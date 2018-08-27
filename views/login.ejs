@@ -1,0 +1,33 @@
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='three wide tablet computer only column'></div>
+		<div class='ten wide table ten wide computer sixteen wide mobile  column'>
+			<div class='ui segment'>
+				<h1>Login</h1>
+				<form action="/login?redirect=<%=req.query.redirect%>" method="post" class='ui <%-error?"error":""%> form'>
+					<div class="ui error message">
+						<div class="header">Please correct error in form</div>
+						<p><%-error%></p>
+					</div>
+					<div class="field">
+						<label for="email">Email address</label>
+						<input name="email" type="text" placeholder="enter your email here" value="<%=email%>"/>
+					</div>
+
+					<div class="field">
+						<label>Password</label>
+						<input name="password" type="password" placeholder="enter your password here"/>
+					</div>
+
+					<input type="submit"/ class='ui teal button'>
+				</form>
+			</div>
+			<div class='ui segment'>
+				<h3>New here? Signup instead..</h3>
+				<a href="/signup?redirect=<%=req.query.redirect%>" class='ui button'>Click here to signup</a>
+			</div>
+		</div>
+		<div class='three wide tablet computer only column'></div>
+	</div>
+	
+</div>

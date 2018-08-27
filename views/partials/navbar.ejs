@@ -1,0 +1,95 @@
+<div class="ui grid" style="padding-bottom: 0.5em">
+	<!-- Definition of the nav bar when seen on a computer -->
+	<div class="ui sixteen wide column">
+		<div class="ui secondary pointing large menu" id="threads" >
+			<div class="ui container" >
+				<a class="item home header <%if(req.page=='home'){%>active<%}%>" href="/">
+					Cashflowy<div class="ui red horizontal label">Beta</div>
+				</a>
+				<!-- <a class="item" href="/explore">
+					Explore
+				</a>
+				<a class="item" href="/find">
+					Finder
+				</a>
+				<a class="item" href="/verify">
+					Verifier
+				</a>
+				<a class="item" target="_blank" href="https://chrome.google.com/webstore/detail/massive-time-saver/odopbjobgpcfknmhdhglfdikhohbbegk">
+					Extension
+				</a> -->
+				<!-- <a class="item" href="/extension">
+					Extension
+				</a> -->
+				<!-- <a class="item" href="/pricing">
+					Pricing
+				</a> -->
+				
+				<!-- <%if(req.user){%>
+					<a class="item" href="/api_keys">
+						API
+					</a>
+				<%}%> -->
+				<div class="right menu">
+					
+					<%if(req.user){%>
+						<a class="item" href="/subscriptions">
+							
+								<i class="ui arrow circle up icon"></i>
+								Upgrade my account
+							
+						</a>
+						<a class="item" href="/help">
+							<i class="ui help icon"></i>
+							Help
+						</a>
+						<div class="ui simple dropdown item" href="">
+							
+							<%=req.user.name%><br>
+							Free plan
+							<i class="dropdown icon"></i>
+							<div class="menu" style="margin-top: 0em">
+								<div class="disabled item">
+									<h4>Free Plan</h4>
+									<div>Requests (10/100)</div>
+									<div class="ui teal tiny progress" data-value="10" data-total="100" style="margin-bottom:12px">
+										<div class="bar"></div>
+									</div>
+									<div>Usage resets in 12 days</div>
+								</div>
+								<a class="item" href='/settings/subscriptions'><i class="ui arrow circle up icon"></i>Subcription</a>
+								<a class="item" href='/settings/usage'><i class="ui chart bar icon"></i>Usage</a>
+								<a class="item" href='/settings'><i class="ui wrench icon"></i>Settings</a>
+								<a class="item" href=''><i class="ui lightbulb outlinetop icon"></i>What is new?</a>
+								<a class="item" href='/logout'><i class="ui stop icon"></i>Logout</a>
+							</div>
+						</div>
+					<%}else{%>
+						<a class="item" href="/login">
+							
+							Login
+						</a>
+						<a class="item" href="/signup">
+							
+							Signup
+						</a>
+					<%}%>
+				</div>
+				<!-- end of right menu -->
+			</div>
+		</div>
+		<!-- end of secondary pointing large menu -->
+	</div>
+	<!-- End of definition of the nav bar when seen on a computer -->
+	<!-- Definition of the nav bar when seen on a mobile -->
+	
+	<!-- End of definition of the nav bar when seen on a mobile -->
+</div>
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		var path = window.location.pathname;
+		$('a[href="'+path+'"]').addClass('active');
+	});
+</script>

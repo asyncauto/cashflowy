@@ -1,0 +1,160 @@
+<%
+	var r_price="$99/year";
+	var o_price="$49/year";
+	var pay_link="https://www.paypal.me/alexjv89/49";
+	// req.headers["cf-ipcountry"]="IN";
+	if(req.headers["cf-ipcountry"]=="IN"){
+		r_price="INR 5999/year";
+		o_price="INR 2999/year";
+		pay_link="https://www.instamojo.com/@alexjv89/l9460eac2d1ed4b998d8e7f6711991354/"
+	}
+%>
+<div class = 'ui container'>
+	<div class='ui center aligned basic segment' style='background:#FFFFFF;'>
+		<br><br><br><br>
+		<h1 style='font-size:3em; opacity:0.8;#5C4B51'>
+			Massive Time Saver (MTS)
+		</h1>
+		<div style="font-size:1.8em; opacity:0.8;color:#5C4B51">
+			A validation service for entrepreneurs/makers<br><br>
+			<!-- that helps you  -->
+			spend time on the internet wisely
+		</div>
+		<br>
+		<a class="ui teal large button" href='/verify' >Try it free</a>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+	</div>
+</div>
+<div class='ui divider'></div>
+
+
+
+<!-- validate url that you visit -->
+<div class = 'ui container'>
+	
+	<div class='ui grid'>
+		<div class='three wide tablet computer only column'></div>
+		<div class='ten wide table ten wide computer sixteen wide mobile  column'>
+			<div class='ui basic segment'>
+				<h1>Validate every url you visit</h1>
+				<p style="font-size:1.4em; opacity:0.8; line-height:1.4em">Every url you visit, we will help you figure out if it is worth your time. </p>
+				<p style="font-size:1.4em; opacity:0.8; line-height:1.4em">
+					Ohh we dont doubt your judgement in figuring out if something is worth your time. You might notice that sometimes it helps to have external validation. 
+				</p>
+				<p style="font-size:1.4em; opacity:0.8; line-height:1.4em">
+					MTS can tell you if a url is worthy of your time. We generate a MTS score based on its  mentioned on twitter. 
+				</p>
+				<!-- <h3>TLDR:</h3> -->
+				
+				<a class="ui teal large button" href='/verify' >Try verifier</a>
+			</div>
+		</div>
+		<div class='three wide tablet computer only column'></div>
+	</div>
+</div>
+<div class='ui divider'></div>
+
+
+<!-- about MTS score  -->
+<div class = 'ui container'>
+	
+	<div class='ui grid'>
+		<div class='three wide tablet computer only column'></div>
+		<div class='ten wide table ten wide computer sixteen wide mobile  column'>
+			<div class='ui basic segment'>
+				<h1> MTS score is affected by:</h1>
+				<ul style="font-size:1.4em; opacity:0.8; line-height:1.4em">
+					<li>number of mentions on twitter</li>
+					<li>when it was mentioned on twitter(older is better)</li>
+					<li>who mentions it on twitter</li>
+				</ul>
+			</div>
+		</div>
+		<div class='three wide tablet computer only column'></div>
+	</div>
+</div>
+<div class='ui divider'></div>
+
+
+<!-- Statistics -->
+<div class = 'ui container'>
+	<div class='ui center aligned basic segment' style='padding:2px'>
+		<h1>Index status</h1>
+	</div>
+	
+	<br>
+</div>
+<div class='ui divider'></div>
+
+
+
+<div class = 'ui container'>
+	<div class='ui grid'>
+		<div class='three wide tablet computer only column'></div>
+		<div class='ten wide table ten wide computer sixteen wide mobile  column'>
+			<!-- <div class='ui basic segment'>
+				<h1>TLDR:</h1>
+				
+				<ul style="font-size:1.4em; opacity:0.8; line-height:1.4em">
+					<li>MTS curates resources for tech entrepreneurs/makers.</li>
+					<li>For busy folks who do a ton of <span style='color:teal'>reading/research online.</span></li>
+					<li>We use twitter mentions of urls to figure out best content. Who mentioned, what did they say when mentioning the url, when they mentioned contributes to the score.</li>
+					<li>We prioritize aged <span style='color:teal'>content that has stood the test of time.</span></li>
+					<li>You get a score of every url (as long as we have indexed it). </li>
+					<li>We got a <span style='color:teal'><a href="/extension">chrome plugin</a></span> that gives you a score of every url that you visit.</li>
+					<li>Use the score to decide if that url is worth your time.</li>
+					<li>Basic plan is free</li>
+					<li>Pro Pricing - <span style='color:teal'><%=r_price%></span> (prelauch offer - <span style='color:red'><%=o_price%></span>)</li>
+
+				</ul>
+				<br>
+				<h1>Start using the beta<i class="ui question circle icon link" style='opacity:0.4' data-html="We would like you to try it out in its early forms and give us some valuable feedback" ></i></h1>
+				<a class="ui teal large button" href='/signup' >Sign up</a>
+			</div> -->
+			<!-- <div class='ui divider'></div>
+			<div class='ui basic segment'>
+				<h1>Alternatives:</h1>
+				<p style="font-size:1.4em; opacity:0.8;">
+					We charge you to access our database, while every one else gives away resources for free. Here are the best alternatives, you decide if MTS is worth your money. 
+				</p>
+				<h3>Newsletters</h3>
+				<ul style="font-size:1.4em; opacity:0.8; line-height:1.4em">
+					<li><a href="">First Search</a></li>
+					<li>Product habits</li>
+					<li>Javascript weekly</li>
+					<li>Mattermost daily</li>
+				</ul>
+				 <a href="https://docs.google.com/spreadsheets/d/1f4sYMbIdrabquGB9OYzxfdOMErD8IMuu62kwpcQiwtI/edit#gid=0" target='_blank'>More alternatives</a>
+			</div> -->
+			
+		</div>
+		<div class='three wide tablet computer only column'></div>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+	function twit(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}
+
+	$(document).ready(function(){
+		$('i.question.circle').popup({on: 'click'});
+
+		// $('#submit_button').click(function(){
+		// 	$(this).addClass('loading').addClass('disabled');
+		// 	var url = $('#url_to_verify').val();
+		// 	// console.log(url);
+		// 	window.location='/verify?url='+url;
+		// });
+
+
+		$('.custom_popup').popup({});
+	});
+</script>

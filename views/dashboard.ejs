@@ -1,0 +1,37 @@
+<div class='ui container'>
+	<div class='ui grid'>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+		<div class='sixteen wide table sixteen wide computer sixteen wide mobile  column'>
+			<div class='ui segment'>
+				<h1>Email events</h1>
+				<table class="ui celled padded table">
+					<thead>
+						<tr><th class="single line">Date</th>
+						<th>Time</th>
+						<th>Description</th>
+						<!-- <th>Currency</th> -->
+						<th>Amount</th>
+						<th>Amount(INR)</th>
+						<th>Paid whom</th>
+						<th>From account</th>
+					</tr></thead>
+					<tbody>
+						<%parsed_emails.forEach(function(pe){%>
+							<tr>
+								<td><%=pe.extracted_data.date%></td>
+								<td><%=pe.extracted_data.time%></td>
+								<td></td>
+								<!-- <td></td> -->
+								<td><%=pe.extracted_data.currency%> <%=pe.extracted_data.amount%></td>
+								<td class="right aligned"><%=pe.extracted_data.amount_inr%></td>
+								<td><%=pe.extracted_data.whom_you_paid%></td>
+								<td><%=pe.extracted_data.credit_card_last_4_digits%></td>
+							</tr>
+						<%})%>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+	</div>
+</div>
