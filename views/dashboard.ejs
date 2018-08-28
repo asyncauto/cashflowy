@@ -23,7 +23,7 @@
 								<td></td>
 								<!-- <td></td> -->
 								<td><%=t.original_currency%> <%=t.original_amount%></td>
-								<td class="right aligned"><%=t.amount_inr%></td>
+								<td class="right aligned"><%=parseFloat(t.amount_inr).toFixed(2)%></td>
 								<td><%=t.third_party%></td>
 								<td><%=t.account.name%></td>
 							</tr>

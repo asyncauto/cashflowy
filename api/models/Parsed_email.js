@@ -45,14 +45,14 @@ module.exports = {
 
 		// find or create transaction
 		// update accociated transaction on this this table
-		console.log('parsed_email after create #1');
+		// console.log('parsed_email after create #1');
 		async.auto({
 			getAccount:function(callback){
-				console.log('parsed_email after create #2');
+				// console.log('parsed_email after create #2');
 				Account.findOne({acc_number:pe.extracted_data.credit_card_last_4_digits}).exec(callback);
 			},
 			findOrCreateTransaction:['getAccount',function(results,callback){
-				console.log('parsed_email after create #3');
+				// console.log('parsed_email after create #3');
 				const fx = require('money');
 				fx.base='INR';
 				fx.rates={
@@ -81,16 +81,12 @@ module.exports = {
 					account:results.getAccount.id,
 					third_party:pe.extracted_data.whom_you_paid
 				}
-				console.log('before transaction find or create');
-				Transaction.findOrCreate(findFilter,t).exec(function(err,t){
-					console.log(err);
-					console.log(t);
-					callback(err,t);
-				});
+				// console.log('before transaction find or create');
+				Transaction.findOrCreate(findFilter,t).exec(callback);
 				
 			}],
 			updateParsedEmail:['findOrCreateTransaction',function(results,callback){
-				console.log('parsed_email after create #4');
+				// console.log('parsed_email after create #4');
 				Parsed_email.update({id:pe.id},{transaction:results.findOrCreateTransaction.id}).exec(callback);
 			}]
 		},cb)
