@@ -54,5 +54,6 @@ module.exports.policies = {
     // find:['sessionAuth'],
     // verify:['sessionAuth'],
     dashboard:['isAuthenticated'],
+    editDescription:['isAuthenticated'],
   }, 
 };

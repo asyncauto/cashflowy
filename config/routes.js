@@ -37,6 +37,10 @@ module.exports.routes = {
   'GET /test2':'MainController.test2',
   'GET /dashboard':'MainController.dashboard',
   'GET /debug':'MainController.debug',
+  
+
+  // api patterns needs rewrite later
+  'POST /api/edit_desc':'MainController.editDescription',
 
 
 
