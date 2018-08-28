@@ -9,7 +9,8 @@ module.exports = {
 
 	attributes: {
 		user: {
-	    model: 'user'
+	    	model: 'user',
+	    	required:true,
 		},
 		type:{
 			type:'string',
@@ -21,6 +22,14 @@ module.exports = {
 		details: {
 		  type: "json"
 		},
+		name:{
+			type:'text',
+			required:true
+		},
+		acc_number:{ // credit card last 4 digits or bank acc number
+			type:'text', // 
+			required:true
+		}
 	}
 };
 

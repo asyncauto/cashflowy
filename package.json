@@ -9,7 +9,7 @@
     "atob": "^2.1.2",
     "bcryptjs": "^2.4.3",
     "cheerio": "^1.0.0-rc.2",
-    "ejs": "2.3.4",
+    "ejs": "2.5.5",
     "googleapis": "^27.0.0",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",

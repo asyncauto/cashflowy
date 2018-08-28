@@ -17,7 +17,7 @@ module.exports = {
 
 	login: function(req, res) {
 		if(req.user)
-			return res.redirect('/find');
+			return res.redirect('/dashboard');
 		var locals={
 			error:false,
 			email:''
@@ -67,7 +67,7 @@ module.exports = {
 	signup:function(req,res){
 
 		if(req.user)
-			return res.redirect('/find');
+			return res.redirect('/dashboard');
 		var locals={
 			error:false,
 			user:{

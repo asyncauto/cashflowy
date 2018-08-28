@@ -113,9 +113,9 @@ module.exports = {
             	console.log('inside processEachMessage');
             	var count=0;
             	async.eachLimit(results.getMessages.messages,1,function(m,next){
+            		console.log("\n\n\n====== m_id="+m.id);
             		console.log(count);
             		count++;
-            		console.log("\n\n\n====== m_id="+m.id);
 					async.auto({
             			getMessageBody:function(callback){
             				var options={
@@ -131,8 +131,8 @@ module.exports = {
             				GmailService.extractDataFromMessageBody(options,callback);
             			}],
             			findOrCreateEmail:['extractDataFromMessageBody',function(results,callback){
-            				console.log('\n\n\nin findOrCreateEmail');
-            				console.log(results.extractDataFromMessageBody);
+            				// console.log('\n\n\nin findOrCreateEmail');
+            				// console.log(results.extractDataFromMessageBody);
             				var email={
             					extracted_data:results.extractDataFromMessageBody.ed,
             					user:1,
@@ -162,25 +162,26 @@ module.exports = {
 		var locals={};
 		// getUserEmailIds:function
 		async.auto({
-			getUserEmailsIds:function(callback){
-				Email.find({user:req.user.id}).exec(callback);
+			getAccounts:function(callback){
+				Account.find({user:req.user.id}).exec(callback);
 			},
-			getParsedEmails:['getUserEmailsIds',function(results,callback){
-				var emails=[];
-				results.getUserEmailsIds.forEach(function(email){
-					emails.push(email.email);
+			getTransactions:['getAccounts',function(results,callback){
+				var accounts=[];
+				results.getAccounts.forEach(function(account){
+					accounts.push(account.id);
 				});
-				Parsed_email.find({email:emails}).sort('createdAt DESC').exec(callback)
+				Transaction.find({account:accounts}).sort('occuredAt DESC').exec(callback);
 			}],
-		},function(err,results){
 			
-			locals.parsed_emails=results.getParsedEmails;
-			locals.parsed_emails.forEach(function(pe){
-				if(pe.extracted_data.amount){
-					pe.extracted_data.amount_inr=fx.convert(pe.extracted_data.amount, {from: pe.extracted_data.currency, to: "INR"}).toFixed(2);
-					// console.log(typeof email.extracted_data.amount_inr);
-				}
-			});
+		},function(err,results){
+			locals.transactions=results.getTransactions;
+			var accounts=results.getAccounts;
+			locals.transactions.forEach(function(t){
+				accounts.forEach(function(account){
+					if(t.account==account.id)
+						t.account=account;
+				});
+			})
 			// res.send(locals);
 			res.view('dashboard',locals);
 			

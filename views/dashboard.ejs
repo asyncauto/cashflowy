@@ -3,11 +3,11 @@
 		<!-- <div class='three wide tablet computer only column'></div> -->
 		<div class='sixteen wide table sixteen wide computer sixteen wide mobile  column'>
 			<div class='ui segment'>
-				<h1>Email events</h1>
+				<h1>Transactions</h1>
 				<table class="ui celled padded table">
 					<thead>
 						<tr><th class="single line">Date</th>
-						<th>Time</th>
+						<!-- <th>Time</th> -->
 						<th>Description</th>
 						<!-- <th>Currency</th> -->
 						<th>Amount</th>
@@ -16,16 +16,16 @@
 						<th>From account</th>
 					</tr></thead>
 					<tbody>
-						<%parsed_emails.forEach(function(pe){%>
+						<%transactions.forEach(function(t){%>
 							<tr>
-								<td><%=pe.extracted_data.date%></td>
-								<td><%=pe.extracted_data.time%></td>
+								<td><%=t.occuredAt.toISOString()%></td>
+								<!-- <td><%=t.occuredAt%></td> -->
 								<td></td>
 								<!-- <td></td> -->
-								<td><%=pe.extracted_data.currency%> <%=pe.extracted_data.amount%></td>
-								<td class="right aligned"><%=pe.extracted_data.amount_inr%></td>
-								<td><%=pe.extracted_data.whom_you_paid%></td>
-								<td><%=pe.extracted_data.credit_card_last_4_digits%></td>
+								<td><%=t.original_currency%> <%=t.original_amount%></td>
+								<td class="right aligned"><%=t.amount_inr%></td>
+								<td><%=t.third_party%></td>
+								<td><%=t.account.name%></td>
 							</tr>
 						<%})%>
 					</tbody>
