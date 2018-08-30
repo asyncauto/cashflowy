@@ -20,6 +20,8 @@ fx.rates={
 }
 module.exports = {
 	landingPage:function(req,res){
+		TestService.printTest();
+		// console.log(sails.services);
 		// Cache.findOne({key:"landing_page_stats"}).exec(function(err,result){
 		// 	if(err)
 		// 		throw err;
