@@ -16,13 +16,15 @@ module.exports = {
 	 * Set the default database connection for models in the production        *
 	 * environment (see config/connections.js and config/models.js )           *
 	 ***************************************************************************/
-	 mainPostgresqlServer:{
-		adapter: 'sails-postgresql',
-		host: process.env.DB_HOST,
-		user: process.env.DB_USER, // optional
-		password: process.env.DB_PASSWORD, // optional
-		database: process.env.DB_DATABASE //optional
-	 }
+	connections:{
+		mainPostgresqlServer:{
+			adapter: 'sails-postgresql',
+			host: process.env.DB_HOST,
+			user: process.env.DB_USER, // optional
+			password: process.env.DB_PASSWORD, // optional
+			database: process.env.DB_DATABASE //optional
+		}
+	},
 	// models: {
 	//   connection: 'someMysqlServer'
 	// },
