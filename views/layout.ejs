@@ -16,10 +16,18 @@
       <meta property="og:image" content="<%- image%>"/>
       <meta name="twitter:image" content="<%- image%>"/>
     <%}%>
+    
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="apple-mobile-web-app-title" content="Cashflowy">
+    <meta name="application-name" content="Cashflowy">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/icons/mstile-144x144.png">
+    <meta name="msapplication-config" content="/icons/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
 
     <!-- <meta name="twitter:creator" content="@nivi"> -->
     <!-- Viewport mobile tag for sensible mobile support -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1 user-scalable=no">
 
     <!--  
         Stylesheets and Preprocessors
@@ -113,9 +121,9 @@
     -->
 
     <!--SCRIPTS-->
+    <!--SCRIPTS END-->
     <script src="/js/dependencies/sails.io.js"></script>
     <script src="/js/jquery.min.js"></script>
-    <!--SCRIPTS END-->
     <script src="/semantic/semantic.min.js"></script>
 
     <!-- include partials/quora_style_login  -->
