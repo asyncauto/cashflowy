@@ -41,7 +41,9 @@ module.exports = {
 		third_party:{ // only for income/expense. 
 			type:'text',
 		},
-		
+		category:{
+			model:'category'
+		}
 
 	}
 };

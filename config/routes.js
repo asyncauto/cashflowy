@@ -36,7 +36,10 @@ module.exports.routes = {
   'GET /test':'MainController.test',
   'GET /test2':'MainController.test2',
   'GET /dashboard':'MainController.dashboard',
+  'GET /transactions':'MainController.viewTransactions',
   'GET /debug':'MainController.debug',
+  'GET /categories':'MainController.listCategories',
+  'GET /category/:id':'MainController.viewCategory',
   
 
   // api patterns needs rewrite later

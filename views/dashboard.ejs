@@ -1,94 +1,152 @@
 <div class='ui container'>
+
+	
 	<div class='ui grid'>
-		<!-- <div class='three wide tablet computer only column'></div> -->
-		<div class='sixteen wide table sixteen wide computer sixteen wide mobile  column'>
-			<div class='ui segment'>
-				<h1>Transactions</h1>
-				<table class="ui celled padded table">
-					<thead>
-						<tr><th class="single line">Date</th>
-						<!-- <th>Time</th> -->
-						<th>Description</th>
-						<!-- <th>Currency</th> -->
-						<th>Amount</th>
-						<th>Amount(INR)</th>
-						<th>Paid whom</th>
-						<th>From account</th>
-					</tr></thead>
-					<tbody>
-						<%transactions.forEach(function(t){%>
-							<tr>
-								<td><%=t.occuredAt.toISOString()%></td>
-								<!-- <td><%=t.occuredAt%></td> -->
-								<td data-id='<%=t.id%>'>
-									<span class='description'><%-t.description?t.description:''%></span>
-									<a class='edit' data-id='<%=t.id%>' href=''>edit</a>
-									<div class='edit_description' data-id='<%=t.id%>' style='display:none;'>
-										
-										<div class="ui fluid input">
-											<input type="text" name='description' value='<%-t.description?t.description:''%>'>
+		<div class='ui two wide column'></div>
+		<div class='ui twelve wide column'>
+			<div class='ui center aligned segment'>
+				<a href="/dashboard/?month=<%=prev%>">
+					<i class="angle left icon big"></i>
+				</a>
+				<%=req.query.month?req.query.month:(req.query.year?req.query.year:new Date().toISOString().substring(0,7))%>
+				<a href="/dashboard/?month=<%=next%>">
+					<i class="angle right icon big"> </i>
+				</a>
+			</div>
+			<div class='ui grid'>
+				<div class='ui row'>
+						
+					<!-- <div class='ui four wide column'>
+						<div class='ui segment'>
+							
+						</div>
+					</div> -->
+					<div class='ui sixteen wide column'>
+						<div class='ui segment'>
+							<div style="width:100%;">
+							    <canvas id="canvas"></canvas>
+							</div>
+							<!-- Balance in various accounts as a line graph -->
+						</div>
+					</div>
+				</div>
+				<div class='ui row'>
+					<div class='ui six wide column'>
+						<div class='ui segment'>
+							<h3>List of accounts</h3>
+							<div class="ui relaxed divided list">
+								<%accounts.forEach(function(account){%>
+									<div class="item">
+										<i class="large github middle aligned icon"></i>
+										<div class="content">
+											<a class="header" href='/account/<%=account.id%>'><%=account.name%></a>
+											<div class="description">Updated - <%=GeneralService.timeAgo(account.updatedAt)%></div>
 										</div>
-										<br>
-										<button class="ui teal button submit_edit_desc" data-id='<%=t.id%>' >save</button>
-										<button class="ui red button cancel_edit_desc" data-id='<%=t.id%>' >cancel</button>
 									</div>
-								</td>
-								<!-- <td></td> -->
-								<td><%=t.original_currency%> <%=t.original_amount%></td>
-								<td class="right aligned"><%=parseFloat(t.amount_inr).toFixed(2)%></td>
-								<td><%=t.third_party%></td>
-								<td><%=t.account.name%></td>
-							</tr>
-						<%})%>
-					</tbody>
-				</table>
+								<%})%>
+							</div>
+						</div>
+					</div>
+					<div class='ui ten wide column'>
+						<div class='ui segment'>
+							<h3>Expense per category</h3>
+							<div class="ui list">
+								<%categories.forEach(function(category){%>
+									<div class="item">
+										<i class="folder icon"></i>
+										<div class="content">
+											<div class="header"><a href='/category/<%=category.id%>'><%=category.name%></a></div>
+											<div class="description">Rs.<%=-category.t_sum%> (<%=(-category.t_sum*100/category.budget).toFixed(1)%>%)</div>
+											<div class="list">
+												<%category.children.forEach(function(c2){%>
+													<div class="item">
+														<i class="folder icon"></i>
+														<div class="content">
+															<div class="header"><a href='/category/<%=c2.id%>'><%=c2.name%></a></div>
+															<div class="description">Rs.<%=-c2.t_sum%> (<%=(-c2.t_sum*100/c2.budget).toFixed(1)%>)</div>
+														</div>
+													</div>
+												<%})%>
+											</div>
+										</div>
+									</div>
+								<%})%>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
-		<!-- <div class='three wide tablet computer only column'></div> -->
+
+		<div class='ui two wide column'></div>
 	</div>
 </div>
 <script type="text/javascript">
 	$(document).ready(function(){
-		var edit_active=false;
-		$('.edit').click(function(e){
-			e.preventDefault();
-			$(this).hide();
-			var t_id=$(this).attr('data-id');
-			console.log('description clicked');
-			console.log(t_id);
-			// if(!edit_active)
-			$('td[data-id='+t_id+'] span.description').hide();
-			$(this).parent().find('.edit_description').show();
-			// edit_active=true;
-		});
-		$('.cancel_edit_desc').click(function(e){
-			console.log('cancel button clicked');
-			var t_id=$(this).attr('data-id');
-			// edit_active=false;
-			$(this).parent().hide();
-			$(this).parents().find('.edit[data-id='+t_id+']').show();
-		});
-		$('.submit_edit_desc').click(function(e){
-			console.log('submit button clicked');
-			var t_id=$(this).attr('data-id');
-			console.log(t_id);
-			var description=$('td[data-id='+t_id+']').find('input[name=description]').val();
-			$('td[data-id='+t_id+'] span.description').text(description);
-			$('td[data-id='+t_id+'] span.description').show();
-			// /api/edit_desc
-			var button = this;
-			$(button).addClass('loading');
-			$(button).addClass('disabled');
-			$.post("/api/edit_desc", {t: t_id,description:description}, function(result,status){
-			    console.log('result = '+result);
-			    console.log('status = '+status);// this runs only on sucess
-			    if(status=='success'){
-			        $(button).removeClass('loading');
-			        $(button).removeClass('disabled');
-					$(button).parent().hide();
-					$(button).parents().find('.edit[data-id='+t_id+']').show();
-			    }
-			});
-		})
-	});
+		$('.ui.accordion').accordion();
+	})
 </script>
+
+
+
+<style>
+    canvas{
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+</style>
+<%if(typeof chart !='undefined'){%>
+<script>
+    var config = {
+        type: 'line',
+        data: {
+            labels: <%-JSON.stringify(chart.x)%>,
+            datasets: [{
+                label: 'Expense',
+                backgroundColor: 'teal',
+                borderColor: 'teal',
+                data: [
+                    <%-chart.y%>
+                ],
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: false,
+                text: 'Expense'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Day'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Value'
+                    }
+                }]
+            }
+        }
+    };
+    window.onload = function() {
+        var ctx = document.getElementById('canvas').getContext('2d');
+        window.myLine = new Chart(ctx, config);
+    };
+</script>
+<%}%>

@@ -144,5 +144,27 @@ module.exports={
 			return t.getDate()+' '+month[t.getMonth()]+' '+t.getFullYear();
 		}
 	},
+	orderCategories:function(categories){
+		var parents=[];
+		categories.forEach(function(category){
+			if(!category.parent)
+				parents.push(category);
+		});
+		parents.forEach(function(pc){
+			pc.children=[];
+			categories.forEach(function(c){
+				if(c.parent==pc.id)
+					pc.children.push(c);
+			});
+			pc.children.forEach(function(p2c){
+				p2c.children=[];
+				categories.forEach(function(c){
+					if(c.parent==p2c.id)
+						p2c.children.push(c);
+				});
+			})
+		});
+		return parents;
+	}
 
 }

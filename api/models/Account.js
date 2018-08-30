@@ -20,7 +20,8 @@ module.exports = {
 			]
 		},
 		details: {
-		  type: "json"
+		  type: "json",
+		  defaultsTo:{}
 		},
 		name:{
 			type:'text',

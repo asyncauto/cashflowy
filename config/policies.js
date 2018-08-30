@@ -55,5 +55,6 @@ module.exports.policies = {
     // verify:['sessionAuth'],
     dashboard:['isAuthenticated'],
     editDescription:['isAuthenticated'],
+    listCategories:['isAuthenticated'],
   }, 
 };

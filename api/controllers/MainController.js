@@ -29,6 +29,132 @@ module.exports = {
 			res.view('landingPage',locals);
 		// });
 	},
+	listCategories:function(req,res){
+		Category.find({user:req.user.id}).exec(function(err,categories){
+			var locals={
+				categories:categories
+			}
+			locals.parents=GeneralService.orderCategories(categories);
+			res.view('list_categories',locals);
+		});
+	},
+	viewCategory:function(req,res){
+		res.send('this is category page');
+	},
+	dashboard:function(req,res){
+		var month=null,year=null;
+		if(req.query.month){
+			year=req.query.month.substring(0,4);
+			month=req.query.month.substring(5,7);
+		}
+		else if(req.query.year)
+			year= req.query.year.substring(0,4);
+		else{
+			year=new Date().toISOString().substring(0,4);
+			month=new Date().toISOString().substring(5,7);
+		}
+
+		async.auto({
+			getAccounts:function(callback){
+				Account.find({user:req.user.id}).sort('updatedAt DESC').exec(callback);
+			},
+			getCategories:function(callback){
+				Category.find({user:req.user.id}).exec(callback);
+			},
+			getCategorySpending:function(callback){
+
+				var escape=[year];
+				var query = 'select count(*),sum(amount_inr),category from transaction';
+				query+=' where';
+				query+=' EXTRACT(YEAR FROM "occuredAt") = $1';
+				if(month){
+					escape.push(month);
+					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
+				}
+				query+=' group by category';
+				Transaction.query(query,escape,function(err, rawResult) {
+					if(err)
+						callback(err);
+					else
+						callback(err,rawResult.rows);
+				});
+			},
+			getExpenseChartData:function(callback){
+				var escape=[year];
+				var query = 'select count(*),sum(amount_inr),EXTRACT(Day from "occuredAt") as day from transaction';
+				query+=' where';
+				query+=' EXTRACT(YEAR FROM "occuredAt") = $1';
+				if(month){
+					escape.push(month);
+					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
+				}
+				query+=' group by day';
+				query+=' order by day';
+				Transaction.query(query,escape,function(err, rawResult) {
+					if(err)
+						callback(err);
+					else
+						callback(err,rawResult.rows);
+				});
+			}
+		},function(err,results){
+			console.log('\n\n\n====err');
+			console.log(err);
+			results.getCategories.forEach(function(cat){
+				cat.t_count=0;
+				cat.t_sum=0;
+				console.log(results.getCategorySpending);
+				results.getCategorySpending.forEach(function(spend){
+					if(cat.id==spend.category){
+						cat.t_count=spend.count;
+						cat.t_sum=spend.sum;
+					}
+				})
+				// console.log(cat);
+			});
+
+			var locals={
+				current:year+'-'+month,
+				accounts:results.getAccounts,
+				categories:GeneralService.orderCategories(results.getCategories),
+			}
+			if(month==1)
+				locals.prev=(parseInt(year)-1)+'-12';
+			else
+				locals.prev=year+'-'+(parseInt(month)-1)
+
+			if(month==12)
+				locals.next=(parseInt(year)+1)+'-1'
+			else
+				locals.next=year+'-'+(parseInt(month)+1);
+
+
+
+			// console.log(locals.next);
+			// console.log(locals.prev);
+			
+			locals.chart={
+				x:[],
+				y:[]
+			}
+			var i=1;
+			results.getExpenseChartData.forEach(function(row){
+				for(;i<row.day;i++){
+					locals.chart.x.push(i);
+					locals.chart.y.push(0);
+				}
+				locals.chart.x.push(row.day);
+				locals.chart.y.push(-row.sum);
+				i++;
+			});
+			// locals.chart.x.forEach()
+			console.log(locals.chart);
+
+
+			res.view('dashboard',locals);
+		})
+
+	},
 	// test:function(req,res){
 	// 	console.log('hi hi');
 	// 	// for each user, 
@@ -158,7 +284,7 @@ module.exports = {
             return res.json({ status: 'success',getMessages:results.getMessages})
         })
 	},
-	dashboard:function(req,res){
+	viewTransactions:function(req,res){
 		var locals={};
 		// getUserEmailIds:function
 		async.auto({
@@ -183,7 +309,7 @@ module.exports = {
 				});
 			})
 			// res.send(locals);
-			res.view('dashboard',locals);
+			res.view('view_transactions',locals);
 			
 		});
 		
