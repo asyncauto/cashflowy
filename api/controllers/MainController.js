@@ -20,6 +20,10 @@ fx.rates={
 }
 module.exports = {
 	landingPage:function(req,res){
+		if(req.user)
+			res.redirect('/dashboard');
+		else 
+			res.redirect('/login')
 		// Cache.findOne({key:"landing_page_stats"}).exec(function(err,result){
 		// 	if(err)
 		// 		throw err;
