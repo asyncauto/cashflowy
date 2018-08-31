@@ -50,11 +50,12 @@ module.exports.policies = {
 	// }
   //
   MainController:{
-    '*':true,
-    // find:['sessionAuth'],
+    '*':['isAuthenticated'],
+    landingPage:true,
+    test2:true,
     // verify:['sessionAuth'],
-    dashboard:['isAuthenticated'],
-    editDescription:['isAuthenticated'],
-    listCategories:['isAuthenticated'],
+    // dashboard:['isAuthenticated'],
+    // editDescription:['isAuthenticated'],
+    // listCategories:['isAuthenticated'],
   }, 
 };

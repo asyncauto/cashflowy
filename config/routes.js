@@ -36,11 +36,28 @@ module.exports.routes = {
   'GET /test':'MainController.test',
   'GET /test2':'MainController.test2',
   'GET /dashboard':'MainController.dashboard',
-  'GET /transactions':'MainController.viewTransactions',
   'GET /debug':'MainController.debug',
   'GET /categories':'MainController.listCategories',
   'GET /category/:id':'MainController.viewCategory',
   
+  'GET /emails':'MainController.listEmails',
+  'GET /email/create':'MainController.createEmail',
+  'POST /email/create':'MainController.createEmail',
+  'GET /email/:id/edit':'MainController.editEmail',
+  'POST /email/:id/edit':'MainController.editEmail',
+  'GET /email/:id':'MainController.viewEmail',
+  
+  'GET /accounts':'MainController.listAccounts',
+  'GET /account/create':'MainController.createAccount',
+  'POST /account/create':'MainController.createAccount',
+
+  
+  'GET /transactions':'MainController.listTransactions',
+  'GET /transaction/create':'MainController.createTransaction',
+  'POST /transaction/create':'MainController.createTransaction',
+
+
+
 
   // api patterns needs rewrite later
   'POST /api/edit_desc':'MainController.editDescription',

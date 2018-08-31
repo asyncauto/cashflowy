@@ -45,6 +45,46 @@ module.exports = {
 	viewCategory:function(req,res){
 		res.send('this is category page');
 	},
+	listEmails:function(req,res){
+		Email.find({user:req.user.id}).exec(function(err,emails){
+			var locals={
+				emails:emails
+			}
+			res.view('list_emails',locals);
+		});
+	},
+	createEmail:function(req,res){
+		if(req.body){ // post request
+			
+		}else{ // view the form
+			var locals={
+				email:'',
+				token:'',
+				status:'',
+				message:'',
+			}
+			console.log(locals);
+			res.view('create_email',locals);
+		}
+
+	},
+	editEmail:function(req,res){
+
+	},
+	viewEmail:function(req,res){
+
+	},
+	createAccount:function(req,res){
+
+	},
+	listAccounts:function(req,res){
+		Account.find({user:req.user.id}).exec(function(err,accounts){
+			var locals={
+				accounts:accounts
+			}
+			res.view('list_accounts',locals);
+		})
+	},
 	dashboard:function(req,res){
 		var month=null,year=null;
 		if(req.query.month){
@@ -159,65 +199,6 @@ module.exports = {
 		})
 
 	},
-	// test:function(req,res){
-	// 	console.log('hi hi');
-	// 	// for each user, 
-	// 	// for each gmail filter
-	// 	var icici_filter= require('../filters/IciciCreditCardTransactionAlertFilter.js');
-	// 	// console.log(icici_filter);
-	// 	var options={
-	// 		q:icici_filter.gmail_filter,
-	// 		pageToken:req.query.pageToken?req.query.pageToken:null,
-	// 	}
-	// 	async.auto({
- //            getMessages: function (callback) {
- //                GmailService.getMessages(options,callback);
- //            },
- //            processEachMessage: ['getMessages', function (results, callback) {
- //            	console.log('inside processEachMessage');
- //            	var count=0;
- //            	async.eachLimit(results.getMessages.messages,1,function(m,next){
- //            		console.log(count);
- //            		count++;
- //            		console.log("\n\n\n====== m_id="+m.id);
- //            		GmailService.getMessageDetails(m.id,function(err,data){
- //            			var log={
- //            				user:1,
- //            				log_type:'credit_card_alert',
- //            				medium:'email',
- //            				extracted_data:data,
- //            				email:'alexjv89@gmail.com',
- //            				message_id:m.id
- //            			}
- //            			console.log(data);
- //            			// next(err);
- //            			Email.findOrCreate({message_id:m.id},log).exec(function(err,result){
- //            				console.log(err);
- //            				next(err);
- //            			});
- //            		});
- //            		// next(null);
- //            		// get message details
- //            		// extract data
- //            		// create or update processed message
- //            	},function(err){
- //            		callback(null);
- //            		console.log('everything done');
- //            	})
- //                // results.getMessages.forEach()
- //            }]
- //        }, function (err, results) {
- //            if (err)
- //                return res.json(500, { status: 'failure', error: err.message });
- //            return res.json({ status: 'success',getMessages:results.getMessages})
- //        })
-	// 	// GmailService.listMessages(options,function(err,results){
-	// 	// 	res.send(results);
-	// 	// });
-	// 	// list messages
-	// 	// get body of each of the message
-	// 	// process the message
-	// },
 	test2:function(req,res){
         var email_type=req.query.email_type?req.query.email_type:'IciciCreditCardTransactionAlertFilter';
 		
@@ -288,7 +269,7 @@ module.exports = {
             return res.json({ status: 'success',getMessages:results.getMessages})
         })
 	},
-	viewTransactions:function(req,res){
+	listTransactions:function(req,res){
 		var locals={};
 		// getUserEmailIds:function
 		async.auto({
@@ -317,6 +298,65 @@ module.exports = {
 			
 		});
 		
+	},
+	createTransaction:function(req,res){
+		Account.find({user:req.user.id}).exec(function(err,accounts){
+			if(req.body){ // post request
+				console.log(req.body);
+				const fx = require('money');
+				fx.base='INR';
+				fx.rates={
+					'EUR':0.0125660,
+					'USD':0.0146289,
+					'MYR':0.0595751,
+					'IDR':211.557,
+					'INR':1,
+					'CZK':0.320764,
+					'HUF':4.03376,
+
+				}
+				var findFilter={
+					createdBy:'user',
+					original_currency:req.body.original_currency,
+					original_amount:-(req.body.original_amount),
+					// needs a bit more filtering
+				};
+				var t={
+					original_currency:req.body.original_currency,
+					original_amount:-(req.body.original_amount),
+					amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
+					occuredAt: new Date(req.body.date+' '+req.body.time),
+					createdBy:'user',
+					type:'income_expense',
+					description:req.body.description,
+					account:req.body.account_id,
+					third_party:req.body.third_party
+				}
+				// console.log('before transaction find or create');
+				// console.log(t);
+				Transaction.findOrCreate(findFilter,t).exec(function(err,transaction){
+					if(err)
+						throw err;
+					else
+						res.redirect('/transactions');
+				});
+			}else{ // view the form
+				var locals={
+					email:'',
+					token:'',
+					status:'',
+					message:'',
+					description:'',
+					original_amount:'',
+					original_currency:'',
+					third_party:'',
+					account_id:'',
+					accounts:accounts
+				}
+				console.log(locals);
+				res.view('create_transaction',locals);
+			}
+		})
 	},
 	debug:function(req,res){
 		var email_type=req.query.email_type?req.query.email_type:'IciciCreditCardTransactionAlertFilter'

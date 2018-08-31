@@ -1,0 +1,16 @@
+<div class='ui container'>
+	
+	<h2>Your accounts:</h2>
+	<ol>
+		<%accounts.forEach(function(account){%>
+			<li><a href="/account/<%=account.id%>"><%=account.name%></a><br></li>
+		<%})%>
+	</ol>
+	<br>
+	<a href="/account/create" class='ui button'>Create account</a>
+	<!-- <div class='ui grid'>
+		<div class=''>
+			
+		</div>
+	</div> -->
+</div>

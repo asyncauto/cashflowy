@@ -1,0 +1,102 @@
+<%
+	var tzoffset = (new Date()).getTimezoneOffset() * 60000;
+	var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
+%>
+<div class="ui container">
+	<div class="ui grid">
+		<div class='four wide tablet computer only column'></div>
+		<div class='eight wide table eight wide computer sixteen wide mobile column'>
+			<h4 class="ui horizontal divider header">
+				<!-- <i class="list icon"></i> -->
+				Create Transaction
+			</h4>
+			<form class="ui <%=status%> form " action="" method='post'>
+				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
+				
+				<div class="two fields">
+					<div class="field">
+						<label>Date</label>
+						<input type="date" name="date" value="<%=localISOTime.substring(0,10)%>">
+					</div>
+					<div class="field">
+						<label>Time</label>
+						<input type="time" name="time" value="<%=localISOTime.substring(11,19)%>">
+					</div>
+				</div>
+				<div class="field">
+					<label>Description</label>
+					<input type="text" name="description" placeholder="Your comments of the transaction" value="<%=description%>">
+				</div>
+				<div class="two fields">
+					
+					<div class="field">
+						<label>Currency</label>
+						<div class="ui fluid search selection dropdown">
+							<input type="hidden" name="original_currency" placeholder="INR" value="<%=original_currency%>">
+							<i class="dropdown icon"></i>
+							<div class="default text">Select Currency</div>
+							<div class="menu">
+								<div class="item" data-value="INR"></i>INR</div>
+								<div class="item" data-value="USD"></i>USD</div>
+								<div class="item" data-value="EUR"></i>EUR</div>
+								<div class="item" data-value="HUF"></i>HUF</div>
+								<!-- <div class="item" data-value="as"><i class="as flag"></i>American Samoa</div>
+								<div class="item" data-value="ad"><i class="ad flag"></i>Andorra</div>
+								<div class="item" data-value="ao"><i class="ao flag"></i>Angola</div>  -->
+							</div>
+						</div>
+					</div>
+					<div class="field">
+						<label>Amount</label>
+						<input type="number" name="original_amount" placeholder="100" value="<%=original_amount%>">
+					</div>
+				</div>
+				<div class="field">
+					<label>Paid Whom</label>
+					<input type="text" name="third_party" placeholder="swiggy" value="<%=third_party%>">
+				</div>
+				<div class="field">
+					<label>Account</label>
+					<div class="ui fluid search selection dropdown">
+						<input type="hidden" name="account_id" value="<%=account_id%>">
+						<i class="dropdown icon"></i>
+						<div class="default text">Select Account</div>
+						<div class="menu">
+							<%accounts.forEach(function(account){%>
+								<div class="item" data-value="<%=account.id%>"><%=account.name%></div>
+							<%})%>
+						</div>
+					</div>
+					
+				</div>
+
+				
+				<div class="ui error message">
+					<div class="header">Error</div>
+					<p><%=message%></p>
+				</div>
+				<input type="submit" class="ui button" value="Submit">
+				<div class="ui success message">
+					<div class="header">Domain created</div>
+					You just created a domain
+				</div>
+			</form>
+		</div>
+		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
+			<div class='ui segment'>
+				You are creating a manual transaction. If you paid via digital means, you most likely dont need to do this
+				<br/><br/>
+				<!-- <b>Email:</b> 
+				For now we support only gmail address. The gmail address can be a business gmail address also. 
+				<br/><br/>
+				<b>Token:</b>
+				You will need to enter token detail here for now. It will be automated later.  -->
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.dropdown').dropdown();
+	})
+</script>
