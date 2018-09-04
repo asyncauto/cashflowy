@@ -1,6 +1,11 @@
 <%
 	var tzoffset = (new Date()).getTimezoneOffset() * 60000;
 	var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
+	if(!original_currency)
+		original_currency=req.user.details.default_currency;
+	var single_active_flag=false;
+	if(!account_id)
+		account_id=req.user.details.default_account;
 %>
 <div class="ui container">
 	<div class="ui grid">
@@ -36,10 +41,10 @@
 							<i class="dropdown icon"></i>
 							<div class="default text">Select Currency</div>
 							<div class="menu">
-								<div class="item" data-value="INR"></i>INR</div>
-								<div class="item" data-value="USD"></i>USD</div>
-								<div class="item" data-value="EUR"></i>EUR</div>
-								<div class="item" data-value="HUF"></i>HUF</div>
+								<div class="<%-(original_currency=="INR")?'active':''%> item" data-value="INR"></i>INR</div>
+								<div class="<%-(original_currency=="USD")?'active':''%> item" data-value="USD"></i>USD</div>
+								<div class="<%-(original_currency=="EUR")?'active':''%> item" data-value="EUR"></i>EUR</div>
+								<div class="<%-(original_currency=="HUF")?'active':''%> item" data-value="HUF"></i>HUF</div>
 								<!-- <div class="item" data-value="as"><i class="as flag"></i>American Samoa</div>
 								<div class="item" data-value="ad"><i class="ad flag"></i>Andorra</div>
 								<div class="item" data-value="ao"><i class="ao flag"></i>Angola</div>  -->
@@ -63,7 +68,7 @@
 						<div class="default text">Select Account</div>
 						<div class="menu">
 							<%accounts.forEach(function(account){%>
-								<div class="item" data-value="<%=account.id%>"><%=account.name%></div>
+								<div class="<%-account_id?'active':''%> item" data-value="<%=account.id%>"><%=account.name%></div>
 							<%})%>
 						</div>
 					</div>
