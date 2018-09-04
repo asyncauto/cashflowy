@@ -145,17 +145,41 @@
 
       <!-- Top menu -->
     </div>
-
-    <% include partials/warning %>
-    <% include partials/navbar %>
-
+    <div class="ui left demo vertical inverted sidebar labeled icon menu">
+      <!-- <a class="item">
+        <i class="home icon"></i>
+        Home
+      </a> -->
+      <a class="item" href='/transactions'>
+        <i class="rupee sign icon"></i>
+        TXNs
+      </a>
+      <a class="item" href='/emails'> 
+        <i class="mail icon"></i>
+        Emails
+      </a>
+      <a class="item" href='/accounts'>
+        <i class="book icon"></i>
+        Accounts
+      </a>
+      <a class="item" href='/categories'>
+        <i class="block layout icon"></i>
+        Categories
+      </a>
+      <!-- <a class="item">
+        <i class="tags icon"></i>
+        Tags
+      </a> -->
+      <a class="item" href='/settings'>
+        <i class="setting icon"></i>
+        Settings
+      </a>
+    </div>
+    <div class="pusher">
+      <% include partials/warning %>
+      <% include partials/navbar %>
       <%- body %>
-    </div> 
-    <% include partials/footer %>
-
-
-
-    
-
+      <% include partials/footer %>
+    </div>
   </body>
 </html>
