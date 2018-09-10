@@ -325,7 +325,7 @@ module.exports = {
 					original_currency:req.body.original_currency,
 					original_amount:-(req.body.original_amount),
 					amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
-					occuredAt: new Date(req.body.date+' '+req.body.time),
+					occuredAt: new Date(req.body.date+' '+req.body.time+'+5:30'),
 					createdBy:'user',
 					type:'income_expense',
 					description:req.body.description,
@@ -333,7 +333,7 @@ module.exports = {
 					third_party:req.body.third_party
 				}
 				// console.log('before transaction find or create');
-				// console.log(t);
+				console.log(t);
 				Transaction.findOrCreate(findFilter,t).exec(function(err,transaction){
 					if(err)
 						throw err;

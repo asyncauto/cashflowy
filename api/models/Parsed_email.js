@@ -75,7 +75,7 @@ module.exports = {
 					original_currency:pe.extracted_data.currency,
 					original_amount:-(pe.extracted_data.amount),
 					amount_inr:-(fx.convert(pe.extracted_data.amount, {from: pe.extracted_data.currency, to: "INR"})),
-					occuredAt: new Date(pe.extracted_data.date+' '+pe.extracted_data.time),
+					occuredAt: new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30'),
 					createdBy:'parsed_email',
 					type:'income_expense',
 					account:results.getAccount.id,
