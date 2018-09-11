@@ -334,7 +334,7 @@ module.exports = {
 				}
 				// console.log('before transaction find or create');
 				console.log(t);
-				Transaction.findOrCreate(findFilter,t).exec(function(err,transaction){
+				Transaction.create(t).exec(function(err,transaction){
 					if(err)
 						throw err;
 					else

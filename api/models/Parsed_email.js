@@ -82,7 +82,7 @@ module.exports = {
 					third_party:pe.extracted_data.whom_you_paid
 				}
 				// console.log('before transaction find or create');
-				Transaction.findOrCreate(findFilter,t).exec(callback);
+				Transaction.create(t).exec(callback);
 				
 			}],
 			updateParsedEmail:['findOrCreateTransaction',function(results,callback){
