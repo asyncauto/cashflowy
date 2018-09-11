@@ -18,23 +18,23 @@
 				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
 				
 				<div class="two fields">
-					<div class=" field">
+					<div class="field">
 						<label>Date</label>
 						<input type="date" name="date" value="">
 					</div>
-					<div class=" field">
+					<div class="field">
 						<label>Time</label>
 						<input type="time" name="time" value="">
 					</div>
 					<input type="hidden" name="tz" value="">
 				</div>
-				<div class=" field">
+				<div class="field">
 					<label>Description</label>
 					<input type="text" name="description" placeholder="Your comments of the transaction" value="<%=description%>">
 				</div>
 				<div class="two fields">
 					
-					<div class=" field">
+					<div class="field">
 						<label>Currency</label>
 						<div class="ui fluid search selection dropdown">
 							<input type="hidden" name="original_currency" placeholder="INR" value="<%=original_currency%>">
@@ -51,16 +51,16 @@
 							</div>
 						</div>
 					</div>
-					<div class=" field">
+					<div class="field">
 						<label>Amount</label>
 						<input type="number" name="original_amount" placeholder="100" value="<%=original_amount%>">
 					</div>
 				</div>
-				<div class=" field">
+				<div class="field">
 					<label>Paid Whom</label>
 					<input type="text" name="third_party" placeholder="swiggy" value="<%=third_party%>">
 				</div>
-				<div class=" field">
+				<div class="field">
 					<label>Account</label>
 					<div class="ui fluid search selection dropdown">
 						<input type="hidden" name="account_id" value="<%=account_id%>">
@@ -106,8 +106,8 @@
 	$(document).ready(function(){
 		var a = moment(); // create a time instance in the local time zone 
 		$('.dropdown').dropdown();
-		$('input[name=date]').val(a.format('YYYY-MM-DD'))
-		$('input[name=time]').val(a.format('HH:mm'))
+		$('input[name=date]').val(a.format('YYYY-MM-DD'));
+		$('input[name=time]').val(a.format('HH:mm'));
 		$('input[name=tz]').val(a.format('Z'));
 		$('.ui.form').form({
 			fields: {
