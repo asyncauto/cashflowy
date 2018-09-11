@@ -251,13 +251,25 @@ module.exports = {
             					body_parser_used:results.extractDataFromMessageBody.body_parser_used,
             					email:'alexjv89@gmail.com',
             					message_id:m.id
-            				}
-            				Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);
+							}
+							if(email.body_parser_used==''){
+								console.log('\n\n\nbody parser is null');
+								console.log(email);
+							}
+							// during testing a new filter, comment/uncomment the following lines
+							// console.log(email);
+							// callback(null);
+							Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);
+							// Parsed_email.findOrCreate({message_id:m.id},email).exec(function(err,result){
+							// 	callback('manual error');
+							// });
             			}]
             		},next)
 
 
             	},function(err){
+					if(err)
+						throw err;
             		callback(null);
             		console.log('everything done');
             	})

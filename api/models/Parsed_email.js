@@ -49,8 +49,20 @@ module.exports = {
 		async.auto({
 			getAccount:function(callback){
 				// console.log('parsed_email after create #2');
-				Account.findOne({acc_number:pe.extracted_data.credit_card_last_4_digits}).exec(callback);
-			},
+				var filter ={}
+				if(pe.type=='IciciCreditCardTransactionAlertFilter'){
+					filter = {
+						acc_number:pe.extracted_data.credit_card_last_4_digits
+					};
+				}else if(pe.type=='IciciInternetBankingFilter'){
+					filter = {
+						like:{
+							acc_number:'%'+pe.extracted_data.account_last_4_digits,
+						}
+					}
+				}
+				Account.findOne(filter).exec(callback);
+			},	
 			findOrCreateTransaction:['getAccount',function(results,callback){
 				// console.log('parsed_email after create #3');
 				const fx = require('money');
