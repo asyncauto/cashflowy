@@ -4,403 +4,6 @@ module.exports={
 	required_fields:['credit_card_last_4_digits','currency','amount','whom_you_paid','available_credit_balance','date','time'],
 	body_parsers:[
 		{
-			version:'v2',
-			description:'before may 30 2016',
-			fields:[
-				{
-					name:'account_last_4_digits',
-					type:'integer',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'You have made an online payment of'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you have not'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'from your Account XXXXXXXX'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'currency',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'You have made an online payment of'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you have not'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'with Transaction ID'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'amount',
-					type:'float',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'You have made an online payment of'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you have not'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'with Transaction ID'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' '
-						},
-						{
-							type:'replace',
-							options:{
-								replace:',',
-								with:'',
-							}
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'whom_you_paid',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'You have made an online payment of'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you have not'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'towards payee'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'from your Account'
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'transaction_id',
-					type:'float',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'You have made an online payment of'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you have not'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'with Transaction ID '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'towards payee'
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'date',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'You have made an online payment of'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you have not'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'from your Account'
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' .'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' at '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'time',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'You have made an online payment of'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you have not'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'from your Account'
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' .'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' at '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-			]
-		},
-		{
 			version:'v1',
 			description:'as of sept 2018',
 			fields:[
@@ -797,6 +400,404 @@ module.exports={
 				},
 			]
 		},
+		{
+			version:'v2',
+			description:'before may 30 2016',
+			fields:[
+				{
+					name:'account_last_4_digits',
+					type:'integer',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'You have made an online payment of'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'In case you have not'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'from your Account XXXXXXXX'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' on '
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'currency',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'You have made an online payment of'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'In case you have not'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'with Transaction ID'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'amount',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'You have made an online payment of'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'In case you have not'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'with Transaction ID'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
+						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'whom_you_paid',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'You have made an online payment of'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'In case you have not'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'towards payee'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'from your Account'
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'transaction_id',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'You have made an online payment of'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'In case you have not'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'with Transaction ID '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'towards payee'
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'date',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'You have made an online payment of'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'In case you have not'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'from your Account'
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' on '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' .'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' at '
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'time',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'You have made an online payment of'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'In case you have not'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'from your Account'
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' on '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' .'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' at '
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+			]
+		},
+		
 
 	]
 	
