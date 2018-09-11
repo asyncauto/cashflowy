@@ -1,6 +1,5 @@
 <%
-	var tzoffset = (new Date()).getTimezoneOffset() * 60000;
-	var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
+	
 	if(!original_currency)
 		original_currency=req.user.details.default_currency;
 	var single_active_flag=false;
@@ -21,12 +20,13 @@
 				<div class="two fields">
 					<div class="field">
 						<label>Date</label>
-						<input type="date" name="date" value="<%=localISOTime.substring(0,10)%>">
+						<input type="date" name="date" value="">
 					</div>
 					<div class="field">
 						<label>Time</label>
-						<input type="time" name="time" value="<%=localISOTime.substring(11,16)%>">
+						<input type="time" name="time" value="">
 					</div>
+					<input type="hidden" name="tz" value="">
 				</div>
 				<div class="field">
 					<label>Description</label>
@@ -100,8 +100,15 @@
 		</div>
 	</div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
+		var a = moment(); // create a time instance in the local time zone 
 		$('.dropdown').dropdown();
+		$('input[name=date]').val(a.format('YYYY-MM-DD'))
+		$('input[name=time]').val(a.format('hh:mm'))
+		$('input[name=tz]').val(a.format('Z'))
 	})
 </script>
+

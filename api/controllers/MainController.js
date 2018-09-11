@@ -288,10 +288,12 @@ module.exports = {
 			locals.transactions=results.getTransactions;
 			var accounts=results.getAccounts;
 			locals.transactions.forEach(function(t){
-				accounts.forEach(function(account){
+				accounts.forEach(function(account){ // expanding account in the transaction object
 					if(t.account==account.id)
 						t.account=account;
 				});
+				var moment = require('moment-timezone');
+				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
 			})
 			// res.send(locals);
 			res.view('view_transactions',locals);
@@ -325,7 +327,7 @@ module.exports = {
 					original_currency:req.body.original_currency,
 					original_amount:-(req.body.original_amount),
 					amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
-					occuredAt: new Date(req.body.date+' '+req.body.time+'+5:30'),
+					occuredAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
 					createdBy:'user',
 					type:'income_expense',
 					description:req.body.description,

@@ -24,6 +24,7 @@
     "grunt-sails-linker": "~0.10.1",
     "grunt-sync": "0.5.2",
     "include-all": "^1.0.0",
+    "moment-timezone": "^0.5.21",
     "money": "^0.2.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
