@@ -22,7 +22,9 @@ module.exports = {
 			error:false,
 			email:''
 		}
-		var redirect = req.query.redirect?decodeURIComponent(req.query.redirect):'/';
+		var redirect='/';
+		if(req.query.redirect && req.query.redirect!='undefined')
+			redirect = decodeURIComponent(req.query.redirect);
 		if(req.body){
 			locals.email=req.body.email;
 			if(!GeneralService.validateEmail(req.body.email)){
