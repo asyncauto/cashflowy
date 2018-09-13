@@ -284,6 +284,7 @@ module.exports = {
 	listTransactions:function(req,res){
 		var locals={};
 		// getUserEmailIds:function
+		var limit = req.query.limit?req.query.limit:100;
 		async.auto({
 			getAccounts:function(callback){
 				Account.find({user:req.user.id}).exec(callback);
@@ -293,9 +294,11 @@ module.exports = {
 				results.getAccounts.forEach(function(account){
 					accounts.push(account.id);
 				});
-				Transaction.find({account:accounts}).sort('occuredAt DESC').exec(callback);
+				Transaction.find({account:accounts}).sort('occuredAt DESC').limit(limit).exec(callback);
 			}],
-			
+			getCategories:function(callback){
+				Category.find({user:req.user.id}).exec(callback);
+			}
 		},function(err,results){
 			locals.transactions=results.getTransactions;
 			var accounts=results.getAccounts;
@@ -307,7 +310,8 @@ module.exports = {
 				var moment = require('moment-timezone');
 				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
 			})
-			// res.send(locals);
+			// locals.categories=GeneralService.orderCategories(results.getCategories);
+			locals.categories=results.getCategories;
 			res.view('view_transactions',locals);
 			
 		});

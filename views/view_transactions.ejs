@@ -18,7 +18,7 @@
 					</tr></thead>
 					<tbody>
 						<%transactions.forEach(function(t){%>
-							<tr>
+							<tr data-tid='<%=t.id%>'>
 								<td class='single line'><%=t.occuredAt.substring(0,10)%></br><%=t.occuredAt.substring(11,16)%></td>
 								<!-- <td><%=t.occuredAt%></td> -->
 								<td data-id='<%=t.id%>'>
@@ -39,7 +39,18 @@
 								<td class="right aligned"><%=parseFloat(t.amount_inr).toFixed(2)%></td>
 								<td><%=t.third_party%></td>
 								<td><%=t.account.name%></td>
-								<td><%=t.category%></td>
+								<td>
+									<div class="ui fluid search selection dropdown">
+										<input type="hidden" name="category" value="<%=t.category%>">
+										<i class="dropdown icon"></i>
+										<div class="default text">Select</div>
+										<div class="menu">
+											<%categories.forEach(function(category){%>
+												<div class="item" data-value="<%=category.id%>"><%=category.name%></div>
+											<%})%>
+										</div>
+									</div>
+								</td>
 							</tr>
 						<%})%>
 					</tbody>
@@ -92,7 +103,26 @@
 					$(button).parents().find('.edit[data-id='+t_id+']').show();
 			    }
 			});
-		})
+		});
+		$('.dropdown').dropdown({
+			onChange:function(value, text, $choice){
+				var dd = this;
+				$(this).addClass('disabled loading');
+				var t_id=$(this).parents('tr').attr('data-tid');
+				$.ajax({
+					url:"/api/transaction/"+t_id,
+					data:{category: value},
+					type:'PUT',
+					success:function(response){
+						console.log('success');
+						$(dd).removeClass('disabled').removeClass('loading');
+					},
+					error:function(xhr, textStatus, errorThrown){
+						console.log("An error occured: " + xhr.status + " " + xhr.statusText);
+					}
+				})
+			}
+		});
 	});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
