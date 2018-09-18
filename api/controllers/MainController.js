@@ -553,7 +553,7 @@ module.exports = {
 					if(err)
 						throw err;
 					else
-						res.redirect('/transactions');
+						res.redirect('/snapshots');
 				});
 			}else{ // view the form
 				var locals={
