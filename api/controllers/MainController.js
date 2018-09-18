@@ -323,6 +323,7 @@ module.exports = {
         })
 	},
 	listTransactions:function(req,res){
+		
 		var locals={};
 		// getUserEmailIds:function
 		var limit = req.query.limit?req.query.limit:100;
@@ -353,10 +354,10 @@ module.exports = {
 			})
 			// locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.categories=results.getCategories;
+			locals.moment=require('moment-timezone');
 			res.view('view_transactions',locals);
 			
 		});
-		
 	},
 	createTransaction:function(req,res){
 		Account.find({user:req.user.id}).exec(function(err,accounts){
@@ -484,7 +485,100 @@ module.exports = {
 				res.send(400,'you cant edit that transaction');
 			}
 		})
-	}
+	},
+	listSnapshots:function(req,res){
+		
+		var locals={};
+		// getUserEmailIds:function
+		var limit = req.query.limit?req.query.limit:100;
+		async.auto({
+			getAccounts:function(callback){
+				Account.find({user:req.user.id}).exec(callback);
+			},
+			getSnapshots:['getAccounts',function(results,callback){
+				var accounts=[];
+				results.getAccounts.forEach(function(account){
+					accounts.push(account.id);
+				});
+				Snapshot.find({account:accounts}).sort('takenAt DESC').limit(limit).exec(callback);
+			}],
+			
+		},function(err,results){
+			locals.snapshots=results.getSnapshots;
+			var accounts=results.getAccounts;
+			locals.snapshots.forEach(function(s){
+				accounts.forEach(function(account){ // expanding account in the transaction object
+					if(s.account==account.id)
+						s.account=account;
+				});
+				var moment = require('moment-timezone');
+				s.takenAt=moment(s.takenAt).tz('Asia/Kolkata').format();
+			})
+			locals.moment=require('moment-timezone');
+			res.view('list_snapshots',locals);
+			
+		});
+	},
+	createSnapshot:function(req,res){
+		Account.find({user:req.user.id}).exec(function(err,accounts){
+			if(req.body){ // post request
+				console.log(req.body);
+				const fx = require('money');
+				fx.base='INR';
+				fx.rates={
+					'EUR':0.0125660,
+					'USD':0.0146289,
+					'MYR':0.0595751,
+					'IDR':211.557,
+					'INR':1,
+					'CZK':0.320764,
+					'HUF':4.03376,
+
+				}
+				var findFilter={
+					createdBy:'user',
+					original_currency:req.body.original_currency,
+					original_amount:-(req.body.original_amount),
+					// needs a bit more filtering
+				};
+				var t={
+					original_currency:req.body.original_currency,
+					original_amount:-(req.body.original_amount),
+					amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
+					occuredAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
+					createdBy:'user',
+					type:'income_expense',
+					description:req.body.description,
+					account:req.body.account_id,
+					third_party:req.body.third_party
+				}
+				// console.log('before transaction find or create');
+				console.log(t);
+				Transaction.create(t).exec(function(err,transaction){
+					if(err)
+						throw err;
+					else
+						res.redirect('/transactions');
+				});
+			}else{ // view the form
+				var locals={
+					email:'',
+					token:'',
+					status:'',
+					message:'',
+					description:'',
+					original_amount:'',
+					original_currency:'',
+					third_party:'',
+					account_id:'',
+					accounts:accounts
+				}
+				console.log(locals);
+				res.view('create_transaction',locals);
+			}
+		})
+	},
+
 };
 
 

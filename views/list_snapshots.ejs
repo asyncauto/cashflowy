@@ -1,0 +1,40 @@
+
+<div class='ui container'>
+	<div class='ui grid'>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+		<div class='sixteen wide table sixteen wide computer sixteen wide mobile  column'>
+			<div class='ui segment'>
+				<h1>Snapshots</h1>
+				<table class="ui celled padded table">
+					<thead>
+						<tr><th class="single line">Date</th>
+						<!-- <th>Time</th> -->
+						<th>Account</th>
+						<!-- <th>Currency</th> -->
+						<th class="right aligned">Balance(INR)</th>
+					</tr></thead>
+					<tbody>
+						<%snapshots.forEach(function(s){%>
+							<tr data-tid='<%=s.id%>'>
+								<td class='single line'><span class='popup' data-html="<%-moment(s.takenAt).tz('Asia/Kolkata').format('Do MMM YYYY')%></br><%-moment(s.takenAt).tz('Asia/Kolkata').format('h:mm a')%>"><%-moment(s.takenAt).fromNow()%></span></td>
+								<td><%=s.account.name%></td>
+								<td class="right aligned"><%=parseFloat(s.balance).toFixed(2)%></td>
+								
+								
+							</tr>
+						<%})%>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+	</div>
+</div>
+<a class="circular ui icon right floated primary big button" href="/transaction/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new transaction" data-position="left center" data-inverted=""><i class="icon add"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.popup').popup();
+	});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/momens.js/2.22.2/momens.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>

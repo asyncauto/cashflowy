@@ -57,7 +57,9 @@ module.exports.routes = {
   'POST /transaction/create':'MainController.createTransaction',
 
 
-
+  'GET /snapshots':'MainController.listSnapshots',
+  'GET /snapshot/create':'MainController.createSnapshot',
+  'POST /snapshot/create':'MainController.createSnapshot',
 
   // api patterns needs rewrite later
   'POST /api/edit_desc':'MainController.editDescription',
