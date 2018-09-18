@@ -115,8 +115,26 @@ module.exports = {
 					escape.push(month);
 					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
 				}
+				// in the accounts that belong to you
 				query+=' group by category';
 				Transaction.query(query,escape,function(err, rawResult) {
+					if(err)
+						callback(err);
+					else
+						callback(err,rawResult.rows);
+				});
+			},
+			getSnapshots:function(callback){
+				var escape=[year];
+				var query = 'select *,EXTRACT(Day from "takenAt") as day from snapshot';
+				query+=' where';
+				query+=' EXTRACT(YEAR FROM "takenAt") = $1';
+				if(month){
+					escape.push(month);
+					query+=' AND EXTRACT(MONTH FROM "takenAt") = $2';
+				}
+				// where accounts in the accounts that belong to you
+				Snapshot.query(query,escape,function(err, rawResult) {
 					if(err)
 						callback(err);
 					else
@@ -193,8 +211,31 @@ module.exports = {
 			});
 			// locals.chart.x.forEach()
 			console.log(locals.chart);
-
-
+			locals.snapshots=results.getSnapshots;
+			locals.chart2={
+				x:locals.chart.x,
+				datasets:[],
+			};
+			results.getAccounts.forEach(function(account,i){
+				var colors = ['teal','blue','red','green','violet','orange','black','brown'];
+				var dataset ={
+	                label: account.name,
+	                backgroundColor: colors[i],
+	                borderColor: colors[i],
+	                data: [],
+	                fill: false,
+	            }
+	            locals.chart2.x.forEach(function(day){
+	            	var y = 0;
+	            	locals.snapshots.forEach(function(snapshot){
+	            		if(snapshot.account==account.id && snapshot.day==day)
+	            			y=snapshot.balance;
+	            	});
+	            	dataset.data.push(y);
+	            })
+				locals.chart2.datasets.push(dataset);
+			})
+			// res.send(locals);
 			res.view('dashboard',locals);
 		})
 
