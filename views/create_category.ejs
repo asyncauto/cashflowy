@@ -1,0 +1,113 @@
+<%
+	
+	if(typeof original_currency == 'undefined' || !original_currency)
+		original_currency=req.user.details.default_currency;
+	var single_active_flag=false;
+%>
+<div class="ui container">
+	<div class="ui grid">
+		<div class='four wide tablet computer only column'></div>
+		<div class='eight wide table eight wide computer sixteen wide mobile column'>
+			<h4 class="ui horizontal divider header">
+				<!-- <i class="list icon"></i> -->
+				Create Category
+			</h4>
+			<form class="ui <%=status%> form " action="" method='post'>
+				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
+				
+				<div class="field">
+					<label>Name</label>
+					<input type="text" name="name" placeholder="Name" value="<%=name%>">
+				</div>
+				<div class="field">
+					<label>Description</label>
+					<input type="text" name="description" placeholder="Description" value="<%=description%>">
+				</div>
+				<div class="two fields">
+					
+					<div class="field">
+						<label>Currency</label>
+						<div class="ui fluid search selection dropdown">
+							<input type="hidden" name="original_currency" placeholder="INR" value="<%=original_currency%>">
+							<i class="dropdown icon"></i>
+							<div class="default text">Select Currency</div>
+							<div class="menu">
+								<div class="<%-(original_currency=="INR")?'active':''%> item" data-value="INR"></i>INR</div>
+								<div class="<%-(original_currency=="USD")?'active':''%> item" data-value="USD"></i>USD</div>
+								<div class="<%-(original_currency=="EUR")?'active':''%> item" data-value="EUR"></i>EUR</div>
+								<div class="<%-(original_currency=="HUF")?'active':''%> item" data-value="HUF"></i>HUF</div>
+								<!-- <div class="item" data-value="as"><i class="as flag"></i>American Samoa</div>
+								<div class="item" data-value="ad"><i class="ad flag"></i>Andorra</div>
+								<div class="item" data-value="ao"><i class="ao flag"></i>Angola</div>  -->
+							</div>
+						</div>
+					</div>
+					<div class="field">
+						<label>Budget</label>
+						<input type="number" step="any" name="budget" placeholder="100" value="<%=budget%>">
+					</div>
+				</div>
+				<div class="field">
+					<label>Parent category</label>
+					<div class="ui fluid search selection dropdown">
+						<input type="hidden" name="parent_id" value="<%=parent_id%>">
+						<i class="dropdown icon"></i>
+						<div class="default text">Select Parent Category</div>
+						<div class="menu">
+							<%categories.forEach(function(account){%>
+								<div class="<%-parent_id?'active':''%> item" data-value="<%=account.id%>"><%=account.name%></div>
+							<%})%>
+						</div>
+					</div>
+					
+				</div>
+
+				
+				<div class="ui error message">
+					<div class="header">Error</div>
+					<p><%=message%></p>
+				</div>
+				<input type="submit" class="ui button" value="Submit">
+				<div class="ui success message">
+					<div class="header">Domain created</div>
+					You just created a domain
+				</div>
+			</form>
+		</div>
+		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
+			<div class='ui segment'>
+				You are creating a manual transaction. If you paid via digital means, you most likely dont need to do this
+				<br/><br/>
+				<!-- <b>Email:</b> 
+				For now we support only gmail address. The gmail address can be a business gmail address also. 
+				<br/><br/>
+				<b>Token:</b>
+				You will need to enter token detail here for now. It will be automated later.  -->
+			</div>
+		</div>
+	</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		var a = moment(); // create a time instance in the local time zone 
+		$('.dropdown').dropdown();
+		$('input[name=date]').val(a.format('YYYY-MM-DD'));
+		$('input[name=time]').val(a.format('HH:mm'));
+		$('input[name=tz]').val(a.format('Z'));
+		$('.ui.form').form({
+			fields: {
+				original_amount     : 'empty',
+				original_currency   : 'empty',
+				date : 'empty',
+				time : 'empty',
+				third_party : 'empty',
+				description : 'empty',
+				account_id:'empty',
+			}
+		});
+	})
+
+</script>
+

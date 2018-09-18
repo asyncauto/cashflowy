@@ -37,8 +37,7 @@ module.exports.routes = {
   'GET /test2':'MainController.test2',
   'GET /dashboard':'MainController.dashboard',
   'GET /debug':'MainController.debug',
-  'GET /categories':'MainController.listCategories',
-  'GET /category/:id':'MainController.viewCategory',
+  
   
   'GET /emails':'MainController.listEmails',
   'GET /email/create':'MainController.createEmail',
@@ -60,6 +59,12 @@ module.exports.routes = {
   'GET /snapshots':'MainController.listSnapshots',
   'GET /snapshot/create':'MainController.createSnapshot',
   'POST /snapshot/create':'MainController.createSnapshot',
+
+
+  'GET /categories':'MainController.listCategories',
+  'GET /category/create':'MainController.createCategory',
+  'POST /category/create':'MainController.createCategory',
+  'GET /category/:id':'MainController.viewCategory',
 
   // api patterns needs rewrite later
   'POST /api/edit_desc':'MainController.editDescription',

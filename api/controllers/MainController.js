@@ -42,6 +42,42 @@ module.exports = {
 			res.view('list_categories',locals);
 		});
 	},
+	createCategory:function(req,res){
+		Category.find({user:req.user.id}).exec(function(err,categories){
+			if(req.body){ // post request
+
+				var c={
+					name:req.body.name,
+					description:req.body.description,
+					budget:parseInt(req.body.budget),
+					parent:req.body.parent_id,
+					user:req.user.id,
+				}
+				// console.log('before transaction find or create');
+				console.log(c);
+				Category.create(c).exec(function(err,transaction){
+					if(err){
+						console.log(err);
+						throw err;
+					}
+					else
+						res.redirect('/categories');
+				});
+			}else{ // view the form
+				var locals={
+					status:'',
+					message:'',
+					name:'',
+					description:'',
+					budget:'',
+					parent_id:'',
+					categories:categories
+				}
+				console.log(locals);
+				res.view('create_category',locals);
+			}
+		})
+	},
 	viewCategory:function(req,res){
 		res.send('this is category page');
 	},

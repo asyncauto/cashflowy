@@ -1,12 +1,32 @@
-<div class='ui container'>
-	<%emails.forEach(function(email){%>
-		<%=email.email%><br>
-	<%})%>
 
-	
-	<!-- <div class='ui grid'>
-		<div class=''>
-			
+<div class='ui container'>
+	<div class='ui grid'>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+		<div class='ten wide computer sixteen wide mobile  column'>
+			<div class='ui segment'>
+				<h1>Emails</h1>
+				<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+					<thead>
+						<tr>
+							<th>Email</th>
+						</tr>
+					</thead>
+					<tbody>
+						<%emails.forEach(function(e){%>
+							<tr data-tid='<%=e.id%>'>
+								<td><%=e.email%></td>
+							</tr>
+						<%})%>
+					</tbody>
+				</table>
+			</div>
 		</div>
-	</div> -->
+		<!-- <div class='three wide tablet computer only column'></div> -->
+	</div>
 </div>
+<a class="circular ui icon right floated primary big button" href="/email/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new email" data-position="left center" data-inverted=""><i class="icon mail"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.popup').popup();
+	});
+</script>
