@@ -12,12 +12,9 @@ module.exports = {
 	    	model: 'account',
 	    	required:true,
 		},
-		type:{ // is it manually entered or is it created from transactions.
-			type:'string',
-			required:true,
-			enum: [
-				"manual_entry","from_transactions"
-			]
+		createdBy:{
+			type:'text',
+			enum:['user','parsed_email']
 		},
 		details: {
 		  type: "json",

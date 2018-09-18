@@ -541,20 +541,15 @@ module.exports = {
 					original_amount:-(req.body.original_amount),
 					// needs a bit more filtering
 				};
-				var t={
-					original_currency:req.body.original_currency,
-					original_amount:-(req.body.original_amount),
-					amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
-					occuredAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
+				var s={
+					balance:req.body.balance,
+					takenAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
 					createdBy:'user',
-					type:'income_expense',
-					description:req.body.description,
 					account:req.body.account_id,
-					third_party:req.body.third_party
 				}
 				// console.log('before transaction find or create');
-				console.log(t);
-				Transaction.create(t).exec(function(err,transaction){
+				console.log(s);
+				Snapshot.create(s).exec(function(err,transaction){
 					if(err)
 						throw err;
 					else
@@ -562,19 +557,14 @@ module.exports = {
 				});
 			}else{ // view the form
 				var locals={
-					email:'',
-					token:'',
 					status:'',
-					message:'',
-					description:'',
-					original_amount:'',
-					original_currency:'',
-					third_party:'',
+					balance:'',
 					account_id:'',
+					message:'',
 					accounts:accounts
 				}
 				console.log(locals);
-				res.view('create_transaction',locals);
+				res.view('create_snapshot',locals);
 			}
 		})
 	},
