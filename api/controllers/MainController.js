@@ -50,9 +50,10 @@ module.exports = {
 					name:req.body.name,
 					description:req.body.description,
 					budget:parseInt(req.body.budget),
-					parent:req.body.parent_id,
 					user:req.user.id,
 				}
+				if(req.body.parent_id)
+					c.parent=req.body.parent_id;
 				// console.log('before transaction find or create');
 				console.log(c);
 				Category.create(c).exec(function(err,transaction){
@@ -91,7 +92,21 @@ module.exports = {
 	},
 	createEmail:function(req,res){
 		if(req.body){ // post request
-			
+			var e={
+				email:req.body.email,
+				token:req.body.token,
+				user:req.user.id,
+			}
+			// console.log('before transaction find or create');
+			console.log(e);
+			Email.create(e).exec(function(err,transaction){
+				if(err){
+					console.log(err);
+					throw err;
+				}
+				else
+					res.redirect('/emails');
+			});
 		}else{ // view the form
 			var locals={
 				email:'',
@@ -111,7 +126,34 @@ module.exports = {
 
 	},
 	createAccount:function(req,res){
-
+		if(req.body){ // post request
+			var findFilter={
+			};
+			var a={
+				name:req.body.name,
+				acc_number:req.body.acc_number,
+				type:req.body.type,
+				user:req.user.id,
+			}
+			// console.log('before transaction find or create');
+			console.log(a);
+			Account.create(a).exec(function(err,transaction){
+				if(err)
+					throw err;
+				else
+					res.redirect('/accounts');
+			});
+		}else{ // view the form
+			var locals={
+				status:'',
+				message:'',
+				name:'',
+				acc_number:'',
+				type:'',
+			}
+			console.log(locals);
+			res.view('create_account',locals);
+		}
 	},
 	listAccounts:function(req,res){
 		Account.find({user:req.user.id}).exec(function(err,accounts){
