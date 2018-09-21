@@ -77,6 +77,21 @@ module.exports.routes = {
   'POST /signup': 'AuthController.signup',
   'GET /logout': 'AuthController.logout',
   
+
+
+
+
+
+  'GET /background/deepCrawl':'Background.deepCrawl',
+  'GET /background/test':'Background.test',
+
+
+
+  'GET /kue':'KueController.index',
+  'GET /kue/:state':'KueController.listItemsInKue',
+  'POST /kue/retry':'KueController.retryJob',
+  'POST /kue/delete':'KueController.deleteJob',
+
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

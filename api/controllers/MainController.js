@@ -18,6 +18,11 @@ fx.rates={
 	'HUF':4.03376,
 
 }
+var kue = require( 'kue' );
+var queue = kue.createQueue({
+	prefix: 'q',
+	redis: sails.config.redis_kue
+});
 module.exports = {
 	landingPage:function(req,res){
 		if(req.user)
