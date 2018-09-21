@@ -29,14 +29,6 @@ module.exports = {
 			res.redirect('/dashboard');
 		else 
 			res.redirect('/login')
-		// Cache.findOne({key:"landing_page_stats"}).exec(function(err,result){
-		// 	if(err)
-		// 		throw err;
-			var locals={
-				// stats:result.value
-			}
-			res.view('landingPage',locals);
-		// });
 	},
 	listCategories:function(req,res){
 		Category.find({user:req.user.id}).exec(function(err,categories){
