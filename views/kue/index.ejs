@@ -1,0 +1,55 @@
+
+<div>
+	<br><br><br>
+	<div class='ui container'>
+	 
+			
+		<h3>Stats</h3>
+		<table class="ui celled structured table">
+			<thead>
+				<tr>
+					<th>Job</th>
+					<th>Active</th>
+					<th>Inactive</th>
+					<th>Delayed</th>
+					<th>Failed</th>
+					<th>Completed</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>All</td>
+					<td><a href="/kue/active"><%=overall_stats.activeCount%></a></td>
+					<td><a href="/kue/inactive"><%=overall_stats.inActiveCount%></a></td>
+					<td><a href="/kue/delayed"><%=overall_stats.delayedCount%></a></td>
+					<td><a href="/kue/failed"><%=overall_stats.failedCount%></a></td>
+					<td><a href="/kue/complete"><%=overall_stats.completeCount%></a></td>
+					
+				</tr>
+				<%job_stats.forEach(function(job_stat){%>
+					<tr>
+						<td><%=job_stat.job_type%></td>
+						<td><a href="/kue/active?job_type=<%=job_stat.job_type%>"><%=job_stat.activeCount%></a></td>
+						<td><a href="/kue/inactive?job_type=<%=job_stat.job_type%>"><%=job_stat.inActiveCount%></a></td>
+						<td><a href="/kue/delayed?job_type=<%=job_stat.job_type%>"><%=job_stat.delayedCount%></a></td>
+						<td><a href="/kue/failed?job_type=<%=job_stat.job_type%>"><%=job_stat.failedCount%></a></td>
+						<td><a href="/kue/complete?job_type=<%=job_stat.job_type%>"><%=job_stat.completeCount%></a></td>
+						
+					</tr>
+				<%})%>
+			</tbody>
+		</table>
+		<h3> Some parameters that you can use</h3>
+		- n - number of items per page (default 30) <br>
+		- job_state - items of a particular state <br>
+		- page - the next page of items (default 1) <br>
+		- order_by - order the items after they are selected (default asc) <br>
+			
+	</div>
+	<br><br><br>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+	});
+</script>

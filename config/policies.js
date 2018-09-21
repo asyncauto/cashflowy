@@ -58,6 +58,9 @@ module.exports.policies = {
     // editDescription:['isAuthenticated'],
     // listCategories:['isAuthenticated'],
   }, 
+  KueController:{
+    '*':['isAuthenticated','isAdmin']
+  },
   BackgroundController:{
     '*':['isBackground']
   }
