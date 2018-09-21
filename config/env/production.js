@@ -25,6 +25,17 @@ module.exports = {
 			database: process.env.DB_DATABASE //optional
 		}
 	},
+	redis_kue:{
+		host:process.env.REDIS_HOST,
+		port: 6379,
+		db:1,
+	},
+	session:{
+		adapter: 'connect-redis',
+		host: process.env.REDIS_HOST,
+		port: 6379,
+		db: 0,
+	},
 	// models: {
 	//   connection: 'someMysqlServer'
 	// },
