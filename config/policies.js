@@ -58,4 +58,7 @@ module.exports.policies = {
     // editDescription:['isAuthenticated'],
     // listCategories:['isAuthenticated'],
   }, 
+  BackgroundController:{
+    '*':['isBackground']
+  }
 };
