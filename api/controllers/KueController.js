@@ -13,7 +13,6 @@ var queue = kue.createQueue({
 	prefix: 'q',
 	redis: sails.config.redis_kue
 });
-var hook_view_dir = '/../node_modules/sails-hook-kue-admin/views';
 
 module.exports = {
 	index:function(req,res){
@@ -109,14 +108,6 @@ module.exports = {
 					jobs:new_jobs,
 				}
 				res.view('kue/list_items',locals);
-				// sails.hooks.views.render(hook_view_dir+'/kue/list_items',locals,function(err,html){
-				// 	if(err)
-				// 		throw err;
-				// 	res.send(html);
-				// });
-				// res.view(hook_view_dir+'/kue/list_items',{jobs:jobs});
-				// res.send({jobs:jobs});
-			  // you have an array of maximum n Job objects here
 			});	
 		}else{
 
@@ -132,16 +123,7 @@ module.exports = {
 					state:req.params.state,
 					jobs:new_jobs,
 				}
-				// res.send(locals);
 				res.view('kue/list_items',locals);
-				// sails.hooks.views.render(hook_view_dir+'/kue/list_items',locals,function(err,html){
-				// 	if(err)
-				// 		throw err;
-				// 	res.send(html);
-				// });
-				// res.view(hook_view_dir+'/kue/list_items',{jobs:jobs});
-				// res.send({jobs:jobs});
-			  // you have an array of maximum n Job objects here
 			});
 		}
 	},
