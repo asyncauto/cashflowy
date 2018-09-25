@@ -180,7 +180,7 @@ module.exports = {
 			getCategories:function(callback){
 				Category.find({user:req.user.id}).exec(callback);
 			},
-			getCategorySpending:function(callback){
+			getCategorySpending:['getAccounts',function(results,callback){
 
 				var escape=[year];
 				var query = 'select count(*),sum(amount_inr),category from transaction';
@@ -190,6 +190,7 @@ module.exports = {
 					escape.push(month);
 					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
 				}
+				query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				// in the accounts that belong to you
 				query+=' group by category';
 				Transaction.query(query,escape,function(err, rawResult) {
@@ -198,8 +199,8 @@ module.exports = {
 					else
 						callback(err,rawResult.rows);
 				});
-			},
-			getSnapshots:function(callback){
+			}],
+			getSnapshots:['getAccounts',function(results,callback){
 				var escape=[year];
 				var query = 'select *,EXTRACT(Day from "takenAt") as day from snapshot';
 				query+=' where';
@@ -208,6 +209,7 @@ module.exports = {
 					escape.push(month);
 					query+=' AND EXTRACT(MONTH FROM "takenAt") = $2';
 				}
+				query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				// where accounts in the accounts that belong to you
 				Snapshot.query(query,escape,function(err, rawResult) {
 					if(err)
@@ -215,8 +217,8 @@ module.exports = {
 					else
 						callback(err,rawResult.rows);
 				});
-			},
-			getExpenseChartData:function(callback){
+			}],
+			getExpenseChartData:['getAccounts',function(results,callback){
 				var escape=[year];
 				var query = 'select count(*),sum(amount_inr),EXTRACT(Day from "occuredAt") as day from transaction';
 				query+=' where';
@@ -225,6 +227,7 @@ module.exports = {
 					escape.push(month);
 					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
 				}
+				query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				query+=' group by day';
 				query+=' order by day';
 				Transaction.query(query,escape,function(err, rawResult) {
@@ -233,7 +236,7 @@ module.exports = {
 					else
 						callback(err,rawResult.rows);
 				});
-			}
+			}]
 		},function(err,results){
 			console.log('\n\n\n====err');
 			console.log(err);
@@ -288,7 +291,7 @@ module.exports = {
 			console.log(locals.chart);
 			locals.snapshots=results.getSnapshots;
 			locals.chart2={
-				x:locals.chart.x,
+				// x:locals.chart.x,
 				datasets:[],
 			};
 			results.getAccounts.forEach(function(account,i){
@@ -300,14 +303,18 @@ module.exports = {
 	                data: [],
 	                fill: false,
 	            }
-	            locals.chart2.x.forEach(function(day){
-	            	var y = 0;
+	            // locals.chart2.x.forEach(function(day){
+	            	// var y = 0;
 	            	locals.snapshots.forEach(function(snapshot){
-	            		if(snapshot.account==account.id && snapshot.day==day)
-	            			y=snapshot.balance;
+	            		if(snapshot.account==account.id){
+	            			dataset.data.push({
+	            				x:snapshot.day,
+	            				y:snapshot.balance,
+	            			});
+	            		}
 	            	});
-	            	dataset.data.push(y);
-	            })
+	            	
+	            // })
 				locals.chart2.datasets.push(dataset);
 			})
 			// res.send(locals);

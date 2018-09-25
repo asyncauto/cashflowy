@@ -1,6 +1,7 @@
 module.exports.filters = {  
 	active:[
 		'IciciCreditCardTransactionAlertFilter',
-		'IciciInternetBankingFilter'
+		'IciciInternetBankingFilter',
+		'IciciDebitCardFilter', // atm and debit card transactions
 	]
 }

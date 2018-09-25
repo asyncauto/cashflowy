@@ -169,14 +169,19 @@
     var config2 = {
         type: 'line',
         data: {
-            labels: <%-JSON.stringify(chart2.x)%>,
-            datasets: <%-JSON.stringify(chart2.datasets)%>
+            // labels: <%-JSON.stringify(chart2.x)%>,
+            datasets:<%-JSON.stringify(chart2.datasets)%>
         },
         options: {
             responsive: true,
+            maintainAspectRatio:true,
             title: {
                 display: false,
                 text: 'Expense'
+            },
+            legend:{
+            	display:true,
+            	boxWidth:20,
             },
             tooltips: {
                 mode: 'index',
@@ -188,6 +193,12 @@
             },
             scales: {
                 xAxes: [{
+                	type: 'linear',
+                	position: 'bottom',
+                	ticks:{
+	                	min:1,
+	                	stepSize:1,
+                	},
                     display: true,
                     scaleLabel: {
                         display: true,
@@ -195,7 +206,7 @@
                     }
                 }],
                 yAxes: [{
-                    display: true,
+                    // display: true,
                     scaleLabel: {
                         display: true,
                         labelString: 'Value'
