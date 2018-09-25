@@ -112,44 +112,44 @@ module.exports={
 		});
 		// });
 	},
-	getMessageDetails:function (m_id,callback) {
-		var auth  = authorize(sails.config.gmail);
-		// console.log("\n\n\n====== m_id="+m_id);
-		const gmail = google.gmail({version: 'v1', auth});
-		gmail.users.messages.get({
-			userId: 'me',
-			id:m_id
-		}, (err, res) => {
-			// console.log('before throwing error');
-			// if (err) return console.log('The API returned an error: ' + err);
-			if (err) throw err;
-			// const messages = res.data.messages;
-			// console.log(res.data);
-			// console.log(res.data.payload.parts);
-			var body;
-			if(res.data.payload.body.size!=0)
-				body=res.data.payload.body.data;
-			else{ // these are emails containing attachments
-				res.data.payload.parts.forEach(function(part){
-					if(part.mimeType=='text/html'){
-						body=part.body.data;
-					}
-				})
-			}
-			var b = atob(body.replace(/-/g, '+').replace(/_/g, '/') ); 
-			// console.log(b);
-			const cheerio = require('cheerio')
-			const $ = cheerio.load(b);
-			console.log($('body').text());
-			var result = GmailService.extractData($('body').text());
-			// console.log('--------ED---------');
-			data.m_id=m_id;
-			// console.log(data);
-			callback(null,result);
+	// getMessageDetails:function (m_id,callback) {
+	// 	var auth  = authorize(sails.config.gmail);
+	// 	// console.log("\n\n\n====== m_id="+m_id);
+	// 	const gmail = google.gmail({version: 'v1', auth});
+	// 	gmail.users.messages.get({
+	// 		userId: 'me',
+	// 		id:m_id
+	// 	}, (err, res) => {
+	// 		// console.log('before throwing error');
+	// 		// if (err) return console.log('The API returned an error: ' + err);
+	// 		if (err) throw err;
+	// 		// const messages = res.data.messages;
+	// 		// console.log(res.data);
+	// 		// console.log(res.data.payload.parts);
+	// 		var body;
+	// 		if(res.data.payload.body.size!=0)
+	// 			body=res.data.payload.body.data;
+	// 		else{ // these are emails containing attachments
+	// 			res.data.payload.parts.forEach(function(part){
+	// 				if(part.mimeType=='text/html'){
+	// 					body=part.body.data;
+	// 				}
+	// 			})
+	// 		}
+	// 		var b = atob(body.replace(/-/g, '+').replace(/_/g, '/') ); 
+	// 		// console.log(b);
+	// 		const cheerio = require('cheerio')
+	// 		const $ = cheerio.load(b);
+	// 		console.log($('body').text());
+	// 		var result = GmailService.extractData($('body').text());
+	// 		// console.log('--------ED---------');
+	// 		data.m_id=m_id;
+	// 		// console.log(data);
+	// 		callback(null,result);
 			
-		});
-		// });
-	},
+	// 	});
+	// 	// });
+	// },
 	getMessageBody:function(options,callback){
 		var auth  = authorize(sails.config.gmail);
 		var m_id=options.message_id;
@@ -189,6 +189,51 @@ module.exports={
 			
 		});
 	},
+	getMessageDetails:function(options,callback){
+		var auth  = authorize(sails.config.gmail);
+		var m_id=options.message_id;
+		// console.log("\n\n\n====== m_id="+m_id);
+		const gmail = google.gmail({version: 'v1', auth});
+		gmail.users.messages.get({
+			userId: 'me',
+			id:m_id
+		}, (err, res) => {
+			// console.log('before throwing error');
+			// if (err) return console.log('The API returned an error: ' + err);
+			if (err) throw err;
+			// const messages = res.data.messages;
+			// console.log(res.data);
+			// console.log(res.data.payload.parts);
+			var body;
+			if(res.data.payload.body.size!=0)
+				body=res.data.payload.body.data;
+			else{ // these are emails containing attachments
+				res.data.payload.parts.forEach(function(part){
+					if(part.mimeType=='text/html'){
+						body=part.body.data;
+					}
+				})
+			}
+			var b = atob(body.replace(/-/g, '+').replace(/_/g, '/') ); 
+			// console.log(b);
+			const cheerio = require('cheerio')
+			const $ = cheerio.load(b);
+			var result={
+				body:$('body').text(),
+				header:{
+					date:_.find(res.data.payload.headers,{'name':'Date'}).value,
+				}
+			}
+			callback(null,result);
+			// console.log($('body').text());
+			// var result = GmailService.extractData($('body').text());
+			// // console.log('--------ED---------');
+			// data.m_id=m_id;
+			// // console.log(data);
+			// callback(null,result);
+			
+		});
+	},
 	/**
 	 * Extract data from email body
 	 * Try different body parsers
@@ -207,7 +252,7 @@ module.exports={
 		var ed={};
 		var body_parser_used=''
 		for(var i = 0;i<body_parsers.length;i++){
-			console.log(i);
+			// console.log(i);
 			ed={};
 			var all_good_flag=true;
 

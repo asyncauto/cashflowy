@@ -54,7 +54,7 @@ module.exports = {
 					filter = {
 						acc_number:pe.extracted_data.credit_card_last_4_digits
 					};
-				}else if(pe.type=='IciciInternetBankingFilter'){
+				}else if(pe.type=='IciciInternetBankingFilter' || pe.type=='IciciDebitCardFilter'){
 					filter = {
 						like:{
 							acc_number:'%'+pe.extracted_data.account_last_4_digits,
@@ -87,12 +87,15 @@ module.exports = {
 					original_currency:pe.extracted_data.currency,
 					original_amount:-(pe.extracted_data.amount),
 					amount_inr:-(fx.convert(pe.extracted_data.amount, {from: pe.extracted_data.currency, to: "INR"})),
-					occuredAt: new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30'),
 					createdBy:'parsed_email',
 					type:'income_expense',
 					account:results.getAccount.id,
 					third_party:pe.extracted_data.whom_you_paid
 				}
+				if(pe.extracted_data.date && pe.extracted_data.time)
+					t.occuredAt= new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30');
+				else
+					t.occuredAt=pe.extracted_data.email_received_time;
 				// console.log('before transaction find or create');
 				Transaction.create(t).exec(callback);
 				
@@ -100,6 +103,24 @@ module.exports = {
 			updateParsedEmail:['findOrCreateTransaction',function(results,callback){
 				// console.log('parsed_email after create #4');
 				Parsed_email.update({id:pe.id},{transaction:results.findOrCreateTransaction.id}).exec(callback);
+			}],
+			createSnapshotIfPossible:['getAccount',function(results,callback){
+				if(pe.extracted_data.balance_currency && pe.extracted_data.balance_amount){
+					var ss={
+						account:results.getAccount.id,
+						createdBy:'parsed_email',
+						takenAt: new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30'),
+						balance_currency:pe.extracted_data.balance_currency,
+						balance:pe.extracted_data.balance_amount,
+					}
+					if(pe.extracted_data.date && pe.extracted_data.time)
+						ss.takenAt= new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30');
+					else
+						ss.takenAt=pe.extracted_data.email_received_time;
+					Snapshot.create(ss).exec(callback);
+				}else{
+					callback(null);
+				}
 			}]
 		},cb)
 

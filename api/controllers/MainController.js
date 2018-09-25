@@ -321,39 +321,41 @@ module.exports = {
 		if(!req.query.email_id)
 			return res.send('email id missing in query parameters');
 		async.auto({
-			getEmailToken:function(callback){
+			getEmail:function(callback){
 				Email.findOne({id:req.query.email_id}).exec(function(err,email){
-					callback(err,email.token);
+					callback(err,email);
 				});
 			},
-            getMessages:['getEmailToken',function (results,callback) {
+            getMessages:['getEmail',function (results,callback) {
             	var extract_config= require('../filters/'+email_type+'.js');
             	// console.log(icici_filter);
             	var options={
             		q:extract_config.gmail_filter,
             		pageToken:req.query.pageToken?req.query.pageToken:null,
-            		email_token:results.getEmailToken,
+            		email_token:results.getEmail.token,
             	}
                 GmailService.getMessages(options,callback);
             }],
             processEachMessage: ['getMessages', function (results, callback) {
             	console.log('inside processEachMessage');
             	var count=0;
+            	var email_address = results.getEmail.email;
+            	var user = results.getEmail.user;
             	async.eachLimit(results.getMessages.messages,1,function(m,next){
             		console.log("\n\n\n====== m_id="+m.id);
             		console.log(count);
             		count++;
 					async.auto({
-            			getMessageBody:function(callback){
+            			getMessageDetails:function(callback){
             				var options={
             					message_id:m.id
             				}
-            				GmailService.getMessageBody(options,callback);
+            				GmailService.getMessageDetails(options,callback);
             			},
-            			extractDataFromMessageBody:['getMessageBody',function(results,callback){
+            			extractDataFromMessageBody:['getMessageDetails',function(results,callback){
             				var options={
             					email_type:email_type,
-            					body:results.getMessageBody
+            					body:results.getMessageDetails.body
             				}
             				GmailService.extractDataFromMessageBody(options,callback);
             			}],
@@ -362,20 +364,35 @@ module.exports = {
             				// console.log(results.extractDataFromMessageBody);
             				var email={
             					extracted_data:results.extractDataFromMessageBody.ed,
-            					user:1,
+            					user:user,
             					type:email_type,
             					body_parser_used:results.extractDataFromMessageBody.body_parser_used,
-            					email:'alexjv89@gmail.com',
+            					email:email_address,
             					message_id:m.id
 							}
+							email.extracted_data.email_received_time= new Date(results.getMessageDetails.header.date);
 							if(email.body_parser_used==''){
 								console.log('\n\n\nbody parser is null');
+								console.log(results.getMessageDetails.body);
 								console.log(email);
+							}else{
+								// console.log(results.getMessageDetails.header);
+								// console.log('\n\n\nbody parser good');
+								// console.log(results.getMessageDetails.body);
+								// console.log(email);
+								// Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);
+								console.log(m.id);
+								Parsed_email.findOrCreate({message_id:m.id},email).exec(function(err,result){
+									console.log(err);
+									// callback('manual error');
+									callback(err,result);
+								});
 							}
+							// else
+
 							// during testing a new filter, comment/uncomment the following lines
 							// console.log(email);
 							// callback(null);
-							Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);
 							// Parsed_email.findOrCreate({message_id:m.id},email).exec(function(err,result){
 							// 	callback('manual error');
 							// });
@@ -384,16 +401,16 @@ module.exports = {
 
 
             	},function(err){
-					if(err)
-						throw err;
-            		callback(null);
+            		callback(err);
             		console.log('everything done');
             	})
                 // results.getMessages.forEach()
             }]
         }, function (err, results) {
+
             if (err)
-                return res.json(500, { status: 'failure', error: err.message });
+            	throw err;
+                // return res.json(500, { status: 'failure', error: err.message });
             return res.json({ status: 'success',getMessages:results.getMessages})
         })
 	},

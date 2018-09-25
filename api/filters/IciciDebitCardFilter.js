@@ -1,7 +1,7 @@
 module.exports={
-	gmail_filter:'from:(customercare@icicibank.com) subject:(Transaction alert for your ICICI Bank Internet Banking)',
+	gmail_filter:'from:(alert@icicibank.com) subject:(Transaction alert for your ICICI Bank debit card)',
 	active:true,
-	required_fields:['account_last_4_digits','currency','amount','whom_you_paid','available_credit_balance','date','time'],
+	required_fields:['credit_card_last_4_digits','currency','amount','whom_you_paid','available_credit_balance','date','time'],
 	body_parsers:[
 		{
 			version:'v1',
@@ -18,7 +18,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'A purchase of '
 						},
 						{
 							type:'find_end_position',
@@ -39,7 +39,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'from your Account XXXXXXXX'
+							q:'Debit Card linked to ICICI Bank Account XX'
 						},
 						{
 							type:'find_end_position',
@@ -66,7 +66,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'A purchase of '
 						},
 						{
 							type:'find_end_position',
@@ -87,7 +87,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'with Transaction ID'
+							q:' has been made using your Debit Card'
 						},
 						{
 							type:'trim',
@@ -117,7 +117,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'A purchase of '
 						},
 						{
 							type:'find_end_position',
@@ -138,7 +138,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'with Transaction ID'
+							q:' has been made using your Debit Card'
 						},
 						{
 							type:'trim',
@@ -175,7 +175,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'A purchase of '
 						},
 						{
 							type:'find_end_position',
@@ -196,7 +196,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'towards payee'
+							q:'Info: '
 						},
 						{
 							type:'find_end_position',
@@ -205,55 +205,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'from your Account'
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'transaction_id',
-					type:'float',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'You have made an online payment of'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you have not'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'with Transaction ID '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'towards payee'
+							q:'The Available Balance'
 						},
 						{
 							type:'trim',
@@ -271,7 +223,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'A purchase of '
 						},
 						{
 							type:'find_end_position',
@@ -292,7 +244,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'from your Account'
+							q:'ICICI Bank Account'
 						},
 						{
 							type:'find_start_position',
@@ -310,19 +262,10 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'hours'
+							q:'. Info:'
 						},
 						{
 							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' at '
 						},
 						{
 							type:'trim',
@@ -330,7 +273,7 @@ module.exports={
 					]
 				},
 				{
-					name:'time',
+					name:'balance_currency',
 					type:'string',
 					filters:[
 						{
@@ -340,7 +283,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'A purchase of '
 						},
 						{
 							type:'find_end_position',
@@ -361,16 +304,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'from your Account'
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on '
+							q:'The Available Balance in your account is '
 						},
 						{
 							type:'find_end_position',
@@ -379,7 +313,34 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'hours'
+							q:' '
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'balance_amount',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'A purchase of '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'In case you have not'
 						},
 						{
 							type:'trim',
@@ -391,18 +352,34 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' at '
+							q:'The Available Balance in your account is '
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
 						},
 						{
 							type:'trim',
+						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
 						},
 					]
 				},
 			]
 		},
 		{
-			version:'v2',
-			description:'before may 30 2016',
+			version:'atm_v1',
+			description:'as of sept 2018',
 			fields:[
 				{
 					name:'account_last_4_digits',
@@ -415,7 +392,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'Cash Withdrawal of '
 						},
 						{
 							type:'find_end_position',
@@ -436,7 +413,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'from your Account XXXXXXXX'
+							q:'Debit Card linked to Account XX'
 						},
 						{
 							type:'find_end_position',
@@ -445,7 +422,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' on '
+							q:'. Info:'
 						},
 						{
 							type:'trim',
@@ -463,7 +440,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'Cash Withdrawal of '
 						},
 						{
 							type:'find_end_position',
@@ -484,7 +461,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'with Transaction ID'
+							q:' has been made at an ATM'
 						},
 						{
 							type:'trim',
@@ -514,7 +491,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'Cash Withdrawal of '
 						},
 						{
 							type:'find_end_position',
@@ -535,7 +512,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'with Transaction ID'
+							q:' has been made at an ATM'
 						},
 						{
 							type:'trim',
@@ -572,7 +549,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'Cash Withdrawal of '
 						},
 						{
 							type:'find_end_position',
@@ -593,7 +570,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'towards payee'
+							q:'Info: '
 						},
 						{
 							type:'find_end_position',
@@ -602,7 +579,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'from your Account'
+							q:'The Available Balance'
 						},
 						{
 							type:'trim',
@@ -610,7 +587,55 @@ module.exports={
 					]
 				},
 				{
-					name:'transaction_id',
+					name:'balance_currency',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Cash Withdrawal of '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'In case you have not'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'The Available Balance in your Account is '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'balance_amount',
 					type:'float',
 					filters:[
 						{
@@ -620,7 +645,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'You have made an online payment of'
+							q:'Cash Withdrawal of '
 						},
 						{
 							type:'find_end_position',
@@ -641,157 +666,26 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'with Transaction ID '
+							q:'The Available Balance in your Account is '
 						},
 						{
-							type:'find_end_position',
+							type:'find_start_position',
 							criteria:'text_match_before',
 							options:{
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'towards payee'
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'date',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'You have made an online payment of'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you have not'
+							q:' '
 						},
 						{
 							type:'trim',
 						},
 						{
-							type:'find_start_position',
-							criteria:'text_match_after',
+							type:'replace',
 							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'from your Account'
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' .'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' at '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'time',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'You have made an online payment of'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you have not'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'from your Account'
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' .'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' at '
-						},
-						{
-							type:'trim',
+								replace:',',
+								with:'',
+							}
 						},
 					]
 				},
