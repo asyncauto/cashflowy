@@ -17,19 +17,21 @@ module.exports = {
 	deepCrawl:function(req,res){
 		if(!req.query.email_id)
 			return res.send('missing mandatory query parameters');
-		var options={
-			email_id:req.query.email_id,
-		}
-		sails.config.filters.active.forEach(function(filter_name){
-			options.email_type=filter_name;
+		async.eachLimit(sails.config.filters.active,1,function(filter_name,next){
+			var options={
+				email_id:req.query.email_id,
+				email_type:filter_name
+			}
 			queue.create('deepCrawl',{
 				title:'deepCrawl - '+options.email_id+' - '+options.email_type,
 				options:options
 			}).delay(100) // 1 min delay
 				.priority('high')
 				.save();
+			next(null);
+		},function(err){
+			res.send('added to kue');
 		});
-		res.send('added to kue');
 	},
 	test:function(req,res){
 		console.log('background test');

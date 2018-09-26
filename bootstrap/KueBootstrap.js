@@ -86,38 +86,40 @@ module.exports = function (callback) {
 		async.forever( 
 			function(next) {// getting 30 messages at a time and processing it
 				async.auto({
-					getEmailToken:function(callback){
+					getEmail:function(callback){
 						Email.findOne({id:options.email_id}).exec(function(err,email){
-							callback(err,email.token);
+							callback(err,email);
 						});
 					},
-					getMessages:['getEmailToken',function (results,callback) {
+					getMessages:['getEmail',function (results,callback) {
 						var extract_config= require('../api/filters/'+options.email_type+'.js');
 						var o={
 							q:extract_config.gmail_filter,
 							pageToken:options.pageToken?options.pageToken:null,
-							email_token:results.getEmailToken,
+							email_token:results.getEmail.token,
 						}
 						GmailService.getMessages(o,callback);
 					}],
 					processEachMessage: ['getMessages', function (results, callback) {
 						console.log('inside processEachMessage');
 						var count=0;
+						var email_address = results.getEmail.email;		
+						var user = results.getEmail.user;
 						async.eachLimit(results.getMessages.messages,1,function(m,next){
 							console.log("\n\n\n====== m_id="+m.id);
 							console.log(count);
 							count++;
 							async.auto({
-								getMessageBody:function(callback){
+								getMessageDetails:function(callback){
 									var opts={
 										message_id:m.id
 									}
-									GmailService.getMessageBody(opts,callback);
+									GmailService.getMessageDetails(opts,callback);
 								},
-								extractDataFromMessageBody:['getMessageBody',function(results,callback){
+								extractDataFromMessageBody:['getMessageDetails',function(results,callback){
 									var opts={
 										email_type:options.email_type,
-										body:results.getMessageBody
+										body:results.getMessageDetails.body
 									}
 									GmailService.extractDataFromMessageBody(opts,callback);
 								}],
@@ -126,20 +128,30 @@ module.exports = function (callback) {
 									// console.log(results.extractDataFromMessageBody);
 									var email={
 										extracted_data:results.extractDataFromMessageBody.ed,
-										user:1,
+										user:user,
 										type:options.email_type,
 										body_parser_used:results.extractDataFromMessageBody.body_parser_used,
-										email:'alexjv89@gmail.com',
+										email:email_address,
 										message_id:m.id
 									}
+									email.extracted_data.email_received_time= new Date(results.getMessageDetails.header.date);
 									if(email.body_parser_used==''){
 										console.log('\n\n\nbody parser is null');
 										console.log(email);
+										console.log(results.getMessageDetails.body);
+										callback('cant process email');
+									}else{		
+										// console.log(results.getMessageDetails.header);		
+										// console.log('\n\n\nbody parser good');		
+										// console.log(results.getMessageDetails.body);		
+										// console.log(email);		
+										// Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);		
+										console.log(m.id);		
+										Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);
 									}
 									// during testing a new filter, comment/uncomment the following lines
 									// console.log(email);
 									// callback(null);
-									Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);
 									// Parsed_email.findOrCreate({message_id:m.id},email).exec(function(err,result){
 									// 	callback('manual error');
 									// });
@@ -147,29 +159,29 @@ module.exports = function (callback) {
 							},next)
 
 
-						},function(err){
-							if(err)
-								throw err;
-							callback(null);
-							// console.log('everything done');
-						})
+						},callback)
 						// results.getMessages.forEach()
 					}]
 				}, function (err, results) {
 					// 30 messages recieved and processed
 					// update job progress
-					options.pageToken = results.getMessages.nextPageToken;
-					options.completed_messages += results.getMessages.messages.length;
-					var progress={
-						completed_messages:options.completed_messages+results.getMessages.messages.length,
-						nextPageToken:results.getMessages.nextPageToken,
+					if(err){
+						next(err);
+					}else{
+
+						options.pageToken = results.getMessages.nextPageToken;
+						options.completed_messages += results.getMessages.messages.length;
+						var progress={
+							completed_messages:options.completed_messages+results.getMessages.messages.length,
+							nextPageToken:results.getMessages.nextPageToken,
+						}
+						job.progress(progress.completed_messages,progress.completed_messages+30,progress);
+						// when all filter contains no more messages - nextPageToken key is missing
+						if(!results.getMessages.nextPageToken && !err) // no error and nextPageToken does not exist
+							next('done',results);
+						else
+							next(err,results);
 					}
-					job.progress(progress.completed_messages,progress.completed_messages+30,progress);
-					// when all filter contains no more messages - nextPageToken key is missing
-					if(!results.getMessages.nextPageToken && !err) // no error and nextPageToken does not exist
-						next('done',results);
-					else
-						next(err,results);
 				})
 			},
 			function(err) {
