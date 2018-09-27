@@ -190,7 +190,8 @@ module.exports = {
 					escape.push(month);
 					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
 				}
-				query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
+				if(_.map(results.getAccounts,'id').length)
+					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				// in the accounts that belong to you
 				query+=' group by category';
 				Transaction.query(query,escape,function(err, rawResult) {
@@ -209,7 +210,8 @@ module.exports = {
 					escape.push(month);
 					query+=' AND EXTRACT(MONTH FROM "takenAt") = $2';
 				}
-				query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
+				if(_.map(results.getAccounts,'id').length)
+					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				// where accounts in the accounts that belong to you
 				Snapshot.query(query,escape,function(err, rawResult) {
 					if(err)
@@ -227,19 +229,24 @@ module.exports = {
 					escape.push(month);
 					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
 				}
-				query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
+				if(_.map(results.getAccounts,'id').length)
+					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				query+=' group by day';
 				query+=' order by day';
 				Transaction.query(query,escape,function(err, rawResult) {
+					console.log('\n\n\n\n');
 					if(err)
-						callback(err);
+						callback(err,[]);
 					else
 						callback(err,rawResult.rows);
 				});
 			}]
 		},function(err,results){
-			console.log('\n\n\n====err');
-			console.log(err);
+			if(err){
+				console.log('\n\n\n====err');
+				console.log(err);
+				throw err;
+			}
 			results.getCategories.forEach(function(cat){
 				cat.t_count=0;
 				cat.t_sum=0;
