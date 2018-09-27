@@ -334,99 +334,17 @@ module.exports = {
 		
 		if(!req.query.email_id)
 			return res.send('email id missing in query parameters');
-		async.auto({
-			getEmail:function(callback){
-				Email.findOne({id:req.query.email_id}).exec(function(err,email){
-					callback(err,email);
-				});
-			},
-            getMessages:['getEmail',function (results,callback) {
-            	var extract_config= require('../filters/'+email_type+'.js');
-            	// console.log(icici_filter);
-            	var options={
-            		q:extract_config.gmail_filter,
-            		pageToken:req.query.pageToken?req.query.pageToken:null,
-            		email_token:results.getEmail.token,
-            	}
-                GmailService.getMessages(options,callback);
-            }],
-            processEachMessage: ['getMessages', function (results, callback) {
-            	console.log('inside processEachMessage');
-            	var count=0;
-            	var email_address = results.getEmail.email;
-            	var user = results.getEmail.user;
-            	async.eachLimit(results.getMessages.messages,1,function(m,next){
-            		console.log("\n\n\n====== m_id="+m.id);
-            		console.log(count);
-            		count++;
-					async.auto({
-            			getMessageDetails:function(callback){
-            				var options={
-            					message_id:m.id
-            				}
-            				GmailService.getMessageDetails(options,callback);
-            			},
-            			extractDataFromMessageBody:['getMessageDetails',function(results,callback){
-            				var options={
-            					email_type:email_type,
-            					body:results.getMessageDetails.body
-            				}
-            				GmailService.extractDataFromMessageBody(options,callback);
-            			}],
-            			findOrCreateEmail:['extractDataFromMessageBody',function(results,callback){
-            				// console.log('\n\n\nin findOrCreateEmail');
-            				// console.log(results.extractDataFromMessageBody);
-            				var email={
-            					extracted_data:results.extractDataFromMessageBody.ed,
-            					user:user,
-            					type:email_type,
-            					body_parser_used:results.extractDataFromMessageBody.body_parser_used,
-            					email:email_address,
-            					message_id:m.id
-							}
-							email.extracted_data.email_received_time= new Date(results.getMessageDetails.header.date);
-							if(email.body_parser_used==''){
-								console.log('\n\n\nbody parser is null');
-								console.log(results.getMessageDetails.body);
-								console.log(email);
-							}else{
-								// console.log(results.getMessageDetails.header);
-								// console.log('\n\n\nbody parser good');
-								// console.log(results.getMessageDetails.body);
-								// console.log(email);
-								// Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);
-								console.log(m.id);
-								Parsed_email.findOrCreate({message_id:m.id},email).exec(function(err,result){
-									console.log(err);
-									// callback('manual error');
-									callback(err,result);
-								});
-							}
-							// else
-
-							// during testing a new filter, comment/uncomment the following lines
-							// console.log(email);
-							// callback(null);
-							// Parsed_email.findOrCreate({message_id:m.id},email).exec(function(err,result){
-							// 	callback('manual error');
-							// });
-            			}]
-            		},next)
-
-
-            	},function(err){
-            		callback(err);
-            		console.log('everything done');
-            	})
-                // results.getMessages.forEach()
-            }]
-        }, function (err, results) {
-
-            if (err)
+		var options={
+			email_id:req.query.email_id,
+			email_type:email_type,
+			pageToken:req.query.pageToken?req.query.pageToken:null,
+		}
+		GmailService.getMessagesAndProcessEach(options,function(err,results){
+			if (err)
             	throw err;
                 // return res.json(500, { status: 'failure', error: err.message });
             return res.json({ status: 'success',getMessages:results.getMessages})
-        })
+		});
 	},
 	listTransactions:function(req,res){
 		
