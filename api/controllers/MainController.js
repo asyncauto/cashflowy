@@ -329,23 +329,6 @@ module.exports = {
 		})
 
 	},
-	test2:function(req,res){
-        var email_type=req.query.email_type?req.query.email_type:'IciciCreditCardTransactionAlertFilter';
-		
-		if(!req.query.email_id)
-			return res.send('email id missing in query parameters');
-		var options={
-			email_id:req.query.email_id,
-			email_type:email_type,
-			pageToken:req.query.pageToken?req.query.pageToken:null,
-		}
-		GmailService.getMessagesAndProcessEach(options,function(err,results){
-			if (err)
-            	throw err;
-                // return res.json(500, { status: 'failure', error: err.message });
-            return res.json({ status: 'success',getMessages:results.getMessages})
-		});
-	},
 	listTransactions:function(req,res){
 		
 		var locals={};

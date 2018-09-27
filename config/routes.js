@@ -33,8 +33,6 @@ module.exports.routes = {
   ***************************************************************************/
 
   'GET /': 'MainController.landingPage',
-  'GET /test':'MainController.test',
-  'GET /test2':'MainController.test2',
   'GET /dashboard':'MainController.dashboard',
   'GET /debug':'MainController.debug',
   
@@ -83,6 +81,7 @@ module.exports.routes = {
 
 
   'GET /background/deepCrawl':'Background.deepCrawl',
+  'POST /background/surface_crawl':'Background.surfaceCrawl',
   'GET /background/test':'Background.test',
 
 

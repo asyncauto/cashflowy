@@ -121,8 +121,11 @@ module.exports = function (callback) {
 		
 	});
 
+	queue.process('surface_crawl',1,function(job,done){
+		GmailService.getMessagesAndProcessEach(job.data.options,done);
+	});
 
 
-	console.log('\n\n\n\n ******** kue setup ********');
+	// console.log('\n\n\n\n ******** kue setup ********');
 	callback(null);
 };
