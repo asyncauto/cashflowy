@@ -68,17 +68,34 @@
 			var job_id=$(this).attr('data-id');
 			// var job_id='';
 			$.post("/kue/retry", {job_id: job_id}, function(result,status){
-		        console.log('result = '+result);
-		        console.log('status = '+status);// this runs only on sucess
-		        if(status=='success'){
-		        	$(button).removeClass('loading');
-		        	$(button).addClass('disabled');
-		        }
-		    });
+				console.log('result = '+result);
+				console.log('status = '+status);// this runs only on sucess
+				if(status=='success'){
+					$(button).removeClass('loading');
+					$(button).addClass('disabled');
+				}
+			});
 			
 		})
 		$('.delete_job').click(function(){
-			$(this).addClass('loading');
+			var button = this;
+			$(button).addClass('loading');
+			var job_id=$(this).attr('data-id');
+			// var job_id='';
+			var r = confirm("Delete this permanently ?");
+			if (r == true) {
+				$.post("/kue/delete", {job_id: job_id}, function(result,status){
+				console.log('result = '+result);
+				console.log('status = '+status);// this runs only on sucess
+				if(status=='success'){
+					$(button).removeClass('loading');
+					$(button).addClass('disabled');
+				}
+			});
+			} else {
+				$(button).removeClass('loading');
+			}
+			
 		})
 	});
 </script>

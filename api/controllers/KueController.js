@@ -141,6 +141,21 @@ module.exports = {
 			res.send(200,'ok')
 		});
 		
+	},
+	deleteJob:function(req,res){
+		var job_id=req.body.job_id?req.body.job_id:'';
+		console.log(job_id);
+		if(job_id=='')
+			return res.send(400,'bad request');
+		kue.Job.get( job_id, function( err, job ) {
+			if(err)
+				return res.json(500,err);
+			job.remove(function(err){
+				if (err) throw err;
+				console.log('removed completed job #%d', job.id);
+				res.send(200,'ok')
+			});
+		});
 	}
 };
 
