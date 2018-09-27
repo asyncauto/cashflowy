@@ -281,6 +281,31 @@ module.exports={
 		});
 		
 	},
+	// given a body parser, the details are extracted
+	extractDataFromMessageBodyUsingBodyParser:function(options,callback){
+		var extract_config = require('../filters/'+options.email_type+'.js');
+		var body_parser=options.body_parser;
+		var ed={};
+		var body_parser_used='';
+		var all_good_flag=true;
+		console.log('\n\n\n--------');
+		console.log(body_parser);
+		body_parser.fields.forEach(function(field){
+			ed[field.name]=GmailService.extractOneField(field,options.body);
+			if(!ed[field.name])
+				all_good_flag=false;
+		});
+		if(all_good_flag)
+			body_parser_used=body_parser.version;
+		
+		// console.log('\n\n\n\ndid this run');
+		// console.log(body_parser_used);
+		callback(null,{
+			ed:ed,
+			body_parser_used:body_parser_used,
+		});
+		
+	},
 
 	/**
 	 * Extract data from email body

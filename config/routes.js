@@ -92,6 +92,11 @@ module.exports.routes = {
   'POST /kue/retry':'KueController.retryJob',
   'POST /kue/delete':'KueController.deleteJob',
 
+
+
+  'GET /curator/filter_test':'CuratorController.filterTest',
+  'POST /curator/filter_test':'CuratorController.filterTest',
+
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

@@ -92,19 +92,35 @@ module.exports = {
 					account:results.getAccount.id,
 					third_party:pe.extracted_data.whom_you_paid
 				}
-				if(pe.extracted_data.date && pe.extracted_data.time)
+				if(pe.extracted_data.date && pe.extracted_data.time){
 					t.occuredAt= new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30');
+					if(t.occuredAt=='Invalid Date')
+						t.occuredAt=pe.extracted_data.email_received_time;
+				}
 				else
 					t.occuredAt=pe.extracted_data.email_received_time;
-				// console.log('before transaction find or create');
-				Transaction.create(t).exec(callback);
+
+				// console.log('\n\n\nbefore transaction find or create');
+
+				Transaction.create(t).exec(function(err,result){
+					if(err){
+						console.log('Attempt to create a transaction failed');
+						console.log('transaction:')
+						console.log(t);
+						console.log('extracted_data');
+						console.log(pe.extracted_data);
+					}
+					callback(err,result);
+
+				});
 				
 			}],
 			updateParsedEmail:['findOrCreateTransaction',function(results,callback){
-				// console.log('parsed_email after create #4');
+				// console.log('update parsed email');
 				Parsed_email.update({id:pe.id},{transaction:results.findOrCreateTransaction.id}).exec(callback);
 			}],
 			createSnapshotIfPossible:['getAccount',function(results,callback){
+				// console.log('create snapshot');
 				if(pe.extracted_data.balance_currency && pe.extracted_data.balance_amount){
 					var ss={
 						account:results.getAccount.id,
@@ -113,8 +129,11 @@ module.exports = {
 						balance_currency:pe.extracted_data.balance_currency,
 						balance:pe.extracted_data.balance_amount,
 					}
-					if(pe.extracted_data.date && pe.extracted_data.time)
+					if(pe.extracted_data.date && pe.extracted_data.time){
 						ss.takenAt= new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30');
+						if(ss.takenAt=='Invalid Date')
+							ss.takenAt=pe.extracted_data.email_received_time;
+					}
 					else
 						ss.takenAt=pe.extracted_data.email_received_time;
 					Snapshot.create(ss).exec(callback);

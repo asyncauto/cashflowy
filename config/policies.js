@@ -63,5 +63,8 @@ module.exports.policies = {
   },
   BackgroundController:{
     '*':['isBackground']
-  }
+  },
+  CuratorController:{
+    '*':['isAuthenticated','isAdmin']
+  },
 };

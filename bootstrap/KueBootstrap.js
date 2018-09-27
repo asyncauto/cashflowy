@@ -105,6 +105,7 @@ module.exports = function (callback) {
 						var count=0;
 						var email_address = results.getEmail.email;		
 						var user = results.getEmail.user;
+						var email = results.getEmail;
 						async.eachLimit(results.getMessages.messages,1,function(m,next){
 							console.log("\n\n\n====== m_id="+m.id);
 							console.log(count);
@@ -112,7 +113,8 @@ module.exports = function (callback) {
 							async.auto({
 								getMessageDetails:function(callback){
 									var opts={
-										message_id:m.id
+										message_id:m.id,
+										email_token:email.token,
 									}
 									GmailService.getMessageDetails(opts,callback);
 								},
@@ -139,14 +141,20 @@ module.exports = function (callback) {
 										console.log('\n\n\nbody parser is null');
 										console.log(email);
 										console.log(results.getMessageDetails.body);
-										callback('cant process email');
+
+										var text="Parsing email failure\n";
+										text+="<-Email body->\n";
+										text+=results.getMessageDetails.body.trim();
+										text+=" ```"+JSON.stringify(email,null,4)+"```";
+										var content = {
+											"icon_emoji": ":robot_face:",
+											"username": "highlyreco-bot",
+											"text":text,
+										}
+										SlackService.pushToSlack('cashflowy',content,function(err){
+											callback(err);
+										});
 									}else{		
-										// console.log(results.getMessageDetails.header);		
-										// console.log('\n\n\nbody parser good');		
-										// console.log(results.getMessageDetails.body);		
-										// console.log(email);		
-										// Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);		
-										console.log(m.id);		
 										Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);
 									}
 									// during testing a new filter, comment/uncomment the following lines
