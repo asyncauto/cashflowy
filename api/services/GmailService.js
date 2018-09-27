@@ -75,7 +75,7 @@ function authorize(credentials) {
 	// Check if we have previously stored a token.
 	// fs.readFile('token.json', (err, token) => {
 		// if (err) return getNewToken(oAuth2Client, callback);
-		oAuth2Client.setCredentials(sails.config.gmail.token);
+		oAuth2Client.setCredentials(credentials.token);
 		// callback(null,oAuth2Client);
 		return oAuth2Client;
 	// });
@@ -84,7 +84,7 @@ function authorize(credentials) {
 
 module.exports={
 	getMessages:function (options,callback) {
-		var config=sails.config.gmail;
+		var config=_.cloneDeep(sails.config.gmail);
 		config.token = options.email_token;
 		var auth = authorize(config);
 		const gmail = google.gmail({version: 'v1', auth});
@@ -190,9 +190,14 @@ module.exports={
 		});
 	},
 	getMessageDetails:function(options,callback){
-		var auth  = authorize(sails.config.gmail);
+		var config=_.cloneDeep(sails.config.gmail);
+		config.token = options.email_token;
+		// console.log('\n\nconfig');
+		// console.log(config);
+		var auth  = authorize(config);
 		var m_id=options.message_id;
 		// console.log("\n\n\n====== m_id="+m_id);
+		// console.log(options);
 		const gmail = google.gmail({version: 'v1', auth});
 		gmail.users.messages.get({
 			userId: 'me',
