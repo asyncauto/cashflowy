@@ -677,6 +677,7 @@ module.exports = {
 				var locals={
 					status:'',
 					balance:'',
+					takenAt:'',
 					account_id:'',
 					message:'',
 					accounts:accounts
@@ -686,6 +687,67 @@ module.exports = {
 			}
 		})
 	},
+	editSnapshot:function(req,res){
+		Account.find({user:req.user.id}).exec(function(err,accounts){
+			if(req.body){ // post request
+				console.log(req.body);
+				const fx = require('money');
+				fx.base='INR';
+				fx.rates={
+					'EUR':0.0125660,
+					'USD':0.0146289,
+					'MYR':0.0595751,
+					'IDR':211.557,
+					'INR':1,
+					'CZK':0.320764,
+					'HUF':4.03376,
+
+				}
+				var s={
+					balance:req.body.balance,
+					takenAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
+					createdBy:'user',
+					account:req.body.account_id,
+				}
+				// console.log('before transaction find or create');
+				console.log(s);
+				Snapshot.update({id:req.params.id},s).exec(function(err,transaction){
+					if(err)
+						throw err;
+					else
+						res.redirect('/snapshots');
+				});
+			}else{ // view the form
+				Snapshot.findOne({id:req.params.id}).exec(function(err,s){
+					var locals={
+						status:'',
+						balance:s.balance,
+						account_id:s.account,
+						takenAt:new Date(s.takenAt).toISOString(),
+						message:'',
+						accounts:accounts
+					}
+					console.log(locals);
+					res.view('create_snapshot',locals);
+				});
+			}
+		});
+	},
+	deleteSnapshot:function(req,res){
+		if(req.body && req.body.confirm){ // confirming delete
+			Snapshot.destroy({id:req.params.id}).exec(function(err,s){
+				if(err)
+					throw(err);
+				res.redirect('/snapshots');
+			});
+		}else{ // showing the warning page
+			Snapshot.findOne({id:req.params.id}).populate('account').exec(function(err,s){
+				s.takenAt=new Date(s.takenAt).toISOString();
+				var locals={s:s};
+				res.view('delete_snapshot',locals);
+			});
+		}
+	}
 
 };
 

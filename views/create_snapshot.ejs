@@ -5,6 +5,7 @@
 	var single_active_flag=false;
 	if(!account_id)
 		account_id=req.user.details.default_account;
+	var create_or_edit = GeneralService.createOrEdit(req.url);
 %>
 <div class="ui container">
 	<div class="ui grid">
@@ -12,7 +13,7 @@
 		<div class='eight wide table eight wide computer sixteen wide mobile column'>
 			<h4 class="ui horizontal divider header">
 				<!-- <i class="list icon"></i> -->
-				Create Snapshot
+				<%=create_or_edit%> Snapshot
 			</h4>
 			<form class="ui <%=status%> form " action="" method='post'>
 				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
@@ -96,7 +97,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
-		var a = moment(); // create a time instance in the local time zone 
+		<%if(takenAt==''){%>
+			var a = moment(); // create a time instance in the local time zone 
+		<%}else{%>
+			var a = moment('<%=takenAt%>');
+		<%}%>
 		$('.dropdown').dropdown();
 		$('input[name=date]').val(a.format('YYYY-MM-DD'));
 		$('input[name=time]').val(a.format('HH:mm'));

@@ -61,7 +61,10 @@ module.exports.routes = {
   'GET /snapshots':'MainController.listSnapshots',
   'GET /snapshot/create':'MainController.createSnapshot',
   'POST /snapshot/create':'MainController.createSnapshot',
-
+  'GET /snapshot/:id/edit':'MainController.editSnapshot',
+  'POST /snapshot/:id/edit':'MainController.editSnapshot',
+  'GET /snapshot/:id/delete':'MainController.deleteSnapshot',
+  'POST /snapshot/:id/delete':'MainController.deleteSnapshot',
 
   'GET /categories':'MainController.listCategories',
   'GET /category/create':'MainController.createCategory',
