@@ -68,7 +68,7 @@ module.exports = {
 					name:'',
 					description:'',
 					budget:'',
-					parent_id:'',
+					parent_id:0,
 					categories:categories
 				}
 				console.log(locals);
@@ -78,6 +78,49 @@ module.exports = {
 	},
 	viewCategory:function(req,res){
 		res.send('this is category page');
+	},
+	editCategory:function(req,res){
+		Category.find({user:req.user.id}).exec(function(err,categories){
+			if(!_.find(categories,{id:parseInt(req.params.id)}))
+				return res.send('you dont have permission to modify this category');
+			if(req.body){
+				var c={
+					name:req.body.name,
+					description:req.body.description,
+					budget:parseInt(req.body.budget),
+					user:req.user.id,
+					parent:0,
+				}
+				if(req.body.parent_id)
+					c.parent=req.body.parent_id;
+				// console.log('before transaction find or create');
+				console.log(c);
+				Category.update({id:req.params.id},c).exec(function(err,transaction){
+					if(err){
+						console.log(err);
+						throw err;
+					}
+					else
+						res.redirect('/categories');
+				});
+
+			}else{
+				console.log(categories);
+				console.log(req.params.id);
+				var c = _.find(categories,{id:parseInt(req.params.id)});
+				console.log(c);
+				var locals={
+					status:'',
+					message:'',
+					name:c.name,
+					description:c.description,
+					budget:c.budget,
+					parent_id:c.parent,
+					categories:categories
+				}
+				res.view('create_category',locals);
+			}
+		});
 	},
 	listEmails:function(req,res){
 		Email.find({user:req.user.id}).exec(function(err,emails){

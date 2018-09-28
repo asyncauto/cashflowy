@@ -165,6 +165,22 @@ module.exports={
 			})
 		});
 		return parents;
+	},
+	/**
+	 * Based on the url, it will tell you if the page is a create page or an edit page
+	 * @param  {[type]} url [description]
+	 * @return {[type]}     [description]
+	 */
+	createOrEdit:function(url){
+		var temp = url.split('/');
+		var create_or_edit='';
+		if(temp[temp.length-1])
+			create_or_edit=temp[temp.length-1];
+		else
+			create_or_edit=temp[temp.length-2];
+		
+		return create_or_edit.charAt(0).toUpperCase()+create_or_edit.slice(1);
+		// returns Edit or Create - notice the caps
 	}
 
 }

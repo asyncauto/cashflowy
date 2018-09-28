@@ -3,6 +3,7 @@
 	if(typeof original_currency == 'undefined' || !original_currency)
 		original_currency=req.user.details.default_currency;
 	var single_active_flag=false;
+	var create_or_edit = GeneralService.createOrEdit(req.url);
 %>
 <div class="ui container">
 	<div class="ui grid">
@@ -10,7 +11,7 @@
 		<div class='eight wide table eight wide computer sixteen wide mobile column'>
 			<h4 class="ui horizontal divider header">
 				<!-- <i class="list icon"></i> -->
-				Create Category
+				<%=create_or_edit%> Category
 			</h4>
 			<form class="ui <%=status%> form " action="" method='post'>
 				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
@@ -54,6 +55,7 @@
 						<i class="dropdown icon"></i>
 						<div class="default text">Select Parent Category</div>
 						<div class="menu">
+							<div class="item" data-value="0">No parent</div>
 							<%categories.forEach(function(account){%>
 								<div class="<%-parent_id?'active':''%> item" data-value="<%=account.id%>"><%=account.name%></div>
 							<%})%>

@@ -12,6 +12,7 @@
 							<th>Description</th>
 							<th>Parent</th>
 							<th class="right aligned">Budget(INR)</th>
+							<th>Edit</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -22,6 +23,7 @@
 								<td><%=c.description%></td>
 								<td><%=c.parent%></td>
 								<td class="right aligned"><%=parseFloat(c.budget).toFixed(2)%></td>
+								<td><a href="/category/<%=c.id%>/edit">edit</a></td>
 							</tr>
 						<%})%>
 					</tbody>

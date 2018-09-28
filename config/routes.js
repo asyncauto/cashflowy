@@ -63,6 +63,8 @@ module.exports.routes = {
   'GET /category/create':'MainController.createCategory',
   'POST /category/create':'MainController.createCategory',
   'GET /category/:id':'MainController.viewCategory',
+  'GET /category/:id/edit':'MainController.editCategory',
+  'POST /category/:id/edit':'MainController.editCategory',
 
   // api patterns needs rewrite later
   'POST /api/edit_desc':'MainController.editDescription',
