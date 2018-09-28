@@ -2,60 +2,60 @@
 	<div class='ui grid'>
 		<!-- <div class='three wide tablet computer only column'></div> -->
 		<div class='sixteen wide table sixteen wide computer sixteen wide mobile  column'>
-			<div class='ui segment'>
-				<h1>Transactions</h1>
-				<table class="ui celled padded unstackable table" style="display: block;overflow-x:scroll;">
-					<thead>
-						<tr><th class="single line">Date</th>
-						<!-- <th>Time</th> -->
-						<th>Description</th>
-						<!-- <th>Currency</th> -->
-						<th>Amount</th>
-						<th>Amount(INR)</th>
-						<th>Paid whom</th>
-						<th>From account</th>
-						<th>Category</th>
-					</tr></thead>
-					<tbody>
-						<%transactions.forEach(function(t){%>
-							<tr data-tid='<%=t.id%>'>
-								<td class='single line'><span class='popup' data-html="<%-moment(t.occuredAt).fromNow()%>"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD-MMM-YYYY')%></br><%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%></span></td>
-								<!-- <td><%=t.occuredAt%></td> -->
-								<td data-id='<%=t.id%>'>
-									<span class='description'><%-t.description?t.description:''%></span>
-									<a class='edit' data-id='<%=t.id%>' href=''>edit</a>
-									<div class='edit_description' data-id='<%=t.id%>' style='display:none;'>
-										
-										<div class="ui fluid input">
-											<input type="text" name='description' value='<%-t.description?t.description:''%>'>
-										</div>
-										<br>
-										<button class="ui teal button submit_edit_desc" data-id='<%=t.id%>' >save</button>
-										<button class="ui red button cancel_edit_desc" data-id='<%=t.id%>' >cancel</button>
+			
+			<h1>Transactions</h1>
+			<table class="ui celled padded unstackable table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr><th class="single line">Date</th>
+					<!-- <th>Time</th> -->
+					<th>Description</th>
+					<!-- <th>Currency</th> -->
+					<th>Amount</th>
+					<th>Amount(INR)</th>
+					<th>Paid whom</th>
+					<th>From account</th>
+					<th>Category</th>
+				</tr></thead>
+				<tbody>
+					<%transactions.forEach(function(t){%>
+						<tr data-tid='<%=t.id%>'>
+							<td class='single line'><span class='popup' data-html="<%-moment(t.occuredAt).fromNow()%>"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD-MMM-YYYY')%></br><%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%></span></td>
+							<!-- <td><%=t.occuredAt%></td> -->
+							<td data-id='<%=t.id%>'>
+								<span class='description'><%-t.description?t.description:''%></span>
+								<a class='edit' data-id='<%=t.id%>' href=''>edit</a>
+								<div class='edit_description' data-id='<%=t.id%>' style='display:none;'>
+									
+									<div class="ui fluid input">
+										<input type="text" name='description' value='<%-t.description?t.description:''%>'>
 									</div>
-								</td>
-								<!-- <td></td> -->
-								<td><%=t.original_currency%> <%=t.original_amount%></td>
-								<td class="right aligned"><%=parseFloat(t.amount_inr).toFixed(2)%></td>
-								<td><%=t.third_party%></td>
-								<td><%=t.account.name%></td>
-								<td>
-									<div class="ui fluid search selection dropdown">
-										<input type="hidden" name="category" value="<%=t.category%>">
-										<i class="dropdown icon"></i>
-										<div class="default text">Select</div>
-										<div class="menu">
-											<%categories.forEach(function(category){%>
-												<div class="item" data-value="<%=category.id%>"><%=category.name%></div>
-											<%})%>
-										</div>
+									<br>
+									<button class="ui teal button submit_edit_desc" data-id='<%=t.id%>' >save</button>
+									<button class="ui red button cancel_edit_desc" data-id='<%=t.id%>' >cancel</button>
+								</div>
+							</td>
+							<!-- <td></td> -->
+							<td><%=t.original_currency%> <%=t.original_amount%></td>
+							<td class="right aligned"><%=parseFloat(t.amount_inr).toFixed(2)%></td>
+							<td><%=t.third_party%></td>
+							<td><%=t.account.name%></td>
+							<td>
+								<div class="ui fluid search selection dropdown">
+									<input type="hidden" name="category" value="<%=t.category%>">
+									<i class="dropdown icon"></i>
+									<div class="default text">Select</div>
+									<div class="menu">
+										<%categories.forEach(function(category){%>
+											<div class="item" data-value="<%=category.id%>"><%=category.name%></div>
+										<%})%>
 									</div>
-								</td>
-							</tr>
-						<%})%>
-					</tbody>
-				</table>
-			</div>
+								</div>
+							</td>
+						</tr>
+					<%})%>
+				</tbody>
+			</table>
+			
 		</div>
 		<!-- <div class='three wide tablet computer only column'></div> -->
 	</div>

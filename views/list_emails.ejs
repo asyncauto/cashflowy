@@ -2,24 +2,22 @@
 <div class='ui container'>
 	<div class='ui grid'>
 		<!-- <div class='three wide tablet computer only column'></div> -->
-		<div class='ten wide computer sixteen wide mobile  column'>
-			<div class='ui segment'>
-				<h1>Emails</h1>
-				<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
-					<thead>
-						<tr>
-							<th>Email</th>
+		<div class='three wide computer sixteen wide mobile  column'>
+			<h1>Emails</h1>
+			<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr>
+						<th>Email</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%emails.forEach(function(e){%>
+						<tr data-tid='<%=e.id%>'>
+							<td><%=e.id%> - <%=e.email%></td>
 						</tr>
-					</thead>
-					<tbody>
-						<%emails.forEach(function(e){%>
-							<tr data-tid='<%=e.id%>'>
-								<td><%=e.id%> - <%=e.email%></td>
-							</tr>
-						<%})%>
-					</tbody>
-				</table>
-			</div>
+					<%})%>
+				</tbody>
+			</table>
 		</div>
 		<!-- <div class='three wide tablet computer only column'></div> -->
 	</div>

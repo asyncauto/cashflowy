@@ -2,33 +2,33 @@
 	<div class='ui grid'>
 		<!-- <div class='three wide tablet computer only column'></div> -->
 		<div class='ten wide computer sixteen wide mobile  column'>
-			<div class='ui segment'>
-				<h1>Categories</h1>
-				<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th>Name</th>
-							<th>Description</th>
-							<th>Parent</th>
-							<th class="right aligned">Budget(INR)</th>
-							<th>Edit</th>
+			
+			<h1>Categories</h1>
+			<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Parent</th>
+						<th class="right aligned">Budget(INR)</th>
+						<th>Edit</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%categories.forEach(function(c){%>
+						<tr data-tid='<%=c.id%>'>
+							<td><%=c.id%></td>
+							<td><%=c.name%></td>
+							<td><%=c.description%></td>
+							<td><%=c.parent?c.parent:''%></td>
+							<td class="right aligned"><%=parseFloat(c.budget).toFixed(2)%></td>
+							<td><a href="/category/<%=c.id%>/edit">edit</a></td>
 						</tr>
-					</thead>
-					<tbody>
-						<%categories.forEach(function(c){%>
-							<tr data-tid='<%=c.id%>'>
-								<td><%=c.id%></td>
-								<td><%=c.name%></td>
-								<td><%=c.description%></td>
-								<td><%=c.parent?c.parent:''%></td>
-								<td class="right aligned"><%=parseFloat(c.budget).toFixed(2)%></td>
-								<td><a href="/category/<%=c.id%>/edit">edit</a></td>
-							</tr>
-						<%})%>
-					</tbody>
-				</table>
-			</div>
+					<%})%>
+				</tbody>
+			</table>
+			
 		</div>
 		<!-- <div class='three wide tablet computer only column'></div> -->
 	</div>

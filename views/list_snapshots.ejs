@@ -2,28 +2,26 @@
 <div class='ui container'>
 	<div class='ui grid'>
 		<!-- <div class='three wide tablet computer only column'></div> -->
-		<div class='sixteen wide table sixteen wide computer sixteen wide mobile  column'>
-			<div class='ui segment'>
-				<h1>Snapshots</h1>
-				<table class="ui celled padded unstackable table" style="display: block;overflow-x:scroll;">
-					<thead>
-						<tr><th class="single line">Date</th>
-						<!-- <th>Time</th> -->
-						<th>Account</th>
-						<!-- <th>Currency</th> -->
-						<th class="right aligned">Balance(INR)</th>
-					</tr></thead>
-					<tbody>
-						<%snapshots.forEach(function(s){%>
-							<tr data-tid='<%=s.id%>'>
-								<td class='single line'><span class='popup' data-html="<%-moment(s.takenAt).tz('Asia/Kolkata').format('Do MMM YYYY')%></br><%-moment(s.takenAt).tz('Asia/Kolkata').format('h:mm a')%>"><%-moment(s.takenAt).fromNow()%></span></td>
-								<td><%=s.account.name%></td>
-								<td class="right aligned"><%=parseFloat(s.balance).toFixed(2)%></td>
-							</tr>
-						<%})%>
-					</tbody>
-				</table>
-			</div>
+		<div class='sixteen wide table five wide computer sixteen wide mobile  column'>
+			<h1>Snapshots</h1>
+			<table class="ui celled padded unstackable table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr><th class="single line">Date</th>
+					<!-- <th>Time</th> -->
+					<th>Account</th>
+					<!-- <th>Currency</th> -->
+					<th class="right aligned">Balance(INR)</th>
+				</tr></thead>
+				<tbody>
+					<%snapshots.forEach(function(s){%>
+						<tr data-tid='<%=s.id%>'>
+							<td class='single line'><span class='popup' data-html="<%-moment(s.takenAt).tz('Asia/Kolkata').format('Do MMM YYYY')%></br><%-moment(s.takenAt).tz('Asia/Kolkata').format('h:mm a')%>"><%-moment(s.takenAt).fromNow()%></span></td>
+							<td><%=s.account.name%></td>
+							<td class="right aligned"><%=parseFloat(s.balance).toFixed(2)%></td>
+						</tr>
+					<%})%>
+				</tbody>
+			</table>
 		</div>
 		<!-- <div class='three wide tablet computer only column'></div> -->
 	</div>
