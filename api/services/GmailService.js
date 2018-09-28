@@ -425,10 +425,6 @@ module.exports={
 							}
 							email.extracted_data.email_received_time= new Date(results.getMessageDetails.header.date);
 							if(email.body_parser_used==''){
-								console.log('\n\n\nbody parser is null');
-								console.log(email);
-								console.log(results.getMessageDetails.body);
-
 								var text="Parsing email failure\n";
 								text+="<-Email body->\n";
 								text+=results.getMessageDetails.body.trim();
@@ -438,8 +434,19 @@ module.exports={
 									"username": "highlyreco-bot",
 									"text":text,
 								}
-								SlackService.pushToSlack('cashflowy',content,function(err){
-									callback(err);
+								Parse_failure.findOne({message_id:m.id}).exec(function(err,pf){
+									if(err)
+										return callback(err);
+									if(!pf){
+										console.log('\n\n\nbody parser is null');
+										console.log(email);
+										console.log(results.getMessageDetails.body);
+										Parse_failure.create(email).exec(function(err,pf_new){
+											SlackService.pushToSlack('cashflowy',content,callback);	
+										});		
+									}else{
+										callback(err);
+									}
 								});
 							}else{		
 								Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);
