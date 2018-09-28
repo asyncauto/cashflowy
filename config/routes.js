@@ -52,6 +52,8 @@ module.exports.routes = {
   'GET /transactions':'MainController.listTransactions',
   'GET /transaction/create':'MainController.createTransaction',
   'POST /transaction/create':'MainController.createTransaction',
+  'GET /transaction/:id/edit':'MainController.editTrasaction',
+  'POST /transaction/:id/edit':'MainController.editTrasaction',
 
 
   'GET /snapshots':'MainController.listSnapshots',

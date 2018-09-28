@@ -452,8 +452,7 @@ module.exports = {
 				});
 			}else{ // view the form
 				var locals={
-					email:'',
-					token:'',
+					occuredAt:'',
 					status:'',
 					message:'',
 					description:'',
@@ -465,6 +464,60 @@ module.exports = {
 				}
 				console.log(locals);
 				res.view('create_transaction',locals);
+			}
+		})
+	},
+	editTrasaction:function(req,res){
+		Account.find({user:req.user.id}).exec(function(err,accounts){
+			if(req.body){ // post request
+				console.log(req.body);
+				const fx = require('money');
+				fx.base='INR';
+				fx.rates={
+					'EUR':0.0125660,
+					'USD':0.0146289,
+					'MYR':0.0595751,
+					'IDR':211.557,
+					'INR':1,
+					'CZK':0.320764,
+					'HUF':4.03376,
+
+				}
+				var t={
+					original_currency:req.body.original_currency,
+					original_amount:-(req.body.original_amount),
+					amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
+					occuredAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
+					createdBy:'user',
+					type:'income_expense',
+					description:req.body.description,
+					account:req.body.account_id,
+					third_party:req.body.third_party
+				}
+				// console.log('before transaction find or create');
+				console.log(t);
+				Transaction.update({id:req.params.id},t).exec(function(err,transaction){
+					if(err)
+						throw err;
+					else
+						res.redirect('/transactions');
+				});
+			}else{ // view the form
+				Transaction.findOne({id:req.params.id}).exec(function(err,t){
+					var locals={
+						status:'',
+						message:'',
+						occuredAt:new Date(t.occuredAt).toISOString(),
+						description:t.description,
+						original_amount:-t.original_amount,
+						original_currency:t.original_currency,
+						third_party:t.third_party,
+						account_id:t.account,
+						accounts:accounts
+					}
+					console.log(locals);
+					res.view('create_transaction',locals);
+				});
 			}
 		})
 	},

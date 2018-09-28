@@ -15,6 +15,7 @@
 					<th>Paid whom</th>
 					<th>From account</th>
 					<th>Category</th>
+					<th></th>
 				</tr></thead>
 				<tbody>
 					<%transactions.forEach(function(t){%>
@@ -50,6 +51,17 @@
 										<%})%>
 									</div>
 								</div>
+							</td>
+							<td>
+								<%if(t.createdBy=='user'){%>
+									<div class="ui basic icon top right pointing dropdown">
+										<i class="bars icon"></i>
+										<div class="menu">
+											<a class="item" href='/transaction/<%=t.id%>/edit'>Edit</a>
+											<a class="item" href='/transaction/<%=t.id%>/delete'>Delete</a>
+										</div>
+									</div>
+								<%}%>
 							</td>
 						</tr>
 					<%})%>
