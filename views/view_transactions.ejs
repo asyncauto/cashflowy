@@ -41,7 +41,7 @@
 							<td><%=t.third_party%></td>
 							<td><%=t.account.name%></td>
 							<td>
-								<div class="ui fluid search selection dropdown">
+								<div class="ui fluid search selection category dropdown">
 									<input type="hidden" name="category" value="<%=t.category%>">
 									<i class="dropdown icon"></i>
 									<div class="default text">Select</div>
@@ -54,7 +54,7 @@
 							</td>
 							<td>
 								<%if(t.createdBy=='user'){%>
-									<div class="ui basic icon top right pointing dropdown">
+									<div class="ui basic icon top right pointing extra_options dropdown">
 										<i class="bars icon"></i>
 										<div class="menu">
 											<a class="item" href='/transaction/<%=t.id%>/edit'>Edit</a>
@@ -116,7 +116,7 @@
 			    }
 			});
 		});
-		$('.dropdown').dropdown({
+		$('.category.dropdown').dropdown({
 			onChange:function(value, text, $choice){
 				var dd = this;
 				$(this).addClass('disabled loading');
@@ -135,6 +135,7 @@
 				})
 			}
 		});
+		$('.extra_options.dropdown').dropdown();
 		$('.popup').popup();
 	});
 </script>
