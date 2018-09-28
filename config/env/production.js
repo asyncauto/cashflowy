@@ -36,6 +36,7 @@ module.exports = {
 		port: 6379,
 		db: 0,
 	},
+	slack_webhook:process.env.SLACK_WEBHOOK,
 	// models: {
 	//   connection: 'someMysqlServer'
 	// },

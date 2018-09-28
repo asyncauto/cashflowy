@@ -64,7 +64,7 @@ module.exports = {
 			"method": "POST",
 			"hostname": "hooks.slack.com",
 			"port": null,
-			"path": "/services/T10HY0VFZ/B3N8NPFDM/bnAAzIPyMEG4rGofcfOhxCvx",
+			"path": sails.config.slack_webhook,
 			"headers": {
 				"content-type": "application/json",
 				"cache-control": "no-cache",
