@@ -50,7 +50,7 @@ module.exports = {
 			getAccount:function(callback){
 				// console.log('parsed_email after create #2');
 				var filter ={}
-				if(pe.type=='IciciCreditCardTransactionAlertFilter'){
+				if(pe.type=='IciciCreditCardTransactionAlertFilter'|| pe.type=='IciciCreditCardRefundFilter'){
 					filter = {
 						acc_number:pe.extracted_data.credit_card_last_4_digits
 					};
@@ -85,13 +85,17 @@ module.exports = {
 				};
 				var t={
 					original_currency:pe.extracted_data.currency,
-					original_amount:-(pe.extracted_data.amount),
-					amount_inr:-(fx.convert(pe.extracted_data.amount, {from: pe.extracted_data.currency, to: "INR"})),
 					createdBy:'parsed_email',
 					type:'income_expense',
 					account:results.getAccount.id,
-					third_party:pe.extracted_data.whom_you_paid
+					third_party:pe.extracted_data.whom_you_paid?pe.extracted_data.whom_you_paid:pe.extracted_data.third_party,
 				}
+				if(pe.type=='IciciCreditCardRefundFilter')
+					t.original_amount=pe.extracted_data.amount; // this is an income, so positive
+				else 
+					t.original_amount=-(pe.extracted_data.amount); // this in an expense, so negative
+				t.amount_inr=fx.convert(t.original_amount, {from: pe.extracted_data.currency, to: "INR"});
+				
 				if(pe.extracted_data.date && pe.extracted_data.time){
 					t.occuredAt= new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30');
 					if(t.occuredAt=='Invalid Date')
