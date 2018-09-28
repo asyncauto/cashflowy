@@ -467,7 +467,7 @@ module.exports = {
 			}
 		})
 	},
-	editTrasaction:function(req,res){
+	editTransaction:function(req,res){
 		Account.find({user:req.user.id}).exec(function(err,accounts){
 			if(req.body){ // post request
 				console.log(req.body);
@@ -520,6 +520,21 @@ module.exports = {
 				});
 			}
 		})
+	},
+	deleteTransaction:function(req,res){
+		if(req.body && req.body.confirm){ // confirming delete
+			Transaction.destroy({id:req.params.id}).exec(function(err,t){
+				if(err)
+					throw(err);
+				res.redirect('/transactions');
+			});
+		}else{ // showing the warning page
+			Transaction.findOne({id:req.params.id}).populate('account').exec(function(err,t){
+				t.occuredAt=new Date(t.occuredAt).toISOString();
+				var locals={t:t};
+				res.view('delete_transaction',locals);
+			});
+		}
 	},
 	debug:function(req,res){
 		var email_type=req.query.email_type?req.query.email_type:'IciciCreditCardTransactionAlertFilter'
