@@ -11,10 +11,10 @@ Functionally Cashflowy is simply a good personal accountant, someone who focus o
 
 
 ![Transactions](https://raw.githubusercontent.com/alexjv89/cashflowy/master/assets/images/transactions.png)
-![Transactions](https://raw.githubusercontent.com/alexjv89/cashflowy/master/assets/images/expense_over_time.png)
-![Transactions](https://raw.githubusercontent.com/alexjv89/cashflowy/master/assets/images/state_of_accounts_over_time.png)
-![Transactions](https://raw.githubusercontent.com/alexjv89/cashflowy/master/assets/images/expense_per_category/budget.png)
-hello
+![Expense over time](https://raw.githubusercontent.com/alexjv89/cashflowy/master/assets/images/expense_over_time.png)
+![State of accounts](https://raw.githubusercontent.com/alexjv89/cashflowy/master/assets/images/state_of_accounts_over_time.png)
+![Expense per category/budget](https://raw.githubusercontent.com/alexjv89/cashflowy/master/assets/images/expense_per_category_budget.png)
+
 
 ## Ok cool, What does it really do?
 Cashflowy paints highly accurate picture of your cashflow. It does this by processing transaction alert emails send by various banks, credit cards, wallets etc. Most Banks and other finacial institution sends you alert emails when you move money. Based on the data that is extracted from these emails, transaction records are auto created for you on cashflowy. This eliminates most of the grunt work for you in terms of recording a transaction. 
