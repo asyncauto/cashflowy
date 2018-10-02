@@ -1,0 +1,14 @@
+<p>Hi <%=name%>,</p>
+
+<p>Here is summary of your accounts for the week that went by:</p>
+<b>Total spending: </b> INR <%=(-expense_total.toFixed(2))%><br/>
+<b>Total income: </b> INR <%=income_total.toFixed(2)%><br/>
+
+<%if(t_wo_d){%>
+	<p style="color:red"><%=t_wo_d%> transactions does not have description. </p>
+	<p>Plz consider adding description. Months into the future, if you have to audit your accounts, description will help you remember a transaction. </p>
+<%}else{%>
+	<p style="color:green">All transactions has descriptions. - Good job</p>
+<%}%>
+
+
