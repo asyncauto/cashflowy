@@ -325,6 +325,122 @@ module.exports={
 					]
 				},
 				{
+					name:'credit_limit_amount',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Thank you for using ICICI Bank Credit Card.'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'If you have not authorised this transaction'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'and total credit limit is '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
+						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'credit_limit_currency',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Thank you for using ICICI Bank Credit Card.'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'If you have not authorised this transaction'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'and total credit limit is '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
+						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
 					name:'date',
 					type:'string',
 					filters:[

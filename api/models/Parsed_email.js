@@ -129,9 +129,25 @@ module.exports = {
 					var ss={
 						account:results.getAccount.id,
 						createdBy:'parsed_email',
-						takenAt: new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30'),
+						// takenAt: new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30'),
 						balance_currency:pe.extracted_data.balance_currency,
 						balance:pe.extracted_data.balance_amount,
+					}
+					if(pe.extracted_data.date && pe.extracted_data.time){
+						ss.takenAt= new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30');
+						if(ss.takenAt=='Invalid Date')
+							ss.takenAt=pe.extracted_data.email_received_time;
+					}
+					else
+						ss.takenAt=pe.extracted_data.email_received_time;
+					Snapshot.create(ss).exec(callback);
+				}else if(pe.extracted_data.credit_limit_currency && pe.extracted_data.credit_limit_amount && pe.extracted_data.available_credit_balance){
+					var ss={
+						account:results.getAccount.id,
+						createdBy:'parsed_email',
+						// takenAt: new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30'),
+						balance_currency:pe.extracted_data.credit_limit_currency,
+						balance:pe.extracted_data.available_credit_balance-pe.extracted_data.credit_limit_amount,
 					}
 					if(pe.extracted_data.date && pe.extracted_data.time){
 						ss.takenAt= new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30');
