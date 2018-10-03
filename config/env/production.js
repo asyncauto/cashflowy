@@ -37,6 +37,10 @@ module.exports = {
 		db: 0,
 	},
 	slack_webhook:process.env.SLACK_WEBHOOK,
+	mailgun:{
+		api_key:process.env.MAILGUN_APIKEY,
+		domain:process.env.MAILGUN_DOMAIN
+	}
 	// models: {
 	//   connection: 'someMysqlServer'
 	// },
