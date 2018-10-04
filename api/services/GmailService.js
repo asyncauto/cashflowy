@@ -350,6 +350,10 @@ module.exports={
 			} else if(f.type=='replace'){
 				var temp = body.split(f.options.replace);
 				body=temp.join(f.options.with);
+			} else if(f.type=='substring'){
+				var start = f.options.start?f.options.start:0;
+				var end = f.options.end?f.options.end:body.length;
+				body=body.substring(start,end);
 			}
 			// console.log('\n\n\n\n*********');
 			// console.log(start);
