@@ -49,22 +49,40 @@ module.exports = {
 		async.auto({
 			getAccount:function(callback){
 				// console.log('parsed_email after create #2');
-				var filter ={}
-				if(pe.type=='IciciCreditCardTransactionAlertFilter'|| pe.type=='IciciCreditCardRefundFilter'){
-					filter = {
-						acc_number:pe.extracted_data.credit_card_last_4_digits
-					};
-				}else if(pe.type=='IciciInternetBankingFilter' || pe.type=='IciciDebitCardFilter'){
-					filter = {
-						like:{
-							acc_number:'%'+pe.extracted_data.account_last_4_digits,
-						}
-					}
+				
+				var acc_number;
+				if(pe.extracted_data.credit_card_last_4_digits)
+					acc_number=pe.extracted_data.credit_card_last_4_digits;
+				else if(pe.extracted_data.account_last_4_digits)
+					acc_number=pe.extracted_data.account_last_4_digits;
+			
+				var filter = {
+					like:{
+						acc_number:'%'+acc_number, // ends with the following number
+					},
+					user:pe.user
 				}
-				Account.findOne(filter).exec(callback);
+
+				var account={ // incase the account does not exist, create account.
+					acc_number:''+acc_number,
+					user:pe.user,
+					type:'bank', // user might need to change this
+					name:'Auto generated account'+acc_number,
+				} 
+				// console.log(filter);
+				// console.log(account);
+				Account.findOne(filter).exec(function(err,result){
+					if(result)
+						callback(err,result);
+					else{
+						Account.create(account).exec(function(err,result){
+							callback(err,result);
+						});
+					}
+				});
 			},	
 			findOrCreateTransaction:['getAccount',function(results,callback){
-				// console.log('parsed_email after create #3');
+				console.log('parsed_email after create #3');
 				const fx = require('money');
 				fx.base='INR';
 				fx.rates={

@@ -21,6 +21,8 @@ module.exports = {
 		details:{ 
 			type:'json',
 			defaultsTo:{
+				"timezone_offset":-330,
+				"default_currency":"INR"
 			}
 		},
 		password:{
