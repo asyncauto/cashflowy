@@ -5,5 +5,6 @@ module.exports.filters = {
 		'IciciDebitCardFilter', // atm and debit card transactions
 		'IciciCreditCardRefundFilter',
 		'HdfcUpiFilter',
+		'HdfcNetBankingFilter',
 	]
 }

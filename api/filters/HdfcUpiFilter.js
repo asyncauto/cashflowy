@@ -152,6 +152,13 @@ module.exports={
 								start:3,
 							}
 						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
+						},
 					]
 				},
 				{
