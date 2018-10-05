@@ -6,17 +6,61 @@
 			<h1>Transactions</h1>
 			<table class="ui celled padded unstackable table" style="display: block;overflow-x:scroll;">
 				<thead>
-					<tr><th class="single line">Date</th>
+					<tr>
+						<th class="single line">Filter</th>
+						<!-- <th>
+							<div class="ui fluid input">
+								<input type="text" name='description' value=''>
+							</div>
+						</th> -->
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<!-- <th>
+							<div class="ui fluid input">
+								<input type="text" name='description' value=''>
+							</div>
+						</th> -->
+						<th>
+							<div class="ui fluid search selection filter dropdown">
+								<input type="hidden" name="filter_account" value="<%=req.query.account?req.query.account:''%>">
+								<i class="dropdown icon"></i>
+								<div class="default text">Select</div>
+								<div class="menu">
+									<%accounts.forEach(function(account){%>
+										<div class="item" data-value="<%=account.id%>"><%=account.name%></div>
+									<%})%>
+								</div>
+							</div>
+						</th>
+						<th>
+							<div class="ui fluid search selection filter dropdown">
+								<input type="hidden" name="filter_category" value="<%=req.query.category?req.query.category:''%>">
+								<i class="dropdown icon"></i>
+								<div class="default text">Select</div>
+								<div class="menu">
+									<%categories.forEach(function(category){%>
+										<div class="item" data-value="<%=category.id%>"><%=category.name%></div>
+									<%})%>
+								</div>
+							</div>
+						</th>
+						<th></th>
+					</tr>
+					<tr>
+						<th class="single line">Date</th>
 					<!-- <th>Time</th> -->
-					<th>Description</th>
-					<!-- <th>Currency</th> -->
-					<th>Amount</th>
-					<th>Amount(INR)</th>
-					<th>Paid whom</th>
-					<th>From account</th>
-					<th>Category</th>
-					<th></th>
-				</tr></thead>
+						<th>Description</th>
+						<!-- <th>Currency</th> -->
+						<th>Amount</th>
+						<th>Amount(INR)</th>
+						<th>Paid whom</th>
+						<th>From account</th>
+						<th>Category</th>
+						<th></th>
+					</tr>
+				</thead>
 				<tbody>
 					<%transactions.forEach(function(t){%>
 						<tr data-tid='<%=t.id%>'>
@@ -136,6 +180,16 @@
 			}
 		});
 		$('.extra_options.dropdown').dropdown();
+		$('.filter.dropdown').dropdown({
+			onChange:function(value, text, $choice){
+				var params = {};
+				if($('input[name="filter_account"]').val())
+					params.account= $('input[name="filter_account"]').val();
+				if($('input[name="filter_category"]').val())
+				    params.category= $('input[name="filter_category"]').val();
+				window.location = '/transactions?'+$.param(params);
+			}
+		});
 		$('.popup').popup();
 	});
 </script>

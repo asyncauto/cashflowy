@@ -383,10 +383,19 @@ module.exports = {
 			},
 			getTransactions:['getAccounts',function(results,callback){
 				var accounts=[];
-				results.getAccounts.forEach(function(account){
-					accounts.push(account.id);
-				});
-				Transaction.find({account:accounts}).sort('occuredAt DESC').limit(limit).exec(callback);
+				if(req.query.account){
+					accounts.push(req.query.account);
+				}else{
+					results.getAccounts.forEach(function(account){
+						accounts.push(account.id);
+					});
+				}
+				var filter={
+					account:accounts,
+				}
+				if(req.query.category)
+					filter.category=req.query.category;
+				Transaction.find(filter).sort('occuredAt DESC').limit(limit).exec(callback);
 			}],
 			getCategories:function(callback){
 				Category.find({user:req.user.id}).exec(callback);
@@ -403,6 +412,7 @@ module.exports = {
 				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
 			})
 			// locals.categories=GeneralService.orderCategories(results.getCategories);
+			locals.accounts=results.getAccounts;
 			locals.categories=results.getCategories;
 			locals.moment=require('moment-timezone');
 			res.view('view_transactions',locals);
