@@ -1,14 +1,32 @@
 <p>Hi <%=name%>,</p>
 
-<p>Here is summary of your accounts for the week that went by:</p>
-<b>Total spending: </b> INR <%=(-expense_total.toFixed(2))%><br/>
-<b>Total income: </b> INR <%=income_total.toFixed(2)%><br/>
+<h2>Here is your cash flow stats for (<%=start_date%> to <%=end_date%>):</h2>
+<b>Expense: </b> INR <%=(-transactions.total.expense.toFixed(2))%><br/>
+<b>Income: </b> INR <%=transactions.total.income.toFixed(2)%><br/>
 
-<%if(t_wo_d){%>
-	<p style="color:red"><%=t_wo_d%> transactions does not have description. </p>
+<h3>Transactions:</h3>
+<b>Count: </b> <%=transactions.count%><br/>
+<!-- <b>Unacconted money: </b> INR 0 (place holder)<br/> -->
+<b>Missing description: </b> <%=transactions.missing.description%><br/>
+<b>Missing category: </b> <%=transactions.missing.category%><br/>
+
+<h3>Category wise spending: </h3>
+<%transactions.spending_per_category.forEach(function(c){%>
+	<b><%=c.category?c.category:'Uncategorized'%>: </b> INR <%=c.sum.toFixed(2)%> (<%=c.count%> trans)<br/>
+<%});%>
+
+
+<%if(transactions.missing.description){%>
+	<p style="color:red"><%=transactions.missing.description%> transactions does not have description. </p>
 	<p>Plz consider adding description. Months into the future, if you have to audit your accounts, description will help you remember a transaction. </p>
 <%}else{%>
 	<p style="color:green">All transactions has descriptions. - Good job</p>
 <%}%>
 
+<%if(transactions.missing.category){%>
+	<p style="color:red"><%=transactions.missing.category%> transactions does not have a category. </p>
+	<p>Categorizing transactions deliberately helps you be consious of your spending. Additionally categories help you budget your spendings. </p>
+<%}else{%>
+	<p style="color:green">All transactions has category. - Good job</p>
+<%}%>
 
