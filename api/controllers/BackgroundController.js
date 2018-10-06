@@ -12,6 +12,7 @@ var queue = kue.createQueue({
 	prefix: 'q',
 	redis: sails.config.redis_kue
 });
+var moment = require('moment-timezone');
 
 module.exports = {
 	deepCrawl:function(req,res){
@@ -71,5 +72,41 @@ module.exports = {
 				throw err;
 			res.send('added '+results.addToKue.length+' tasks to surface_crawl kue');
 		})
+	},
+	sendWeeklyEmails:function(req,res){
+		// get all users 
+		// subtract disabled users - Mayank
+		// identify the right week
+		// add to quey
+		var prevMonday = new Date();
+		prevMonday.setDate(prevMonday.getDate() - (prevMonday.getDay() + 6) % 7);
+		prevMonday=moment(prevMonday).tz('Asia/Kolkata').format();
+		var end = new Date(prevMonday.substring(0,10)+'T00:00:00.000+0530');
+		var start = new Date(end);
+		start.setDate(start.getDate()-7);
+		// '2018-09-24T00:00:00.000+0530'
+		var filter={};
+		if(req.query.user)
+			filter.id=req.query.user;
+		User.find(filter).exec(function(err,users){
+			var kue_configs=[];
+			users.forEach(function(user){
+				var data={
+					title:'Send weekly email to '+user.name,
+					options:{
+						start_date:start,
+						end_date:end,
+						user:user.id,
+					},
+					info:{}
+				};
+				kue_configs.push(data);
+			})
+			async.eachLimit(kue_configs,1,function(data,next){
+				queue.create('send_weekly_email',data).priority('high').save(next);
+			},function(err){
+				res.send(kue_configs);
+			});
+		});
 	}
 };

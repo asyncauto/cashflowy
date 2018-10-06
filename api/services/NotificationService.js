@@ -2,6 +2,8 @@
 var async = require('async');
 module.exports={
 	sendWeeklyEmailReport:function(options,callback){
+		options.start_date=new Date(options.start_date);
+		options.end_date=new Date(options.end_date);
 		async.auto({
 			getUserDetails:function(callback){
 				console.log('getUserDetails');

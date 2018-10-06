@@ -92,6 +92,7 @@ module.exports.routes = {
   'GET /background/deepCrawl':'Background.deepCrawl',
   'POST /background/surface_crawl':'Background.surfaceCrawl',
   'GET /background/test':'Background.test',
+  'POST /background/send_weekly_emails':'Background.sendWeeklyEmails',
 
 
 
