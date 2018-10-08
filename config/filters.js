@@ -6,5 +6,7 @@ module.exports.filters = {
 		'IciciCreditCardRefundFilter',
 		'HdfcUpiFilter',
 		'HdfcNetBankingFilter',
+		'CitibankCreditCardTransactionFilter',
+
 	]
 }
