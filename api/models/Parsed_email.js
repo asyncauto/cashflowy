@@ -56,7 +56,10 @@ module.exports = {
 				else if(pe.extracted_data.account_last_4_digits)
 					acc_number=pe.extracted_data.account_last_4_digits;
 				else{
-					if(pe.type=='AmazonPayTransactionFilter')
+					switch(pe.type){
+						case 'AmazonPayTransactionFilter':
+					}
+					if(pe.type=='AmazonPayTransactionFilter' || pe.type=='AmazonPayCashbackFilter')
 						acc_number=pe.email+'-amazon_pay';
 				}
 				var filter = {
@@ -111,7 +114,7 @@ module.exports = {
 					account:results.getAccount.id,
 					third_party:pe.extracted_data.whom_you_paid?pe.extracted_data.whom_you_paid:pe.extracted_data.third_party,
 				}
-				if(pe.type=='IciciCreditCardRefundFilter')
+				if(pe.type=='IciciCreditCardRefundFilter' || pe.type=='AmazonPayCashbackFilter')
 					t.original_amount=pe.extracted_data.amount; // this is an income, so positive
 				else 
 					t.original_amount=-(pe.extracted_data.amount); // this in an expense, so negative

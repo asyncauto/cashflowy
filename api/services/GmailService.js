@@ -358,6 +358,8 @@ module.exports={
 				var start = f.options.start?f.options.start:0;
 				var end = f.options.end?f.options.end:body.length;
 				body=body.substring(start,end);
+			} else if(f.type=='is'){
+				body=f.value;
 			}
 			// console.log('\n\n\n\n*********');
 			// console.log(start);

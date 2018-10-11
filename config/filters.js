@@ -8,6 +8,7 @@ module.exports.filters = {
 		'HdfcNetBankingFilter',
 		'CitibankCreditCardTransactionFilter',
 		'AmazonPayTransactionFilter',
+		'AmazonPayCashbackFilter',
 
 	]
 }

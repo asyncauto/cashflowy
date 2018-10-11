@@ -84,9 +84,9 @@ module.exports = {
 					results.parsed_email.extracted_data.email_received_time= new Date(results.getMessageDetails.header.date);
 					if(results.parsed_email.body_parser_used==''){
 						console.log('\n\n\nbody parser is null');
-						console.log(results.getMessageDetails.body);
-						console.log(results.parsed_email);
 					}
+					console.log(results.getMessageDetails.body);
+					console.log(results.parsed_email);
 					locals.results=results;
 					locals.status='error';
 					
