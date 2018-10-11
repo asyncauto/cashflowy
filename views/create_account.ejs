@@ -16,16 +16,16 @@
 				
 				<div class="field">
 					<label>Name</label>
-					<input type="text" name="name" value="">
+					<input type="text" name="name" value="<%=name?name:''%>">
 				</div>
 				<div class="field">
 					<label>Account No</label>
-					<input type="text" name="acc_number" value="">
+					<input type="text" name="acc_number" value="<%=acc_number?acc_number:''%>">
 				</div>
 				<div class="field">
 					<label>Type</label>
 					<div class="ui fluid search selection dropdown">
-						<input type="hidden" name="type" value="bank">
+						<input type="hidden" name="type" value="<%=type?type:'bank'%>">
 						<i class="dropdown icon"></i>
 						<div class="default text">Select type</div>
 						<div class="menu">

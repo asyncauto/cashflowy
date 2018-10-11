@@ -47,6 +47,10 @@ module.exports.routes = {
   'GET /accounts':'MainController.listAccounts',
   'GET /account/create':'MainController.createAccount',
   'POST /account/create':'MainController.createAccount',
+  'GET /account/:id/edit':'MainController.editAccount',
+  'POST /account/:id/edit':'MainController.editAccount',
+  // 'GET /account/:id/delete':'MainController.deleteAccount',
+  // 'POST /account/:id/delete':'MainController.deleteAccount',
 
   
   'GET /transactions':'MainController.listTransactions',
