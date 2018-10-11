@@ -9,6 +9,7 @@ module.exports.filters = {
 		'CitibankCreditCardTransactionFilter',
 		'AmazonPayTransactionFilter',
 		'AmazonPayCashbackFilter',
+		'AmazonPayExternalFilter',
 
 	]
 }

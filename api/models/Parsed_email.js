@@ -59,7 +59,7 @@ module.exports = {
 					switch(pe.type){
 						case 'AmazonPayTransactionFilter':
 					}
-					if(pe.type=='AmazonPayTransactionFilter' || pe.type=='AmazonPayCashbackFilter')
+					if(pe.type=='AmazonPayTransactionFilter' || pe.type=='AmazonPayCashbackFilter' || pe.type=='AmazonPayExternalFilter')
 						acc_number=pe.email+'-amazon_pay';
 				}
 				var filter = {
