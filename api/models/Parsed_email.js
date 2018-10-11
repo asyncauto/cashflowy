@@ -55,7 +55,10 @@ module.exports = {
 					acc_number=pe.extracted_data.credit_card_last_4_digits;
 				else if(pe.extracted_data.account_last_4_digits)
 					acc_number=pe.extracted_data.account_last_4_digits;
-			
+				else{
+					if(pe.type=='AmazonPayTransactionFilter')
+						acc_number=pe.email+'-amazon_pay';
+				}
 				var filter = {
 					like:{
 						acc_number:'%'+acc_number, // ends with the following number

@@ -1,5 +1,5 @@
 module.exports={
-	gmail_filter:'from:(alerts@hdfcbank.net) subject:("Alert Message By HDFC Bank") "HDFC Bank NetBanking" -{"addition/modification of the beneficiary"}',
+	gmail_filter:'from:(CitiAlert.India@citicorp.com) subject:("CitiAlert - UPI Fund Transfer Acknowledgement") ',
 	active:true,
 	required_fields:['account_last_4_digits','currency','amount','whom_you_paid','available_credit_balance','date','time','upi_ref_no'],
 	body_parsers:[
@@ -18,7 +18,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Thank you for using HDFC Bank NetBanking'
+							q:'Dear Customer,'
 						},
 						{
 							type:'find_end_position',
@@ -27,7 +27,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'As a thank you gesture from us'
+							q:'Please call on '
 						},
 						{
 							type:'trim',
@@ -39,7 +39,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' from A/c XXXX'
+							q:'from account **'
 						},
 						{
 							type:'find_end_position',
@@ -48,7 +48,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'to '
+							q:' to VPA '
 						},
 						{
 							type:'trim',
@@ -66,7 +66,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Thank you for using HDFC Bank NetBanking'
+							q:'Dear Customer,'
 						},
 						{
 							type:'find_end_position',
@@ -75,28 +75,19 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'As a thank you gesture from us'
+							q:'Please call on '
 						},
 						{
 							type:'trim',
 						},
 						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'for payment of '
-						},
-						{
 							type:'find_end_position',
 							criteria:'text_match_before',
 							options:{
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' from '
+							q:' has been debited'
 						},
 						{
 							type:'trim',
@@ -115,6 +106,7 @@ module.exports={
 								with:'INR',
 							}
 						},
+						
 					]
 				},
 				{
@@ -128,7 +120,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Thank you for using HDFC Bank NetBanking'
+							q:'Dear Customer,'
 						},
 						{
 							type:'find_end_position',
@@ -137,28 +129,19 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'As a thank you gesture from us'
+							q:'Please call on '
 						},
 						{
 							type:'trim',
 						},
 						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'for payment of '
-						},
-						{
 							type:'find_end_position',
 							criteria:'text_match_before',
 							options:{
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' from '
+							q:' has been debited'
 						},
 						{
 							type:'trim',
@@ -189,7 +172,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Thank you for using HDFC Bank NetBanking'
+							q:'Dear Customer,'
 						},
 						{
 							type:'find_end_position',
@@ -198,7 +181,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'As a thank you gesture from us'
+							q:'Please call on '
 						},
 						{
 							type:'trim',
@@ -210,7 +193,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' from A/c XXXX'
+							q:'debited from account '
 						},
 						{
 							type:'find_start_position',
@@ -219,7 +202,64 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'to '
+							q:' to VPA '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' on '
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'date',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Dear Customer,'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Please call on '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' on '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'. Your UPI transaction'
 						},
 						{
 							type:'trim',
@@ -229,8 +269,8 @@ module.exports={
 			]
 		},
 		{
-			version:'cc_pay_v1',
-			description:'as of oct 2018',
+			version:'v2',
+			description:'upi transactions from one account to another',
 			fields:[
 				{
 					name:'account_last_4_digits',
@@ -252,7 +292,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'In case you need any further'
+							q:'Please call on '
 						},
 						{
 							type:'trim',
@@ -264,7 +304,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'from your account No. XXXX'
+							q:'from account **'
 						},
 						{
 							type:'find_end_position',
@@ -273,7 +313,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' on account of'
+							q:' to account'
 						},
 						{
 							type:'trim',
@@ -300,19 +340,10 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'In case you need any further'
+							q:'Please call on '
 						},
 						{
 							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' that an amount of '
 						},
 						{
 							type:'find_end_position',
@@ -321,7 +352,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' has been debited from'
+							q:' has been debited'
 						},
 						{
 							type:'trim',
@@ -340,6 +371,7 @@ module.exports={
 								with:'INR',
 							}
 						},
+						
 					]
 				},
 				{
@@ -362,19 +394,10 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'In case you need any further'
+							q:'Please call on '
 						},
 						{
 							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' that an amount of '
 						},
 						{
 							type:'find_end_position',
@@ -383,7 +406,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' has been debited from'
+							q:' has been debited'
 						},
 						{
 							type:'trim',
@@ -400,9 +423,6 @@ module.exports={
 								replace:',',
 								with:'',
 							}
-						},
-						{
-							type:'trim',
 						},
 					]
 				},
@@ -426,7 +446,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'In case you need any further'
+							q:'Please call on '
 						},
 						{
 							type:'trim',
@@ -438,7 +458,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' on account of '
+							q:'debited from account '
 						},
 						{
 							type:'find_start_position',
@@ -447,31 +467,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' done using HDFC Bank NetBanking'
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-			]
-		},
-		{
-			version:'cc_pay_v2',
-			description:'as of july 2018',
-			fields:[
-				{
-					name:'account_last_4_digits',
-					type:'integer',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Dear Customer,'
+							q:' to account **'
 						},
 						{
 							type:'find_end_position',
@@ -480,28 +476,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'In case you need any further'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'from your account number XXXX'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on account of'
+							q:' on '
 						},
 						{
 							type:'trim',
@@ -509,7 +484,7 @@ module.exports={
 					]
 				},
 				{
-					name:'currency',
+					name:'date',
 					type:'string',
 					filters:[
 						{
@@ -528,7 +503,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'In case you need any further'
+							q:'Please call on '
 						},
 						{
 							type:'trim',
@@ -540,7 +515,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' that an amount of '
+							q:' on '
 						},
 						{
 							type:'find_end_position',
@@ -549,361 +524,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' has been debited from'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'substring',
-							options:{
-								start:0,
-								end:3,
-							}
-						},
-						{
-							type:'replace',
-							options:{
-								replace:'Rs.',
-								with:'INR',
-							}
-						},
-					]
-				},
-				{
-					name:'amount',
-					type:'float',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Dear Customer,'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you need any further'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' that an amount of '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' has been debited from'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'substring',
-							options:{
-								start:3,
-							}
-						},
-						{
-							type:'replace',
-							options:{
-								replace:',',
-								with:'',
-							}
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'third_party',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Dear Customer,'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'In case you need any further'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on account of '
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'done using HDFC Bank NetBanking'
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-			]
-		},
-		{
-			version:'online_pay_v1',
-			description:'as of oct 2018',
-			fields:[
-				{
-					name:'account_last_4_digits',
-					type:'integer',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Dear Customer,'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'For more details on the transaction'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'from your account No. XXXX'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on account of'
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'currency',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Dear Customer,'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'For more details on the transaction'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' that an amount of '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' has been debited from'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'substring',
-							options:{
-								start:0,
-								end:3,
-							}
-						},
-						{
-							type:'replace',
-							options:{
-								replace:'Rs.',
-								with:'INR',
-							}
-						},
-					]
-				},
-				{
-					name:'amount',
-					type:'float',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Dear Customer,'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'For more details on the transaction'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' that an amount of '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' has been debited from'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'substring',
-							options:{
-								start:3,
-							}
-						},
-						{
-							type:'replace',
-							options:{
-								replace:',',
-								with:'',
-							}
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'third_party',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Dear Customer,'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'For more details on the transaction'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on account of '
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' done using HDFC Bank NetBanking'
+							q:'.Your UPI transaction '
 						},
 						{
 							type:'trim',
