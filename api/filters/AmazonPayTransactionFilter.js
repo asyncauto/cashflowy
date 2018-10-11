@@ -304,7 +304,7 @@ module.exports={
 						{
 							type:'replace',
 							options:{
-								replace:'Rs',
+								replace:'Rs.',
 								with:'INR',
 							}
 						},

@@ -263,7 +263,9 @@ module.exports={
 
 			body_parsers[i].fields.forEach(function(field){
 				ed[field.name]=GmailService.extractOneField(field,options.body);
-				if(!ed[field.name])
+				if(typeof ed[field.name]=='number' && ed[field.name]==0)
+					all_good_flag=true;
+				else if(!ed[field.name])
 					all_good_flag=false;
 			});
 			// console.log(ed);
@@ -292,7 +294,9 @@ module.exports={
 		console.log(body_parser);
 		body_parser.fields.forEach(function(field){
 			ed[field.name]=GmailService.extractOneField(field,options.body);
-			if(!ed[field.name])
+			if(typeof ed[field.name]=='number' && ed[field.name]==0)
+				all_good_flag=true;
+			else if(!ed[field.name])
 				all_good_flag=false;
 		});
 		if(all_good_flag)
