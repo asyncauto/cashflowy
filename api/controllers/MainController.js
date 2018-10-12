@@ -165,6 +165,15 @@ module.exports = {
 	viewEmail:function(req,res){
 
 	},
+	
+	listAccounts:function(req,res){
+		Account.find({user:req.user.id}).exec(function(err,accounts){
+			var locals={
+				accounts:accounts
+			}
+			res.view('list_accounts',locals);
+		})
+	},
 	createAccount:function(req,res){
 		if(req.body){ // post request
 			var findFilter={
@@ -195,13 +204,37 @@ module.exports = {
 			res.view('create_account',locals);
 		}
 	},
-	listAccounts:function(req,res){
-		Account.find({user:req.user.id}).exec(function(err,accounts){
-			var locals={
-				accounts:accounts
+	editAccount:function(req,res){
+		if(req.body){ // post request
+			var findFilter={
+			};
+			var a={
+				name:req.body.name,
+				acc_number:req.body.acc_number,
+				type:req.body.type,
+				user:req.user.id,
 			}
-			res.view('list_accounts',locals);
-		})
+			// console.log('before transaction find or create');
+			// console.log(a);
+			Account.update({id:req.params.id},a).exec(function(err,account){
+				if(err)
+					throw err;
+				else
+					res.redirect('/accounts');
+			});
+		}else{ // view the form
+			Account.findOne({id:req.params.id}).exec(function(err,a){
+				var locals={
+					status:'',
+					message:'',
+					name:a.name,
+					acc_number:a.acc_number,
+					type:a.type,
+				}
+				// console.log(locals);
+				res.view('create_account',locals);
+			});
+		}
 	},
 	dashboard:function(req,res){
 		var month=null,year=null;
