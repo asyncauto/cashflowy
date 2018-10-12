@@ -44,7 +44,9 @@ module.exports.session = {
   //   // Should the session cookie be secure? (only valid for HTTPS sites)
   //   secure: false
   // },
-
+  cookie: {
+    maxAge: 365 * 24 * 60 * 60 * 1000 // the sessions supposed to last 1 year
+  },
   /***************************************************************************
   *                                                                          *
   * Uncomment the following lines to set up a Redis session store that can   *
