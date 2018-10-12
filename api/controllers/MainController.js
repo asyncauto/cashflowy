@@ -342,12 +342,21 @@ module.exports = {
 			console.log(locals.chart);
 			locals.snapshots=results.getSnapshots;
 			locals.chart2={
-				// x:locals.chart.x,
+				datasets:[],
+			};
+			locals.chart3={
 				datasets:[],
 			};
 			results.getAccounts.forEach(function(account,i){
 				var colors = ['teal','blue','red','green','violet','orange','black','brown'];
-				var dataset ={
+				var dataset2 ={
+	                label: account.name,
+	                backgroundColor: colors[i],
+	                borderColor: colors[i],
+	                data: [],
+	                fill: false,
+	            }
+	            var dataset3 ={
 	                label: account.name,
 	                backgroundColor: colors[i],
 	                borderColor: colors[i],
@@ -358,15 +367,21 @@ module.exports = {
 	            	// var y = 0;
 	            	locals.snapshots.forEach(function(snapshot){
 	            		if(snapshot.account==account.id){
-	            			dataset.data.push({
+	            			dataset2.data.push({
 	            				x:snapshot.day,
 	            				y:snapshot.balance,
 	            			});
+	            			if(snapshot.details && snapshot.details.uam){
+		            			dataset3.data.push({
+		            				x:snapshot.day,
+		            				y:snapshot.details.uam.value,
+		            			});
+	            			}
 	            		}
 	            	});
-	            	
 	            // })
-				locals.chart2.datasets.push(dataset);
+				locals.chart2.datasets.push(dataset2);
+				locals.chart3.datasets.push(dataset3);
 			})
 			// res.send(locals);
 			res.view('dashboard',locals);

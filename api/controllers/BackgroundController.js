@@ -108,5 +108,23 @@ module.exports = {
 				res.send(kue_configs);
 			});
 		});
+	},
+	calculateUAM:function(req,res){
+		var options={};
+		if(req.query.user)
+			options.user=req.query.user;
+		if(req.query.account)
+			options.account=req.query.account;
+		// if(req.query.snapshots)
+			// options.snapshots=req.query.snapshots;
+
+		if(Object.keys(options).length!=1)
+			return res.send('query string not right');
+		BackgroundService.calculateUAM(options,function(err){
+			if(err)
+				throw err;
+			res.send('snapshots updated');
+		})
+			
 	}
 };

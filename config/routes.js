@@ -97,6 +97,7 @@ module.exports.routes = {
   'POST /background/surface_crawl':'Background.surfaceCrawl',
   'GET /background/test':'Background.test',
   'POST /background/send_weekly_emails':'Background.sendWeeklyEmails',
+  'POST /background/calculate_uam':'Background.calculateUAM',
 
 
 
