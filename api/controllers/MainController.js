@@ -255,6 +255,7 @@ module.exports = {
 				}
 				if(_.map(results.getAccounts,'id').length)
 					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
+				query+=' ORDER BY "takenAt" ASC';
 				// where accounts in the accounts that belong to you
 				Snapshot.query(query,escape,function(err, rawResult) {
 					if(err)
