@@ -31,7 +31,7 @@ module.exports = function (callback) {
 		// ElasticSearchService.createOrUpdate(esInput,function(err,result){
 			// callback(err);
 		// });
-		callback('null');
+		callback(null);
 		
 	};
 
@@ -57,6 +57,16 @@ module.exports = function (callback) {
 					job.remove();
 			});
 			console.log('Job '+job.id+' is successfully completed');
+		});
+	});
+	// 
+	queue.watchStuckJobs(10*60*1000);
+	// force delete completed tasks if any
+	kue.Job.rangeByState( 'complete', 0, 100, 'asc', function( err, jobs ) {
+		jobs.forEach( function( job ) {
+			job.remove( function(){
+				console.log( 'removed ', job.id );
+			});
 		});
 	});
 
