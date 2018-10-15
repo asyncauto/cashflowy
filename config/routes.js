@@ -98,6 +98,7 @@ module.exports.routes = {
   'GET /background/test':'Background.test',
   'POST /background/send_weekly_emails':'Background.sendWeeklyEmails',
   'POST /background/calculate_uam':'Background.calculateUAM',
+  'POST /background/delete_tasks':'Background.deleteTasks',
 
 
 

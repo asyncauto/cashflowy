@@ -126,5 +126,17 @@ module.exports = {
 			res.send('snapshots updated');
 		})
 			
+	},
+	deleteTasks:function(req,res){
+		var state = req.query.state?req.query.state:'complete';
+		var n = req.query.n?req.query.n:100;
+		kue.Job.rangeByState( state, 0, n, 'asc', function( err, jobs ) {
+			jobs.forEach( function( job ) {
+				job.remove( function(){
+					console.log( 'removed ', job.id );
+				});
+			});
+			res.send(n+' tasks will be deleted');
+		});
 	}
 };
