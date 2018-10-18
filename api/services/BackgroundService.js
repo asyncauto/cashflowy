@@ -42,13 +42,14 @@ module.exports={
 							return callback(err,prev_snap);
 				});
 			}],
-			getTransactions:['getPreviousSnapshot',function(results,callback){
+			getIEs:['getPreviousSnapshot',function(results,callback){
 				var escape=[];
 				var query = 'select * from transaction';
 				query+=' where';
 				query+=` "occuredAt">'${results.getPreviousSnapshot.takenAt.toISOString()}'`;
 				query+=` AND "occuredAt"<='${results.getSnapshot.takenAt.toISOString()}'`;
 				query+=` AND account ='${results.getSnapshot.account}'`;
+				query+=` AND type ='income_expense'`;
 				// console.log('\n\n\n\n '+query);
 				// callback(null);
 				Transaction.query(query,escape,function(err, rawResult) {
@@ -59,7 +60,26 @@ module.exports={
 						callback(err,rawResult.rows);
 				});
 			}],
-			calculateAndUpdateSnapshot:['getTransactions',function(results,callback){
+			getTransfers:['getPreviousSnapshot',function(results,callback){
+				var escape=[];
+				var query = 'select * from transaction';
+				query+=' where';
+				query+=` "occuredAt">'${results.getPreviousSnapshot.takenAt.toISOString()}'`;
+				query+=` AND "occuredAt"<='${results.getSnapshot.takenAt.toISOString()}'`;
+				query+=` AND (account ='${results.getSnapshot.account}' OR to_account ='${results.getSnapshot.account}')`;
+				query+=` AND type ='transfer'`;
+				// console.log('\n\n\n\n '+query);
+				// callback(null);
+				Transaction.query(query,escape,function(err, rawResult) {
+					// console.log(rawResult.rows)
+					if(err)
+						callback(err);
+					else
+						callback(err,rawResult.rows);
+				});
+			}],
+			
+			calculateAndUpdateSnapshot:['getIEs','getTransfers',function(results,callback){
 				var uam=0;
 				// s1+t+uam=s2;
 				// uam = negative - some payments are missing
@@ -67,20 +87,26 @@ module.exports={
 				var s1 = results.getPreviousSnapshot.balance;
 				var s2 = results.getSnapshot.balance;
 				var sum = 0;
-				results.getTransactions.forEach(function(t){
+				results.getIEs.forEach(function(t){
 					sum+=t.amount_inr;
 				});
-
+				results.getTransfers.forEach(function(t){
+					if(t.account==results.getSnapshot.account)
+						sum+=t.amount_inr;
+					else if(t.to_account==results.getSnapshot.account)
+						sum-=t.amount_inr;
+				});
 				uam = Math.round(s2 - s1 - sum);
 				// console.log(results.getSnapshot.id,results.getPreviousSnapshot.id);
-				console.log(s1,s2,sum,uam,results.getTransactions.length);
+				console.log(s1,s2,sum,uam,results.getIEs.length);
 				// callback(null,uam);
 				var snapshot=results.getSnapshot;
 				if(!snapshot.details)
 					snapshot.details={};
 				snapshot.details.uam={
 					value:uam,
-					transactions:results.getTransactions.length,
+					IEs:results.getIEs.length,
+					transfers:results.getTransfers.length,
 				};
 				Snapshot.update({id:snapshot.id},{details:snapshot.details}).exec(callback);
 			}],
