@@ -456,6 +456,8 @@ module.exports = {
 				accounts.forEach(function(account){ // expanding account in the transaction object
 					if(t.account==account.id)
 						t.account=account;
+					if(t.to_account==account.id)
+						t.to_account=account;
 				});
 				var moment = require('moment-timezone');
 				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();

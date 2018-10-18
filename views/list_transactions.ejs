@@ -49,16 +49,40 @@
 								<br>
 							</div>
 							<div class='two wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
-								<span style='opacity: 0.5'>You paid</span><br>
-								<b style='color:red'><%=t.original_currency%> <%=(-t.original_amount)%></b>
+								<%if(t.type=='income_expense'){
+									if(t.original_amount<0){%> 
+										<span style='opacity: 0.5'>You paid</span><br>
+										<b style='color:red'><%=t.original_currency%> <%=(-t.original_amount)%></b>
+									<%}else{%>
+										<span style='opacity: 0.5'>You got</span><br>
+										<b style='color:#5bc5a2'><%=t.original_currency%> <%=(t.original_amount)%></b>
+									<%}
+								}else{%>
+									<span style='opacity: 0.5'>You transferred</span><br>
+									<b style=''><%=t.original_currency%> <%=(-t.original_amount)%></b>
+									
+								<%}%>
 							</div>
 							<div class='four wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
-								<span style='opacity: 0.5'>to</span><br>
-								<%=t.third_party%>
+								<%if(t.original_amount<0){%> 
+									<span style='opacity: 0.5'>from</span><br>
+								<%}else{%>
+									<span style='opacity: 0.5'>deposited to</span><br>
+								<%}%>
+								<%=t.account.name%>
 							</div>
 							<div class='three wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
-								<span style='opacity: 0.5'>from</span><br>
-								<%=t.account.name%>
+								<%if(t.type=='income_expense'){%> 
+									<%if(t.original_amount<0){%> 
+										<span style='opacity: 0.5'>to</span><br>
+									<%}else{%>
+										<span style='opacity: 0.5'>from</span><br>
+									<%}%>
+									<%=t.third_party%>
+								<%}else{%>
+									<span style='opacity: 0.5'>to</span><br>
+									<%=t.to_account.name%>
+								<%}%>
 							</div>
 							<div class='one wide column' style='padding-left:0.5rem;'>
 									<div class="ui basic icon top right pointing extra_options dropdown">
