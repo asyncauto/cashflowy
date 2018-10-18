@@ -464,7 +464,7 @@ module.exports = {
 			locals.accounts=results.getAccounts;
 			locals.categories=results.getCategories;
 			locals.moment=require('moment-timezone');
-			res.view('view_transactions',locals);
+			res.view('list_transactions',locals);
 			
 		});
 	},

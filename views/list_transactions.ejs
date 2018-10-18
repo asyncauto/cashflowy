@@ -1,0 +1,162 @@
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='three wide computer only column'></div>
+		<div class='ten wide computer sixteen wide tablet sixteen wide mobile column'>
+			<div class="ui raised segments">
+				<%transactions.forEach(function(t){%>
+
+					<div class="ui segment transaction" data-tid='<%=t.id%>'>
+						<div class='ui grid'>
+							<div class='one wide column' style='padding-right:0.5rem;'>
+								<span class='popup' data-html="<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
+									
+								<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+								<span style="font-size: 1.5rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+								<!-- <span style="font-size: 0.75rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('HH:mm')%></span> -->
+								</span>
+								
+							</div>
+							<div class='five wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
+								<!-- category  -->
+								<span style="opacity: 0.5">Category:</span>
+								<div class="ui category dropdown">
+									<input type="hidden" name="category" value="<%=t.category%>">
+									<div class="text">None</div>
+									<i class="dropdown icon"></i>
+									<div class="menu">
+										<%categories.forEach(function(category){%>
+											<div class="item" data-value="<%=category.id%>"><%=category.name%></div>
+										<%})%>
+									</div>
+								</div>
+								<!-- &nbsp;&nbsp;&nbsp; <span style="opacity: 0.5">| Tags:</span> -->
+								<div class='ui divider' style='margin-top: 0px; margin-bottom: 0px;'></div>
+								<!-- description -->
+								<span class='description'><%-t.description?t.description:''%></span>
+								<a class='edit' data-id='<%=t.id%>' href=''>edit</a>
+								<div class='edit_description' data-id='<%=t.id%>' style='display:none;'>
+									
+									<div class="ui fluid input">
+										<input type="text" name='description' value='<%-t.description?t.description:''%>'>
+									</div>
+									<br>
+									<button class="ui teal button submit_edit_desc" data-id='<%=t.id%>' >save</button>
+									<button class="ui red button cancel_edit_desc" data-id='<%=t.id%>' >cancel</button>
+								</div>
+
+								
+								
+								<br>
+							</div>
+							<div class='two wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
+								<span style='opacity: 0.5'>You paid</span><br>
+								<b style='color:red'><%=t.original_currency%> <%=(-t.original_amount)%></b>
+							</div>
+							<div class='four wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
+								<span style='opacity: 0.5'>to</span><br>
+								<%=t.third_party%>
+							</div>
+							<div class='three wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
+								<span style='opacity: 0.5'>from</span><br>
+								<%=t.account.name%>
+							</div>
+							<div class='one wide column' style='padding-left:0.5rem;'>
+									<div class="ui basic icon top right pointing extra_options dropdown">
+										<i class="angle down icon"></i>
+										<div class="menu">
+											<a class="item" href='/transaction/<%=t.id%>/edit'>Edit</a>
+											<a class="item" href='/transaction/<%=t.id%>/delete'>Delete</a>
+										</div>
+									</div>
+							</div>
+						</div>
+						
+						
+					</div>
+				<%})%>
+			</div>
+		</div>
+		<div class='three wide computer only column'></div>
+	</div>
+</div>
+
+<a class="circular ui icon right floated primary big button" href="/transaction/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new transaction" data-position="left center" data-inverted=""><i class="icon add"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+		var edit_active=false;
+		$('.edit').click(function(e){
+			e.preventDefault();
+			$(this).hide();
+			var t_id=$(this).attr('data-id');
+			console.log('description clicked');
+			console.log(t_id);
+			// if(!edit_active)
+			$('td[data-id='+t_id+'] span.description').hide();
+			$(this).parent().find('.edit_description').show();
+			// edit_active=true;
+		});
+		$('.cancel_edit_desc').click(function(e){
+			console.log('cancel button clicked');
+			var t_id=$(this).attr('data-id');
+			// edit_active=false;
+			$(this).parent().hide();
+			$(this).parents().find('.edit[data-id='+t_id+']').show();
+		});
+		$('.submit_edit_desc').click(function(e){
+			console.log('submit button clicked');
+			var t_id=$(this).parents('.transaction').attr('data-tid');
+			console.log(t_id);
+			var description=$('div.transaction[data-tid='+t_id+']').find('input[name=description]').val();
+			$('div.transaction[data-tid='+t_id+'] span.description').text(description);
+			$('div.transaction[data-tid='+t_id+'] span.description').show();
+			// /api/edit_desc
+			var button = this;
+			$(button).addClass('loading');
+			$(button).addClass('disabled');
+			$.post("/api/edit_desc", {t: t_id,description:description}, function(result,status){
+			    console.log('result = '+result);
+			    console.log('status = '+status);// this runs only on sucess
+			    if(status=='success'){
+			        $(button).removeClass('loading');
+			        $(button).removeClass('disabled');
+					$(button).parent().hide();
+					$(button).parents().find('.edit[data-id='+t_id+']').show();
+			    }
+			});
+		});
+		$('.category.dropdown').dropdown({
+			onChange:function(value, text, $choice){
+				var dd = this;
+				$(this).addClass('disabled loading');
+				var t_id=$(this).parents('.transaction').attr('data-tid');
+				console.log(t_id);
+				$.ajax({
+					url:"/api/transaction/"+t_id,
+					data:{category: value},
+					type:'PUT',
+					success:function(response){
+						console.log('success');
+						$(dd).removeClass('disabled').removeClass('loading');
+					},
+					error:function(xhr, textStatus, errorThrown){
+						console.log("An error occured: " + xhr.status + " " + xhr.statusText);
+					}
+				})
+			}
+		});
+		$('.extra_options.dropdown').dropdown();
+		$('.filter.dropdown').dropdown({
+			onChange:function(value, text, $choice){
+				var params = {};
+				if($('input[name="filter_account"]').val())
+					params.account= $('input[name="filter_account"]').val();
+				if($('input[name="filter_category"]').val())
+				    params.category= $('input[name="filter_category"]').val();
+				window.location = '/transactions?'+$.param(params);
+			}
+		});
+		$('.popup').popup();
+	});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>
