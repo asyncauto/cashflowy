@@ -261,7 +261,8 @@ module.exports = {
 				var escape=[year];
 				var query = 'select count(*),sum(amount_inr),category from transaction';
 				query+=' where';
-				query+=' EXTRACT(YEAR FROM "occuredAt") = $1';
+				query+=" type='income_expense'";
+				query+=' AND EXTRACT(YEAR FROM "occuredAt") = $1';
 				if(month){
 					escape.push(month);
 					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
@@ -301,7 +302,8 @@ module.exports = {
 				var escape=[year];
 				var query = 'select count(*),sum(amount_inr),EXTRACT(Day from "occuredAt") as day from transaction';
 				query+=' where';
-				query+=' EXTRACT(YEAR FROM "occuredAt") = $1';
+				query+=" type='income_expense'";
+				query+=' AND EXTRACT(YEAR FROM "occuredAt") = $1';
 				if(month){
 					escape.push(month);
 					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
