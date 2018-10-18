@@ -17,7 +17,20 @@
 			</h4>
 			<form class="ui <%=status%> form " action="" method='post'>
 				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
-				
+				<div class="field">
+					<label style='color:red'>Type of transaction</label>
+					<div class="ui fluid selection dropdown" id='select_type' style='color:red'>
+						<input type="hidden" name="type" value="expense">
+						<i class="dropdown icon"></i>
+						<div class="default text">Choose type of transaction</div>
+						<div class="menu">
+							<div class="item" data-value="expense">Expense</div>
+							<div class="item" data-value="income">Income</div>
+							<div class="item" data-value="transfer">Transfer</div> 
+						</div>
+					</div>
+				</div>
+				<div class='ui divider'></div>
 				<div class="two fields">
 					<div class="field">
 						<label>Date</label>
@@ -57,12 +70,12 @@
 						<input type="number" step="any" name="original_amount" placeholder="100" value="<%=original_amount%>">
 					</div>
 				</div>
-				<div class="field">
+				<div class="field" id='paid_whom'>
 					<label>Paid Whom</label>
 					<input type="text" name="third_party" placeholder="swiggy" value="<%=third_party%>">
 				</div>
-				<div class="field">
-					<label>Account</label>
+				<div class="field" id='account'>
+					<label>Expensed from</label>
 					<div class="ui fluid search selection dropdown">
 						<input type="hidden" name="account_id" value="<%=account_id%>">
 						<i class="dropdown icon"></i>
@@ -73,9 +86,20 @@
 							<%})%>
 						</div>
 					</div>
-					
 				</div>
-
+				<div class="field" id='to_account' style='display:none;'>
+					<label>To Account</label>
+					<div class="ui fluid search selection dropdown">
+						<input type="hidden" name="to_account" value="<%=to_account%>">
+						<i class="dropdown icon"></i>
+						<div class="default text">Select Account</div>
+						<div class="menu">
+							<%accounts.forEach(function(account){%>
+								<div class="<%-account_id?'active':''%> item" data-value="<%=account.id%>"><%=account.name%></div>
+							<%})%>
+						</div>
+					</div>
+				</div>
 				
 				<div class="ui error message">
 					<div class="header">Error</div>
@@ -83,8 +107,8 @@
 				</div>
 				<input type="submit" class="ui button" value="Submit">
 				<div class="ui success message">
-					<div class="header">Domain created</div>
-					You just created a domain
+					<div class="header">Transaction created</div>
+					You just created a transaction
 				</div>
 			</form>
 		</div>
@@ -111,6 +135,44 @@
 			var a = moment('<%=occuredAt%>');
 		<%}%>
 		$('.dropdown').dropdown();
+		$('#select_type').dropdown({
+			onChange: function(value, text, $selectedItem) {
+				console.log(value);
+				console.log(text);
+				switch(value){
+					case 'expense':
+						$('#account label').text('Expensed from');
+						$('#paid_whom label').text('Paid whom');
+						$('#paid_whom').show();
+						$('#to_account').hide();
+						$('#select_type').attr('style','color:red');
+						$('#select_type').prev().attr('style','color:red');
+						break;
+					case 'income':
+						$('#account label').text('Deposited to');
+						$('#paid_whom label').text('Source of income');
+						$('#paid_whom').show();
+						$('#to_account').hide();
+						$('#select_type').attr('style','color:#5bc5a2');
+						$('#select_type').prev().attr('style','color:#5bc5a2');
+						break;
+					case 'transfer':
+						$('#account label').text('From account');
+						$('#paid_whom').hide();
+						$('#to_account').show();
+						$('#select_type').attr('style','color:black');
+						$('#select_type').prev().attr('style','color:black');
+						break;
+				}
+				// $('.people_in_submenu').hide();
+				// if(value=='staff_curated_list')
+				// 	$('#staff_list').show();
+				// // else if(value=='people_i_follow')
+				// else if(value=='my_list')
+				// 	$('#your_list').show();
+			}
+		});
+		$('#select_type').dropdown('set selected','<%=type%>');
 		$('input[name=date]').val(a.format('YYYY-MM-DD'));
 		$('input[name=time]').val(a.format('HH:mm'));
 		$('input[name=tz]').val(a.format('Z'));
@@ -120,7 +182,7 @@
 				original_currency   : 'empty',
 				date : 'empty',
 				time : 'empty',
-				third_party : 'empty',
+				// third_party : 'empty',
 				description : 'empty',
 				account_id:'empty',
 			}

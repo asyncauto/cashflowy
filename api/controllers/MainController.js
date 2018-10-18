@@ -494,14 +494,28 @@ module.exports = {
 				};
 				var t={
 					original_currency:req.body.original_currency,
-					original_amount:-(req.body.original_amount),
-					amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
+					// original_amount:-(req.body.original_amount),
+					// amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
 					occuredAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
 					createdBy:'user',
-					type:'income_expense',
+					// type:'income_expense',
 					description:req.body.description,
 					account:req.body.account_id,
 					third_party:req.body.third_party
+				}
+				if(req.body.type=='expense'){
+					t.type='income_expense';
+					t.original_amount=-(req.body.original_amount);
+					t.amount_inr=-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+				}else if(req.body.type=='income'){
+					t.type='income_expense';
+					t.original_amount=(req.body.original_amount);
+					t.amount_inr=(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+				}else if(req.body.type=='transfer'){
+					t.type='transfer';
+					t.original_amount=-(req.body.original_amount);
+					t.amount_inr=-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+					t.to_account=req.body.to_account;
 				}
 				// console.log('before transaction find or create');
 				console.log(t);
@@ -521,7 +535,9 @@ module.exports = {
 					original_currency:'',
 					third_party:'',
 					account_id:'',
-					accounts:accounts
+					to_account:'',
+					accounts:accounts,
+					type:'expense',
 				}
 				console.log(locals);
 				res.view('create_transaction',locals);
@@ -546,14 +562,28 @@ module.exports = {
 				}
 				var t={
 					original_currency:req.body.original_currency,
-					original_amount:-(req.body.original_amount),
-					amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
+					// original_amount:-(req.body.original_amount),
+					// amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
 					occuredAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
 					createdBy:'user',
-					type:'income_expense',
+					// type:'income_expense',
 					description:req.body.description,
 					account:req.body.account_id,
 					third_party:req.body.third_party
+				}
+				if(req.body.type=='expense'){
+					t.type='income_expense';
+					t.original_amount=-(req.body.original_amount);
+					t.amount_inr=-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+				}else if(req.body.type=='income'){
+					t.type='income_expense';
+					t.original_amount=(req.body.original_amount);
+					t.amount_inr=(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+				}else if(req.body.type=='transfer'){
+					t.type='transfer';
+					t.original_amount=-(req.body.original_amount);
+					t.amount_inr=-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+					t.to_account=req.body.to_account;
 				}
 				// console.log('before transaction find or create');
 				console.log(t);
@@ -574,7 +604,18 @@ module.exports = {
 						original_currency:t.original_currency,
 						third_party:t.third_party,
 						account_id:t.account,
-						accounts:accounts
+						to_account:t.to_account,
+						accounts:accounts,
+						// type:'expense',
+						// color:'red',
+					}
+					if(t.type=='transfer')
+						locals.type='transfer';
+					else if(t.type=='income_expense'){
+						if(t.original_amount<0)
+							locals.type='expense';
+						else
+							locals.type='income';
 					}
 					console.log(locals);
 					res.view('create_transaction',locals);
