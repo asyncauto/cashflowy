@@ -1,5 +1,5 @@
 module.exports={
-	gmail_filter:'from:(alerts@hdfcbank.net) subject:("Alert Message By HDFC Bank") "UPI transaction"',
+	gmail_filter:'from:(alerts@hdfcbank.net) "UPI transaction"',
 	active:true,
 	required_fields:['account_last_4_digits','currency','amount','whom_you_paid','available_credit_balance','date','time','upi_ref_no'],
 	body_parsers:[
