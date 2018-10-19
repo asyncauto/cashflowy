@@ -3,21 +3,20 @@
 		<div class='three wide computer only column'></div>
 		<div class='ten wide computer sixteen wide tablet sixteen wide mobile column'>
 			<h1>Transactions</h1>
-			<div class="ui raised segments">
-				<%transactions.forEach(function(t){%>
+			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
+				<tbody>
+					<%transactions.forEach(function(t){%>
 
-					<div class="ui segment transaction" data-tid='<%=t.id%>'>
-						<div class='ui grid'>
-							<div class='one wide column' style='padding-right:0.5rem;'>
+						<tr class='transaction top aligned' data-tid='<%=t.id%>'>
+							<td>
 								<span class='popup' data-html="<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
 									
 								<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
 								<span style="font-size: 1.5rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
 								<!-- <span style="font-size: 0.75rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('HH:mm')%></span> -->
 								</span>
-								
-							</div>
-							<div class='five wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
+							</td>
+							<td>
 								<!-- category  -->
 								<span style="opacity: 0.5">Category:</span>
 								<div class="ui category dropdown">
@@ -48,8 +47,8 @@
 								
 								
 								<br>
-							</div>
-							<div class='two wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
+							</td>
+							<td>
 								<%if(t.type=='income_expense'){
 									if(t.original_amount<0){%> 
 										<span style='opacity: 0.5'>You paid</span><br>
@@ -63,16 +62,16 @@
 									<b style=''><%=t.original_currency%> <%=(-t.original_amount)%></b>
 									
 								<%}%>
-							</div>
-							<div class='four wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
+							</td>
+							<td>
 								<%if(t.original_amount<0){%> 
 									<span style='opacity: 0.5'>from</span><br>
 								<%}else{%>
 									<span style='opacity: 0.5'>deposited to</span><br>
 								<%}%>
 								<%=t.account.name%>
-							</div>
-							<div class='three wide column' style='padding-left:0.5rem;padding-right:0.5rem;'>
+							</td>
+							<td>
 								<%if(t.type=='income_expense'){%> 
 									<%if(t.original_amount<0){%> 
 										<span style='opacity: 0.5'>to</span><br>
@@ -84,24 +83,24 @@
 									<span style='opacity: 0.5'>to</span><br>
 									<%=t.to_account.name%>
 								<%}%>
-							</div>
-							<div class='one wide column' style='padding-left:0.5rem;'>
-									<div class="ui basic icon top right pointing extra_options dropdown">
-										<i class="angle down icon"></i>
-										<div class="menu">
-											<a class="disabled item" href='/transaction/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
-											<a class="item" href='/transaction/<%=t.id%>/edit'>Edit</a>
-											<!-- <a class="item" href='/transaction/<%=t.id%>/convert_to_transfer'>Convert to transfer</a> -->
-											<a class="item" href='/transaction/<%=t.id%>/delete'>Delete</a>
-										</div>
+							</td>
+							<td>
+								<div class="ui basic icon top right pointing extra_options dropdown">
+									<i class="angle down icon"></i>
+									<div class="menu">
+										<a class="disabled item" href='/transaction/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
+										<a class="item" href='/transaction/<%=t.id%>/edit'>Edit</a>
+										<!-- <a class="item" href='/transaction/<%=t.id%>/convert_to_transfer'>Convert to transfer</a> -->
+										<a class="item" href='/transaction/<%=t.id%>/delete'>Delete</a>
 									</div>
-							</div>
-						</div>
-						
-						
-					</div>
-				<%})%>
-			</div>
+								</div>
+							</td>
+							<!-- <td></td>
+							<td></td> -->
+						</tr>
+					<%})%>
+				</tbody>
+			</table>
 		</div>
 		<div class='three wide computer only column'></div>
 	</div>
@@ -118,7 +117,7 @@
 			console.log('description clicked');
 			console.log(t_id);
 			// if(!edit_active)
-			$('td[data-id='+t_id+'] span.description').hide();
+			$('tr[data-tid='+t_id+']').find('span.description').hide();
 			$(this).parent().find('.edit_description').show();
 			// edit_active=true;
 		});
@@ -127,15 +126,17 @@
 			var t_id=$(this).attr('data-id');
 			// edit_active=false;
 			$(this).parent().hide();
-			$(this).parents().find('.edit[data-id='+t_id+']').show();
+			$(this).parents('tr[data-tid='+t_id+']').find('span.description').show();
+			$(this).parents('tr[data-tid='+t_id+']').find('.edit').show();
+			// $(this).parents().find('.edit[data-id='+t_id+']').show();
 		});
 		$('.submit_edit_desc').click(function(e){
 			console.log('submit button clicked');
 			var t_id=$(this).parents('.transaction').attr('data-tid');
 			console.log(t_id);
-			var description=$('div.transaction[data-tid='+t_id+']').find('input[name=description]').val();
-			$('div.transaction[data-tid='+t_id+'] span.description').text(description);
-			$('div.transaction[data-tid='+t_id+'] span.description').show();
+			var description=$('.transaction[data-tid='+t_id+']').find('input[name=description]').val();
+			$('.transaction[data-tid='+t_id+'] span.description').text(description);
+			$('.transaction[data-tid='+t_id+'] span.description').show();
 			// /api/edit_desc
 			var button = this;
 			$(button).addClass('loading');
