@@ -1,0 +1,23 @@
+<div class="item">
+	<i class="folder icon"></i>
+	<div class="content">
+		<div class="header"><a href='/category/<%=category.id%>'><%=category.name%></a></div>
+		<div class="description">Rs.<%=-category.super_sum%> 
+			(<span class='popup' 
+				style="color:<%=(-category.super_sum<=category.budget)?'green':'red'%>;" 
+				title=""  
+				data-html="<h3><%=(-category.super_sum<=category.budget)?'Within Budget':'You overspend'%></h3>SubCategories spend=<%=-(category.super_sum-category.t_sum)%><br></h3>Direct category spend=<%=-(category.t_sum)%><br>Total spend=<%=-category.super_sum%><br>Allocated budget=<%=category.budget%><br>"
+				data-variation="wide"
+				>
+				<%=(-category.super_sum*100/category.budget).toFixed(1)%>%
+			</span>)
+		</div>
+		<%if(category.children.length){%>
+			<div class="list">
+				<%category.children.forEach(function(c2){%>
+					<%- partial('category', {category: c2}) %>
+				<%})%>
+			</div>
+		<%}%>
+	</div>
+</div>

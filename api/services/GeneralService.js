@@ -152,17 +152,21 @@ module.exports={
 		});
 		parents.forEach(function(pc){
 			pc.children=[];
-			categories.forEach(function(c){
+			categories.forEach(function(c){ // level 2
 				if(c.parent==pc.id)
 					pc.children.push(c);
 			});
-			pc.children.forEach(function(p2c){
+			pc.children.forEach(function(p2c){ // level 3
 				p2c.children=[];
 				categories.forEach(function(c){
 					if(c.parent==p2c.id)
 						p2c.children.push(c);
 				});
+				p2c.super_count=_.sum(p2c.children,'t_count')+p2c.t_count;
+				p2c.super_sum=_.sum(p2c.children,'t_sum')+p2c.t_sum;
 			})
+			pc.super_count=_.sum(pc.children,'t_count')+pc.t_count;
+			pc.super_sum=_.sum(pc.children,'t_sum')+pc.t_sum;
 		});
 		return parents;
 	},
