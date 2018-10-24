@@ -398,23 +398,37 @@ module.exports = {
 	                data: [],
 	                fill: false,
 	            }
-	            // locals.chart2.x.forEach(function(day){
-	            	// var y = 0;
-	            	locals.snapshots.forEach(function(snapshot){
-	            		if(snapshot.account==account.id){
-	            			dataset2.data.push({
+	            // ########## logic for one snapshot per day
+	            var temp=null;
+	            var snapshots=[];
+	            results.getSnapshots.forEach(function(s){
+	            	if(s.account==account.id){
+		            	if(temp && temp.day!=s.day)
+		            		snapshots.push(temp);
+		            	temp=s;
+		            }
+	            })
+	            if(temp)
+	            	snapshots.push(temp); // adding the last snapshot
+	            // ########## logic for one snapshot per day
+	            console.log('\n\n\n **********');
+	            console.log(snapshots);
+	            
+            	snapshots.forEach(function(snapshot){
+            		if(snapshot.account==account.id){
+            			dataset2.data.push({
+            				x:snapshot.day,
+            				y:snapshot.balance,
+            			});
+            			if(snapshot.details && snapshot.details.uam){
+	            			dataset3.data.push({
 	            				x:snapshot.day,
-	            				y:snapshot.balance,
+	            				y:snapshot.details.uam.value,
 	            			});
-	            			if(snapshot.details && snapshot.details.uam){
-		            			dataset3.data.push({
-		            				x:snapshot.day,
-		            				y:snapshot.details.uam.value,
-		            			});
-	            			}
-	            		}
-	            	});
-	            // })
+            			}
+            		}
+            	});
+	            
 				locals.chart2.datasets.push(dataset2);
 				locals.chart3.datasets.push(dataset3);
 			})
