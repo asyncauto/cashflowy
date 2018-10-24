@@ -466,7 +466,7 @@ module.exports = {
 			})
 			// locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.accounts=results.getAccounts;
-			locals.categories=results.getCategories;
+			locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.moment=require('moment-timezone');
 			res.view('list_transactions',locals);
 			

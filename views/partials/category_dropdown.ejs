@@ -1,0 +1,14 @@
+<div class="item" data-value="<%=category.id%>">
+	<%=category.name%>
+	<%if(category.children.length){%>
+		<i class="dropdown icon"></i>
+		<div class="menu">
+			<div class="item" data-value="<%=category.id%>">
+				<%=category.name%>
+			</div>
+			<%category.children.forEach(function(c2){%>
+				<%- partial('category_dropdown', {category: c2}) %>
+			<%})%>
+		</div>	
+	<%}%>
+</div>
