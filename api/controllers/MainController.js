@@ -251,7 +251,7 @@ module.exports = {
 
 		async.auto({
 			getAccounts:function(callback){
-				Account.find({user:req.user.id}).sort('updatedAt DESC').exec(callback);
+				Account.find({user:req.user.id}).sort('name ASC').exec(callback);
 			},
 			getCategories:function(callback){
 				Category.find({user:req.user.id}).exec(callback);
@@ -865,10 +865,21 @@ module.exports = {
 				res.view('delete_snapshot',locals);
 			});
 		}
-	}
+	},
+	emailTest:function(req,res){
+		// MailgunService.sendEmail({},function(err){
+		// 	res.send('email sent');
+		// })
+		var options={
+			start_date:new Date('2018-09-24T00:00:00.000+0530'),
+			end_date:new Date('2018-10-01T00:00:00.000+0530'),
+			user:req.query.user,
+		}
+		NotificationService.sendWeeklyEmailReport(options,function(err,result){
+			if(err)
+				throw err;
+			res.send(result);
+		})
+	},
 
-};
-
-
-//
-
+}

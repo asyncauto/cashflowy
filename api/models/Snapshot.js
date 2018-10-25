@@ -27,6 +27,16 @@ module.exports = {
 		takenAt:{ // defaults to createdAt. Useful when creating manually. 
 			type:'datetime'
 		},
+	},
+	afterCreate:function(snapshot,cb){
+		// after creating the snapshot, update the cache in accounts table.
+		Account.findOne({id:snapshot.account}).exec(function(err,acc){
+			var details = {};
+			if(acc.details)
+				details=acc.details;
+			details.last_snapshot=snapshot;
+			Account.update({id:snapshot.account},{details:details}).exec(cb);
+		})
 	}
 };
 
