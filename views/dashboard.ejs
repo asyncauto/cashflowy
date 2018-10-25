@@ -25,24 +25,24 @@
 						<div class='ui segment'>
 							<div class='ui header'>Expenses</div>
 							<div style="width:100%;">
-							    <canvas id="canvas"></canvas>
+								<canvas id="canvas"></canvas>
 							</div>
 							<!-- Balance in various accounts as a line graph -->
 						</div>
 						<div class='ui segment'>
 							<div class='ui header'>Account snapshots</div>
 							<div style="width:100%;">
-							    <canvas id="canvas2"></canvas>
+								<canvas id="canvas2"></canvas>
 							</div>
 							<!-- Balance in various accounts as a line graph -->
 						</div>
-                        <div class='ui segment'>
-                            <div class='ui header'>Un-Accounted Money (UAM)</div>
-                            <div style="width:100%;">
-                                <canvas id="canvas3"></canvas>
-                            </div>
-                            <!-- Balance in various accounts as a line graph -->
-                        </div>
+						<div class='ui segment'>
+							<div class='ui header'>Un-Accounted Money (UAM)</div>
+							<div style="width:100%;">
+								<canvas id="canvas3"></canvas>
+							</div>
+							<!-- Balance in various accounts as a line graph -->
+						</div>
 					</div>
 				</div>
 				<div class='ui row'>
@@ -67,7 +67,7 @@
 							<h3>Expense per category</h3>
 							<div class="ui list">
 								<%categories.forEach(function(category){%>
-                                    <%- partial('partials/category', {category: category}) %>
+									<%- partial('partials/category', {category: category}) %>
 								<%})%>
 							</div>
 						</div>
@@ -101,169 +101,169 @@
 
 
 <style>
-    canvas{
-        -moz-user-select: none;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-    }
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
 </style>
 <%if(typeof chart !='undefined'){%>
 <script>
-    var config = {
-        type: 'line',
-        data: {
-            labels: <%-JSON.stringify(chart.x)%>,
-            datasets: [{
-                label: 'Expense',
-                backgroundColor: 'teal',
-                borderColor: 'teal',
-                data: [
-                    <%-chart.y%>
-                ],
-                fill: false,
-            }]
-        },
-        options: {
-            responsive: true,
-            title: {
-                display: false,
-                text: 'Expense'
-            },
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-            },
-            hover: {
-                mode: 'nearest',
-                intersect: true
-            },
-            scales: {
-                xAxes: [{
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Day'
-                    }
-                }],
-                yAxes: [{
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Value'
-                    }
-                }]
-            }
-        }
-    };
+	var config = {
+		type: 'line',
+		data: {
+			labels: <%-JSON.stringify(chart.x)%>,
+			datasets: [{
+				label: 'Expense',
+				backgroundColor: 'teal',
+				borderColor: 'teal',
+				data: [
+					<%-chart.y%>
+				],
+				fill: false,
+			}]
+		},
+		options: {
+			responsive: true,
+			title: {
+				display: false,
+				text: 'Expense'
+			},
+			tooltips: {
+				mode: 'index',
+				intersect: false,
+			},
+			hover: {
+				mode: 'nearest',
+				intersect: true
+			},
+			scales: {
+				xAxes: [{
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Day'
+					}
+				}],
+				yAxes: [{
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Value'
+					}
+				}]
+			}
+		}
+	};
 
-    var config2 = {
-        type: 'line',
-        data: {
-            // labels: <%-JSON.stringify(chart2.x)%>,
-            datasets:<%-JSON.stringify(chart2.datasets)%>
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio:true,
-            title: {
-                display: false,
-                text: 'Expense'
-            },
-            legend:{
-            	display:false, // TODO - later, this needs to be done by device type
-            	boxWidth:20,
-            },
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-            },
-            hover: {
-                mode: 'nearest',
-                intersect: true
-            },
-            scales: {
-                xAxes: [{
-                	type: 'linear',
-                	position: 'bottom',
-                	ticks:{
-	                	min:1,
-	                	stepSize:1,
-                	},
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Day'
-                    }
-                }],
-                yAxes: [{
-                    // display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Value'
-                    }
-                }]
-            }
-        }
-    };
-    var config3 = {
-        type: 'line',
-        data: {
-            // labels: <%-JSON.stringify(chart2.x)%>,
-            datasets:<%-JSON.stringify(chart3.datasets)%>
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio:true,
-            title: {
-                display: false,
-                text: 'Expense'
-            },
-            legend:{
-                display:false, // TODO - later, this needs to be done by device type
-                boxWidth:20,
-            },
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-            },
-            hover: {
-                mode: 'nearest',
-                intersect: true
-            },
-            scales: {
-                xAxes: [{
-                    type: 'linear',
-                    position: 'bottom',
-                    ticks:{
-                        min:1,
-                        stepSize:1,
-                    },
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Day'
-                    }
-                }],
-                yAxes: [{
-                    // display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Value'
-                    }
-                }]
-            }
-        }
-    };
-    window.onload = function() {
-        var ctx = document.getElementById('canvas').getContext('2d');
-        window.myLine = new Chart(ctx, config);
-        var ctx2 = document.getElementById('canvas2').getContext('2d');
-        window.myLine2 = new Chart(ctx2, config2);
-        var ctx3 = document.getElementById('canvas3').getContext('2d');
-        window.myLine3 = new Chart(ctx3, config3);
-    };
-    $(document).ready(function(){
-        $('.popup').popup();
-    })
+	var config2 = {
+		type: 'line',
+		data: {
+			// labels: <%-JSON.stringify(chart2.x)%>,
+			datasets:<%-JSON.stringify(chart2.datasets)%>
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio:true,
+			title: {
+				display: false,
+				text: 'Expense'
+			},
+			legend:{
+				display:false, // TODO - later, this needs to be done by device type
+				boxWidth:20,
+			},
+			tooltips: {
+				mode: 'index',
+				intersect: false,
+			},
+			hover: {
+				mode: 'nearest',
+				intersect: true
+			},
+			scales: {
+				xAxes: [{
+					type: 'linear',
+					position: 'bottom',
+					ticks:{
+						min:1,
+						stepSize:1,
+					},
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Day'
+					}
+				}],
+				yAxes: [{
+					// display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Value'
+					}
+				}]
+			}
+		}
+	};
+	var config3 = {
+		type: 'line',
+		data: {
+			// labels: <%-JSON.stringify(chart2.x)%>,
+			datasets:<%-JSON.stringify(chart3.datasets)%>
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio:true,
+			title: {
+				display: false,
+				text: 'Expense'
+			},
+			legend:{
+				display:false, // TODO - later, this needs to be done by device type
+				boxWidth:20,
+			},
+			tooltips: {
+				mode: 'index',
+				intersect: false,
+			},
+			hover: {
+				mode: 'nearest',
+				intersect: true
+			},
+			scales: {
+				xAxes: [{
+					type: 'linear',
+					position: 'bottom',
+					ticks:{
+						min:1,
+						stepSize:1,
+					},
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Day'
+					}
+				}],
+				yAxes: [{
+					// display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Value'
+					}
+				}]
+			}
+		}
+	};
+	window.onload = function() {
+		var ctx = document.getElementById('canvas').getContext('2d');
+		window.myLine = new Chart(ctx, config);
+		var ctx2 = document.getElementById('canvas2').getContext('2d');
+		window.myLine2 = new Chart(ctx2, config2);
+		var ctx3 = document.getElementById('canvas3').getContext('2d');
+		window.myLine3 = new Chart(ctx3, config3);
+	};
+	$(document).ready(function(){
+		$('.popup').popup();
+	})
 </script>
 <%}%>
