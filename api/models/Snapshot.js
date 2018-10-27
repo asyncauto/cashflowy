@@ -34,7 +34,10 @@ module.exports = {
 			var details = {};
 			if(acc.details)
 				details=acc.details;
-			details.last_snapshot=snapshot;
+			if(!details.last_snapshot) // if last_snapshot does not exist
+				details.last_snapshot=snapshot;
+			else if(new Date(snapshot.takenAt) > new Date(details.last_snapshot.takenAt)) 
+				details.last_snapshot=snapshot; // if the recently created snapshot is more recent then update
 			Account.update({id:snapshot.account},{details:details}).exec(cb);
 		})
 	}
