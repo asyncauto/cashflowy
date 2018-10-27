@@ -1,5 +1,5 @@
-module.exports.filters = {  
-	active:[
+module.exports.filters = {
+	active: [
 		'IciciCreditCardTransactionAlertFilter',
 		'IciciInternetBankingFilter',
 		'IciciDebitCardFilter', // atm and debit card transactions
@@ -10,6 +10,6 @@ module.exports.filters = {
 		'AmazonPayTransactionFilter',
 		'AmazonPayCashbackFilter',
 		'AmazonPayExternalFilter',
-
+		'HdfcBankBalanceFilter' //periodic balance alert from bank
 	]
 }

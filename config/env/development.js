@@ -16,8 +16,8 @@ module.exports = {
 	 * Set the default database connection for models in the development       *
 	 * environment (see config/connections.js and config/models.js )           *
 	 ***************************************************************************/
-	connections:{
-		mainPostgresqlServer:{
+	connections: {
+		mainPostgresqlServer: {
 			adapter: 'sails-postgresql',
 			host: process.env.DB_HOST,
 			user: process.env.DB_USER, // optional
@@ -25,16 +25,20 @@ module.exports = {
 			database: process.env.DB_DATABASE //optional
 		}
 	},
-	redis_kue:{
-		host:'127.0.0.1',
+	redis_kue: {
+		host: '127.0.0.1',
 		port: 6379,
-		db:4,
+		db: 4,
 	},
-	session:{
+	session: {
 		adapter: 'connect-redis',
 		host: '127.0.0.1',
 		port: 6379,
 		db: 0,
 	},
-	slack_webhook:process.env.SLACK_WEBHOOK,
+	slack_webhook: process.env.SLACK_WEBHOOK,
+	mailgun: {
+		api_key: process.env.MAILGUN_APIKEY,
+		domain: process.env.MAILGUN_DOMAIN
+	}
 };
