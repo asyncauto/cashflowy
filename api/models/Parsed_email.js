@@ -88,6 +88,9 @@ module.exports = {
 				});
 			},	
 			findOrCreateTransaction:['getAccount',function(results,callback){
+				//skip if it only contains information about account balance.
+				if(pe.type=='HdfcBankBalanceFilter')
+					return callback(null);
 				console.log('parsed_email after create #3');
 				const fx = require('money');
 				fx.base='INR';
@@ -144,6 +147,9 @@ module.exports = {
 				
 			}],
 			updateParsedEmail:['findOrCreateTransaction',function(results,callback){
+				//skip if it only contains information about account balance.
+				if(pe.type=='HdfcBankBalanceFilter')
+					return callback(null);
 				// console.log('update parsed email');
 				Parsed_email.update({id:pe.id},{transaction:results.findOrCreateTransaction.id}).exec(callback);
 			}],
