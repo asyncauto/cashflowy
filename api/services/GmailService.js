@@ -216,6 +216,8 @@ module.exports={
 				res.data.payload.parts.forEach(function(part){
 					if(part.mimeType=='text/html'){
 						body=part.body.data;
+					}else if(part.mimeType=='multipart/related'){ // the case with paytm emails
+						body=part.parts[0].body.data;
 					}
 				})
 			}

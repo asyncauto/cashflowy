@@ -61,6 +61,8 @@ module.exports = {
 					}
 					if(pe.type=='AmazonPayTransactionFilter' || pe.type=='AmazonPayCashbackFilter' || pe.type=='AmazonPayExternalFilter')
 						acc_number=pe.email+'-amazon_pay';
+					else if(pe.type=='PaytmFilter')
+						acc_number=pe.extracted_data.from_phone;
 				}
 				var filter = {
 					like:{
@@ -153,6 +155,12 @@ module.exports = {
 					t.type='transfer';
 					t.third_party=null;
 					t.to_account=results.getToAccount.id;
+				}
+				if(pe.type=='PaytmFilter'){
+					if(pe.extracted_data.to_phone)
+						t.third_party=pe.extracted_data.to_phone+'('+pe.extracted_data.to_name+')';
+					else 
+						t.third_party=pe.extracted_data.to_name;
 				}
 				
 				if(pe.type=='IciciCreditCardRefundFilter' || pe.type=='AmazonPayCashbackFilter')
