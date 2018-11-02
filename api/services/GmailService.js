@@ -409,6 +409,7 @@ module.exports={
 					count++;
 					async.auto({
 						getMessageDetails:function(callback){
+							// console.log('getMessageDetails');
 							var opts={
 								message_id:m.id,
 								email_token:email.token,
@@ -416,6 +417,7 @@ module.exports={
 							GmailService.getMessageDetails(opts,callback);
 						},
 						extractDataFromMessageBody:['getMessageDetails',function(results,callback){
+							// console.log('extractDataFromMessageBody');
 							var opts={
 								email_type:options.email_type,
 								body:results.getMessageDetails.body
@@ -423,7 +425,7 @@ module.exports={
 							GmailService.extractDataFromMessageBody(opts,callback);
 						}],
 						findOrCreateEmail:['extractDataFromMessageBody',function(results,callback){
-							// console.log('\n\n\nin findOrCreateEmail');
+							// console.log('findOrCreateEmail');
 							// console.log(results.extractDataFromMessageBody);
 							var email={
 								extracted_data:results.extractDataFromMessageBody.ed,
@@ -435,6 +437,7 @@ module.exports={
 							}
 							email.extracted_data.email_received_time= new Date(results.getMessageDetails.header.date);
 							if(email.body_parser_used==''){
+								// console.log('parser failed');
 								var text="Parsing email failure\n";
 								text+="<-Email body->\n";
 								text+=results.getMessageDetails.body.trim();
@@ -459,6 +462,7 @@ module.exports={
 									}
 								});
 							}else{		
+								// console.log('parser success');
 								Parsed_email.findOrCreate({message_id:m.id},email).exec(callback);
 							}
 							// during testing a new filter, comment/uncomment the following lines

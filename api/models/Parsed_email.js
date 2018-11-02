@@ -42,7 +42,7 @@ module.exports = {
 		}
 	},
 	afterCreate: function(pe, cb) {
-
+		// console.log('after create of parsed_email');
 		// find or create transaction
 		// update accociated transaction on this this table
 		// console.log('parsed_email after create #1');
@@ -86,9 +86,41 @@ module.exports = {
 						});
 					}
 				});
-			},	
-			findOrCreateTransaction:['getAccount',function(results,callback){
+			},
+			getToAccount:function(callback){
+				// console.log('getToAccount');
+				if(pe.type=='ZerodhaTransferFilter'){
+					var acc_number=pe.email+'-zerodha';
+					var filter = {
+						like:{
+							acc_number:'%'+acc_number, // ends with the following number
+						},
+						user:pe.user
+					}
+
+					var account={ // incase the account does not exist, create account.
+						acc_number:''+acc_number,
+						user:pe.user,
+						type:'investment', // user might need to change this
+						name:'Zerodha - Auto generated account',
+					} 
+					Account.findOne(filter).exec(function(err,result){
+						if(result)
+							callback(err,result);
+						else{
+							Account.create(account).exec(function(err,result){
+								callback(err,result);
+							});
+						}
+					});
+				}else{
+					callback(null);
+				}
+			},
+			findOrCreateTransaction:['getAccount','getToAccount',function(results,callback){
 				//skip if it only contains information about account balance.
+				if(!pe.extracted_data.currency)
+					pe.extracted_data.currency='INR';
 				if(pe.type=='HdfcBankBalanceFilter')
 					return callback(null);
 				console.log('parsed_email after create #3');
@@ -102,7 +134,6 @@ module.exports = {
 					'INR':1,
 					'CZK':0.320764,
 					'HUF':4.03376,
-
 				}
 				var findFilter={
 					createdBy:'user',
@@ -110,6 +141,7 @@ module.exports = {
 					original_amount:pe.extracted_data.amount,
 					// needs a bit more filtering
 				};
+				
 				var t={
 					original_currency:pe.extracted_data.currency,
 					createdBy:'parsed_email',
@@ -117,6 +149,12 @@ module.exports = {
 					account:results.getAccount.id,
 					third_party:pe.extracted_data.whom_you_paid?pe.extracted_data.whom_you_paid:pe.extracted_data.third_party,
 				}
+				if(pe.type=='ZerodhaTransferFilter'){
+					t.type='transfer';
+					t.third_party=null;
+					t.to_account=results.getToAccount.id;
+				}
+				
 				if(pe.type=='IciciCreditCardRefundFilter' || pe.type=='AmazonPayCashbackFilter')
 					t.original_amount=pe.extracted_data.amount; // this is an income, so positive
 				else 
