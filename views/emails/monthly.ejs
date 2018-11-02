@@ -42,7 +42,7 @@
 					<td>
 						<b><%=account.name%></b>
 						<div style="opacity: 0.5 ">
-							<%if(account.details.last_snapshot && account.details.last_snapshot.balance){%>
+							<%if(account.details && account.details.last_snapshot && account.details.last_snapshot.balance){%>
 								Rs. <%=account.details.last_snapshot.balance%>
 							<%}else{%>
 								Unknown

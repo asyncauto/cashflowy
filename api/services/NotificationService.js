@@ -114,7 +114,7 @@ module.exports={
 				opts.locals.transactions.count=count;
 			});
 			results.getAccounts.forEach(function(account){
-				if(account.details.last_snapshot && account.details.last_snapshot.balance){
+				if(account.details && account.details.last_snapshot && account.details.last_snapshot.balance){
 					if(account.details.last_snapshot.balance>0)
 						opts.locals.assets+=account.details.last_snapshot.balance;
 					else
