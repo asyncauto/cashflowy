@@ -61,8 +61,12 @@ module.exports = {
 					}
 					if(pe.type=='AmazonPayTransactionFilter' || pe.type=='AmazonPayCashbackFilter' || pe.type=='AmazonPayExternalFilter')
 						acc_number=pe.email+'-amazon_pay';
-					else if(pe.type=='PaytmFilter')
-						acc_number=pe.extracted_data.from_phone;
+					else if(pe.type=='PaytmFilter'){
+						if(pe.body_parser_used=='received_money_v1')
+							acc_number=pe.extracted_data.to;
+						else
+							acc_number=pe.extracted_data.from_phone;
+					}
 				}
 				var filter = {
 					like:{
@@ -156,17 +160,24 @@ module.exports = {
 					t.third_party=null;
 					t.to_account=results.getToAccount.id;
 				}
-				if(pe.type=='PaytmFilter'){
-					if(pe.extracted_data.to_phone)
-						t.third_party=pe.extracted_data.to_phone+'('+pe.extracted_data.to_name+')';
-					else 
-						t.third_party=pe.extracted_data.to_name;
-				}
+
 				
 				if(pe.type=='IciciCreditCardRefundFilter' || pe.type=='AmazonPayCashbackFilter')
 					t.original_amount=pe.extracted_data.amount; // this is an income, so positive
 				else 
 					t.original_amount=-(pe.extracted_data.amount); // this in an expense, so negative
+
+				if(pe.type=='PaytmFilter'){
+					if(pe.body_parser_used=='received_money_v1'){
+						t.original_amount=pe.extracted_data.amount;	 // income					
+						t.third_party=pe.extracted_data.from_phone+'('+pe.extracted_data.from_name+')';
+					}else{
+						if(pe.extracted_data.to_phone)
+							t.third_party=pe.extracted_data.to_phone+'('+pe.extracted_data.to_name+')';
+						else 
+							t.third_party=pe.extracted_data.to_name;
+					}
+				}
 				t.amount_inr=fx.convert(t.original_amount, {from: pe.extracted_data.currency, to: "INR"});
 				
 				if(pe.extracted_data.date && pe.extracted_data.time){
