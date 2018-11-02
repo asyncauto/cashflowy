@@ -138,8 +138,8 @@ module.exports = function (callback) {
 			done(err,result);
 		});
 	});
-	queue.process('send_weekly_email',1,function(job,done){
-		NotificationService.sendWeeklyEmailReport(job.data.options,function(err,result){
+	queue.process('send_email_report',1,function(job,done){
+		NotificationService.sendEmailReport(job.data.options,function(err,result){
 			// if(err) // uncomment for debugging when the kue has errors
 			// 	throw err;
 			done(err,result);

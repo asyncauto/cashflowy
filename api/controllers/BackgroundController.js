@@ -97,13 +97,47 @@ module.exports = {
 						start_date:start,
 						end_date:end,
 						user:user.id,
+						type:'Weekly'
 					},
 					info:{}
 				};
 				kue_configs.push(data);
 			})
 			async.eachLimit(kue_configs,1,function(data,next){
-				queue.create('send_weekly_email',data).priority('high').save(next);
+				queue.create('send_email_report',data).priority('high').save(next);
+			},function(err){
+				res.send(kue_configs);
+			});
+		});
+	},
+	sendMonthlyEmails:function(req,res){
+		var temp = new Date();
+		temp.setDate(1);
+		temp=moment(temp).tz('Asia/Kolkata').format();
+		var end = new Date(temp.substring(0,10)+'T00:00:00.000+0530');
+		var start = new Date(end);
+		start.setDate(-5);
+		start.setDate(1);
+		var filter={};
+		if(req.query.user)
+			filter.id=req.query.user;
+		User.find(filter).exec(function(err,users){
+			var kue_configs=[];
+			users.forEach(function(user){
+				var data={
+					title:'Send monthly email to '+user.name,
+					options:{
+						start_date:start,
+						end_date:end,
+						user:user.id,
+						type:'Monthly'
+					},
+					info:{}
+				};
+				kue_configs.push(data);
+			})
+			async.eachLimit(kue_configs,1,function(data,next){
+				queue.create('send_email_report',data).priority('high').save(next);
 			},function(err){
 				res.send(kue_configs);
 			});

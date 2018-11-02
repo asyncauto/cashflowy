@@ -77,10 +77,20 @@ module.exports.routes = {
   'GET /category/:id/edit':'MainController.editCategory',
   'POST /category/:id/edit':'MainController.editCategory',
 
+  'GET /rules':'MainController.listRules',
+  'GET /rule/create':'MainController.createRule',
+  'POST /rule/create':'MainController.createRule',
+  'GET /rule/:id':'MainController.viewRule',
+  'GET /rule/:id/edit':'MainController.editRule',
+  'POST /rule/:id/edit':'MainController.editRule',
+  'GET /rule/:id/delete':'MainController.deleteRule',
+  'POST /rule/:id/delete':'MainController.deleteRule',
+
   // api patterns needs rewrite later
   'POST /api/edit_desc':'MainController.editDescription',
 
-
+  'GET /email_test':'MainController.emailTest',
+  'GET /uam_test':'MainController.testUAM',
 
   'GET /login': 'AuthController.login',
   'POST /login': 'AuthController.login',
@@ -97,6 +107,7 @@ module.exports.routes = {
   'POST /background/surface_crawl':'Background.surfaceCrawl',
   'GET /background/test':'Background.test',
   'POST /background/send_weekly_emails':'Background.sendWeeklyEmails',
+  'POST /background/send_monthly_emails':'Background.sendMonthlyEmails',
   'POST /background/calculate_uam':'Background.calculateUAM',
   'POST /background/delete_tasks':'Background.deleteTasks',
 

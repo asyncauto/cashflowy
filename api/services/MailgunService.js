@@ -29,11 +29,17 @@ module.exports={
 			// html:'<b>test</b>. this is a sample email'
 		};
 		generateHTML({template:options.template,locals:options.locals},function(err,result){
-			data.html=result;
-			mailgun.messages().send(data, function (err, body) {
-				console.log(body);
-				callback(err);
-			});	
+			var inlineCss = require('inline-css');
+			inlineCss(result, {url:' '}).then(function(html) {
+				// console.log('\n\n\n\n -------- ');
+				// console.log(html); 
+				data.html=html;
+				// callback(null);
+				mailgun.messages().send(data, function (err, body) {
+					console.log(body);
+					callback(err);
+				});	
+			});
 		})
 		
 	}	
