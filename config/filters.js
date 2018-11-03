@@ -12,6 +12,6 @@ module.exports.filters = {
 		'AmazonPayExternalFilter',
 		'HdfcBankBalanceFilter', //periodic balance alert from bank
 		'ZerodhaTransferFilter',
-		'PaytmFilter',
+		// 'PaytmFilter',
 	]
 }
