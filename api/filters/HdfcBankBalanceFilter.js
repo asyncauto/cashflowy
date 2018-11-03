@@ -1,5 +1,5 @@
 module.exports = {
-	gmail_filter: 'from:(alerts@hdfcbank.net) Available balance in your A/c -{has been debited from}',
+	gmail_filter: 'from:(alerts@hdfcbank.net) "Available balance in your A/c"',
 	active: true,
 	required_fields: ['account_last_4_digits', 'balance_currency', 'balance_amount', 'date', 'time'],
 	body_parsers: [
