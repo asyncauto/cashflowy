@@ -22,7 +22,7 @@ module.exports = {
 		},
 		createdBy:{
 			type:'text',
-			enum:['user','parsed_email']
+			enum:['user','parsed_email', 'parsed_document']
 		},
 		type:{
 			type:'text',

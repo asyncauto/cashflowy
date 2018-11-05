@@ -23,6 +23,8 @@ var queue = kue.createQueue({
 	prefix: 'q',
 	redis: sails.config.redis_kue
 });
+
+var request = require("request");
 module.exports = {
 	landingPage:function(req,res){
 		if(req.user)
@@ -385,50 +387,50 @@ module.exports = {
 			results.getAccounts.forEach(function(account,i){
 				var colors = ['teal','blue','red','green','violet','orange','black','brown'];
 				var dataset2 ={
-	                label: account.name,
-	                backgroundColor: colors[i],
-	                borderColor: colors[i],
-	                data: [],
-	                fill: false,
-	            }
-	            var dataset3 ={
-	                label: account.name,
-	                backgroundColor: colors[i],
-	                borderColor: colors[i],
-	                data: [],
-	                fill: false,
-	            }
-	            // ########## logic for one snapshot per day
-	            var temp=null;
-	            var snapshots=[];
-	            results.getSnapshots.forEach(function(s){
-	            	if(s.account==account.id){
-		            	if(temp && temp.day!=s.day)
-		            		snapshots.push(temp);
-		            	temp=s;
-		            }
-	            })
-	            if(temp)
-	            	snapshots.push(temp); // adding the last snapshot
-	            // ########## logic for one snapshot per day
-	            console.log('\n\n\n **********');
-	            console.log(snapshots);
-	            
-            	snapshots.forEach(function(snapshot){
-            		if(snapshot.account==account.id){
-            			dataset2.data.push({
-            				x:snapshot.day,
-            				y:snapshot.balance,
-            			});
-            			if(snapshot.details && snapshot.details.uam){
-	            			dataset3.data.push({
-	            				x:snapshot.day,
-	            				y:snapshot.details.uam.value,
-	            			});
-            			}
-            		}
-            	});
-	            
+					label: account.name,
+					backgroundColor: colors[i],
+					borderColor: colors[i],
+					data: [],
+					fill: false,
+				}
+				var dataset3 ={
+					label: account.name,
+					backgroundColor: colors[i],
+					borderColor: colors[i],
+					data: [],
+					fill: false,
+				}
+				// ########## logic for one snapshot per day
+				var temp=null;
+				var snapshots=[];
+				results.getSnapshots.forEach(function(s){
+					if(s.account==account.id){
+						if(temp && temp.day!=s.day)
+							snapshots.push(temp);
+						temp=s;
+					}
+				})
+				if(temp)
+					snapshots.push(temp); // adding the last snapshot
+				// ########## logic for one snapshot per day
+				console.log('\n\n\n **********');
+				console.log(snapshots);
+				
+				snapshots.forEach(function(snapshot){
+					if(snapshot.account==account.id){
+						dataset2.data.push({
+							x:snapshot.day,
+							y:snapshot.balance,
+						});
+						if(snapshot.details && snapshot.details.uam){
+							dataset3.data.push({
+								x:snapshot.day,
+								y:snapshot.details.uam.value,
+							});
+						}
+					}
+				});
+				
 				locals.chart2.datasets.push(dataset2);
 				locals.chart3.datasets.push(dataset3);
 			})
@@ -881,5 +883,74 @@ module.exports = {
 			res.send(result);
 		})
 	},
+
+	createDocument: function(req, res) {
+		if (req.method == 'GET') {
+			var locals = {
+				type: '',
+				options:sails.config.docparser_filters,
+				message: ''
+			}
+			res.view('create_document', locals)
+		} else {
+			var locals = {
+				type: '',
+				options:sails.config.docparser_filters,
+				message: ''
+			}
+			async.auto({
+				uploadFile: function (cb) {
+					req.file('file').upload(function (err, uploadedFiles) {
+						if (err) return cb(err);
+						cb(null, uploadedFiles)
+					});
+				},
+				createDocument: function (cb) {
+					Document.create({ user: req.user.id, parser_used: req.body.type }).exec(cb);
+				},
+				sendToDocParser: ['createDocument', 'uploadFile', function (results, cb) {
+	
+					var options = {
+						method: 'POST',
+						url: `https://${sails.config.docparser_api_key}:@api.docparser.com/v1/document/upload/${req.body.type}`,
+						json:true,
+						formData:
+							{
+								remote_id: results.createDocument.id,
+								file:
+									{
+										value: fs.createReadStream(`.tmp/uploads/${results.uploadFile[0].fd}`),
+										options:
+											{
+												filename: results.uploadFile[0].filename,
+												contentType: null
+											}
+									}
+							}
+					};
+	
+					request(options, function (error, response, body) {
+						if (error) return cb(error);
+						cb(body);
+					});
+	
+				}]
+			}, function(error, results){
+				 var locals ={
+					 type:'',
+					 message:''
+				 };
+
+				if(error)
+					 locals.message = error.message
+			
+				else	
+				 	locals.type = results.createDocument.parser_used
+
+				return res.view('create_document', locals);
+			})
+			
+		}
+	}
 
 }

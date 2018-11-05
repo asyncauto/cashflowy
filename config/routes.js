@@ -86,6 +86,17 @@ module.exports.routes = {
   'GET /rule/:id/delete':'MainController.deleteRule',
   'POST /rule/:id/delete':'MainController.deleteRule',
 
+  'GET /document/create':'MainController.createDocument',
+  'POST /document/create':'MainController.createDocument',
+
+  'GET /rule/:id':'MainController.viewRule',
+  'GET /rule/:id/edit':'MainController.editRule',
+  'POST /rule/:id/edit':'MainController.editRule',
+  'GET /rule/:id/delete':'MainController.deleteRule',
+  'POST /rule/:id/delete':'MainController.deleteRule',
+
+  '/test':'MainController.test',
+
   // api patterns needs rewrite later
   'POST /api/edit_desc':'MainController.editDescription',
 
@@ -122,6 +133,9 @@ module.exports.routes = {
 
   'GET /curator/filter_test':'CuratorController.filterTest',
   'POST /curator/filter_test':'CuratorController.filterTest',
+
+  //webhooks
+  'POST /webhook/docparser': 'WebhookController.docparser'
 
   /***************************************************************************
   *                                                                          *

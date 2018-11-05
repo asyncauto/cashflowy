@@ -52,7 +52,6 @@ module.exports.policies = {
   MainController:{
     '*':['isAuthenticated'],
     landingPage:true,
-    test2:true,
     // verify:['sessionAuth'],
     // dashboard:['isAuthenticated'],
     // editDescription:['isAuthenticated'],
@@ -67,4 +66,7 @@ module.exports.policies = {
   CuratorController:{
     '*':['isAuthenticated','isAdmin']
   },
+  WebhookController:{
+    '*':true
+  }
 };
