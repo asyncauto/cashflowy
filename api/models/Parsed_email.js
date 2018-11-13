@@ -162,7 +162,7 @@ module.exports = {
 				}
 
 				
-				if(pe.type=='IciciCreditCardRefundFilter' || pe.type=='AmazonPayCashbackFilter')
+				if(pe.type=='IciciCreditCardRefundFilter' || pe.type=='AmazonPayCashbackFilter' || pe.type=='HdfcBankAccountCreditFilter')
 					t.original_amount=pe.extracted_data.amount; // this is an income, so positive
 				else 
 					t.original_amount=-(pe.extracted_data.amount); // this in an expense, so negative
