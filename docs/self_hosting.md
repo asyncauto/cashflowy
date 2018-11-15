@@ -48,16 +48,205 @@ Cloud servers are good because they can ensure that you get good uptimes for the
 12. Configure cron jobs
 13. Make sure your server is always up. Use PM2 or AWS elastic beanstalk. 
 
-#### 1. Clone Cashflowy master branch
+## Installation on AWS EC2 walk though 
+Walkthough of setting up Cashflowy on an EC2 machine on AWS.
 
-#### 11. Do an initial crawl
+### Launch AWS console and launch a EC2 machine (min t2.micro) with ubuntu on it.
 
-#### 13. Make sure your server is always up
-Cashflowys server, Redis and Postgress needs to be up and running all the time. You can run Redis and Postgres as a background service. 
+### ssh into the machine.
 
-Use pm2 to keep your server running all the time. When your server breaks, pm2 will make sure your server is automatically restarted. You will need this if you are running cashflowy on your machine or aws ec2. If you use AWS elastic beanstalk single instance, then you will not need pm2. Beanstalk will take care of most of the requirements for you. 
+### Install Nodejs
+
+```
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+Verify is Nodejs and NPM is installed
+
+```
+node -v
+npm -v
+```
+### Clone the repo
+
+`git clone https://github.com/alexjv89/cashflowy`
+
+### Install all dependencies
+
+`npm install`
+
+At this point Cashflowy server is now installed. You can try running the server with `node app.js` or `npm start`. It will not work, because we have not configured the server with database etc.
 
 
 
+### Install redis
+
+`sudo apt-get install redis`
+
+Run redis server
+
+`redis-server`
+
+### Install postgres
+
+```
+// access root
+sudo su -
+
+// install postgres
+apt-get install postgresql postgresql-contrib
+
+// configure postgresql to run on server boot
+update-rc.d postgresql enable
+
+// start postgresql server
+service postgresql start
+```
+
+**Create database.**
+
+```
+sudo -u postgres psql
+// you can change alex to a user name of your preference. Similarly you can change the password as well
+create user alex createdb password 'randompass';
+
+create database cashflowy owner alex;
+
+show database \l
+```
+
+change user back to ubuntu
+`su - ubuntu`
+
+### Setting up config
+Inside config folder, create a file called local.js
+
+```
+cd cashflowy
+sudo nano /config/local.js
+```
+
+This config file should contain the following structure. Some of the configs are prefilled for you. Some of them you will need to fill with your custom settings. 
+
+```
+module.exports = {
+  gmail:{
+    "installed":{  
+      "client_id":"", // fill this
+      "project_id":"", // fill this
+      "auth_uri":"https://accounts.google.com/o/oauth2/auth",
+      "token_uri":"https://www.googleapis.com/oauth2/v3/token",
+      "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
+      "client_secret":"", // fill this
+      "redirect_uris":[  
+        "urn:ietf:wg:oauth:2.0:oob",
+        "http://localhost",
+      ]
+    }
+  },
+  connections:{
+    mainPostgresqlServer:{
+      adapter: 'sails-postgresql',
+      host: 'localhost', // edit this
+      user: 'alex', // // edit this
+      password: 'randompassword', // edit this
+      database: 'cashflowy'
+    }
+  },
+  redis_kue: {
+    host: '127.0.0.1',
+    port: 6379,
+    db: 1,
+  },
+  session:{
+    adapter: 'connect-redis',
+    host: '127.0.0.1',
+    port: 6379,
+    db: 0,
+    secret:'sdfasoudfo2jouh23bskhbdfalskjdf' // edit this - some random charectors will do
+  },
+  models:{
+    migrate:'safe' // sails does not do any db migrations. 
+    // migrate:'alter' // to let sails auto migrate database tables
+  }
+};
+
+```
+### Accessing your cashflowy deployment via the browser
+Even without filling in the missing details in the config file, if you copy paste the above config to /cashflowy/env/local.js. The server should lift up. 
+
+Lift cashflowy server by running `node app.js` from /cashflowy folder. The server should lift now(as seen via terminal).  
+
+**Find public IP address**
+From AWS console, find out the IP address of your new EC2 machine.
+
+Change security group setting so that your server is available on the internet.
+You need to allow port 1337 to be accessible in the security group. 
+
+Now if you access the IP address followed by the port (eg. 18.52.52.52:1337), you should see the login page.
+
+### Auto generating tables in your database
+Click on signup. Enter details and submit form. You should get an error on the screen. This is because even if the database is created, the tables inside the database is not created yet. Sails can auto generate tables for you. Lets do that now.
+
+In terminal break the server with control C. Go to locals and update models.migrate from 'safe' to 'alter'. Now lift the server again with node app.js. This time, sails at the time of lifting the server will auto create the tables for you. This is not a safe configuration. You can loose data if you leave the migrate settings to alter. Lets change it immediately, as there is a lot of chance of forgetting about it. Break the server and change the migrate settings from alter back to safe.
+
+Run the server again and try signup again. This time it should work.
+
+### Setting up a gmail app to process your transaction emails.
+
+In order to programatically access your email, gmail provides apis. To do that you need to create an `app` with google. 
+
+https://developers.google.com/gmail/api/
+
+click on quick start(https://developers.google.com/gmail/api/quickstart/js).
+
+on that page, under step 1, a), click on the wizard.
+
+create a project -> continue
+
+Click `get credentials`
+
+Under the "where will you be calling the api from " dropdown choose - "Other UI"
+
+Enter a name for your app
+
+Define email address and product name to be shown to user. Download the credentials.
+
+This downloaded google app credentials file contains the details missing in the local.js file that you created earlier. 
+
+Copy paste the credentials into local.js configs
+
+### Allow your gmail app that you created to access your email.
+Now you have a google app. You server is connected to your google app. The google app is generic. It still does not have access to your email content yet. You need to autherize the google app that you created to access your gmail account. Lets do that now. 
+
+Run getAuthToken.js
+`node getAuthToken.js`
+
+Open the link that you get from the terminal. Here you are giving access permission to your app to access your transaction emails. Once you authentiate you will get a code. Paste that code back in the terminal. Once you do that, a file called token.js will be created in cashflowy folder. This file contains the auth token, that specifically allows your gmail app(hence your cashflowy server) to access your gmail content. 
+
+To view the token in the terminal type
+
+cat token.js
+
+Copy paste this token in the cashflowy UI. 
+In cashflowy, click create email. Enter your email address and then paste the result of `cat token.js`
+
+Now cashflowy has access to read your transaction emails. Now lets process your emails to extract financial data.
+
+### Extracting financial data
+
+curl -X POST \
+  'http://localhost:1337/background/surface_crawl?secret=aslfhlaksbfalskhbfdladshbflkasj2346ncaubdlai2shflasdflhasbdflks234alkjfnslcnalsjnf&user=1' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Postman-Token: 4c21ed59-9151-408e-932b-0c0b64d239d3' \
+  -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
+  -F user_id=1
+
+Now lift the server again with node app.js and you will notice a lot of activity in the terminal. If you navigate to /transactions you will start seeing transactions extracted from your data.
 
 
+
+ref:
+
+https://www.postgresql.org/message-id/4D958A35.8030501@hogranch.com
+https://www.godaddy.com/garage/how-to-install-postgresql-on-ubuntu-14-04/
