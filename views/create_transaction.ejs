@@ -3,8 +3,12 @@
 	if(!original_currency)
 		original_currency=req.user.details.default_currency;
 	var single_active_flag=false;
-	if(!account_id)
-		account_id=req.user.details.default_account;
+	if(!account_id){	
+		if(req.user.details.default_account)
+			account_id=req.user.details.default_account;
+		else
+			account_id=accounts[0].id;
+	}
 	var create_or_edit = GeneralService.createOrEdit(req.url);
 %>
 <div class="ui container">
