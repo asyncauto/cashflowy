@@ -59,13 +59,9 @@
 							<i class="dropdown icon"></i>
 							<div class="default text">Select Currency</div>
 							<div class="menu">
-								<div class="<%-(original_currency=="INR")?'active':''%> item" data-value="INR"></i>INR</div>
-								<div class="<%-(original_currency=="USD")?'active':''%> item" data-value="USD"></i>USD</div>
-								<div class="<%-(original_currency=="EUR")?'active':''%> item" data-value="EUR"></i>EUR</div>
-								<div class="<%-(original_currency=="HUF")?'active':''%> item" data-value="HUF"></i>HUF</div>
-								<!-- <div class="item" data-value="as"><i class="as flag"></i>American Samoa</div>
-								<div class="item" data-value="ad"><i class="ad flag"></i>Andorra</div>
-								<div class="item" data-value="ao"><i class="ao flag"></i>Angola</div>  -->
+								<%Object.keys(sails.config.fx_rates).forEach(function(currency){%>
+									<div class='item' data-value="<%=currency%>"></i><%=currency%></div>
+								<%})%>
 							</div>
 						</div>
 					</div>
