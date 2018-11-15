@@ -165,6 +165,11 @@ module.exports = {
     db: 0,
     secret:'sdfasoudfo2jouh23bskhbdfalskjdf' // edit this - some random charectors will do
   },
+  mailgun:{
+    api_key:'key-sdasfasfdasf',
+    domain:'localhost'
+  },
+  slack_webhook:'https://slack.com/sadfasfasfsfd',
   models:{
     migrate:'safe' // sails does not do any db migrations. 
     // migrate:'alter' // to let sails auto migrate database tables
