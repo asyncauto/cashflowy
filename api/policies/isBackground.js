@@ -1,5 +1,5 @@
 module.exports = function(req, res, next) {
-	if(req.query.secret && req.query.secret=='aslfhlaksbfalskhbfdladshbflkasj2346ncaubdlai2shflasdflhasbdflks234alkjfnslcnalsjnf')
+	if(req.query.secret && req.query.secret==sails.config.background_secret)
 		return next();
 	else
 		return res.forbidden();

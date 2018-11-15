@@ -170,6 +170,7 @@ module.exports = {
     domain:'localhost'
   },
   slack_webhook:'https://slack.com/sadfasfasfsfd',
+  background_secret:'aslfhlaksbfalskhbfdladshbflkasj2346ncaubdlai2shflasdflhasbdflks234alkjfnslcnalsjnf',
   models:{
     migrate:'safe' // sails does not do any db migrations. 
     // migrate:'alter' // to let sails auto migrate database tables

@@ -40,7 +40,8 @@ module.exports = {
 	mailgun:{
 		api_key:process.env.MAILGUN_APIKEY,
 		domain:process.env.MAILGUN_DOMAIN
-	}
+	},
+	background_secret:process.env.BACKGROUND_SECRET,
 	// models: {
 	//   connection: 'someMysqlServer'
 	// },
