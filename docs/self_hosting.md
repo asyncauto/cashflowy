@@ -123,7 +123,7 @@ Inside config folder, create a file called local.js
 
 ```
 cd cashflowy
-sudo nano /config/local.js
+sudo nano config/local.js
 ```
 
 This config file should contain the following structure. Some of the configs are prefilled for you. Some of them you will need to fill with your custom settings. 
