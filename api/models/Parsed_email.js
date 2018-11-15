@@ -132,15 +132,7 @@ module.exports = {
 				console.log('parsed_email after create #3');
 				const fx = require('money');
 				fx.base='INR';
-				fx.rates={
-					'EUR':0.0125660,
-					'USD':0.0146289,
-					'MYR':0.0595751,
-					'IDR':211.557,
-					'INR':1,
-					'CZK':0.320764,
-					'HUF':4.03376,
-				}
+				fx.rates=sails.config.fx_rates;
 				var findFilter={
 					createdBy:'user',
 					original_currency:pe.extracted_data.currency,

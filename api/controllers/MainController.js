@@ -8,16 +8,7 @@ const fs = require('fs');
 const async = require('async');
 const fx = require('money');
 fx.base='INR';
-fx.rates={
-	'EUR':0.0125660,
-	'USD':0.0146289,
-	'MYR':0.0595751,
-	'IDR':211.557,
-	'INR':1,
-	'CZK':0.320764,
-	'HUF':4.03376,
-
-}
+fx.rates=sails.config.fx_rates;
 var kue = require( 'kue' );
 var queue = kue.createQueue({
 	prefix: 'q',
@@ -494,16 +485,7 @@ module.exports = {
 				console.log(req.body);
 				const fx = require('money');
 				fx.base='INR';
-				fx.rates={
-					'EUR':0.0125660,
-					'USD':0.0146289,
-					'MYR':0.0595751,
-					'IDR':211.557,
-					'INR':1,
-					'CZK':0.320764,
-					'HUF':4.03376,
-
-				}
+				fx.rates=sails.config.fx_rates;
 				var findFilter={
 					createdBy:'user',
 					original_currency:req.body.original_currency,
@@ -568,16 +550,7 @@ module.exports = {
 				console.log(req.body);
 				const fx = require('money');
 				fx.base='INR';
-				fx.rates={
-					'EUR':0.0125660,
-					'USD':0.0146289,
-					'MYR':0.0595751,
-					'IDR':211.557,
-					'INR':1,
-					'CZK':0.320764,
-					'HUF':4.03376,
-
-				}
+				fx.rates=sails.config.fx_rates;
 				var t={
 					original_currency:req.body.original_currency,
 					// original_amount:-(req.body.original_amount),
@@ -763,16 +736,7 @@ module.exports = {
 				console.log(req.body);
 				const fx = require('money');
 				fx.base='INR';
-				fx.rates={
-					'EUR':0.0125660,
-					'USD':0.0146289,
-					'MYR':0.0595751,
-					'IDR':211.557,
-					'INR':1,
-					'CZK':0.320764,
-					'HUF':4.03376,
-
-				}
+				fx.rates=sails.config.fx_rates;
 				var findFilter={
 					createdBy:'user',
 					original_currency:req.body.original_currency,
@@ -813,16 +777,7 @@ module.exports = {
 				console.log(req.body);
 				const fx = require('money');
 				fx.base='INR';
-				fx.rates={
-					'EUR':0.0125660,
-					'USD':0.0146289,
-					'MYR':0.0595751,
-					'IDR':211.557,
-					'INR':1,
-					'CZK':0.320764,
-					'HUF':4.03376,
-
-				}
+				fx.rates=sails.config.fx_rates;
 				var s={
 					balance:req.body.balance,
 					takenAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
