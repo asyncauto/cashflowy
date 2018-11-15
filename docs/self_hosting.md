@@ -241,12 +241,7 @@ Now cashflowy has access to read your transaction emails. Now lets process your 
 ### Extracting financial data
 
 ```
-curl -X POST \
-  'http://localhost:1337/background/surface_crawl?secret=aslfhlaksbfalskhbfdladshbflkasj2346ncaubdlai2shflasdflhasbdflks234alkjfnslcnalsjnf&user=1' \
-  -H 'Cache-Control: no-cache' \
-  -H 'Postman-Token: 4c21ed59-9151-408e-932b-0c0b64d239d3' \
-  -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
-  -F user_id=1
+curl -X POST 'http://localhost:1337/background/surface_crawl?secret=aslfhlaksbfalskhbfdladshbflkasj2346ncaubdlai2shflasdflhasbdflks234alkjfnslcnalsjnf&user=1' -F user_id=1
 ```
 Now lift the server again with node app.js and you will notice a lot of activity in the terminal. If you navigate to /transactions you will start seeing transactions extracted from your data.
 
