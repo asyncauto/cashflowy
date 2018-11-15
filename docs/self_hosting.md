@@ -231,10 +231,10 @@ Open the link that you get from the terminal. Here you are giving access permiss
 
 To view the token in the terminal type
 
-cat token.js
+cat token.json
 
 Copy paste this token in the cashflowy UI. 
-In cashflowy, click create email. Enter your email address and then paste the result of `cat token.js`
+In cashflowy, click create email. Enter your email address and then paste the result of `cat token.json`
 
 Now cashflowy has access to read your transaction emails. Now lets process your emails to extract financial data.
 
@@ -249,6 +249,10 @@ curl -X POST \
 
 Now lift the server again with node app.js and you will notice a lot of activity in the terminal. If you navigate to /transactions you will start seeing transactions extracted from your data.
 
+## Video of this deployment:
+Part 1 - https://youtu.be/MgtNZz77MHU
+Part 2 - https://youtu.be/45EUKULYn_g
+Part 3 - https://youtu.be/GXlgqATFQoA
 
 
 ref:
