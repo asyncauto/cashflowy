@@ -52,14 +52,14 @@
 								<%if(t.type=='income_expense'){
 									if(t.original_amount<0){%> 
 										<span style='opacity: 0.5'>You paid</span><br>
-										<b style='color:red'><%=t.original_currency%> <%=(-t.original_amount)%></b>
+										<b style='color:red' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></b>
 									<%}else{%>
 										<span style='opacity: 0.5'>You got</span><br>
-										<b style='color:#5bc5a2'><%=t.original_currency%> <%=(t.original_amount)%></b>
+										<b style='color:#5bc5a2' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%-t.amount_inr%>"><%=t.original_currency%> <%=(t.original_amount)%></b>
 									<%}
 								}else{%>
 									<span style='opacity: 0.5'>You transferred</span><br>
-									<b style=''><%=t.original_currency%> <%=(-t.original_amount)%></b>
+									<b style='' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></b>
 									
 								<%}%>
 							</td>
