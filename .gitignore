@@ -116,7 +116,7 @@ npm-debug.log
 nbproject
 .idea
 .node_history
-
+package-lock.json
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
