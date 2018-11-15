@@ -18,8 +18,8 @@
 							</td>
 							<td>
 								<!-- category  -->
-								<span style="opacity: 0.5">Category:</span>
-								<div class="ui category dropdown">
+								<span style="opacity: 0.5;">Category:</span>
+								<div class="ui category dropdown" style="<%=(t.type=='income_expense'&&!t.category)?'background:yellow':''%>">
 									<input type="hidden" name="category" value="<%=t.category%>">
 									<div class="text">None</div>
 									<i class="dropdown icon"></i>
@@ -33,7 +33,7 @@
 								<div class='ui divider' style='margin-top: 0px; margin-bottom: 0px;'></div>
 								<!-- description -->
 								<span class='description'><%-t.description?t.description:''%></span>
-								<a class='edit' data-id='<%=t.id%>' href=''>edit</a>
+								<a class='edit' data-id='<%=t.id%>' href='' style="<%=(!t.description)?'background:yellow':''%>">edit</a>
 								<div class='edit_description' data-id='<%=t.id%>' style='display:none;'>
 									
 									<div class="ui fluid input">
