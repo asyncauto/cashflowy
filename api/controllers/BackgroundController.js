@@ -164,13 +164,25 @@ module.exports = {
 	deleteTasks:function(req,res){
 		var state = req.query.state?req.query.state:'complete';
 		var n = req.query.n?req.query.n:100;
-		kue.Job.rangeByState( state, 0, n, 'asc', function( err, jobs ) {
-			jobs.forEach( function( job ) {
-				job.remove( function(){
-					console.log( 'removed ', job.id );
+		if(req.query.job_type){
+			kue.Job.rangeByType( req.query.job_type, state, 0, n, 'asc', function( err, jobs ) {
+				jobs.forEach( function( job ) {
+					job.remove( function(){
+						console.log( 'removed ', job.id );
+					});
 				});
+				res.send(jobs.length+' tasks will be deleted');
+			});	
+		}else{
+			kue.Job.rangeByState( state, 0, n, 'asc', function( err, jobs ) {
+				jobs.forEach( function( job ) {
+					job.remove( function(){
+						console.log( 'removed ', job.id );
+					});
+				});
+				res.send(jobs.length+' tasks will be deleted');
 			});
-			res.send(n+' tasks will be deleted');
-		});
+		}
+		
 	}
 };
