@@ -126,7 +126,7 @@ module.exports={
 							type:'replace',
 							options:{
 								replace:',',
-								with:'.',
+								with:'',
 							}
 						},
 					]
