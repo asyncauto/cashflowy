@@ -118,6 +118,50 @@ show database \l
 change user back to ubuntu
 `su - ubuntu`
 
+### Setting up a gmail app to process your transaction emails.
+
+In order to programatically access your email, gmail provides apis. To do that you need to create an `app` with google. 
+
+https://developers.google.com/gmail/api/
+
+click on quick start(https://developers.google.com/gmail/api/quickstart/js).
+
+on that page, under step 1, a), click on the wizard.
+
+create a project -> continue
+
+Click `get credentials`
+
+Under the "where will you be calling the api from " dropdown choose - "Other UI"
+
+Under which API, choose - Gmail API
+Under what data, choose user data
+
+Enter a name for your app
+
+Define email address and product name to be shown to user. Download the credentials.
+
+This downloaded google app credentials file contains the details missing in the local.js file that you created earlier. 
+
+Copy paste the credentials into local.js configs
+
+### Allow your gmail app that you created to access your email.
+Now you have a google app. You server is connected to your google app. The google app is generic. It still does not have access to your email content yet. You need to autherize the google app that you created to access your gmail account. Lets do that now. 
+
+Run getAuthToken.js
+`node getAuthToken.js`
+
+Open the link that you get from the terminal. Here you are giving access permission to your app to access your transaction emails. Once you authentiate you will get a code. Paste that code back in the terminal. Once you do that, a file called token.js will be created in cashflowy folder. This file contains the auth token, that specifically allows your gmail app(hence your cashflowy server) to access your gmail content. 
+
+To view the token in the terminal type
+
+cat token.json
+
+Copy paste this token in the cashflowy UI. 
+In cashflowy, click create email. Enter your email address and then paste the result of `cat token.json`
+
+Now cashflowy has access to read your transaction emails. Now lets process your emails to extract financial data.
+
 ### Setting up config
 Inside config folder, create a file called local.js
 
@@ -198,48 +242,7 @@ In terminal break the server with control C. Go to locals and update models.migr
 
 Run the server again and try signup again. This time it should work.
 
-### Setting up a gmail app to process your transaction emails.
-
-In order to programatically access your email, gmail provides apis. To do that you need to create an `app` with google. 
-
-https://developers.google.com/gmail/api/
-
-click on quick start(https://developers.google.com/gmail/api/quickstart/js).
-
-on that page, under step 1, a), click on the wizard.
-
-create a project -> continue
-
-Click `get credentials`
-
-Under the "where will you be calling the api from " dropdown choose - "Other UI"
-
-Enter a name for your app
-
-Define email address and product name to be shown to user. Download the credentials.
-
-This downloaded google app credentials file contains the details missing in the local.js file that you created earlier. 
-
-Copy paste the credentials into local.js configs
-
-### Allow your gmail app that you created to access your email.
-Now you have a google app. You server is connected to your google app. The google app is generic. It still does not have access to your email content yet. You need to autherize the google app that you created to access your gmail account. Lets do that now. 
-
-Run getAuthToken.js
-`node getAuthToken.js`
-
-Open the link that you get from the terminal. Here you are giving access permission to your app to access your transaction emails. Once you authentiate you will get a code. Paste that code back in the terminal. Once you do that, a file called token.js will be created in cashflowy folder. This file contains the auth token, that specifically allows your gmail app(hence your cashflowy server) to access your gmail content. 
-
-To view the token in the terminal type
-
-cat token.json
-
-Copy paste this token in the cashflowy UI. 
-In cashflowy, click create email. Enter your email address and then paste the result of `cat token.json`
-
-Now cashflowy has access to read your transaction emails. Now lets process your emails to extract financial data.
-
-### Extracting financial data
+### Extracting financial data from gmail
 
 ```
 curl -X POST 'http://localhost:1337/background/surface_crawl?secret=aslfhlaksbfalskhbfdladshbflkasj2346ncaubdlai2shflasdflhasbdflks234alkjfnslcnalsjnf&user=1' -F user_id=1
