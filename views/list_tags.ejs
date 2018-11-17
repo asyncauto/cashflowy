@@ -1,0 +1,37 @@
+<div class='ui container'>
+	<div class='ui grid'>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+		<div class='ten wide computer sixteen wide mobile  column'>
+			
+			<h1>Categories</h1>
+			<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Edit</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%tags.forEach(function(t){%>
+						<tr data-tid='<%=t.id%>'>
+							<td><%=t.id%></td>
+							<td><%=t.name%></td>
+							<td><%=t.description%></td>
+							<td><a href="/tag/<%=t.id%>/edit">edit</a></td>
+						</tr>
+					<%})%>
+				</tbody>
+			</table>
+			
+		</div>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+	</div>
+</div>
+<a class="circular ui icon right floated primary big button" href="/tag/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new tag" data-position="left center" data-inverted=""><i class="icon tags"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.popup').popup();
+	});
+</script>

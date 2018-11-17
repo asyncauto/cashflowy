@@ -838,7 +838,6 @@ module.exports = {
 			res.send(result);
 		})
 	},
-
 	createDocument: function(req, res) {
 		if (req.method == 'GET') {
 			var locals = {
@@ -906,6 +905,77 @@ module.exports = {
 			})
 			
 		}
-	}
+	},
+	listTags:function(req,res){
+		Tag.find({user:req.user.id}).exec(function(err,tags){
+			var locals={
+				tags:tags
+			}
+			res.view('list_tags',locals);
+		});
+	},
+	createTag:function(req,res){
+		if(req.body){ // post request
 
+			var t={
+				name:req.body.name,
+				description:req.body.description,
+				user:req.user.id,
+				type:'user',
+			}
+			console.log(t);
+			Tag.create(t).exec(function(err,transaction){
+				if(err){
+					console.log(err);
+					throw err;
+				}
+				else
+					res.redirect('/tags');
+			});
+		}else{ // view the form
+			var locals={
+				status:'',
+				message:'',
+				name:'',
+				description:'',
+			}
+			console.log(locals);
+			res.view('create_tag',locals);
+		}
+	},
+	viewTag:function(req,res){
+		res.send('this is tag page');
+	},
+	editTag:function(req,res){
+		Tag.findOne({user:req.user.id,id:req.params.id}).exec(function(err,tag){
+			if(err)
+				throw err;
+			if(!tag)
+				return res.send('No tag with this id or you dont have permission to edit this tag');
+			console.log(tag);
+			if(req.body){ // post request
+				var t={
+					name:req.body.name,
+					description:req.body.description,
+					user:req.user.id,
+				}
+				console.log(t);
+				Tag.update({id:req.params.id},t).exec(function(err,transaction){
+					if(err)
+						throw err;
+					else
+						res.redirect('/tags');
+				});
+			}else{ // view the form
+				var locals={
+					status:'',
+					message:'',
+					name:tag.name,
+					description:tag.description,
+				}
+				console.log(locals);
+				res.view('create_tag',locals);
+			}
+		});
+	},
 }
