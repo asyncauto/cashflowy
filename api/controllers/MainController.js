@@ -838,6 +838,51 @@ module.exports = {
 			res.send(result);
 		})
 	},
+	listRules:function(req,res){
+		
+	},
+	createRule:function(req,res){
+		async.auto({
+			getAccounts:function(callback){
+				Account.find({user:req.user.id}).exec(callback);
+			},
+			getCategories:function(callback){
+				Category.find({user:req.user.id}).exec(callback);
+			},
+			getEmails:function(callback){
+				Email.find({user:req.user.id}).exec(callback);	
+			},
+		},function(err,results){
+			if(req.body){ // post request
+				
+			}else{ // view the form
+				var locals={
+					occuredAt:'',
+					status:'',
+					message:'',
+					description:'',
+					original_amount:'',
+					original_currency:'',
+					third_party:'',
+					account_id:'',
+					to_account:'',
+					accounts:results.getAccounts,
+					categories:results.getCategories,
+					emails:results.getEmails,
+					type:'expense',
+				}
+				console.log(locals);
+				res.view('create_rule',locals);
+			}
+		});
+		
+	},
+	editRule:function(req,res){
+		
+	},
+	deleteRule:function(req,res){
+		
+	},
 
 	createDocument: function(req, res) {
 		if (req.method == 'GET') {

@@ -1,0 +1,189 @@
+<%
+	
+	if(!original_currency)
+		original_currency=req.user.details.default_currency;
+	var single_active_flag=false;
+	if(!account_id)
+		account_id=req.user.details.default_account;
+	var create_or_edit = GeneralService.createOrEdit(req.url);
+%>
+<div class="ui container">
+	<h4 class="ui horizontal divider header">
+		<!-- <i class="list icon"></i> -->
+		<%=create_or_edit%> Rule
+	</h4>
+	<div class="ui grid">
+		<div class='seven wide column'>
+			<h3>What should trigger this rule?</h3>
+			<div class='ui segment'>
+				<div class="ui fluid selection dropdown" id='trigger'>
+					<i class="dropdown icon"></i>
+					<span class="default text">Choose a trigger...</span>
+					<div class="menu">
+						<div class="item" data-value='email_parsed'>
+							<b>Email parsed</b>
+							<br>
+							<br>
+							<div style='opacity: 0.7'>
+								This event is fired after a new email is parsed 
+							</div>
+						</div>
+						<div class="item" data-value='added_category'>
+							<b>Added category</b>
+							<br>
+							<br>
+							<div style='opacity: 0.7'>
+								This event is fired when a category is added to a transaction.
+							</div>
+						</div>
+						<div class="item" data-value='added_description'>
+							<b>Added description</b>
+							<br>
+							<br>
+							<div style='opacity: 0.7'>
+								This event is fired when a description is added to a transaction
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='ui horizontal divider'>Criteria</div>
+				<form class="ui <%=status%> form " action="" method='post'>
+					<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
+					<div class="field trigger email_parsed" style='display: none;'>
+						<label>Filter type</label>
+						<div class="ui fluid search selection dropdown" id='filter_type'>
+							<input type="hidden" name="type" value="">
+							<i class="dropdown icon"></i>
+							<div class="default text">Choose email filter type</div>
+							<div class="menu">
+								<%sails.config.filters.active.forEach(function(filter){%>
+									<div class="item" data-value="<%=filter%>"><%=filter%></div>
+								<%})%>
+							</div>
+						</div>
+					</div>
+					<div class="field trigger email_parsed" style='display: none;'>
+						<label>Body parse used:</label>
+						<input type="text" name="body_parser_used" placeholder="using a specific body parser" value="<%=description%>">
+					</div>
+					<div class="field trigger email_parsed" style='display: none;'>
+						<label>Email address:</label>
+						<div class="ui fluid search selection dropdown">
+							<input type="hidden" name="to_email" value="<%=emails[0].email%>">
+							<i class="dropdown icon"></i>
+							<div class="default text">Email address where it is parsed from</div>
+							<div class="menu">
+								<%emails.forEach(function(email){%>
+									<div class="item" data-value="<%=email.email%>"><%=email.email%></div>
+								<%})%>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class='two wide column'>
+			<div class='ui center aligned basic  segment' style='font-size: 3rem;'>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<i class="arrow right icon"></i>
+			</div>
+		</div>
+		<div class='seven wide column'>
+			<h3>What action should we perform?</h3>
+			<div class='ui segment'>
+				<div class="ui fluid selection dropdown" id='action'>
+					<i class="dropdown icon"></i>
+					<span class="default text">Choose an action...</span>
+					<div class="menu">
+						<div class="item action email_parsed" data-value='modify_extracted_data' style='display: none;'>
+							<b>Modify Extracted Data</b>
+							<br>
+							<br>
+							<div style='opacity: 0.7'>
+								Modify the data extracted in the parsed email
+							</div>
+						</div>
+						<div class="item" data-value='modify_extracted_data2' style='display: none;'>
+							<b>Modify Extracted Data2</b>
+							<br>
+							<br>
+							<div style='opacity: 0.7'>
+								Modify the data extracted in the parsed email
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class='ui horizontal divider'>Details</div>
+				<form class="ui <%=status%> form " action="" method='post'>
+					<div class="field action modify_extracted_data" style='display: none;'>
+						<label>Account no:</label>
+						<input type="text" name="account_last_4_digits" placeholder="Enter account no" value="<%=description%>">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.dropdown').dropdown();
+		$('#trigger').dropdown({
+			onChange: function(value, text, $selectedItem) {
+				console.log(value);
+				// console.log(text);
+				$('.field.trigger').hide();
+				$('.field.trigger.'+value).show();
+				$('.item.action.'+value).show();
+				switch(value){
+					case 'email_parsed':
+						
+						break;
+					case 'added_category':
+						
+						break;
+					case 'added_description':
+						
+						break;
+				}
+				// $('.people_in_submenu').hide();
+				// if(value=='staff_curated_list')
+				// 	$('#staff_list').show();
+				// // else if(value=='people_i_follow')
+				// else if(value=='my_list')
+				// 	$('#your_list').show();
+			}
+		});
+		$('#action').dropdown({
+			onChange: function(value, text, $selectedItem) {
+				console.log(value);
+				// console.log(text);
+				$('.field.action').hide();
+				$('.field.action.'+value).show();
+			}
+		});
+		$('#select_type').dropdown('set selected','<%=type%>');
+		// $('input[name=date]').val(a.format('YYYY-MM-DD'));
+		// $('input[name=time]').val(a.format('HH:mm'));
+		// $('input[name=tz]').val(a.format('Z'));
+		$('.ui.form').form({
+			fields: {
+				original_amount     : 'empty',
+				original_currency   : 'empty',
+				date : 'empty',
+				time : 'empty',
+				// third_party : 'empty',
+				description : 'empty',
+				account_id:'empty',
+			}
+		});
+	})
+
+</script>
+
