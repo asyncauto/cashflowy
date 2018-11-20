@@ -43,7 +43,12 @@ module.exports = {
 		},
 		category:{
 			model:'category'
-		}
+		},
+		tags:{
+			collection:'tag',
+			via:'transactions',
+			dominant:true
+		},
 
 	}
 };

@@ -107,6 +107,7 @@ module.exports.routes = {
 
   // api patterns needs rewrite later
   'POST /api/edit_desc':'MainController.editDescription',
+  'POST /api/edit_tags':'MainController.editTags',
 
   'GET /email_test':'MainController.emailTest',
   'GET /uam_test':'MainController.testUAM',

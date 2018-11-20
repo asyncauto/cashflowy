@@ -33,7 +33,8 @@
 								<div class='ui divider' style='margin-top: 0px; margin-bottom: 0px;'></div>
 								<!-- description -->
 								<span class='description'><%-t.description?t.description:''%></span>
-								<a class='edit' data-id='<%=t.id%>' href='' style="<%=(!t.description)?'background:yellow':''%>">edit</a>
+								<a class='edit' data-id='<%=t.id%>' href='' style="<%=(!t.description)?'background:yellow':''%>">edit</a><br>
+
 								<div class='edit_description' data-id='<%=t.id%>' style='display:none;'>
 									
 									<div class="ui fluid input">
@@ -43,8 +44,37 @@
 									<button class="ui teal button submit_edit_desc" data-id='<%=t.id%>' >save</button>
 									<button class="ui red button cancel_edit_desc" data-id='<%=t.id%>' >cancel</button>
 								</div>
-
+								<span style="opacity: 0.5;">Tags:</span>
+								<span class='tags'>
+									<%- partial('partials/display_tags', {tags: t.tags}) %>
+								</span>
+								<button class='add_tags2 ui small basic icon button'>
+									<i class="plus icon"></i>
+								</button>
+								<div class="ui add_tags_popup popup">
+									Add tags to this transaction:
+									<button class='ui teal disabled button submit_edit_tags'>update</button>
+									<div class='ui tags_dd fluid multiple search selection dropdown'>
+										<%
+											var tag_names=_.map(t.tags,'id');
+											var tags_string=tag_names.join(',');
+										%>
+										<input name='tags' type='hidden' value='<%=tags_string%>'>
+										<i class='dropdown icon'></i>
+										<input class='search' autocomplete='off' tabindex='0'><span class='sizer' style=''></span>
+										<div class='default text'>Tags</div>
+										<div class='menu transition hidden' tabindex='-1'>
+											<%tags.forEach(function(tag){%>
+												<div class='item' data-value='<%=tag.id%>'><%=tag.name%></div>
+											<%})%>
+										</div>
+									</div>
+									<br>
+									<!-- <button class='ui red button cancel_edit_tags' data-id='<%=t.id%>' >cancel</button> -->
+								</div>
 								
+								
+
 								
 								<br>
 							</td>
@@ -89,6 +119,7 @@
 									<i class="angle down icon"></i>
 									<div class="menu">
 										<a class="disabled item" href='/transaction/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
+										<a class='item add_tags' href=''>Add tags</a>
 										<a class="item" href='/transaction/<%=t.id%>/edit'>Edit</a>
 										<!-- <a class="item" href='/transaction/<%=t.id%>/convert_to_transfer'>Convert to transfer</a> -->
 										<a class="item" href='/transaction/<%=t.id%>/delete'>Delete</a>
@@ -172,6 +203,12 @@
 				})
 			}
 		});
+		$('.add_tags').click(function(e){
+			e.preventDefault();
+			$(this).parents('tr').find('.tags').hide();
+			console.log('hi');
+			$(this).parents('tr').find('.edit_tags').show();
+		})
 		$('.extra_options.dropdown').dropdown();
 		$('.filter.dropdown').dropdown({
 			onChange:function(value, text, $choice){
@@ -183,7 +220,44 @@
 				window.location = '/transactions?'+$.param(params);
 			}
 		});
+		$('.tags_dd.ui.dropdown')
+		  .dropdown({
+		    allowAdditions: true,
+		    onChange:function(value, text, $choice){
+				$(this).parents('.add_tags_popup').find('.submit_edit_tags').removeClass('disabled');
+			}
+		  });
 		$('.popup').popup();
+		$('.add_tags2').popup({
+			on:'click',
+			popup: '.add_tags_popup'
+		});
+		$('.submit_edit_tags').click(function(e){
+			$(this).addClass('disabled');
+			var t_id=$(this).parents('.transaction').attr('data-tid');
+			var tags_string=$(this).parents('.transaction').find('.add_tags_popup').find('input[name=tags]').val();;
+			console.log(t_id);
+			console.log(tags_string);
+			var dd = this;
+			$.ajax({
+				url:"/api/edit_tags/",
+				data:{new_tags: tags_string.split(','),t_id:t_id},
+				type:'POST',
+				success:function(response){
+					console.log('success');
+					// alert('updated tags');
+					console.log(response);
+					// $(dd).removeClass('disabled').removeClass('loading');
+					$(dd).parents('.transaction').find('.tags').html(response);
+					// $(dd).parents('.transaction').find('span.tags').html('hello');
+				},
+				error:function(xhr, textStatus, errorThrown){
+					console.log("An error occured: " + xhr.status + " " + xhr.statusText);
+				}
+			})
+			// update the ui to include the tags.
+			// update details on the backend. 
+		})
 	});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>

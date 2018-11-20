@@ -23,7 +23,16 @@ module.exports = {
 		type:{
 			type:'text',
 			enum:['user','global']
-		}
+		},
+		color:{
+			type:'text',
+			enum:["red","orange","yellow","olive","green","teal","blue","violet","purple","pink","brown","grey","black"],
+			defaultsTo:'teal'
+		},
+		transactions:{
+			collection:'transaction',
+			via:'tags',
+		},
 	}
 };
 

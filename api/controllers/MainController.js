@@ -453,10 +453,13 @@ module.exports = {
 				}
 				if(req.query.category)
 					filter.category=req.query.category;
-				Transaction.find(filter).sort('occuredAt DESC').limit(limit).exec(callback);
+				Transaction.find(filter).sort('occuredAt DESC').limit(limit).populate('tags').exec(callback);
 			}],
 			getCategories:function(callback){
 				Category.find({user:req.user.id}).exec(callback);
+			},
+			getTags:function(callback){
+				Tag.find({user:req.user.id}).exec(callback);
 			}
 		},function(err,results){
 			locals.transactions=results.getTransactions;
@@ -473,6 +476,7 @@ module.exports = {
 			})
 			// locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.accounts=results.getAccounts;
+			locals.tags=results.getTags;
 			locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.moment=require('moment-timezone');
 			res.view('list_transactions',locals);
@@ -977,5 +981,46 @@ module.exports = {
 				res.view('create_tag',locals);
 			}
 		});
+	},
+	editTags:function(req,res){
+		async.auto({
+			getAllTags:function(callback){
+				Tag.find({user:req.user.id}).exec(callback);
+			},
+			getTransaction:function(callback){
+				// console.log(req.body);
+				Transaction.findOne({id:req.body.t_id}).populate('tags').exec(callback);
+			},
+		},function(err,results){
+			var all_tags=results.getAllTags;
+			var old_tags=results.getTransaction.tags;
+			var new_tags=req.body.new_tags;
+			
+			var t = results.getTransaction;
+			all_tags.forEach(function(a_tag){
+				var action='remove';
+				new_tags.forEach(function(new_tag){
+					if(a_tag.id==new_tag)
+						action='add';
+				})
+				// console.log('\n-----');
+				// console.log(a_tag.name,a_tag.id,action);
+				
+				if(action=='add')
+					t.tags.add(a_tag.id);
+				else
+					t.tags.remove(a_tag.id);
+			});
+			// console.log(t);
+			t.save(function(err) {
+				// console.log(t);
+				Transaction.findOne({id:req.body.t_id}).populate('tags').exec(function(err,new_t){
+					res.view('partials/display_tags', {tags: new_t.tags,layout:false});
+					
+				});
+			});
+
+		});
+		
 	},
 }
