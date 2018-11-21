@@ -8,8 +8,8 @@ module.exports.gmail = {
 		"client_secret":process.env.GOOGLE_CLIENT_SECRET,
 		"redirect_uris":[  
 			"urn:ietf:wg:oauth:2.0:oob",
-			"http://localhost",
-			"https://app.cashflowy.in",
+			// "http://localhost",
+			"https://app.cashflowy.in/oauth2callback",
 		]
 	}
 }
