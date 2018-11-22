@@ -40,6 +40,7 @@ module.exports.routes = {
   'GET /emails':'MainController.listEmails',
   'GET /email/create':'MainController.createEmail',
   'POST /email/create':'MainController.createEmail',
+  'GET /email/create2':'MainController.createEmail2',
   'GET /email/:id/edit':'MainController.editEmail',
   'POST /email/:id/edit':'MainController.editEmail',
   'GET /email/:id':'MainController.viewEmail',
@@ -145,6 +146,8 @@ module.exports.routes = {
 
   //webhooks
   'POST /webhook/docparser': 'WebhookController.docparser'
+
+  'GET /oauth2callback':'MainController.oauth2callback',
 
   /***************************************************************************
   *                                                                          *

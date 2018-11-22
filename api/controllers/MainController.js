@@ -124,6 +124,34 @@ module.exports = {
 		});
 	},
 	createEmail:function(req,res){
+		if(req.body){ // post request
+ 			var e={
+ 				email:req.body.email,
+ 				token:req.body.token,
+ 				user:req.user.id,
+ 			}
+ 			// console.log('before transaction find or create');
+ 			console.log(e);
+ 			Email.create(e).exec(function(err,transaction){
+ 				if(err){
+ 					console.log(err);
+ 					throw err;
+ 				}
+ 				else
+ 					res.redirect('/emails');
+ 			});
+ 		}else{ // view the form
+ 			var locals={
+ 				email:'',
+ 				token:'',
+ 				status:'',
+ 				message:'',
+ 			}
+ 			console.log(locals);
+ 			res.view('create_email',locals);
+ 		}
+	},
+	createEmail2:function(req,res){
 		const {google} = require('googleapis');
 		const {client_secret, client_id, redirect_uris} = sails.config.gmail.installed;
 		const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[1]);
