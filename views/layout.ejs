@@ -21,6 +21,9 @@
     <meta qqname="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <meta name="apple-mobile-web-app-title" content="Cashflowy">
+    <% if (req.headers['user-agent'].includes('Android')) { %>
+      <meta name="apple-mobile-web-app-capable" content="yes">
+    <% } %>
     <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
     <meta name="application-name" content="Cashflowy">
     <meta name="msapplication-TileColor" content="#da532c">
