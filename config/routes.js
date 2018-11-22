@@ -145,7 +145,7 @@ module.exports.routes = {
   'POST /curator/filter_test':'CuratorController.filterTest',
 
   //webhooks
-  'POST /webhook/docparser': 'WebhookController.docparser'
+  'POST /webhook/docparser': 'WebhookController.docparser',
 
   'GET /oauth2callback':'MainController.oauth2callback',
 
