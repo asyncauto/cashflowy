@@ -1066,4 +1066,153 @@ module.exports = {
 		});
 		
 	},
+	listRecurringTransactions:function(req,res){
+		var locals={};
+		async.auto({
+			getRecurringTransactions:function(callback){
+				Recurring_transaction.find({user:req.user.id}).exec(callback);
+			},
+			getAccounts:function(callback){
+				Account.find({user:req.user.id}).exec(callback);
+			}
+		},function(err,results){
+			var rts=results.getRecurringTransactions;
+			rts.forEach(function(rt){
+				results.getAccounts.forEach(function(account){
+					if(rt.details.account==account.id)
+						rt.details.account=account;
+					if(rt.details.to_account && rt.details.to_account==account.id)
+						rt.details.to_account=account;
+				});
+			});
+			locals.recurring_transactions=rts;
+			res.view('list_recurring_transactions',locals);
+		})
+		
+		// var locals={};
+		// // getUserEmailIds:function
+		// var limit = req.query.limit?req.query.limit:100;
+		// async.auto({
+		// 	getAccounts:function(callback){
+		// 		Account.find({user:req.user.id}).exec(callback);
+		// 	},
+		// 	getTransactions:['getAccounts',function(results,callback){
+		// 		var accounts=[];
+		// 		if(req.query.account){
+		// 			accounts.push(req.query.account);
+		// 		}else{
+		// 			results.getAccounts.forEach(function(account){
+		// 				accounts.push(account.id);
+		// 			});
+		// 		}
+		// 		var filter={
+		// 			account:accounts,
+		// 		}
+		// 		if(req.query.category)
+		// 			filter.category=req.query.category;
+		// 		Transaction.find(filter).sort('occuredAt DESC').limit(limit).populate('tags').exec(callback);
+		// 	}],
+		// 	getCategories:function(callback){
+		// 		Category.find({user:req.user.id}).exec(callback);
+		// 	},
+		// 	getTags:function(callback){
+		// 		Tag.find({user:req.user.id}).exec(callback);
+		// 	}
+		// },function(err,results){
+		// 	locals.transactions=results.getTransactions;
+		// 	var accounts=results.getAccounts;
+		// 	locals.transactions.forEach(function(t){
+		// 		accounts.forEach(function(account){ // expanding account in the transaction object
+		// 			if(t.account==account.id)
+		// 				t.account=account;
+		// 			if(t.to_account==account.id)
+		// 				t.to_account=account;
+		// 		});
+		// 		var moment = require('moment-timezone');
+		// 		t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
+		// 	})
+		// 	// locals.categories=GeneralService.orderCategories(results.getCategories);
+		// 	locals.accounts=results.getAccounts;
+		// 	locals.tags=results.getTags;
+		// 	locals.categories=GeneralService.orderCategories(results.getCategories);
+		// 	locals.moment=require('moment-timezone');
+		// 	res.view('list_transactions',locals);
+			
+		// });
+	},
+	createRecurringTransaction:function(req,res){
+		// var locals={};
+		// res.view('create_recurring_transaction',locals);
+		Account.find({user:req.user.id}).exec(function(err,accounts){
+			if(req.body){ // post request
+				console.log(req.body);
+				const fx = require('money');
+				fx.base='INR';
+				fx.rates=sails.config.fx_rates;
+				var findFilter={
+					createdBy:'user',
+					original_currency:req.body.original_currency,
+					original_amount:-(req.body.original_amount),
+					// needs a bit more filtering
+				};
+				var t={
+					original_currency:req.body.original_currency,
+					// original_amount:-(req.body.original_amount),
+					// amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
+					starts_from: new Date(req.body.date+' '+req.body.time+req.body.tz),
+					createdBy:'user',
+					// type:'income_expense',
+					description:req.body.description,
+					account:req.body.account_id,
+					third_party:req.body.third_party,
+					repeat:req.body.repeat,
+					repeat_times:req.body.repeat_times,
+					happens_on:req.body.happens_on,
+					intervention:req.body.intervention,
+				}
+				if(req.body.type=='expense'){
+					t.type='income_expense';
+					t.original_amount=-(req.body.original_amount);
+					t.amount_inr=-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+				}else if(req.body.type=='income'){
+					t.type='income_expense';
+					t.original_amount=(req.body.original_amount);
+					t.amount_inr=(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+				}else if(req.body.type=='transfer'){
+					t.type='transfer';
+					t.original_amount=-(req.body.original_amount);
+					t.amount_inr=-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+					t.to_account=req.body.to_account;
+				}
+				// console.log('before transaction find or create');
+				console.log(t);
+				var rt={
+					user:req.user.id,
+					details:t
+				}
+				Recurring_transaction.create(rt).exec(function(err,transaction){
+					if(err)
+						throw err;
+					else
+						res.redirect('/recurring_transactions');
+				});
+			}else{ // view the form
+				var locals={
+					occuredAt:'',
+					status:'',
+					message:'',
+					description:'',
+					original_amount:'',
+					original_currency:'',
+					third_party:'',
+					account_id:'',
+					to_account:'',
+					accounts:accounts,
+					type:'expense',
+				}
+				console.log(locals);
+				res.view('create_recurring_transaction',locals);
+			}
+		})
+	},
 }

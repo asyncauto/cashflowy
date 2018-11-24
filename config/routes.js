@@ -62,6 +62,14 @@ module.exports.routes = {
   'GET /transaction/:id/delete':'MainController.deleteTransaction',
   'POST /transaction/:id/delete':'MainController.deleteTransaction',
 
+  'GET /future_transactions':'MainController.listFutureTransactions',
+  'GET /recurring_transactions':'MainController.listRecurringTransactions',
+  'GET /recurring_transaction/create':'MainController.createRecurringTransaction',
+  'POST /recurring_transaction/create':'MainController.createRecurringTransaction',
+  'GET /recurring_transaction/:id/edit':'MainController.editRecurringTransaction',
+  'POST /recurring_transaction/:id/edit':'MainController.editRecurringTransaction',
+  'GET /recurring_transaction/:id/delete':'MainController.deleteRecurringTransaction',
+  'POST /recurring_transaction/:id/delete':'MainController.deleteRecurringTransaction',
 
   'GET /snapshots':'MainController.listSnapshots',
   'GET /snapshot/create':'MainController.createSnapshot',

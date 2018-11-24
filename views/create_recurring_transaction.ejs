@@ -1,0 +1,242 @@
+create recurring transaction
+
+<%
+	
+	if(!original_currency)
+		original_currency=req.user.details.default_currency;
+	var single_active_flag=false;
+	if(!account_id){	
+		if(req.user.details.default_account)
+			account_id=req.user.details.default_account;
+		else
+			account_id=accounts[0].id;
+	}
+	var create_or_edit = GeneralService.createOrEdit(req.url);
+%>
+<div class="ui container">
+	<div class="ui grid">
+		<div class='four wide tablet computer only column'></div>
+		<div class='eight wide table eight wide computer sixteen wide mobile column'>
+			<h4 class="ui horizontal divider header">
+				<!-- <i class="list icon"></i> -->
+				<%=create_or_edit%> Recurring Transaction
+			</h4>
+			<form class="ui <%=status%> form " action="" method='post'>
+				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
+				<div class="field">
+					<label style='color:red'>Type of transaction</label>
+					<div class="ui fluid selection dropdown" id='select_type' style='color:red'>
+						<input type="hidden" name="type" value="expense">
+						<i class="dropdown icon"></i>
+						<div class="default text">Choose type of transaction</div>
+						<div class="menu">
+							<div class="item" data-value="expense">Expense</div>
+							<div class="item" data-value="income">Income</div>
+							<div class="item" data-value="transfer">Transfer</div> 
+						</div>
+					</div>
+				</div>
+				<div class='ui divider'></div>
+				<div class="two fields">
+					
+					<div class="field">
+						<label>Currency</label>
+						<div class="ui fluid search selection dropdown">
+							<input type="hidden" name="original_currency" placeholder="INR" value="<%=original_currency%>">
+							<i class="dropdown icon"></i>
+							<div class="default text">Select Currency</div>
+							<div class="menu">
+								<%Object.keys(sails.config.fx_rates).forEach(function(currency){%>
+									<div class='item' data-value="<%=currency%>"></i><%=currency%></div>
+								<%})%>
+							</div>
+						</div>
+					</div>
+					<div class="field">
+						<label>Amount</label>
+						<input type="number" step="any" name="original_amount" placeholder="100" value="<%=original_amount%>">
+					</div>
+				</div>
+				<div class="field">
+					<label>Description</label>
+					<input type="text" name="description" placeholder="Your comments of the transaction" value="<%=description%>">
+				</div>
+				<div class="field" id='paid_whom'>
+					<label>Paid Whom</label>
+					<input type="text" name="third_party" placeholder="swiggy" value="<%=third_party%>">
+				</div>
+
+				<div class="field" id='account'>
+					<label>Expensed from</label>
+					<div class="ui fluid search selection dropdown">
+						<input type="hidden" name="account_id" value="<%=account_id%>">
+						<i class="dropdown icon"></i>
+						<div class="default text">Select Account</div>
+						<div class="menu">
+							<%accounts.forEach(function(account){%>
+								<div class="<%-account_id?'active':''%> item" data-value="<%=account.id%>"><%=account.name%></div>
+							<%})%>
+						</div>
+					</div>
+				</div>
+				<div class="field" id='to_account' style='display:none;'>
+					<label>To Account</label>
+					<div class="ui fluid search selection dropdown">
+						<input type="hidden" name="to_account" value="<%=to_account%>">
+						<i class="dropdown icon"></i>
+						<div class="default text">Select Account</div>
+						<div class="menu">
+							<%accounts.forEach(function(account){%>
+								<div class="<%-account_id?'active':''%> item" data-value="<%=account.id%>"><%=account.name%></div>
+							<%})%>
+						</div>
+					</div>
+				</div>
+				<div class='ui horizontal divider'>Repetition</div>
+				<div class="two fields">
+					
+					<div class="field" id='repeat'>
+						<label>Repeat: </label>
+						<div class="ui fluid search selection dropdown">
+							<input type="hidden" name="repeat" value="monthly">
+							<i class="dropdown icon"></i>
+							<div class="default text">Select Account</div>
+							<div class="menu">
+								<div class="item" data-value="monthly">Monthly</div>
+								<div class="item" data-value="quarterly">Quarterly</div>
+								<div class="item" data-value="half-yearly">Half Yearly</div>
+								<div class="item" data-value="yearly">Yearly</div>
+							</div>
+						</div>
+					</div>
+					<div class="field">
+						<label>Number of times:</label>
+						<input type="number" step="1" name="repeat_times" placeholder="6" value="">
+					</div>
+				</div>
+				
+				
+				<div class="two fields">
+					<div class="field">
+						<label>Starts from:</label>
+						<input type="date" name="date" value="">
+					</div>
+					<div class="field">
+						<label>Happens on this day of the month:</label>
+						<input type="number" step="1" min="1" max="30" name="happens_on" placeholder="1" value="5">
+					</div>
+					<div class="field" style='display:none;'>
+						<label>At Time</label>
+						<input type="time" name="time" value="">
+					</div>
+					<input type="hidden" name="tz" value="">
+				</div>
+
+				<div class="two fields">
+					<div class="field">
+						<label>Type of intervention: </label>
+						<div class="ui fluid search selection dropdown">
+							<input type="hidden" name="intervention" value="manual">
+							<i class="dropdown icon"></i>
+							<div class="default text">Type of intervention</div>
+							<div class="menu">
+								<div class="item" data-value="manual">Manual</div>
+								<div class="item" data-value="automated">Automated</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			
+				
+				
+				<div class="ui error message">
+					<div class="header">Error</div>
+					<p><%=message%></p>
+				</div>
+				<input type="submit" class="ui button" value="Submit">
+				<div class="ui success message">
+					<div class="header">Transaction created</div>
+					You just created a transaction
+				</div>
+			</form>
+		</div>
+		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
+			<div class='ui segment'>
+				Recurring transactions helps you understand expense/transfers or income that you are expecting in the future. 
+				<br/><br/>
+				<!-- <b>Email:</b> 
+				For now we support only gmail address. The gmail address can be a business gmail address also. 
+				<br/><br/>
+				<b>Token:</b>
+				You will need to enter token detail here for now. It will be automated later.  -->
+			</div>
+		</div>
+	</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		<%if(occuredAt==''){%>
+			var a = moment(); // create a time instance in the local time zone 
+		<%}else{%>
+			var a = moment('<%=occuredAt%>');
+		<%}%>
+		$('.dropdown').dropdown();
+		$('#select_type').dropdown({
+			onChange: function(value, text, $selectedItem) {
+				console.log(value);
+				console.log(text);
+				switch(value){
+					case 'expense':
+						$('#account label').text('Expensed from');
+						$('#paid_whom label').text('Paid whom');
+						$('#paid_whom').show();
+						$('#to_account').hide();
+						$('#select_type').attr('style','color:red');
+						$('#select_type').prev().attr('style','color:red');
+						break;
+					case 'income':
+						$('#account label').text('Deposited to');
+						$('#paid_whom label').text('Source of income');
+						$('#paid_whom').show();
+						$('#to_account').hide();
+						$('#select_type').attr('style','color:#5bc5a2');
+						$('#select_type').prev().attr('style','color:#5bc5a2');
+						break;
+					case 'transfer':
+						$('#account label').text('From account');
+						$('#paid_whom').hide();
+						$('#to_account').show();
+						$('#select_type').attr('style','color:black');
+						$('#select_type').prev().attr('style','color:black');
+						break;
+				}
+				// $('.people_in_submenu').hide();
+				// if(value=='staff_curated_list')
+				// 	$('#staff_list').show();
+				// // else if(value=='people_i_follow')
+				// else if(value=='my_list')
+				// 	$('#your_list').show();
+			}
+		});
+		$('#select_type').dropdown('set selected','<%=type%>');
+		$('input[name=date]').val(a.format('YYYY-MM-DD'));
+		$('input[name=time]').val(a.format('HH:mm'));
+		$('input[name=tz]').val(a.format('Z'));
+		$('.ui.form').form({
+			fields: {
+				original_amount     : 'empty',
+				original_currency   : 'empty',
+				date : 'empty',
+				time : 'empty',
+				// third_party : 'empty',
+				description : 'empty',
+				account_id:'empty',
+			}
+		});
+	})
+
+</script>
+

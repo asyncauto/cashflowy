@@ -1,0 +1,21 @@
+<div class='ui container'>
+	<h2>Recurring transactions:</h2>
+	<%recurring_transactions.forEach(function(rt){%>
+		<h3><%=rt.details.original_currency%> <%=-rt.details.original_amount%></h3>
+		<b>Type:</b> <%=rt.details.type%><br>
+		<b>Repeat:</b> <%=rt.details.repeat%><br>
+		<b>Times:</b> <%=rt.details.repeat_times%><br>
+		<b>Starts from:</b> <%=rt.details.starts_from.substring(0,10)%><br>
+		<%if(rt.details.third_party){%>
+			<b>Third Party:</b> <%=rt.details.third_party%><br>
+		<%}%>
+		<b>Account:</b> <%=rt.details.account.name%><br>
+		<%if(rt.details.to_account){%>
+			<b>To Account:</b> <%=rt.details.to_account.name%><br>
+		<%}%>
+		<b>Intervention:</b> <%=rt.details.intervention%><br>
+		<b>Description:</b> <%=rt.details.description%><br>
+		<b>Happens on:</b> <%=rt.details.happens_on%><br>
+		 <div class='ui divider'></div>
+	<%});%>
+</div>
