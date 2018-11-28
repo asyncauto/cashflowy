@@ -49,7 +49,7 @@
 				
 				<input type="submit" class="ui button" value="Submit">
 				<div class="ui error message">
-					<%if(results.parsed_email.body_parser_used){%>
+					<%if(typeof(results)!='undefined' && results.parsed_email && results.parsed_email.body_parser_used){%>
 						<div class="header">
 							Success
 						</div>
