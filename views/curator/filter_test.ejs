@@ -47,22 +47,37 @@
 				</div>
 
 				
-				<div class="ui error message">
-					<div class="header">Error</div>
-					<p><%=message%></p>
-				</div>
 				<input type="submit" class="ui button" value="Submit">
+				<div class="ui error message">
+					<%if(results.parsed_email.body_parser_used){%>
+						<div class="header">
+							Success
+						</div>
+						<p><%=results.parsed_email.body_parser_used%></p>
+					<%}else{%>
+						<div class="header">
+							Error
+						</div>
+						<p>this email did not fit the specified body parser</p>
+					<%}%>
+				</div>
 				<div class="ui success message">
 					<div class="header">Domain created</div>
 					You just created a domain
 				</div>
 			</form>
 			<%if(typeof results!="undefined"){%>
-				<div class='ui segment'>
+				<!-- <div class='ui segment'>
 					<h3>Results</h3>
-					<%-JSON.stringify(results.parsed_email,null,'    ')%>
+					
 						
-				</div>
+				</div> -->
+				<form class="ui form">
+					<div class="field">
+					    <label>Results</label>
+					    <textarea rows="20"><%=JSON.stringify(results.parsed_email,null,"\t")%></textarea>
+					</div>
+				</form>
 			<%}%>
 		</div>
 		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
