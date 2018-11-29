@@ -13,7 +13,8 @@ module.exports.filters = {
 		'HdfcBankBalanceFilter', //periodic balance alert from bank
 		'ZerodhaTransferFilter',
 		'HdfcBankAccountCreditFilter',
-		'YesBankCreditCardTransactionFilter'
+		'YesBankCreditCardTransactionFilter',
+		'SBIDebitCardFilter',
 		// 'PaytmFilter',
 	]
 }

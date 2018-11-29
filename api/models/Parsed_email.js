@@ -9,9 +9,13 @@ var async = require('async');
 module.exports = {
 
 	attributes: {
-		extracted_data: {
+		extracted_data: { // data originally extracted from email
 			type: 'json',
 			required: true,
+		},
+		data:{ // the processed version of extracted data. This can be modified by automation
+			type: 'json',
+			// required: true,	
 		},
 		email:{
 			type:'text',
@@ -41,6 +45,42 @@ module.exports = {
 			// required is true, but when initially created, it is created without a ref to transaction.
 		}
 	},
+	beforeCreate:function(pe,cb){
+		pe.data=_.cloneDeep(pe.extracted_data);
+		// console.log('before create parsed email');
+		Rule.find({user:pe.user}).exec(function(err,rules){
+			// console.log('inside list of rules');
+			// console.log(pe.user);
+			// console.log(err);
+			// console.log(rules);
+			rules.forEach(function(rule){
+				// console.log('\n\nrule:')
+				// console.log(rule);
+				// console.log('\ncondition:')
+				// console.log(rule.details.trigger.condition)
+				var status = RuleService.evaluateCondition(rule.details.trigger.condition,pe);
+				// console.log("\nstatus = "+status);
+				if(status){
+					// executing action here. 
+					if(rule.action=='modify_data'){
+						if(rule.details.action.type=='modify_pe_data'){
+							Object.keys(rule.details.action.set).forEach(function(s_key){
+								// console.log(s_key);
+								if(s_key=='data.account_last_4_digits')
+									pe.data.account_last_4_digits=rule.details.action.set[s_key];
+							});
+						}
+					}
+					// console.log('\n\n\n -------');
+					// console.log(pe.data);
+				}
+			});
+			cb(null);
+		})
+
+		// check if any rules apply. 
+		// execute those rules. 
+	},
 	afterCreate: function(pe, cb) {
 		// console.log('after create of parsed_email');
 		// find or create transaction
@@ -51,10 +91,10 @@ module.exports = {
 				// console.log('parsed_email after create #2');
 				
 				var acc_number;
-				if(pe.extracted_data.credit_card_last_4_digits)
-					acc_number=pe.extracted_data.credit_card_last_4_digits;
-				else if(pe.extracted_data.account_last_4_digits)
-					acc_number=pe.extracted_data.account_last_4_digits;
+				if(pe.data.credit_card_last_4_digits)
+					acc_number=pe.data.credit_card_last_4_digits;
+				else if(pe.data.account_last_4_digits)
+					acc_number=pe.data.account_last_4_digits;
 				else{
 					switch(pe.type){
 						case 'AmazonPayTransactionFilter':
@@ -63,11 +103,13 @@ module.exports = {
 						acc_number=pe.email+'-amazon_pay';
 					else if(pe.type=='PaytmFilter'){
 						if(pe.body_parser_used=='received_money_v1')
-							acc_number=pe.extracted_data.to;
+							acc_number=pe.data.to;
 						else
-							acc_number=pe.extracted_data.from_phone;
+							acc_number=pe.data.from_phone;
 					}
 				}
+
+
 				var filter = {
 					like:{
 						acc_number:'%'+acc_number, // ends with the following number
@@ -92,6 +134,7 @@ module.exports = {
 						});
 					}
 				});
+				
 			},
 			getToAccount:function(callback){
 				// console.log('getToAccount');
@@ -125,8 +168,8 @@ module.exports = {
 			},
 			findOrCreateTransaction:['getAccount','getToAccount',function(results,callback){
 				//skip if it only contains information about account balance.
-				if(!pe.extracted_data.currency)
-					pe.extracted_data.currency='INR';
+				if(!pe.data.currency)
+					pe.data.currency='INR';
 				if(pe.type=='HdfcBankBalanceFilter')
 					return callback(null);
 				console.log('parsed_email after create #3');
@@ -135,17 +178,17 @@ module.exports = {
 				fx.rates=sails.config.fx_rates;
 				var findFilter={
 					createdBy:'user',
-					original_currency:pe.extracted_data.currency,
-					original_amount:pe.extracted_data.amount,
+					original_currency:pe.data.currency,
+					original_amount:pe.data.amount,
 					// needs a bit more filtering
 				};
 				
 				var t={
-					original_currency:pe.extracted_data.currency,
+					original_currency:pe.data.currency,
 					createdBy:'parsed_email',
 					type:'income_expense',
 					account:results.getAccount.id,
-					third_party:pe.extracted_data.whom_you_paid?pe.extracted_data.whom_you_paid:pe.extracted_data.third_party,
+					third_party:pe.data.whom_you_paid?pe.data.whom_you_paid:pe.data.third_party,
 				}
 				if(pe.type=='ZerodhaTransferFilter'){
 					t.type='transfer';
@@ -155,40 +198,41 @@ module.exports = {
 
 				
 				if(pe.type=='IciciCreditCardRefundFilter' || pe.type=='AmazonPayCashbackFilter' || pe.type=='HdfcBankAccountCreditFilter')
-					t.original_amount=pe.extracted_data.amount; // this is an income, so positive
+					t.original_amount=pe.data.amount; // this is an income, so positive
 				else 
-					t.original_amount=-(pe.extracted_data.amount); // this in an expense, so negative
+					t.original_amount=-(pe.data.amount); // this in an expense, so negative
 
 				if(pe.type=='PaytmFilter'){
 					if(pe.body_parser_used=='received_money_v1'){
-						t.original_amount=pe.extracted_data.amount;	 // income					
-						t.third_party=pe.extracted_data.from_phone+'('+pe.extracted_data.from_name+')';
+						t.original_amount=pe.data.amount;	 // income					
+						t.third_party=pe.data.from_phone+'('+pe.data.from_name+')';
 					}else{
-						if(pe.extracted_data.to_phone)
-							t.third_party=pe.extracted_data.to_phone+'('+pe.extracted_data.to_name+')';
+						if(pe.data.to_phone)
+							t.third_party=pe.data.to_phone+'('+pe.data.to_name+')';
 						else 
-							t.third_party=pe.extracted_data.to_name;
+							t.third_party=pe.data.to_name;
 					}
 				}
-				t.amount_inr=fx.convert(t.original_amount, {from: pe.extracted_data.currency, to: "INR"});
+				t.amount_inr=fx.convert(t.original_amount, {from: pe.data.currency, to: "INR"});
 				
-				if(pe.extracted_data.date && pe.extracted_data.time){
-					t.occuredAt= new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30');
+				if(pe.data.date && pe.data.time){
+					t.occuredAt= new Date(pe.data.date+' '+pe.data.time+'+5:30');
 					if(t.occuredAt=='Invalid Date')
-						t.occuredAt=pe.extracted_data.email_received_time;
+						t.occuredAt=pe.data.email_received_time;
 				}
 				else
-					t.occuredAt=pe.extracted_data.email_received_time;
+					t.occuredAt=pe.data.email_received_time;
 
-				// console.log('\n\n\nbefore transaction find or create');
+				console.log('\n\n\nbefore transaction find or create');
+				// console.log(t);
 
 				Transaction.create(t).exec(function(err,result){
 					if(err){
 						console.log('Attempt to create a transaction failed');
 						console.log('transaction:')
 						console.log(t);
-						console.log('extracted_data');
-						console.log(pe.extracted_data);
+						console.log('data');
+						console.log(pe.data);
 					}
 					callback(err,result);
 
@@ -204,37 +248,37 @@ module.exports = {
 			}],
 			createSnapshotIfPossible:['getAccount',function(results,callback){
 				// console.log('create snapshot');
-				if(pe.extracted_data.balance_currency && pe.extracted_data.balance_amount){
+				if(pe.data.balance_currency && pe.data.balance_amount){
 					var ss={
 						account:results.getAccount.id,
 						createdBy:'parsed_email',
-						// takenAt: new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30'),
-						balance_currency:pe.extracted_data.balance_currency,
-						balance:pe.extracted_data.balance_amount,
+						// takenAt: new Date(pe.data.date+' '+pe.data.time+'+5:30'),
+						balance_currency:pe.data.balance_currency,
+						balance:pe.data.balance_amount,
 					}
-					if(pe.extracted_data.date && pe.extracted_data.time){
-						ss.takenAt= new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30');
+					if(pe.data.date && pe.data.time){
+						ss.takenAt= new Date(pe.data.date+' '+pe.data.time+'+5:30');
 						if(ss.takenAt=='Invalid Date')
-							ss.takenAt=pe.extracted_data.email_received_time;
+							ss.takenAt=pe.data.email_received_time;
 					}
 					else
-						ss.takenAt=pe.extracted_data.email_received_time;
+						ss.takenAt=pe.data.email_received_time;
 					Snapshot.create(ss).exec(callback);
-				}else if(pe.extracted_data.credit_limit_currency && pe.extracted_data.credit_limit_amount && pe.extracted_data.available_credit_balance){
+				}else if(pe.data.credit_limit_currency && pe.data.credit_limit_amount && pe.data.available_credit_balance){
 					var ss={
 						account:results.getAccount.id,
 						createdBy:'parsed_email',
-						// takenAt: new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30'),
-						balance_currency:pe.extracted_data.credit_limit_currency,
-						balance:pe.extracted_data.available_credit_balance-pe.extracted_data.credit_limit_amount,
+						// takenAt: new Date(pe.data.date+' '+pe.data.time+'+5:30'),
+						balance_currency:pe.data.credit_limit_currency,
+						balance:pe.data.available_credit_balance-pe.data.credit_limit_amount,
 					}
-					if(pe.extracted_data.date && pe.extracted_data.time){
-						ss.takenAt= new Date(pe.extracted_data.date+' '+pe.extracted_data.time+'+5:30');
+					if(pe.data.date && pe.data.time){
+						ss.takenAt= new Date(pe.data.date+' '+pe.data.time+'+5:30');
 						if(ss.takenAt=='Invalid Date')
-							ss.takenAt=pe.extracted_data.email_received_time;
+							ss.takenAt=pe.data.email_received_time;
 					}
 					else
-						ss.takenAt=pe.extracted_data.email_received_time;
+						ss.takenAt=pe.data.email_received_time;
 					Snapshot.create(ss).exec(callback);
 				}else{
 					callback(null);
