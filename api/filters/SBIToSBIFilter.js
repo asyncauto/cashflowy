@@ -1,10 +1,10 @@
 module.exports={
-	gmail_filter:'from:(donotreply.sbiatm@sbi.co.in) subject:(Transaction alert for your State Bank of India Debit Card)',
+	gmail_filter:'from:(donotreply.inb@sbi.co.in) subject:(Transaction acknowledgement)',
 	active:true,
 	required_fields:['account_last_4_digits','currency','amount','whom_you_paid','available_credit_balance','date','time'],
 	body_parsers:[
 		{
-			version:'atm_v1',
+			version:'v1',
 			description:'as of sept 2018',
 			fields:[
 				{
@@ -12,9 +12,14 @@ module.exports={
 					type:'integer',
 					filters:[
 						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:'Thank you for using State Bank Internet Banking.'
+						},
+						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							q:'.If not done by you'
+							q:'In case you have not logged'
 						},
 						{
 							type:'trim',
@@ -22,16 +27,12 @@ module.exports={
 						{
 							type:'find_start_position',
 							criteria:'text_match_after',
-							q:' fm A/cx '
+							q:' from A/c ending '
 						},
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on '
+							q:' to '
 						},
 						{
 							type:'trim',
@@ -43,24 +44,211 @@ module.exports={
 					type:'string',
 					filters:[
 						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:'Thank you for using State Bank Internet Banking.'
+						},
+						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							q:'.If not done by you'
+							q:'In case you have not logged'
 						},
 						{
 							type:'trim',
 						},
 						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:' for transaction of '
+						},
+						{
 							type:'find_end_position',
 							criteria:'text_match_before',
+							q:' from A/c ending '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'substring',
 							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' '
+								start:0,
+								end:3,
+							}
+						},
+						{
+							type:'replace',
+							options:{
+								replace:'Rs.',
+								with:'INR',
+							}
+						},
+					]
+				},
+				{
+					name:'amount',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:'Thank you for using State Bank Internet Banking.'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							q:'In case you have not logged'
 						},
 						{
 							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:' for transaction of '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							q:' from A/c ending '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'substring',
+							options:{
+								start:3,
+							}
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
+						},
+					]
+				},
+				{
+					name:'whom_you_paid',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:'Thank you for using State Bank Internet Banking.'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							q:'In case you have not logged'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:' from A/c ending '
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:' to '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							q:' on '
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'transaction_id',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:'Thank you for using State Bank Internet Banking.'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							q:'In case you have not logged'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:' from A/c ending '
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:' is '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							q:'.'
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+			]
+		},
+		{
+			version:'v2',
+			description:'Payment of bescom',
+			fields:[
+				{
+					name:'currency',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:'Thank you for banking with State Bank of India.'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							q:'In case you have not logged'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:' for '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							q:'has been processed successfully'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'substring',
+							options:{
+								start:0,
+								end:2,
+							}
 						},
 						{
 							type:'replace',
@@ -76,9 +264,14 @@ module.exports={
 					type:'float',
 					filters:[
 						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:'Thank you for banking with State Bank of India.'
+						},
+						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							q:'.If not done by you'
+							q:'In case you have not logged'
 						},
 						{
 							type:'trim',
@@ -86,19 +279,31 @@ module.exports={
 						{
 							type:'find_start_position',
 							criteria:'text_match_after',
-							q:'Rs '
+							q:' for '
 						},
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' w/d at '
+							q:'has been processed successfully'
 						},
 						{
 							type:'trim',
+						},
+						{
+							type:'substring',
+							options:{
+								start:2,
+							}
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
 						},
 					]
 				},
@@ -107,9 +312,14 @@ module.exports={
 					type:'string',
 					filters:[
 						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:'Thank you for banking with State Bank of India.'
+						},
+						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							q:'.If not done by you'
+							q:'In case you have not logged'
 						},
 						{
 							type:'trim',
@@ -117,16 +327,12 @@ module.exports={
 						{
 							type:'find_start_position',
 							criteria:'text_match_after',
-							q:' at '
+							q:'Your payment of '
 						},
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' fm A/cx '
+							q:' for '
 						},
 						{
 							type:'trim',
@@ -135,43 +341,17 @@ module.exports={
 				},
 				{
 					name:'transaction_id',
-					type:'float',
-					filters:[
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:'.Txn#'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'.Avl bal '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'balance_currency',
 					type:'string',
 					filters:[
 						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							q:'Thank you for banking with State Bank of India.'
+						},
+						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							q:'.If not done by you'
+							q:'In case you have not logged'
 						},
 						{
 							type:'trim',
@@ -179,52 +359,12 @@ module.exports={
 						{
 							type:'find_start_position',
 							criteria:'text_match_after',
-							q:'.Avl bal '
-						},
-						{
-							type:'trim',
+							q:'Txn Ref is '
 						},
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							q:' '
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'replace',
-							options:{
-								replace:'Rs',
-								with:'INR',
-							}
-						},
-					]
-				},
-				{
-					name:'balance_amount',
-					type:'float',
-					filters:[
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:'.Avl bal '
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:' '
+							q:'.'
 						},
 						{
 							type:'trim',
@@ -234,275 +374,9 @@ module.exports={
 			]
 		},
 		{
-			version:'atm_v2',
-			description:'as of sept 2018',
+			version:'v3',
+			description:'for emails where there is no mention on thirdparty',
 			fields:[
-				{
-					name:'account_last_4_digits',
-					type:'integer',
-					filters:[
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:' withdrawn from A/c xx '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'currency',
-					type:'string',
-					filters:[
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' '
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'replace',
-							options:{
-								replace:'Rs',
-								with:'INR',
-							}
-						},
-					]
-				},
-				{
-					name:'amount',
-					type:'float',
-					filters:[
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:'Rs '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' withdrawn from A/c xx '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'whom_you_paid',
-					type:'string',
-					filters:[
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:' at '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'.Txn# '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'transaction_id',
-					type:'float',
-					filters:[
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:'.Txn#'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'.Avl bal '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'balance_currency',
-					type:'string',
-					filters:[
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:'.Avl bal '
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:' '
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'replace',
-							options:{
-								replace:'Rs',
-								with:'INR',
-							}
-						},
-					]
-				},
-				{
-					name:'balance_amount',
-					type:'float',
-					filters:[
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:'.Avl bal '
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:' '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-			]
-		},
-		{
-			version:'debit_card_v1',
-			description:'as of sept 2018',
-			fields:[
-				{
-					name:'debit_card_last_4_digits',
-					type:'integer',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:'Thank you for using your SBI Debit Card '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:'XX'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' for a purchase worth '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
 				{
 					name:'currency',
 					type:'string',
@@ -510,12 +384,12 @@ module.exports={
 						{
 							type:'find_start_position',
 							criteria:'text_match_after',
-							q:'Thank you for using your SBI Debit Card '
+							q:'Thank you for using State Bank Internet banking'
 						},
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							q:'.If not done by you'
+							q:'In case you have not logged'
 						},
 						{
 							type:'trim',
@@ -523,15 +397,11 @@ module.exports={
 						{
 							type:'find_start_position',
 							criteria:'text_match_after',
-							q:'for a purchase worth '
+							q:' for '
 						},
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
 							q:' on '
 						},
 						{
@@ -541,13 +411,13 @@ module.exports={
 							type:'substring',
 							options:{
 								start:0,
-								end:2
+								end:3,
 							}
 						},
 						{
 							type:'replace',
 							options:{
-								replace:'Rs',
+								replace:'Rs.',
 								with:'INR',
 							}
 						},
@@ -560,12 +430,12 @@ module.exports={
 						{
 							type:'find_start_position',
 							criteria:'text_match_after',
-							q:'Thank you for using your SBI Debit Card '
+							q:'Thank you for using State Bank Internet banking'
 						},
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							q:'.If not done by you'
+							q:'In case you have not logged'
 						},
 						{
 							type:'trim',
@@ -573,15 +443,11 @@ module.exports={
 						{
 							type:'find_start_position',
 							criteria:'text_match_after',
-							q:'for a purchase worth '
+							q:' for '
 						},
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
 							q:' on '
 						},
 						{
@@ -590,24 +456,34 @@ module.exports={
 						{
 							type:'substring',
 							options:{
-								start:2
+								start:3,
+							}
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
 							}
 						},
 					]
 				},
 				{
-					name:'whom_you_paid',
+					name:'transaction_id',
 					type:'string',
 					filters:[
 						{
 							type:'find_start_position',
 							criteria:'text_match_after',
-							q:'Thank you for using your SBI Debit Card '
+							q:'Thank you for using State Bank Internet banking'
 						},
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							q:'.If not done by you'
+							q:'In case you have not logged'
 						},
 						{
 							type:'trim',
@@ -615,43 +491,12 @@ module.exports={
 						{
 							type:'find_start_position',
 							criteria:'text_match_after',
-							q:' at '
+							q:'Your Transaction Ref No '
 						},
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' txn# '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'transaction_id',
-					type:'float',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:'Thank you for using your SBI Debit Card '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							q:'.If not done by you'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							q:' txn# '
+							q:' for '
 						},
 						{
 							type:'trim',

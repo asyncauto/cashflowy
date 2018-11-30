@@ -16,6 +16,8 @@ module.exports.filters = {
 		'YesBankCreditCardTransactionFilter',
 		'SBIDebitCardFilter',
 		'SBIOnlineTransactionFilter',
+		'SBIToSBIFilter',
+		'SBIRtgsFilter',
 		// 'PaytmFilter',
 	]
 }

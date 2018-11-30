@@ -13,6 +13,9 @@ module.exports={
 				// console.log(condition[c_key])
 				if(pe.type!=condition[c_key])
 					status=false;
+			}else if(c_key=='body_parser_used'){
+				if(pe.body_parser_used!=condition[c_key])
+					status=false;
 			}else if(c_key=='extracted_data.debit_card_last_4_digits'){
 				// console.log('checking debit card last 4 digits');
 				console.log(condition[c_key]);
