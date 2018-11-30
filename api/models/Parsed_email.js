@@ -202,6 +202,9 @@ module.exports = {
 				else 
 					t.original_amount=-(pe.data.amount); // this in an expense, so negative
 
+				if(pe.type=='SBIRtgsFilter' && pe.body_parser_used=='credit_v1')
+					t.original_amount=pe.data.amount;
+
 				if(pe.type=='PaytmFilter'){
 					if(pe.body_parser_used=='received_money_v1'){
 						t.original_amount=pe.data.amount;	 // income					
