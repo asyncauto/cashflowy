@@ -18,6 +18,7 @@ module.exports.filters = {
 		'SBIOnlineTransactionFilter',
 		'SBIToSBIFilter',
 		'SBIRtgsFilter',
+		'SBINeftFilter',
 		// 'PaytmFilter',
 	]
 }
