@@ -185,6 +185,19 @@ module.exports={
 		
 		return create_or_edit.charAt(0).toUpperCase()+create_or_edit.slice(1);
 		// returns Edit or Create - notice the caps
+	},
+	/**
+	 * convert a promise to callback
+	 * @param  {[type]}   promise  [description]
+	 * @param  {Function} callback [description]
+	 * @return {[type]}            [description]
+	 */
+	p2c:function(promise,callback){
+		promise.then(function(result) {
+			callback(null, result);
+		}, function(error) {
+			callback(error);
+		});
 	}
 
 }
