@@ -100,35 +100,30 @@ module.exports = {
 			res.view('bull/list_items',locals);
 		});
 	},
-	// retryJob:function(req,res){
-	// 	var job_id=req.body.job_id?req.body.job_id:'';
-	// 	console.log(job_id);
-	// 	if(job_id=='')
-	// 		return res.send(400,'bad request');
-	// 	kue.Job.get( job_id, function( err, job ) {
-	// 		if(err)
-	// 			return res.json(500,err);
-	// 		// console.log(job);
-	// 		console.log('making the job inactive now');
-	// 		job.inactive();
-	// 		res.send(200,'ok')
-	// 	});
+	retryJob:function(req,res){
+		var job_id=req.body.job_id?req.body.job_id:'';
+		console.log(job_id);
+		if(job_id=='')
+			return res.send(400,'bad request');
+		queue.getJob(job_id).then(function(job){
+			job.retry().then(function(){
+				console.log('Making job inactive now #%d', job.id);
+				res.send(200,'ok')
+			})
+		});
 		
-	// },
-	// deleteJob:function(req,res){
-	// 	var job_id=req.body.job_id?req.body.job_id:'';
-	// 	console.log(job_id);
-	// 	if(job_id=='')
-	// 		return res.send(400,'bad request');
-	// 	kue.Job.get( job_id, function( err, job ) {
-	// 		if(err)
-	// 			return res.json(500,err);
-	// 		job.remove(function(err){
-	// 			if (err) throw err;
-	// 			console.log('removed completed job #%d', job.id);
-	// 			res.send(200,'ok')
-	// 		});
-	// 	});
-	// }
+	},
+	deleteJob:function(req,res){
+		var job_id=req.body.job_id?req.body.job_id:'';
+		console.log(job_id);
+		if(job_id=='')
+			return res.send(400,'bad request');
+		queue.getJob(job_id).then(function(job){
+			job.remove().then(function(){
+				console.log('removed completed job #%d', job.id);
+				res.send(200,'ok')
+			})
+		});
+	}
 };
 

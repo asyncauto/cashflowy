@@ -43,7 +43,7 @@
 						<td><%=job.processedOn%></td>
 						<td><%=job.finishedOn%></td>
 						<td class="center aligned">
-							<button class="circular green ui icon button retry_job" data-id='<%=job.id%>'>
+							<button class="<%-state!='failed'?'disabled':''%> circular green ui icon button retry_job" data-id='<%=job.id%>'>
 								<i class="icon refresh"></i>
 							</button>
 						</td>
