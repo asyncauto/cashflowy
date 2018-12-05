@@ -130,6 +130,10 @@ module.exports.routes = {
   'POST /kue/delete':'KueController.deleteJob',
 
 
+  'GET /bull':'BullController.index',
+  'GET /bull/:state':'BullController.listItems',
+  'POST /bull/retry':'BullController.retryJob',
+  'POST /bull/delete':'BullController.deleteJob',
 
   'GET /curator/filter_test':'CuratorController.filterTest',
   'POST /curator/filter_test':'CuratorController.filterTest',
