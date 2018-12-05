@@ -8,6 +8,7 @@
     "async": "^2.6.1",
     "atob": "^2.1.2",
     "bcryptjs": "^2.4.3",
+    "bull": "^3.5.2",
     "cheerio": "^1.0.0-rc.2",
     "connect-redis": "^3.3.3",
     "ejs": "2.5.5",
