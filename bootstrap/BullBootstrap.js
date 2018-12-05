@@ -35,14 +35,14 @@ module.exports = function (callback) {
 	};
 
 
-	queue.process('surface_crawl',0,function(job,done){
+	queue.process('surface_crawl',1,function(job,done){
 		GmailService.getMessagesAndProcessEach(job.data.options,function(err,result){
 			// if(err) // uncomment for debugging when the kue has errors
 			// 	throw err;
 			done(err,result);
 		});
 	});
-	queue.process('send_email_report',0,function(job,done){
+	queue.process('send_email_report',1,function(job,done){
 		NotificationService.sendEmailReport(job.data.options,function(err,result){
 			// if(err) // uncomment for debugging when the kue has errors
 			// 	throw err;

@@ -26,7 +26,7 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  // '*': true,
+  '*': false,
 
   /***************************************************************************
   *                                                                          *
@@ -58,6 +58,9 @@ module.exports.policies = {
     // listCategories:['isAuthenticated'],
   }, 
   KueController:{
+    '*':['isAuthenticated','isAdmin']
+  },
+  BullController:{
     '*':['isAuthenticated','isAdmin']
   },
   BackgroundController:{
