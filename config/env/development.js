@@ -30,6 +30,11 @@ module.exports = {
 		port: 6379,
 		db: 4,
 	},
+	redis_bull: {
+		host: '127.0.0.1',
+		port: 6379,
+		db: 4,
+	},
 	session: {
 		adapter: 'connect-redis',
 		host: '127.0.0.1',

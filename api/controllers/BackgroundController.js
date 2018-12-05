@@ -7,11 +7,14 @@
  * 
  */
 const async = require('async');
-var kue = require( 'kue' );
-var queue = kue.createQueue({
-	prefix: 'q',
-	redis: sails.config.redis_kue
-});
+// var kue = require( 'kue' );
+// var queue = kue.createQueue({
+// 	prefix: 'q',
+// 	redis: sails.config.redis_kue
+// });
+var Bull = require( 'bull' );
+	// create our job queue
+var queue = new Bull('queue',{redis:sails.config.redis_bull});
 var moment = require('moment-timezone');
 
 module.exports = {
@@ -23,13 +26,11 @@ module.exports = {
 				email_id:req.query.email_id,
 				email_type:filter_name
 			}
-			queue.create('deepCrawl',{
+			var promise = queue.add('surface_crawl',{
 				title:'deepCrawl - '+options.email_id+' - '+options.email_type,
 				options:options
-			}).delay(100) // 1 min delay
-				.priority('high')
-				.save();
-			next(null);
+			});
+			GeneralService.p2c(promise,next);
 		},function(err){
 			res.send('added to kue');
 		});
@@ -62,7 +63,8 @@ module.exports = {
 					});
 				});
 				async.eachLimit(kue_configs,1,function(data,next){
-					queue.create('surface_crawl',data).priority('high').save(next);
+					var promise = queue.add('surface_crawl',data);
+					GeneralService.p2c(promise,next);
 				},function(err){
 					callback(err,kue_configs);
 				})
@@ -104,7 +106,8 @@ module.exports = {
 				kue_configs.push(data);
 			})
 			async.eachLimit(kue_configs,1,function(data,next){
-				queue.create('send_email_report',data).priority('high').save(next);
+				var promise = queue.add('send_email_report',data);
+				GeneralService.p2c(promise,next);
 			},function(err){
 				res.send(kue_configs);
 			});
@@ -137,7 +140,8 @@ module.exports = {
 				kue_configs.push(data);
 			})
 			async.eachLimit(kue_configs,1,function(data,next){
-				queue.create('send_email_report',data).priority('high').save(next);
+				var promise = queue.add('send_email_report',data);
+				GeneralService.p2c(promise,next);
 			},function(err){
 				res.send(kue_configs);
 			});

@@ -15,7 +15,7 @@ var async = require('async');
 // });
 var Bull = require( 'bull' );
 	// create our job queue
-var queue = new Bull('queue','redis://127.0.0.1:6379');
+var queue = new Bull('queue',{redis:sails.config.redis_bull});
 module.exports = {
 	index:function(req,res){
 		var job_types=_.uniq(sails.config.kue_admin?sails.config.kue_admin.job_types:[]);
