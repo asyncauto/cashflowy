@@ -9,10 +9,10 @@ var async = require('async');
 
  // create our job queue
 
-var queue = kue.createQueue({
-	prefix: 'q',
-	redis: sails.config.redis_kue
-});
+// var queue = kue.createQueue({
+// 	prefix: 'q',
+// 	redis: sails.config.redis_kue
+// });
 var Bull = require( 'bull' );
 	// create our job queue
 var queue = new Bull('queue','redis://127.0.0.1:6379');
@@ -20,68 +20,13 @@ module.exports = {
 	index:function(req,res){
 		var job_types=_.uniq(sails.config.kue_admin?sails.config.kue_admin.job_types:[]);
 		var job_stats=[];
-		async.eachLimit(job_types,1,function(job_type,next){
-			async.auto({
-				inActiveCount:function(callback){
-					queue.inactiveCount(job_type,callback);
-				},
-				completeCount:function(callback){
-					queue.completeCount(job_type,callback);
-				},
-				failedCount:function(callback){
-					queue.failedCount(job_type,callback);
-				},
-				delayedCount:function(callback){
-					queue.delayedCount(job_type,callback);
-				},
-				activeCount:function(callback){
-					queue.activeCount(job_type,callback);
-				},
-			},function(err,results){
-				var js={
-					job_type:job_type,
-					inActiveCount:results.inActiveCount,
-					completeCount:results.completeCount,
-					failedCount:results.failedCount,
-					delayedCount:results.delayedCount,
-					activeCount:results.activeCount
-				}
-				job_stats.push(js);
-				next(err);
-			});
-		},function(err,results){
-			if(err)
-				throw err;
-			async.auto({
-				inActiveCount:function(callback){
-					queue.inactiveCount(callback);
-				},
-				completeCount:function(callback){
-					queue.completeCount(callback);
-				},
-				failedCount:function(callback){
-					queue.failedCount(callback);
-				},
-				delayedCount:function(callback){
-					queue.delayedCount(callback);
-				},
-				activeCount:function(callback){
-					queue.activeCount(callback);
-				},
-			},function(err,results){
-				var locals={
-					job_stats:job_stats,
-					overall_stats:results,
-				}
-				res.view('kue/index',locals);
-				// sails.hooks.views.render(hook_view_dir+'/kue/index',locals,function(err,html){
-				// 	if(err)
-				// 		throw err;
-				// 	res.send(html);
-				// });
-			})
+		queue.getJobCounts().then(function(counts){
+			var locals={
+				job_stats:[],
+				overall_stats:counts
+			}
+			res.view('bull/index',locals);
 		});
-		
 	},
 	listItems:function(req,res){
 		// var JSON = require('flatted');
