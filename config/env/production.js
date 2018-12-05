@@ -30,6 +30,11 @@ module.exports = {
 		port: 6379,
 		db:1,
 	},
+	redis_bull:{
+		host:process.env.REDIS_HOST,
+		port: 6379,
+		db:1,
+	},
 	session:{
 		adapter: 'connect-redis',
 		host: process.env.REDIS_HOST,
