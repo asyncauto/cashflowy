@@ -12,7 +12,7 @@
 				<%=(-category.super_sum*100/category.budget).toFixed(1)%>%
 			</span>)
 		</div>
-		<%if(category.children.length){%>
+		<%if(category.children && category.children.length){%>
 			<div class="list">
 				<%category.children.forEach(function(c2){%>
 					<%- partial('category', {category: c2}) %>
