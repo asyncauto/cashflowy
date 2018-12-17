@@ -115,7 +115,7 @@ module.exports = {
                             q: 'on '
                         },
                         {
-                            type: 'trim',
+                            type: 'trim'
                         },
                     ]
                 },
