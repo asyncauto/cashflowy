@@ -153,6 +153,7 @@ module.exports.routes = {
 
   'GET /oauth2callback':'MainController.oauth2callback',
 
+  'POST /webhook/docparser2':'WebhookController.docparser2',
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *
