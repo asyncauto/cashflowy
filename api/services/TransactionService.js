@@ -9,7 +9,7 @@ module.exports = {
 			},
 			findOrCreateTransaction: ['findSLI', function (results, cb) {
 				//if transaction is present return.
-				if (results.findSLI.transaction) return cb(null);
+				if (results.findSLI.transaction) return cb(null, { id: results.findSLI.transaction });
 
 				switch (results.findSLI.document.parser_used) {
 					// case for hdfc credit card statments. It straight forword for hdfc as there were not other source i.e email from where we can extract data
@@ -40,8 +40,11 @@ module.exports = {
 					default:
 						break;
 				}
+			}],
+			updateSLI: ['findOrCreateTransaction', function (results, cb) {
+				Statement_line_item.update({ id: sli.id }, { transaction: results.findOrCreateTransaction.id }).exec(cb);
 			}]
-		}, function(err, results){
+		}, function (err, results) {
 			cb(err, results);
 		});
 	}

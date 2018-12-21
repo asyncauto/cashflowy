@@ -941,7 +941,7 @@ module.exports = {
 	
 					request(options, function (error, response, body) {
 						if (error) return cb(error);
-						cb(body);
+						cb(null, body);
 					});
 	
 				}]
@@ -956,9 +956,7 @@ module.exports = {
 					 return res.view('create_document', locals);
 				}
 				else	
-				 	return res.redirect("/documents")
-
-				
+				 	return res.redirect("/documents");
 			})
 			
 		}

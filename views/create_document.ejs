@@ -31,17 +31,18 @@
 				</div>
 	
 				
-				
-				<div class="ui error message">
-					<div class="header">Error</div>
-					<p><%=message%></p>
-				</div>
 				<input type="submit" class="ui button" value="Submit">
 				<div class="ui success message">
 					<div class="header">Document created</div>
 					We will parse the document and update your transactions.
 				</div>
 			</form>
+			<% if(message){ %>
+			<div class="ui error message">
+				<div class="header">Error</div>
+				<p><%=message%></p>
+			</div>
+			<% } %>
 		</div>
 		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
 			<div class='ui segment'>
