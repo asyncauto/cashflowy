@@ -885,6 +885,15 @@ module.exports = {
 			res.send(result);
 		})
 	},
+	listDocuments: function(req, res){
+		Document.find({user:req.user.id}).sort('id DESC').exec(function(err,documents){
+			var locals={
+				documents:documents,
+				moment: require('moment-timezone')
+			}
+			res.view('list_documents',locals);
+		})
+	},
 	createDocument: function(req, res) {
 		if (req.method == 'GET') {
 			var locals = {
@@ -942,13 +951,14 @@ module.exports = {
 					 message:''
 				 };
 
-				if(error)
+				if(error){
 					 locals.message = error.message
-			
+					 return res.view('create_document', locals);
+				}
 				else	
-				 	locals.type = results.createDocument.parser_used
+				 	return res.redirect("/documents")
 
-				return res.view('create_document', locals);
+				
 			})
 			
 		}

@@ -95,6 +95,7 @@ module.exports.routes = {
   'GET /rule/:id/delete':'MainController.deleteRule',
   'POST /rule/:id/delete':'MainController.deleteRule',
 
+  'GET /documents':'MainController.listDocuments',
   'GET /document/create':'MainController.createDocument',
   'POST /document/create':'MainController.createDocument',
 
@@ -153,6 +154,7 @@ module.exports.routes = {
 
   'GET /oauth2callback':'MainController.oauth2callback',
 
+  'POST /webhook/docparser2':'WebhookController.docparser2',
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *
