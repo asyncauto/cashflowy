@@ -49,8 +49,12 @@ module.exports = function (callback) {
 			done(err,result);
 		})
 	});
-	
-	
+
+	queue.process('afterCreate_sli',1,function(job,done){
+		TransactionService.createTransactionFromSLI(job.data, function(err, result){
+			done(err, result);
+		})
+	});
 
 	// console.log('\n\n\n\n ******** kue setup ********');
 	callback(null);
