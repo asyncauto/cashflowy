@@ -1,0 +1,46 @@
+<div class='ui container'>
+	<div class='ui grid'>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+		<div class='sixteen wide table six wide computer sixteen wide mobile  column'>
+			<h1>Your Documents: </h1>
+			<table class="ui celled padded unstackable table">
+				<thead>
+					<tr>
+                        <th>Statement_date</th>
+						<th>File Name</th>
+                        <th>Acc_number</th>
+                        <th>Acc_holder</th>
+                        <th>Uploaded_at</th>
+                        <th>Processed_at</th>
+                        <th>Original_file</th>
+                        <th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%documents.forEach(function(a){%>
+						<tr data-tid='<%=a.id%>'>
+                            <td>
+                                <span style="font-size: 1.1rem;"><%-a.parsed_data ? moment(a.parsed_data.statement_date).tz('Asia/Kolkata').format('ll') : '-'%></span>
+								</td>
+							<td><%=a.parsed_data ? a.parsed_data.file_name : '-' %></td>
+							<td><%=a.parsed_data ? a.parsed_data.account_id : '-' %></td>
+                            <td><%=a.parsed_data ? a.parsed_data.account_holder : '-'%></td>
+                            <td><span style="font-size: 1.1rem;"><%-a.parsed_data ? moment(a.parsed_data.uploaded_at).tz('Asia/Kolkata').format('lll') : '-'%></span></td>
+                            <td><span style="font-size: 1.1rem;"><%-a.parsed_data ? moment(a.parsed_data.processed_at).tz('Asia/Kolkata').format('lll') : '-'%></span></td>
+                            <td><a href="<%=a.parsed_data ? a.parsed_data.media_link_original : '#' %>" target="_blank"><i class="blue large download icon"></i></a></td>
+                            <td><i class="<%=a.parsed_data ? a.parsed_data.transactions.length ? 'green large thumbs up icon' :  'red large thumbs down icon' : new Date() - new Date(a.createdAt) < 60000 ? 'large history icon':  'red large thumbs down icon'%>"></i> </td>
+						</tr>
+					<%})%>
+				</tbody>
+			</table>
+		</div>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+	</div>
+</div>
+<a class="circular ui icon right floated primary big button" href="/document/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new document" data-position="left center" data-inverted=""><i class="file alternate outline icon"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.popup').popup();
+		$('.extra_options.dropdown').dropdown();
+	});
+</script>

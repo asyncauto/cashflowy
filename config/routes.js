@@ -95,6 +95,7 @@ module.exports.routes = {
   'GET /rule/:id/delete':'MainController.deleteRule',
   'POST /rule/:id/delete':'MainController.deleteRule',
 
+  'GET /documents':'MainController.listDocuments',
   'GET /document/create':'MainController.createDocument',
   'POST /document/create':'MainController.createDocument',
 
