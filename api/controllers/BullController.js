@@ -124,6 +124,13 @@ module.exports = {
 				res.send(200,'ok')
 			})
 		});
+	},
+	restartQueueConnection:function(req,res){
+		sails.config.queue.close().then(function(){
+			sails.config.queue=new Bull('queue',{redis:sails.config.redis_bull});
+		}).catch(function(err){
+			console.log(err);
+		})
 	}
 };
 

@@ -14,6 +14,7 @@ var queue = kue.createQueue({
 	prefix: 'q',
 	redis: sails.config.redis_kue
 });
+var temp_count = 10;
 
 var request = require("request");
 module.exports = {
@@ -961,6 +962,12 @@ module.exports = {
 			
 		}
 	},
+	editDocument:function(req,res){
+		res.send('edit a document here');
+	},
+	deleteDocument:function(req,res){
+		res.send('delete a document using this');
+	},
 	listTags:function(req,res){
 		Tag.find({user:req.user.id}).exec(function(err,tags){
 			var locals={
@@ -1070,7 +1077,6 @@ module.exports = {
 					
 				});
 			});
-
 		});
 		
 	},

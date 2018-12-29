@@ -98,6 +98,11 @@ module.exports.routes = {
   'GET /documents':'MainController.listDocuments',
   'GET /document/create':'MainController.createDocument',
   'POST /document/create':'MainController.createDocument',
+  'GET /document/:id/edit':'MainController.editDocument',
+  'POST /document/:id/edit':'MainController.editDocument',
+  'GET /document/:id/delete':'MainController.deleteDocument',
+  'POST /document/:id/delete':'MainController.deleteDocument',
+  
 
   'GET /rule/:id':'MainController.viewRule',
   'GET /rule/:id/edit':'MainController.editRule',
@@ -142,17 +147,19 @@ module.exports.routes = {
 
 
   'GET /bull':'BullController.index',
+  'GET /bull/restartQueueConnection':'BullController.restartQueueConnection',
   'GET /bull/:state':'BullController.listItems',
   'POST /bull/retry':'BullController.retryJob',
   'POST /bull/delete':'BullController.deleteJob',
+
+  'GET /testBull':'MainController.testBull',
+
+
 
   'GET /curator/filter_test':'CuratorController.filterTest',
   'POST /curator/filter_test':'CuratorController.filterTest',
 
   //webhooks
-  'POST /webhook/docparser': 'WebhookController.docparser',
-
-  'GET /oauth2callback':'MainController.oauth2callback',
 
   'POST /webhook/docparser2':'WebhookController.docparser2',
   /***************************************************************************

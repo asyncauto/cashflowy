@@ -32,14 +32,17 @@
     "mailgun-js": "^0.21.0",
     "moment-timezone": "^0.5.21",
     "money": "^0.2.0",
+    "node-qpdf": "^1.0.3",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "python-shell": "^1.0.6",
     "rc": "^1.2.8",
     "read-last-lines": "^1.6.0",
     "sails": "~0.12.14",
     "sails-disk": "~0.10.9",
     "sails-helper": "git+https://git@github.com/alexjv89/sails-helper.git",
-    "sails-postgresql": "^0.11.4"
+    "sails-postgresql": "^0.11.4",
+    "textract": "^2.4.0"
   },
   "scripts": {
     "debug": "node debug app.js",

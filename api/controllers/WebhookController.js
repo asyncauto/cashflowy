@@ -73,7 +73,7 @@ module.exports = {
         if (req.query.secret != sails.config.docparser_webhook_secret)
             return res.status(403).json({ status: 'failure', error: 'athorization failed' });
         // req.body.remote_id?req.body.remote_id:1;
-        req.body.remote_id=1;
+        // req.body.remote_id=1;
         async.auto({
             findDocument: function (cb) {
                 Document.findOne({ id: parseInt(req.body.remote_id) }).exec(cb);
@@ -82,11 +82,13 @@ module.exports = {
                 // cb(null);
                 Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: req.body }).exec(cb);
             },
+            // check if the document entered is duplicate of something else
             createStatementLineItems:['findDocument',function(results,cb){
                 console.log('statement line items will be created here\n\n\n\n');
                 // Line items will only be created if they dont already exist. 
                 var pos=0;
-                var acc_no=req.body.accounts[0].acc_no;
+                var acc_no=_.find(req.body.accounts,{acc_type:'Savings'}).acc_no;
+                // var acc_no=req.body.accounts[0].acc_no;
                 async.eachLimit(req.body.transactions,1,function(t,next){
                     t.acc_no=acc_no;
                     // var sli_t=CashflowyService.transformSLIToTransactionFormat(sli);
