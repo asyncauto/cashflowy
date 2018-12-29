@@ -17,18 +17,42 @@ var config=require(path.join(__dirname, '/config/services/CashflowyService.test.
 describe('CashflowyService',function(){
 	Object.keys(config).forEach(function(function_name){
 		describe('#'+function_name, function() {
-			var testcases = config[function_name];
-			testcases.forEach(function(testcase){
-				it(testcase.description,function(done){
-					// var output=CashflowyService[function_name](testcase.input);
-					var output=CashflowyService.internal.convertSliToTransaction(testcase.input);
-					expect(output).toEqual(testcase.output);
-					done();
+			var testcases = config[function_name].tests;
+			if(config[function_name].return_or_callback=='return'){
+				testcases.forEach(function(testcase){
+					it(testcase.description,function(done){
+						// var output=CashflowyService[function_name](testcase.input);
+						if(config[function_name].internal)
+							var output=CashflowyService.internal[function_name](testcase.input);
+						else
+							var output=CashflowyService[function_name](testcase.input);
+						expect(output).toEqual(testcase.output);
+						done();
+					});
 				});
-			});
+			}else if(config[function_name].return_or_callback=='callback'){
+				testcases.forEach(function(testcase){
+					it(testcase.description,function(done){
+						// var output=CashflowyService[function_name](testcase.input);
+						if(config[function_name].internal){	
+							CashflowyService.internal[function_name](testcase.input,function(err,output){
+								expect(output).toEqual(testcase.output);
+								done();		
+							});
+						}
+						else{
+							CashflowyService[function_name](testcase.input,function(err,output){
+								expect(output).toEqual(testcase.output);
+								done();		
+							});
+						}
+						
+					});
+				});
+			}
 		});
 	});
-})
+});
 
 // describe('TagsListService', function() {
 // 	describe('#UpdateObjWithFiltered', function() {
