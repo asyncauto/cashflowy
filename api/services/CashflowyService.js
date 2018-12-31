@@ -190,9 +190,8 @@ module.exports={
 				console.log('\n\n\n_____________');
 				console.log('we got error');
 				console.log(err);
-			}
-
-			callback('error');
+			}else
+				callback();
 		})
 	},
 }
