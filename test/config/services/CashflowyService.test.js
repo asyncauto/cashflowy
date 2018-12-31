@@ -23,7 +23,7 @@ module.exports={
 					createdAt:'2018-12-21T10:27:07.000Z',
 					updatedAt:'2018-12-21T10:27:07.000Z',
 					details:{
-						type:'icici_bank_statement',
+						type:'icici_bank',
 						parser_used:'sebtifdmvape',
 					},
 					data:{  
@@ -66,7 +66,7 @@ module.exports={
 					"createdAt": "2018-12-21T10:39:27.000Z",
 					"updatedAt": "2018-12-21T10:39:27.000Z",
 					details:{
-						type:'icici_bank_statement',
+						type:'icici_bank',
 						parser_used:'sebtifdmvape',
 					},
 					data:{  
@@ -111,7 +111,7 @@ module.exports={
 					"createdAt": "2018-12-21T10:39:27.000Z",
 					"updatedAt": "2018-12-21T10:39:27.000Z",
 					details:{
-						type:'icici_bank_statement',
+						type:'icici_bank',
 						parser_used:'sebtifdmvape',
 					},
 					data:{  
@@ -156,7 +156,7 @@ module.exports={
 					"createdAt": "2018-12-29T04:57:37.000Z",
 					"updatedAt": "2018-12-29T04:57:37.000Z",
 					details:{
-						type:'icici_bank_statement',
+						type:'icici_bank',
 						parser_used:'sebtifdmvape',
 					},
 					data:{  
@@ -201,7 +201,7 @@ module.exports={
 					"createdAt": "2018-12-29T04:57:37.000Z",
 					"updatedAt": "2018-12-29T04:57:37.000Z",
 					details:{
-						type:'icici_bank_statement',
+						type:'icici_bank',
 						parser_used:'sebtifdmvape',
 					},
 					data:{  
@@ -246,7 +246,7 @@ module.exports={
 					"createdAt": "2018-12-29T04:57:37.000Z",
 					"updatedAt": "2018-12-29T04:57:37.000Z",
 					details:{
-						type:'icici_bank_statement',
+						type:'icici_bank',
 						parser_used:'sebtifdmvape',
 					},
 					data:{  
@@ -291,7 +291,7 @@ module.exports={
 					"createdAt": "2018-12-29T04:57:37.000Z",
 					"updatedAt": "2018-12-29T04:57:37.000Z",
 					details:{
-						type:'icici_bank_statement',
+						type:'icici_bank',
 						parser_used:'sebtifdmvape',
 					},
 					data:{  

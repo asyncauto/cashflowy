@@ -71,8 +71,8 @@ module.exports = {
     docparser2: function (req, res) {
 
         var doc_filter_type={
-            'bzqxicqhpsrk':'hdfc_credit_card_statement',
-            'sebtifdmvape':'icici_bank_statement',
+            'bzqxicqhpsrk':'hdfc_credit_card',
+            'sebtifdmvape':'icici_bank',
         }
 
         console.log(req.body);

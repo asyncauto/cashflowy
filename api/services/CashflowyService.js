@@ -12,7 +12,7 @@ var convertSliToTransaction = function(sli){
 		third_party:sli.data.paid_whom,
 	}
 
-	if(sli.details.type=='icici_bank_statement' && sli.details.parser_used=='sebtifdmvape'){
+	if(sli.details.type=='icici_bank' && sli.details.parser_used=='sebtifdmvape'){
 		sli.data.credit=sli.data.credit.replace(',','');
 		sli.data.credit=sli.data.credit.replace(',','');
 		sli.data.credit=sli.data.credit.replace(',','');
@@ -23,7 +23,7 @@ var convertSliToTransaction = function(sli){
 			t.original_amount=parseFloat(sli.data.credit);
 		else if(!isNaN(parseFloat(sli.data.debit)))
 			t.original_amount=-parseFloat(sli.data.debit);
-	}else if(sli.details.type=='hdfc_credit_card_statement' && sli.details.parser_used=='bzqxicqhpsrk'){
+	}else if(sli.details.type=='hdfc_credit_card' && sli.details.parser_used=='bzqxicqhpsrk'){
 	// }else{
 		sli.data.amount=sli.data.amount.replace(',','');
 		sli.data.amount=sli.data.amount.replace(',','');
