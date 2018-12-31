@@ -52,15 +52,15 @@ module.exports = function (callback) {
 
 
 	queue.process('afterCreate_sli',1,function(job,done){
-		TransactionService.createTransactionFromSLI(job.data, function(err, result){
-			done(err, result);
-		})
-		// CashflowyService.afterCreate_SLI(job.data,function(err,result){
-		// // CashflowyService.afterCreate_SLI(job.data.sli,function(err,result){
-		// 	// if(err) // uncomment for debugging when the kue has errors
-		// 	// 	throw err;
-		// 	done(err,result);
+		// TransactionService.createTransactionFromSLI(job.data, function(err, result){
+		// 	done(err, result);
 		// })
+		CashflowyService.afterCreate_SLI(job.data,function(err,result){
+		// CashflowyService.afterCreate_SLI(job.data.sli,function(err,result){
+			// if(err) // uncomment for debugging when the kue has errors
+			// 	throw err;
+			done(err,result);
+		})
 	});
 
 	

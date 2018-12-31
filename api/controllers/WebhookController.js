@@ -69,6 +69,12 @@ module.exports = {
     },
     // this is the new doc parser - needs clean up - written by Alex
     docparser2: function (req, res) {
+
+        var doc_filter_type={
+            'bzqxicqhpsrk':'hdfc_credit_card_statement',
+            'sebtifdmvape':'icici_bank_statement',
+        }
+
         console.log(req.body);
         if (req.query.secret != sails.config.docparser_webhook_secret)
             return res.status(403).json({ status: 'failure', error: 'athorization failed' });
@@ -78,16 +84,20 @@ module.exports = {
             findDocument: function (cb) {
                 Document.findOne({ id: parseInt(req.body.remote_id) }).exec(cb);
             },
-            updateDocument: function (cb) {
+            updateDocument: ['findDocument',function (results,cb) {
                 // cb(null);
-                Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: req.body }).exec(cb);
-            },
+                Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: req.body, type:doc_filter_type[results.findDocument.parser_used]}).exec(cb);
+            }],
             // check if the document entered is duplicate of something else
             createStatementLineItems:['findDocument',function(results,cb){
                 console.log('statement line items will be created here\n\n\n\n');
                 // Line items will only be created if they dont already exist. 
                 var pos=0;
-                var acc_no=_.find(req.body.accounts,{acc_type:'Savings'}).acc_no;
+                // this can be abstracted out into a function and tested. 
+                if(results.findDocument.parser_used=='bzqxicqhpsrk')
+                    var acc_no = req.body.account_id;
+                else if(results.findDocument.parser_used=='sebtifdmvape')
+                    var acc_no=_.find(req.body.accounts,{acc_type:'Savings'}).acc_no;
                 // var acc_no=req.body.accounts[0].acc_no;
                 async.eachLimit(req.body.transactions,1,function(t,next){
                     t.acc_no=acc_no;
@@ -96,6 +106,10 @@ module.exports = {
                         extracted_data:t,
                         document:results.findDocument.id,
                         pos:pos,
+                        details:{
+                            parser_used:results.findDocument.parser_used,
+                            type:doc_filter_type[results.findDocument.parser_used],
+                        },
                         user:results.findDocument.user // this is sort of reduntant
                     }
                     // statement_line_item.data=_.cloneDeep(t);

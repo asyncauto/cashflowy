@@ -22,8 +22,10 @@ module.exports={
 					id:26,
 					createdAt:'2018-12-21T10:27:07.000Z',
 					updatedAt:'2018-12-21T10:27:07.000Z',
-					type:'ICICIBankStatement',
-					body_parser_used:'sebtifdmvape',
+					details:{
+						type:'icici_bank_statement',
+						parser_used:'sebtifdmvape',
+					},
 					data:{  
 						date:'01-11-2018',
 						type:'',
@@ -63,8 +65,10 @@ module.exports={
 					"id": 54,
 					"createdAt": "2018-12-21T10:39:27.000Z",
 					"updatedAt": "2018-12-21T10:39:27.000Z",
-					type:'ICICIBankStatement',
-					body_parser_used:'sebtifdmvape',
+					details:{
+						type:'icici_bank_statement',
+						parser_used:'sebtifdmvape',
+					},
 					data:{  
 						"date": "30-11-2018",
 						"type": "",
@@ -106,8 +110,10 @@ module.exports={
 					"id": 53,
 					"createdAt": "2018-12-21T10:39:27.000Z",
 					"updatedAt": "2018-12-21T10:39:27.000Z",
-					type:'ICICIBankStatement',
-					body_parser_used:'sebtifdmvape',
+					details:{
+						type:'icici_bank_statement',
+						parser_used:'sebtifdmvape',
+					},
 					data:{  
 						"date": "30-11-2018",
 						"type": "",
@@ -149,8 +155,10 @@ module.exports={
 					"id": 55,
 					"createdAt": "2018-12-29T04:57:37.000Z",
 					"updatedAt": "2018-12-29T04:57:37.000Z",
-					type:'ICICIBankStatement',
-					body_parser_used:'sebtifdmvape',
+					details:{
+						type:'icici_bank_statement',
+						parser_used:'sebtifdmvape',
+					},
 					data:{  
 						"date": "05-11-2018",
 						"type": "",
@@ -192,8 +200,10 @@ module.exports={
 					"id": 56,
 					"createdAt": "2018-12-29T04:57:37.000Z",
 					"updatedAt": "2018-12-29T04:57:37.000Z",
-					type:'ICICIBankStatement',
-					body_parser_used:'sebtifdmvape',
+					details:{
+						type:'icici_bank_statement',
+						parser_used:'sebtifdmvape',
+					},
 					data:{  
 						"date": "05-11-2018",
 						"type": "NET BANKING",
@@ -235,8 +245,10 @@ module.exports={
 					"id": 57,
 					"createdAt": "2018-12-29T04:57:37.000Z",
 					"updatedAt": "2018-12-29T04:57:37.000Z",
-					type:'ICICIBankStatement',
-					body_parser_used:'sebtifdmvape',
+					details:{
+						type:'icici_bank_statement',
+						parser_used:'sebtifdmvape',
+					},
 					data:{  
 						"date": "21-11-2018",
 						"type": "MOBILE BANKING",
@@ -278,8 +290,10 @@ module.exports={
 					"id": 58,
 					"createdAt": "2018-12-29T04:57:37.000Z",
 					"updatedAt": "2018-12-29T04:57:37.000Z",
-					type:'ICICIBankStatement',
-					body_parser_used:'sebtifdmvape',
+					details:{
+						type:'icici_bank_statement',
+						parser_used:'sebtifdmvape',
+					},
 					data:{  
 						"date": "22-11-2018",
 						"type": "",

@@ -12,7 +12,7 @@ var convertSliToTransaction = function(sli){
 		third_party:sli.data.paid_whom,
 	}
 
-	if(sli.type=='ICICIBankStatement' && sli.body_parser_used=='sebtifdmvape'){
+	if(sli.details.type=='icici_bank_statement' && sli.details.parser_used=='sebtifdmvape'){
 		sli.data.credit=sli.data.credit.replace(',','');
 		sli.data.credit=sli.data.credit.replace(',','');
 		sli.data.credit=sli.data.credit.replace(',','');
@@ -23,6 +23,16 @@ var convertSliToTransaction = function(sli){
 			t.original_amount=parseFloat(sli.data.credit);
 		else if(!isNaN(parseFloat(sli.data.debit)))
 			t.original_amount=-parseFloat(sli.data.debit);
+	}else if(sli.details.type=='hdfc_credit_card_statement' && sli.details.parser_used=='bzqxicqhpsrk'){
+	// }else{
+		sli.data.amount=sli.data.amount.replace(',','');
+		sli.data.amount=sli.data.amount.replace(',','');
+		sli.data.amount=sli.data.amount.replace(',','');
+		if(sli.data.dr_cr=='Cr') // amount is creditted
+			t.original_amount=parseFloat(sli.data.amount);
+		else if(sli.data.dr_cr=='Dr')
+			t.original_amount=-parseFloat(sli.data.amount);
+		t.third_party=sli.data.details;
 	}
 
 	// t.amount_inr=t.original_amount;
@@ -62,26 +72,11 @@ var findSimilarTransactions = function(t,callback){
 		if(err)
 			callback(err);
 		else
-			if(!rawResult.rows.length)
-				return callback('no similar transactions');
-			else
-				return callback(err,rawResult.rows);
+			return callback(err,rawResult.rows);
+			// if(!rawResult.rows.length)
+			// 	return callback('no similar transactions');
+			// else
 	});
-	// async.auto({
-	// 	findSimilarTransactions:function(callback){
-	// 		t.account=results.getAccount.id;
-			
-	// 		var find={
-	// 			account:t.account,
-	// 			original_amount:t.original_amount,
-	// 			original_currency:t.original_currency,
-	// 			occuredAt:t.occuredAt,
-	// 		};
-	// 		Transaction.find(find).exec(callback);
-	// 	},
-		
-	// },callback)
-	
 }
 
 var identifyExistingTransaction=function(options){
@@ -123,10 +118,12 @@ module.exports={
 	afterCreate_SLI:function(sli,callback){
 		// check if transaction exists, 
 		// if not create a transaction and link it to the sli
-		sli.type='ICICIBankStatement';
-		sli.body_parser_used='sebtifdmvape';
-		sli.data=_.cloneDeep(sli.extracted_data); // temp - should be removed
-		sli.data.currency?sli.data.currency:'INR';
+		// sli.type='ICICIBankStatement';
+		// sli.type='hdfc_creditcard_statement';
+		// sli.body_parser_used='sebtifdmvape';
+		// sli.body_parser_used='bzqxicqhpsrk';
+		// sli.data=_.cloneDeep(sli.extracted_data); // temp - should be removed
+		// sli.data.currency?sli.data.currency:'INR';
 		if(!sli.data.currency)
 			sli.data.currency='INR'
 		console.log('\n\n\n ------------');
@@ -161,11 +158,14 @@ module.exports={
 			findSimilarTransactions:function(callback){
 				findSimilarTransactions(t,callback);
 			},
-			createTransactionIfNew:['findSimilarTransactions',function(results,callback){
+			createTransactionIfNew:['getAccount','findSimilarTransactions',function(results,callback){
 				sli.transaction=null;
 				t.account=results.getAccount.id;
 				if(t.original_amount){
-					var existing_t = identifyExistingTransaction({similar_transactions:results.findSimilarTransactions,new_t:t});
+					var existing_t = null;
+					if(results.findSimilarTransactions.length!=0){
+						existing_t=identifyExistingTransaction({similar_transactions:results.findSimilarTransactions,new_t:t});
+					}
 					if(!existing_t){
 						Transaction.create(t).exec(function(err,transaction){
 							console.log(err);
