@@ -26,7 +26,14 @@ module.exports = {
 		},
 		user:{
 			model:'user'
-		}
+		},
+		data: { // incase you want to write rules
+			type: 'json',
+		},
+		details: { // additional stuff that you want to add
+			type: 'json',
+			defaultsTo:{}
+		},
 	},
 	beforeCreate:function(sli,cb){
 		sli.data=_.cloneDeep(sli.extracted_data);

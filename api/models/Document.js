@@ -12,14 +12,15 @@ module.exports = {
 		parsed_data: {
 			type: 'json',
 		},
-
 		user: {
 			model: 'user',
 			required: true
 		},
-
 		parser_used: {
 			type: 'text',
+		},
+		type:{
+			type:'text'
 		}
 	}
 };
