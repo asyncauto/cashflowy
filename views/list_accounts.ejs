@@ -16,7 +16,7 @@
 				<tbody>
 					<%accounts.forEach(function(a){%>
 						<tr data-tid='<%=a.id%>'>
-							<td><%=a.name%></td>
+							<td><a href="/account/<%=a.id%>"><%=a.name%></a></td>
 							<td><%=a.acc_number%></td>
 							<td><%=a.type%></td>
 							<td>
