@@ -211,6 +211,33 @@ module.exports = {
 			res.view('list_accounts',locals);
 		})
 	},
+	viewAccount:function(req,res){
+		var jwt = require("jsonwebtoken");
+
+		var METABASE_SITE_URL = "https://metabase.cashflowy.in";
+		var METABASE_SECRET_KEY = "68d2050a97d92bb16b1628da77360b63091a004139eaef82a92e076f7fbf1d99";
+
+		console.log('\n\n\n-----------------------');
+		console.log(req.params.id);
+		Account.findOne({id:req.params.id}).exec(function(err,account){
+			console.log(err);
+			console.log(account);
+			
+			var payload = {
+			  resource: { dashboard: 2 },
+			  params: {
+			  	account_ids:""+account.id
+			  	// "account_ids": "1,2"
+			  }
+			};
+			var token = jwt.sign(payload, METABASE_SECRET_KEY);
+			var locals={
+				account:account,
+				iframeUrl:METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=false&titled=false"
+			}
+			res.view('view_account',locals);
+		})
+	},
 	createAccount:function(req,res){
 		if(req.body){ // post request
 			var findFilter={

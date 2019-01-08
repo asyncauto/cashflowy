@@ -28,6 +28,7 @@
     "include-all": "^1.0.0",
     "inline-css": "^2.4.1",
     "js-base64": "^2.4.9",
+    "jsonwebtoken": "^8.4.0",
     "kue": "^0.11.6",
     "mailgun-js": "^0.21.0",
     "moment-timezone": "^0.5.21",
@@ -46,6 +47,7 @@
   },
   "scripts": {
     "debug": "node debug app.js",
+    "test": "node ./node_modules/mocha/bin/mocha tests/bootstrap.test.js ",
     "start": "node app.js"
   },
   "main": "app.js",

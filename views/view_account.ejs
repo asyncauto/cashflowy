@@ -1,0 +1,52 @@
+
+<div class='ui container'>
+	<div class='ui grid'>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+		<div class='sixteen wide table six wide computer sixteen wide mobile  column'>
+			<h1>Your accounts: </h1>
+			
+			<iframe
+			    src="<%=iframeUrl%>"
+			    frameborder="0"
+			    width="800"
+			    height="300"
+			    allowtransparency
+			></iframe>
+			<table class="ui celled padded unstackable table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Acc_number</th>
+						<th>Type</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<%var a=account;%>
+					<tr data-tid='<%=a.id%>'>
+						<td><%=a.name%></td>
+						<td><%=a.acc_number%></td>
+						<td><%=a.type%></td>
+						<td>
+							<div class="ui basic icon top right pointing extra_options dropdown">
+								<i class="bars icon"></i>
+								<div class="menu">
+									<a class="item" href='/account/<%=a.id%>/edit'>Edit</a>
+									<!-- <a class="item" href='/snapshot/<%=a.id%>/delete'>Delete</a> -->
+								</div>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<!-- <div class='three wide tablet computer only column'></div> -->
+	</div>
+</div>
+<a class="circular ui icon right floated primary big button" href="/account/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new account" data-position="left center" data-inverted=""><i class="icon book"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.popup').popup();
+		$('.extra_options.dropdown').dropdown();
+	});
+</script>
