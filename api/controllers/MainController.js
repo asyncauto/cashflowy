@@ -502,7 +502,6 @@ module.exports = {
 
 	},
 	listTransactions:function(req,res){
-		
 		var locals={};
 		// getUserEmailIds:function
 		var limit = req.query.limit?req.query.limit:100;
@@ -511,8 +510,9 @@ module.exports = {
 				Account.find({user:req.user.id}).exec(callback);
 			},
 			getTransactions:['getAccounts',function(results,callback){
+				//account filter
 				var accounts=[];
-				if(req.query.account){
+				if(!_.isNaN(parseInt(req.query.account))){
 					accounts.push(req.query.account);
 				}else{
 					results.getAccounts.forEach(function(account){
@@ -522,8 +522,60 @@ module.exports = {
 				var filter={
 					account:accounts,
 				}
-				if(req.query.category)
+				// category filter
+				if(!_.isNaN(parseInt(req.query.category)))
 					filter.category=req.query.category;
+
+				// description filter
+				if(req.query.description){
+					filter.description = {contains: req.query.description.split(' ') }
+				}
+
+				// txn type filter
+				if(req.query.txn_type){
+					switch (req.query.txn_type) {
+						case 'transfer':
+							filter.type = 'transfer'
+							break;
+						case 'income':
+							filter.type = 'income_expense'
+							filter.amount_inr = {'>':0};
+							break;
+						case 'expense':
+							filter.type = 'income_expense'
+							filter.amount_inr = {'<':0};
+							break;
+						default:
+							break;
+					}
+				}
+
+				//amount range filter
+				var amount_less_than  = !_.isNaN(parseInt(req.query.amount_less_than))?parseInt(req.query.amount_less_than) : null;
+				var amount_greater_than  = !_.isNaN(parseInt(req.query.amount_greater_than)) ? parseInt(req.query.amount_greater_than) : 0;
+				// default case
+				filter.or = 
+					[
+						{amount_inr :{'>': amount_greater_than > 0 ? amount_greater_than: (-1) * amount_greater_than }},
+						{amount_inr :{'<': amount_greater_than < 0 ?  amount_greater_than: (-1) * amount_greater_than}}
+					]
+				if(amount_less_than)
+					filter.or = 
+						[
+							{amount_inr :{'<': amount_less_than > 0 ? amount_less_than: (-1) * amount_less_than , '>': amount_greater_than > 0 ? amount_greater_than: (-1) * amount_greater_than }},
+							{amount_inr :{'>': amount_less_than < 0 ?  amount_less_than: (-1) * amount_less_than, '<': amount_greater_than < 0 ?  amount_greater_than: (-1) * amount_greater_than}}
+						]
+					
+
+				// occured_at filter
+				var moment = require('moment-timezone');
+				var date_to  = req.query.date_to ? moment(req.query.date_to, 'DD/MM/YYYY').endOf('day').tz('Asia/Kolkata').toDate() : new Date();
+				var date_from = req.query.date_from ? moment(req.query.date_from, 'DD/MM/YYYY').tz('Asia/Kolkata').toDate() : null;
+				//default case
+				filter.occuredAt = {'<': date_to };
+				if(date_from)
+					filter.occuredAt = {'>':date_from, '<': date_to };			
+
 				Transaction.find(filter).sort('occuredAt DESC').limit(limit).populate('tags').exec(callback);
 			}],
 			getCategories:function(callback){

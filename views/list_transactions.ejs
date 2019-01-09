@@ -1,8 +1,95 @@
 <div class='ui container'>
 	<div class='ui grid'>
-		<div class='three wide computer only column'></div>
-		<div class='ten wide computer sixteen wide tablet sixteen wide mobile column'>
-			<h1>Transactions</h1>
+		<div class='five wide computer only column'>
+			<h2>Filters</h2>
+			<form class="ui form segment" action="" method='get'>
+				<div class="field">
+					<label>Account:</label>
+					<div class="ui compact selection filter_txn dropdown">
+						<input type="hidden" name="account" value='<%=req.query.account?req.query.account:''%>'>
+						<i class="dropdown icon"></i>
+						<div class="text">All</div>
+						<div class="menu transition hidden" tabindex="-1">
+							<div class="item active selected" data-value='all'>All</div>
+							<%accounts.forEach(function(a){%>
+								<div class="item" data-value='<%= a.id %>'><%= a.name %></div>
+							<%})%>
+						</div>
+					</div>
+				</div>
+					 
+				<div class="field">
+					<label>Category: </label>
+					<div class="ui compact selection filter_txn dropdown">
+						<input type="hidden" name="category" value="<%=req.query.category?req.query.category:'' %>">
+						<i class="dropdown icon"></i>
+						<div class="text">All</div>
+						<div class="menu transition hidden" tabindex="-1">
+							<div class="item active selected" data-value='all'>All</div>
+							<%categories.forEach(function(c){%>
+								<div class="item" data-value='<%= c.id %>'><%= c.name %></div>
+							<%})%>
+						</div>
+					</div>
+				</div>
+	
+				
+
+				<div class="field">
+					<label>Transaction Type: </label>
+					<div class="ui compact selection filter_txn dropdown">
+						<input type="hidden" name="txn_type" value="<%=req.query.txn_type?req.query.txn_type:'' %>">
+						<i class="dropdown icon"></i>
+						<div class="text">All</div>
+						<div class="menu transition hidden" tabindex="-1">
+							<div class="item active selected" data-value='all'>All</div>
+							<div class="item" data-value='income'>Income</div>
+							<div class="item" data-value='expense'>Expense</div>
+							<div class="item" data-value='transfer'>Transfer</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="field">
+					<label>Description contains:</label>
+					<input type="text" name="description" placeholder="ex: house loan" value="<%= req.query.description ? req.query.description: ''%>">
+				</div>
+
+				<div class="field">
+					<label>Amount Range(INR):</label>
+					<div class="two fields">
+						<div class="field">
+							<input type="number" placeholder="greater than"  name="amount_greater_than" value="<%= req.query.amount_greater_than ? req.query.amount_greater_than: ''%>">
+						</div>
+						<div class="field">
+							<input type="number" placeholder="less than" name="amount_less_than" value="<%= req.query.amount_less_than ? req.query.amount_less_than: ''%>">
+						</div>
+					</div>
+				</div>
+
+				<div class="field">
+					<label>Date from:</label>
+					<input type="date" placeholder="dd/mm/yyyy"  name="date_from" value="<%= req.query.date_from ? req.query.date_from: ''%>">
+				</div>
+
+				<div class="field">
+					<label>Date to:</label>
+					<input type="date" placeholder="dd/mm/yyyy" name="date_to" value="<%= req.query.date_to ? req.query.date_to: ''%>">
+				</div>
+				<!-- <div class="field">
+					<label>Tags:</label>
+					<select class="ui fluid selection dropdown filter_txn" multiple="" name="tags">
+						<option value="">Tags</option>
+						<%tags.forEach(function(t){%>
+							<option value="<%= t.id %>"><%= t.name %></option>
+						<%})%>
+					</select>
+				</div> -->
+				<div class='ui orange button' id='submit_form'>Update filter</div>
+			</form>
+		</div>
+		<div class='eleven wide computer sixteen wide tablet sixteen wide mobile column'>
+			<h2>Transactions</h2>
 			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
 				<tbody>
 					<%transactions.forEach(function(t){%>
@@ -131,7 +218,6 @@
 				</tbody>
 			</table>
 		</div>
-		<div class='three wide computer only column'></div>
 	</div>
 </div>
 
@@ -207,6 +293,7 @@
 			console.log('hi');
 			$(this).parents('tr').find('.edit_tags').show();
 		})
+		$('.filter_txn.dropdown').dropdown();
 		$('.extra_options.dropdown').dropdown();
 		$('.filter.dropdown').dropdown({
 			onChange:function(value, text, $choice){
@@ -256,6 +343,15 @@
 			// update the ui to include the tags.
 			// update details on the backend. 
 		})
+		$('#submit_form').click(function(){
+			console.log('clicked on form submit');
+			$('input').each(function(i) {
+		        var $input = $(this);
+		        if ($input.val() == '')
+		            $input.attr('disabled', 'disabled');
+		    });
+			$( "form" ).submit();
+		});
 	});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
