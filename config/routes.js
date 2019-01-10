@@ -41,6 +41,7 @@ module.exports.routes = {
   'GET /email/create':'MainController.createEmail',
   'POST /email/create':'MainController.createEmail',
   'GET /email/create2':'MainController.createEmail2',
+  'GET /oauth2callback':'MainController.oauth2callback',
   'GET /email/:id/edit':'MainController.editEmail',
   'POST /email/:id/edit':'MainController.editEmail',
   'GET /email/:id':'MainController.viewEmail',

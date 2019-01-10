@@ -577,7 +577,6 @@ module.exports = {
 							{amount_inr :{'>': amount_less_than < 0 ?  amount_less_than: (-1) * amount_less_than, '<': amount_greater_than < 0 ?  amount_greater_than: (-1) * amount_greater_than}}
 						]
 					
-
 				// occured_at filter
 				var moment = require('moment-timezone');
 				try{
