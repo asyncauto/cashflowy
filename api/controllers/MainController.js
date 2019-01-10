@@ -569,12 +569,16 @@ module.exports = {
 
 				// occured_at filter
 				var moment = require('moment-timezone');
-				var date_to  = req.query.date_to ? moment(req.query.date_to, 'DD/MM/YYYY').endOf('day').tz('Asia/Kolkata').toDate() : new Date();
-				var date_from = req.query.date_from ? moment(req.query.date_from, 'DD/MM/YYYY').tz('Asia/Kolkata').toDate() : null;
-				//default case
-				filter.occuredAt = {'<': date_to };
-				if(date_from)
-					filter.occuredAt = {'>':date_from, '<': date_to };			
+				try{
+					var date_to  = req.query.date_to ? moment(req.query.date_to, 'YYYY-MM-DD').endOf('day').tz('Asia/Kolkata').toDate() : new Date();
+					var date_from = req.query.date_from ? moment(req.query.date_from, 'YYYY-MM-DD').tz('Asia/Kolkata').toDate() : null;
+					//default case
+					filter.occuredAt = {'<': date_to };
+					if(date_from)
+						filter.occuredAt = {'>':date_from, '<': date_to };			
+				} catch(err){
+					sails.log.error('error while parsing the dates', err);
+				}
 
 				Transaction.find(filter).sort('occuredAt DESC').limit(limit).populate('tags').exec(callback);
 			}],
