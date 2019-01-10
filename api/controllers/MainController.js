@@ -214,27 +214,38 @@ module.exports = {
 	viewAccount:function(req,res){
 		var jwt = require("jsonwebtoken");
 
-		var METABASE_SITE_URL = "https://metabase.cashflowy.in";
-		var METABASE_SECRET_KEY = "68d2050a97d92bb16b1628da77360b63091a004139eaef82a92e076f7fbf1d99";
-
-		console.log('\n\n\n-----------------------');
-		console.log(req.params.id);
-		Account.findOne({id:req.params.id}).exec(function(err,account){
-			console.log(err);
-			console.log(account);
-			
-			var payload = {
-			  resource: { dashboard: 2 },
-			  params: {
-			  	account_ids:""+account.id
-			  	// "account_ids": "1,2"
-			  }
-			};
-			var token = jwt.sign(payload, METABASE_SECRET_KEY);
+		Account.findOne({id:req.params.id,user:req.user.id}).exec(function(err,account){
+			if(!account)
+				return res.send('you dont have the permission to view this account');
+			var questions=[
+				{
+					url_name:'income_expense',
+					question_id:21,
+				},
+				{
+					url_name:'transfer_in_out',
+					question_id:22,
+				},
+				{
+					url_name:'balance',
+					question_id:23,
+				},
+			]
 			var locals={
 				account:account,
-				iframeUrl:METABASE_SITE_URL + "/embed/dashboard/" + token + "#bordered=false&titled=false"
+				metabase:{}
 			}
+			questions.forEach(function(q){
+				var payload = {
+					resource: { question: q.question_id },
+				};
+				if(q.url_name=='balance')
+					payload.params= {account_id:""+account.id};
+				else
+					payload.params= {account_ids:""+account.id};
+				var token = jwt.sign(payload, sails.config.metabase.secret_key);
+				locals.metabase[q.url_name]=sails.config.metabase.site_url + "/embed/question/" + token + "#bordered=true&titled=false";
+			});
 			res.view('view_account',locals);
 		})
 	},

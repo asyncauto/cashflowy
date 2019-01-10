@@ -47,6 +47,10 @@ module.exports = {
 		domain:process.env.MAILGUN_DOMAIN
 	},
 	background_secret:process.env.BACKGROUND_SECRET,
+	metabase:{
+		site_url:process.env.METABASE_SITE_URL,
+		secret_key:process.env.METABASE_SECRET_KEY
+	}
 	// models: {
 	//   connection: 'someMysqlServer'
 	// },

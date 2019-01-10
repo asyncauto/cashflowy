@@ -1,44 +1,175 @@
-
+<style>
+	.statistic>.label {
+		font-size: 0.8em !important;
+	}
+</style>
+<% var date_to='2019-01-10';%>
+<% var date_from='2019-01-01';%>
 <div class='ui container'>
 	<div class='ui grid'>
 		<!-- <div class='three wide tablet computer only column'></div> -->
 		<div class='sixteen wide column'>
-			<h1><%=account.name%> - <%=account.acc_number%> - <%=account.type%> </h1>
-			
-			<iframe
-			    src="<%=iframeUrl%>"
-			    frameborder="0"
-			    width="800"
-			    height="300"
-			    allowtransparency
-			></iframe>
-			<table class="ui celled padded unstackable table" style="display: block;overflow-x:scroll;">
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Acc_number</th>
-						<th>Type</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<%var a=account;%>
-					<tr data-tid='<%=a.id%>'>
-						<td><%=a.name%></td>
-						<td><%=a.acc_number%></td>
-						<td><%=a.type%></td>
-						<td>
-							<div class="ui basic icon top right pointing extra_options dropdown">
-								<i class="bars icon"></i>
-								<div class="menu">
-									<a class="item" href='/account/<%=a.id%>/edit'>Edit</a>
-									<!-- <a class="item" href='/snapshot/<%=a.id%>/delete'>Delete</a> -->
-								</div>
+			<h1><%=account.name%></h1>
+			<h3>Details:</h3>
+			<a href="/account/<%=account.id%>/edit">edit</a><br/>
+			<!-- Account name : <%=account.name%> <br/> -->
+			<b>Account number:</b> <%=account.acc_number%> <br/>
+			<b>Account type:</b> <%=account.type%> <br/>
+			<b>Has data from:</b> 25th June 
+
+			<h3>Current state:</h3>
+			<div class="ui tiny statistics">
+				<div class="statistic">
+					<div class="">
+						Balance
+					</div>
+					<div class="value">
+						<%if(account.details && account.details.last_snapshot){%>
+							<div class="description popup" data-content='Balance in the account as per last snapshot - <%=GeneralService.timeAgo(account.updatedAt)%>'><%=account.details.last_snapshot.balance%></div>
+						<%}else{%>
+							<div class="description popup" data-content='Balance in account is the balance in the last known snapshot taken of the account. This account does not seem to have a snapshot. Create a snapshot to show balance here '>Balance unknown</div>
+						<%}%>
+					</div>
+					<div class="">
+						<%if(account.details && account.details.last_snapshot){%>
+							<div> <%=GeneralService.timeAgo(account.updatedAt)%> ago</div>
+						<%}%>
+					</div>
+				</div>
+				<!-- <div class="statistic">
+					<div class="">
+						Total UAM
+					</div>
+					<div class="value">
+						31,200
+					</div>
+					
+				</div> -->
+				<a class="statistic" href='/transactions?account=<%=account.id%>&txn_type=income'>
+					<div class="">
+						Total income
+					</div>
+					<div class="value">
+						22,000
+					</div>
+					
+				</a>
+				<a class="statistic" href='/transactions?account=<%=account.id%>&txn_type=expense'>
+					<div class="">
+						Total expense
+					</div>
+					<div class="value">
+						22,000
+					</div>
+					
+				</a>
+				<a class="statistic" href='/transactions?account=<%=account.id%>&txn_type=transfer'>
+					<div class="">
+						Total transfers in&out
+					</div>
+					<div class="value">
+						22,000
+					</div>
+				</a>
+			</div>
+			<!-- <b>Income and Expense</b> -->			
+		</div>
+		<div class='ui row'>
+			<div class='eight wide column'>
+				<!-- <b>Income and Expense</b> -->
+				<h4>Balance</h4>
+				<iframe
+				    src="<%=metabase.balance%>"
+				    frameborder="0"
+				    width="100%"
+				    height="200px"
+				    allowtransparency
+				></iframe>
+			</div>
+		</div>
+		<div class='ui row'>
+			<div class='sixteen wide column'>
+				<h3 class="ui header">
+					<!-- <i class="trophy icon"></i> -->
+					<div class="content">
+						<div class="ui inline adjust_time_span dropdown">
+							<div class="text">This Month</div>
+							<i class="dropdown icon"></i>
+							<div class="menu">
+								<div class="header">Adjust time span</div>
+								<!-- <div class="active item" data-text="today">Today</div> -->
+								<div class="item" data-text="This Week">This Week</div>
+								<div class="active item" data-text="This Month">This Month</div>
+								<div class="item" data-text="This Year">This Year</div>
+								<div class="item" data-text="This Financial Year">This Financial Year</div>
+								<div class="item" data-text="During time period">This Financial Year</div>
 							</div>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+						</div>
+					</div>
+				</h3>
+				<div class="ui tiny statistics">
+					<div class="statistic">
+						<div class="">
+							UAM
+						</div>
+						<div class="value">
+							0
+						</div>
+						
+					</div>
+					<a class="statistic" href='/transactions?account=<%=account.id%>&txn_type=income&date_from=<%=date_from%>&date_to=<%=date_to%>'>
+						<div class="">
+							Income
+						</div>
+						<div class="value">
+							22,000
+						</div>
+						
+					</a>
+					<a class="statistic" href='/transactions?account=<%=account.id%>&txn_type=expense&date_from=<%=date_from%>&date_to=<%=date_to%>'>
+						<div class="">
+							Expense
+						</div>
+						<div class="value">
+							22,000
+						</div>
+						
+					</a>
+					<a class="statistic" href='/transactions?account=<%=account.id%>&txn_type=transfer&date_from=<%=date_from%>&date_to=<%=date_to%>'>
+						<div class="">
+							Total transfer in/out
+						</div>
+						<div class="value">
+							22,000
+						</div>
+						
+					</a>
+				</div>
+				<!-- <h3>During a time period:</h3> -->
+			</div>
+		</div>
+		<div class='ui row'>
+			<div class='five wide column'>
+				<!-- <b>Income and Expense</b> -->
+				<h4>Income & Expense</h4>
+				<iframe
+				    src="<%=metabase.income_expense%>"
+				    frameborder="0"
+				    width="100%"
+				    height="300px"
+				    allowtransparency
+				></iframe>
+			</div>
+			<div class='five wide column'>
+				<h4>Transfers in & out</h4>
+				<iframe
+				    src="<%=metabase.transfer_in_out%>"
+				    frameborder="0"
+				    width="100%"
+				    height="300px"
+				    allowtransparency
+				></iframe>
+			</div>
 		</div>
 		<!-- <div class='three wide tablet computer only column'></div> -->
 	</div>
@@ -47,6 +178,6 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('.popup').popup();
-		$('.extra_options.dropdown').dropdown();
+		$('.adjust_time_span.dropdown').dropdown();
 	});
 </script>
