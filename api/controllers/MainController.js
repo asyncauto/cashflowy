@@ -17,6 +17,7 @@ var queue = kue.createQueue({
 var temp_count = 10;
 
 var request = require("request");
+var jwt = require("jsonwebtoken");
 module.exports = {
 	landingPage:function(req,res){
 		if(req.user)
@@ -71,7 +72,67 @@ module.exports = {
 		})
 	},
 	viewCategory:function(req,res){
-		res.send('this is category page');
+		// get account of the user
+		// find sub categories
+		var locals = {};
+		async.auto({
+			getCategory:function(callback){
+				Category.findOne({id:req.params.id}).populate('parent').exec(callback)
+			},
+			getChildrenCategories:function(callback){
+				Category.find({parent:req.params.id}).exec(callback)
+			},
+			getAccounts:function(callback){
+				Account.find({user:req.user.id}).exec(callback)
+			}
+		},function(err,results){
+
+			var locals = {
+				category:results.getCategory,
+				children_categories:results.getChildrenCategories,
+				// user_accounts:results.getAccounts,
+				metabase:{}
+			}
+			var questions=[
+				{
+					url_name:'sub_categories_expense',
+					question_id:26,
+					params:{
+						account_ids:_.map(results.getAccounts,'id').join(','),
+						category_ids:_.map(results.getChildrenCategories,'id').join(','),
+					}
+				},
+				{
+					url_name:'sub_categories_income',
+					question_id:27,
+					params:{
+						account_ids:_.map(results.getAccounts,'id').join(','),
+						category_ids:_.map(results.getChildrenCategories,'id').join(','),
+					}
+				},
+				{
+					url_name:'income_expense',
+					question_id:28,
+					params:{
+						category_ids:""+results.getCategory.id,
+					}
+				},
+			]
+			questions.forEach(function(q){
+				var payload = {
+					resource: { question: q.question_id },
+					params:q.params,
+				};
+				var token = jwt.sign(payload, sails.config.metabase.secret_key);
+				locals.metabase[q.url_name]=sails.config.metabase.site_url + "/embed/question/" + token + "#bordered=true&titled=false";
+				console.log('\n\n\n---------');
+				console.log(payload);
+			});
+			console.log('\n\n\n---------');
+			console.log(locals);
+			res.view('view_category',locals);
+
+		});
 	},
 	editCategory:function(req,res){
 		Category.find({user:req.user.id}).exec(function(err,categories){
@@ -212,7 +273,6 @@ module.exports = {
 		})
 	},
 	viewAccount:function(req,res){
-		var jwt = require("jsonwebtoken");
 
 		Account.findOne({id:req.params.id,user:req.user.id}).exec(function(err,account){
 			if(!account)
