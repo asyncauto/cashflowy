@@ -25,22 +25,7 @@
 					 
 				<div class="field">
 					<label>Category: </label>
-					<div class="ui compact selection filter_txn dropdown">
-						<input type="hidden" name="category" value="<%=req.query.category?req.query.category:'' %>">
-						<i class="dropdown icon"></i>
-						<div class="text">All</div>
-						<div class="menu transition hidden" tabindex="-1">
-							<div class="item active selected" data-value='all'>All</div>
-							<%categories.forEach(function(c){%>
-								<div class="item" data-value='<%= c.id %>'><%= c.name %></div>
-							<%})%>
-						</div>
-					</div>
-				</div>
-
-				<div class="field">
-					<label>Category: </label>
-					<div class="ui filter_txn fluid selection dropdown">
+					<div class="ui filter_txn fluid scrolling selection dropdown">
 						<input type="hidden" name="category" value="<%=req.query.category?req.query.category:'' %>">
 						<div class="text">All</div>
 						<i class="dropdown icon"></i>
