@@ -19,7 +19,7 @@
 					<%categories.forEach(function(c){%>
 						<tr data-tid='<%=c.id%>'>
 							<td><%=c.id%></td>
-							<td><%=c.name%></td>
+							<td><a href="/category/<%=c.id%>"><%=c.name%></a></td>
 							<td><%=c.description%></td>
 							<td><%=c.parent?c.parent:''%></td>
 							<td class="right aligned"><%=parseFloat(c.budget).toFixed(2)%></td>
