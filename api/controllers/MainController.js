@@ -1159,7 +1159,58 @@ module.exports = {
 		}
 	},
 	viewTag:function(req,res){
-		res.send('this is tag page');
+		// get account of the user
+		// find sub categories
+		var locals = {};
+		async.auto({
+			getTag:function(callback){
+				Tag.findOne({id:req.params.id}).exec(callback)
+			},
+		},function(err,results){
+
+			var locals = {
+				tag:results.getTag,
+				// user_accounts:results.getAccounts,
+				metabase:{}
+			}
+			var questions=[
+				{
+					url_name:'category_vice_expense',
+					question_id:30,
+					params:{
+						tag_id:""+results.getTag.id,
+					}
+				},
+				{
+					url_name:'category_vice_income',
+					question_id:31,
+					params:{
+						tag_id:""+results.getTag.id,
+					}
+				},
+				{
+					url_name:'income_expense',
+					question_id:29,
+					params:{
+						tag_id:""+results.getTag.id,
+					}
+				},
+			]
+			questions.forEach(function(q){
+				var payload = {
+					resource: { question: q.question_id },
+					params:q.params,
+				};
+				var token = jwt.sign(payload, sails.config.metabase.secret_key);
+				locals.metabase[q.url_name]=sails.config.metabase.site_url + "/embed/question/" + token + "#bordered=true&titled=false";
+				// console.log('\n\n\n---------');
+				// console.log(payload);
+			});
+			// console.log('\n\n\n---------');
+			// console.log(locals);
+			res.view('view_tag',locals);
+
+		});
 	},
 	editTag:function(req,res){
 		Tag.findOne({user:req.user.id,id:req.params.id}).exec(function(err,tag){

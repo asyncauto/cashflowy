@@ -17,7 +17,7 @@
 					<%tags.forEach(function(t){%>
 						<tr data-tid='<%=t.id%>'>
 							<td><%=t.id%></td>
-							<td><%=t.name%></td>
+							<td><a href="/tag/<%=t.id%>"><%=t.name%></a></td>
 							<td><%=t.description%></td>
 							<td><a href="/tag/<%=t.id%>/edit">edit</a></td>
 						</tr>
