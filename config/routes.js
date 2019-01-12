@@ -126,10 +126,10 @@ module.exports.routes = {
   'GET /signup': 'AuthController.signup',
   'POST /signup': 'AuthController.signup',
   'GET /logout': 'AuthController.logout',
-  
-
-
-
+  'GET /forgot': 'AuthController.view_forgot',
+  'POST /forgot': 'AuthController.forgot',
+  'GET /reset': 'AuthController.view_reset',
+  'POST /reset': 'AuthController.reset',
 
 
   'GET /background/deepCrawl':'Background.deepCrawl',

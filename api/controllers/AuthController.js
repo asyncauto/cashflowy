@@ -6,6 +6,10 @@
  */
 
 var passport = require('passport');
+var request = require('request');
+var async = require('async');
+var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
 
 module.exports = {
 
@@ -131,5 +135,127 @@ module.exports = {
 			}	
 			res.view('signup',locals);
 		}
-	}
+	},
+
+	view_forgot: function(req, res){
+		var locals = {
+			error: '',
+			message:''
+		}
+		res.view('forgot', locals);
+	},
+
+	/**
+	 * Triggers an email to help reset the forgotten password
+	 */
+	forgot: function (req, res) {
+		var email = req.body.email;
+		
+		if (!email) return res.view('reset', {
+			error: 'email is mandatory',
+			message:''
+		});
+
+		async.auto({
+			findUser: function(cb){
+				User.findOne({email:email}).exec(function(err, user){
+					if(err) return cb(err);
+					if(!user) return cb(new Error('user not found'));
+					return cb(null, user);
+				})
+			},
+			generateToken: ['findUser', function(results, cb){
+				jwt.sign({
+					email: results.findUser.email,
+					for:'forgot_password'
+				}, 
+					sails.config.password_reset_secret, 
+					{expiresIn: 60*10},  //10 mins or 600 seconds
+					cb);
+			}],
+			sendMail:['generateToken', function(results, cb){
+				var reset_url = sails.config.app_url + '/reset?token='+ results.generateToken;
+				var opts={
+					template:'reset',
+					to:results.findUser.email,
+					from:'Cashflowy<no-reply@cashflowy.in>',
+					subject: 'Reset Password',
+					locals:{
+						name: results.findUser.name,
+						url: reset_url
+					}
+				}
+				MailgunService.sendEmail(opts,function(err){
+					cb(err)
+				})
+			}]
+		}, function(err, results){
+			var locals = {
+				error: err ? err.message : '',
+				message: !err ? 'link sent successfully' : ''
+			}
+			res.view('forgot', locals);
+		})
+	},
+
+	view_reset: function(req, res){
+		var token =  req.query.token;
+
+		if (!token) return res.view('reset', {
+			error: 'reset token is missing',
+			message:''
+		});
+
+		res.view('reset', {
+			error: '',
+			message:''
+		});
+	},
+
+	reset: function (req, res) {
+		var password = req.body.password;
+		if (!password) return res.view('reset', {
+			error: 'password is missing',
+			message:''
+		});
+
+		var token =  req.query.token;
+
+		if (!token) return res.view('reset', {
+			error: 'reset token is missing',
+			message:''
+		});
+
+		async.auto({
+			verifyToken: function(cb){
+				jwt.verify(token, 
+					sails.config.password_reset_secret, 
+					cb);
+			},
+			findUser: ['verifyToken', function(results, cb){
+				User.findOne({email:results.verifyToken.email}).exec(function(err, user){
+					if(err) return cb(err);
+					if(!user) return cb(new Error('user not found'));
+					return cb(null, user);
+				})
+			}],
+			resetPassword:['findUser', function(results, cb){
+				bcrypt.genSalt(10, function(err, salt) {
+					bcrypt.hash(password, salt, function(err, hash) {
+						if (err) {
+							cb(err);
+						}else{
+							User.update({id: results.findUser.id},{password: hash}).exec(cb);
+						}
+					});
+				});
+			}]
+		}, function(err, results){
+			var locals = {
+				error: err ? err.message : '',
+				message: !err ? 'Password reseted successfully' : ''
+			}
+			res.view('reset', locals);
+		})
+	},
 };

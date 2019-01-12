@@ -50,23 +50,10 @@ module.exports = {
 	metabase:{
 		site_url:process.env.METABASE_SITE_URL,
 		secret_key:process.env.METABASE_SECRET_KEY
-	}
-	// models: {
-	//   connection: 'someMysqlServer'
-	// },
+	},
 
-	/***************************************************************************
-	 * Set the port in the production environment to 80                        *
-	 ***************************************************************************/
-
-	// port: 80,
-
-	/***************************************************************************
-	 * Set the log level in production environment to "silent"                 *
-	 ***************************************************************************/
-
-	// log: {
-	//   level: "silent"
-	// }
+	password_reset_secret: process.env.PASSWORD_RESET_SECRET,
+	
+	app_url: process.env.APP_URL
 
 };

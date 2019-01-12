@@ -48,5 +48,9 @@ module.exports = {
 		api_key: process.env.MAILGUN_APIKEY,
 		domain: process.env.MAILGUN_DOMAIN
 	},
-	background_secret:process.env.BACKGROUND_SECRET
+	background_secret:process.env.BACKGROUND_SECRET,
+
+	password_reset_secret: process.env.PASSWORD_RESET_SECRET,
+
+	app_url: process.env.APP_URL
 };

@@ -1,0 +1,34 @@
+<div class="ui container">
+    <div class="ui middle aligned one column centered grid">
+        <div class="sixteen wide mobile six wide computer column" style="margin-top:100px">
+            <center>
+                <h2 class="ui black image header">Forgot your password</h2>
+                <p style="font-size:13px;opacity: 0.5;">
+                    Just drop in your registered email id and we will help you with the reset right away.
+                    </br>
+                    Keep this one safe. Link is valid for 10 mins.</p>
+            </center>
+            <br>
+            <form class="ui large form" method="POST">
+                <div class="ui stacked segment">
+                    <div class="field">
+                        <div class="ui big left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" name="email" placeholder="E-mail address" required>
+                        </div>
+                    </div>
+                    <button class="ui green button" type="submit">Send link</button>
+                </div>
+            </form>
+            <% if(error){ %>
+                <div class="ui error message">
+                    <%=error%>
+                </div>
+                <% }else if(message){ %>
+                <div class="ui positive message">
+                    <%=message%>
+                </div>
+                <% } %>
+        </div>
+    </div>
+</div>
