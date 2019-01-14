@@ -1,5 +1,6 @@
 var async=require('async');
 const fx = require('money');
+var moment = require('moment-timezone');
 fx.base='INR';
 fx.rates=sails.config.fx_rates;
 
@@ -23,6 +24,11 @@ var convertSliToTransaction = function(sli){
 			t.original_amount=parseFloat(sli.data.credit);
 		else if(!isNaN(parseFloat(sli.data.debit)))
 			t.original_amount=-parseFloat(sli.data.debit);
+
+		if(sli.data.date){
+			var temp_date=sli.data.date.split('-').reverse().join('-');
+			t.occuredAt = new Date(temp_date+' 12:00:00.000 +5:30'); 
+		}
 	}else if(sli.details.type=='hdfc_credit_card' && sli.details.parser_used=='bzqxicqhpsrk'){
 	// }else{
 		sli.data.amount=sli.data.amount.replace(',','');
@@ -33,16 +39,31 @@ var convertSliToTransaction = function(sli){
 		else if(sli.data.dr_cr=='Dr')
 			t.original_amount=-parseFloat(sli.data.amount);
 		t.third_party=sli.data.details;
+
+		if(sli.data.date){
+			t.occuredAt = moment(sli.data.date, 'MM/DD/YYYY').tz('Asia/Kolkata').toDate()
+		}
+	}else if(sli.details.type=='hdfc_bank' && sli.details.parser_used=='jrvqwmfuhapd'){
+		sli.data.credit=sli.data.credit.replace(',','');
+		sli.data.credit=sli.data.credit.replace(',','');
+		sli.data.credit=sli.data.credit.replace(',','');
+		sli.data.debit=sli.data.debit.replace(',','');
+		sli.data.debit=sli.data.debit.replace(',','');
+		sli.data.debit=sli.data.debit.replace(',','');
+		if(parseFloat(sli.data.credit) && !isNaN(parseFloat(sli.data.credit))) // is credit a number
+			t.original_amount=parseFloat(sli.data.credit);
+		else if(parseFloat(sli.data.debit) && !isNaN(parseFloat(sli.data.debit)))
+			t.original_amount=-parseFloat(sli.data.debit);
+		
+		if(sli.data.date){
+			t.occuredAt = moment(sli.data.date, 'DD/MM/YYYY').tz('Asia/Kolkata').toDate()
+		}
 	}
 
 	// t.amount_inr=t.original_amount;
 	if(t.original_amount)
 		t.amount_inr=fx.convert(t.original_amount, {from: sli.data.currency, to: "INR"});
-	
-	if(sli.data.date){
-		var temp_date=sli.data.date.split('-').reverse().join('-');
-		t.occuredAt = new Date(temp_date+' 12:00:00.000 +5:30'); 
-	}
+
 	return t;
 }
 
