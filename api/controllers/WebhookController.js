@@ -38,11 +38,9 @@ module.exports = {
                 var pos=0;
                 // this can be abstracted out into a function and tested. 
                 if(req.body.account_id)
-                    var acc_no = req.body.account_id;
+                    var acc_no = req.body.account_id.substr(-4);
                 else if(results.findDocument.parser_used=='sebtifdmvape')
                     var acc_no=_.find(req.body.accounts,{acc_type:'Savings'}).acc_no;
-                else if(results.findDocument.parser_used=='jrvqwmfuhapd')
-                    var acc_no = req.body.account_id.match.substr(req.body.account_id.match.length - 4)
                 // var acc_no=req.body.accounts[0].acc_no;
                 async.eachLimit(req.body.transactions,1,function(t,next){
                     t.acc_no=acc_no;
