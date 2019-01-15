@@ -1049,10 +1049,34 @@ module.exports = {
 		})
 	},
 	viewDocument:function(req,res){
-		Document.findOne({id:req.params.id}).exec(function(err,doc){
-			var locals={doc:doc};
+		async.auto({
+			getDoc:function(callback){
+				Document.findOne({id:req.params.id}).exec(callback);
+			},
+			getSLIs:function(callback){
+				Statement_line_item.find({document:req.params.id}).populate('transaction').sort('pos ASC').exec(callback);
+			},
+			getDoubtfulTransactions:['getSLIs',function(results,callback){
+				Doubtful_transaction.find({sli:_.map(results.getSLIs,'id')}).exec(callback);
+			}]
+		},function(err,results){
+			results.getDoubtfulTransactions.forEach(function(dt){
+				results.getSLIs.forEach(function(sli){
+					if(dt.sli==sli.id){
+						sli.dt=dt;
+						// dt.sli=sli;
+
+					}
+				})
+			});
+			var locals={
+				doc:results.getDoc,
+				slis:results.getSLIs,
+				doubtful_transactions:results.getDoubtfulTransactions,
+			};
+			// res.send(locals);
 			res.view('view_document',locals);
-		});
+		})
 		// get
 			// show extracted data 
 			// statement line items 
