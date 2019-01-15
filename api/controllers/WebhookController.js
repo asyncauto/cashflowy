@@ -24,6 +24,7 @@ module.exports = {
         // req.body.remote_id=1;
         async.auto({
             findDocument: function (cb) {
+                // req.body.remote_id = 5;
                 Document.findOne({ id: parseInt(req.body.remote_id) }).exec(cb);
             },
             updateDocument: ['findDocument',function (results,cb) {

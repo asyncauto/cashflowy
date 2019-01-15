@@ -166,6 +166,7 @@ module.exports={
 		var t = convertSliToTransaction(sli);
 		console.log(t);
 		// callback('error');
+		var unique_transaction_flag=false;
 		async.auto({
 			getAccount:function(callback){
 				var filter = {
@@ -197,29 +198,24 @@ module.exports={
 			createTransactionIfNew:['getAccount','findSimilarTransactions',function(results,callback){
 				sli.transaction=null;
 				t.account=results.getAccount.id;
-				if(t.original_amount){
-					var existing_t = null;
-					if(results.findSimilarTransactions.length!=0){
-						existing_t=identifyExistingTransaction({similar_transactions:results.findSimilarTransactions,new_t:t});
+				if(results.findSimilarTransactions.length==0){
+					unique_transaction_flag = true;
+					Transaction.create(t).exec(callback);
+				}else{
+					var dt={
+						transaction:t,
+						similar_transactions:results.findSimilarTransactions,
+						sli:sli.id,
 					}
-					if(!existing_t){
-						Transaction.create(t).exec(function(err,transaction){
-							console.log(err);
-							// sli.transaction=transaction.id;
-							callback(err,transaction);
-						});
-					}else{
-						callback(null);
-					}
+					Doubtful_transaction.create(dt).exec(callback);
 				}
 			}],
 			updateSli:['createTransactionIfNew',function(results,callback){
-				var existing_t = identifyExistingTransaction({similar_transactions:results.findSimilarTransactions,new_t:t});
-				if(existing_t)
-					sli.transaction=existing_t.id;
-				else
+				if(unique_transaction_flag){
 					sli.transaction=results.createTransactionIfNew.id;
-				Statement_line_item.update({id:sli.id},{transaction:sli.transaction}).exec(callback);
+					Statement_line_item.update({id:sli.id},{transaction:sli.transaction}).exec(callback);
+				} else
+					callback(null);
 			}]
 		},function(err,results){
 			if(err){

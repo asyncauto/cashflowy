@@ -1,0 +1,79 @@
+<div class='ui container'>
+	<div class= 'ui grid'>
+		<div class='sixteen wide column'>
+			<b>id:</b><%=doc.id%><br>
+			<b>File name:</b><%=doc.parsed_data.file_name%><br>
+			<b>Number of transactions processed:</b><%=doc.parsed_data.transactions.length%><br>
+			<b>Possible duplicates:</b><%=doubtful_transactions.length%><br>
+		</div>
+		<div class='sixteen wide column'>
+			<h4><%=slis.length%> transactions extracted:</h4>
+			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr>
+                        <th>Row</th>
+                        <th>Transaction</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+						<th>Similar transactions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%slis.forEach(function(sli){%>
+						<% 
+							var t;
+							var t_created_flag=false;
+							if(sli.transaction){
+								t_created_flag=true;
+								t=sli.transaction;
+							}
+							else
+								t=sli.dt.transaction;
+						%>	
+						<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>style="background-color:yellow;"<%}%> >
+							<td><%=sli.pos+1%></td>
+							<td><%=t.third_party%></td>
+							<td class='single line'><%=new Date(t.occuredAt).toISOString().substring(0,10)%></td>
+							<td class='single line'><%=t.amount_inr%></td>
+							<td class='single line'><%=sli.dt?sli.dt.similar_transactions.length:''%></td>
+						</tr>
+						<!-- <%if(!t_created_flag){%>
+							<tr style="background-color:yellow;" >
+								additional data
+								<td><%=sli.pos+1%></td>
+							</tr>
+						<%}%> -->
+					<%})%>
+				</tbody>
+			</table>
+		</div>
+		<div class='sixteen wide column'>
+			<h4><%=doubtful_transactions.length%> items needs your attention </h4>
+			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr>
+                        <th>Id</th>
+                        <th>Transaction</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+						<th>Similar transactions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%doubtful_transactions.forEach(function(dt){%>
+						<tr data-tid='<%=dt.id%>'>
+							<td><%=dt.id%></td>
+                            <td><%=dt.transaction.third_party%></td>
+                            <td><%=dt.transaction.occuredAt.substring(0,10)%></td>
+                            <td>INR <%=dt.transaction.amount_inr%></td>
+                            <td><%=dt.similar_transactions.length%></td>
+						</tr>
+					<%})%>
+				</tbody>
+			</table>
+		</div>
+		
+
+	</div>
+	
+</div>
