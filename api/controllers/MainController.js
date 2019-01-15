@@ -1048,6 +1048,17 @@ module.exports = {
 			res.view('list_documents',locals);
 		})
 	},
+	viewDocument:function(req,res){
+		Document.findOne({id:req.params.id}).exec(function(err,doc){
+			var locals={doc:doc};
+			res.view('view_document',locals);
+		});
+		// get
+			// show extracted data 
+			// statement line items 
+			// transactions created from each of the statement line item
+			// ones that has been marked as 
+	},
 	createDocument: function(req, res) {
 		if (req.method == 'GET') {
 			var locals = {

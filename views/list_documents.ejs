@@ -6,6 +6,7 @@
 			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
 				<thead>
 					<tr>
+                        <th>Id</th>
                         <th>Statement_date</th>
 						<th>File Name</th>
                         <th>Acc_number</th>
@@ -19,6 +20,7 @@
 				<tbody>
 					<%documents.forEach(function(a){%>
 						<tr data-tid='<%=a.id%>'>
+							<td><a href="/document/<%=a.id%>"><%=a.id%></a></td>
                             <td>
                                 <span style="font-size: 1.1rem;"><%-a.parsed_data ? moment(a.parsed_data.statement_date).tz('Asia/Kolkata').format('ll') : '-'%></span>
 								</td>

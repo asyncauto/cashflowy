@@ -39,7 +39,6 @@ var convertSliToTransaction = function(sli){
 		else if(sli.data.dr_cr=='Dr')
 			t.original_amount=-parseFloat(sli.data.amount);
 		t.third_party=sli.data.details;
-
 		if(sli.data.date){
 			t.occuredAt = moment(sli.data.date, 'MM/DD/YYYY').tz('Asia/Kolkata').toDate()
 		}
@@ -58,7 +57,23 @@ var convertSliToTransaction = function(sli){
 		if(sli.data.date){
 			t.occuredAt = moment(sli.data.date, 'DD/MM/YYYY').tz('Asia/Kolkata').toDate()
 		}
+	}else if(sli.details.type=='sbi_bank' && sli.details.parser_used=='mzbvtiryowtr'){
+		sli.data.credit=sli.data.credit.replace(',','');
+		sli.data.credit=sli.data.credit.replace(',','');
+		sli.data.credit=sli.data.credit.replace(',','');
+		sli.data.debit=sli.data.debit.replace(',','');
+		sli.data.debit=sli.data.debit.replace(',','');
+		sli.data.debit=sli.data.debit.replace(',','');
+		if(!isNaN(parseFloat(sli.data.credit))) // is credit a number
+			t.original_amount=parseFloat(sli.data.credit);
+		else if(!isNaN(parseFloat(sli.data.debit)))
+			t.original_amount=-parseFloat(sli.data.debit);
+		t.occuredAt = new Date(sli.data.txn_date+' 12:00 +5:30');
+		t.third_party=sli.data.description;
+		if(sli.data.ref_cheque_no)
+			t.third_party+='('+sli.data.ref_cheque_no+')';
 	}
+
 
 	// t.amount_inr=t.original_amount;
 	if(t.original_amount)

@@ -13,7 +13,8 @@ module.exports = {
         var doc_filter_type={
             'bzqxicqhpsrk':'hdfc_credit_card',
             'sebtifdmvape':'icici_bank',
-            'jrvqwmfuhapd':'hdfc_bank'
+            'jrvqwmfuhapd':'hdfc_bank',
+            'mzbvtiryowtr':'sbi_bank'
         }
 
         console.log(req.body);
@@ -35,7 +36,7 @@ module.exports = {
                 // Line items will only be created if they dont already exist. 
                 var pos=0;
                 // this can be abstracted out into a function and tested. 
-                if(results.findDocument.parser_used=='bzqxicqhpsrk')
+                if(req.body.account_id)
                     var acc_no = req.body.account_id;
                 else if(results.findDocument.parser_used=='sebtifdmvape')
                     var acc_no=_.find(req.body.accounts,{acc_type:'Savings'}).acc_no;

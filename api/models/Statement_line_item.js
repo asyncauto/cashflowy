@@ -37,7 +37,8 @@ module.exports = {
 	},
 	beforeCreate:function(sli,cb){
 		sli.data=_.cloneDeep(sli.extracted_data);
-		sli.data.currency?sli.data.currency:'INR';
+		if(!sli.data.currency)
+			sli.data.currency='INR';
 		cb(null);
 		// console.log('before create parsed email');
 		// Rule.find({user:pe.user}).exec(function(err,rules){
