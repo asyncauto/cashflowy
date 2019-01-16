@@ -1,8 +1,3 @@
-<style>
-	.ui.selection.dropdown.filter_txn .menu {
-    overflow: visible !important;
-}
-</style>
 <div class='ui container'>
 	<div class='ui grid'>
 		<div class='five wide computer only column'>
@@ -10,7 +5,7 @@
 			<form class="ui form segment" action="" method='get'>
 				<div class="field">
 					<label>Account:</label>
-					<div class="ui compact selection scrolling filter_txn dropdown">
+					<div class="ui fluid filter_txn scrolling dropdown basic button">
 						<input type="hidden" name="account" value='<%=req.query.account?req.query.account:''%>'>
 						<i class="dropdown icon"></i>
 						<div class="text">All</div>
@@ -25,7 +20,7 @@
 					 
 				<div class="field">
 					<label>Category: </label>
-					<div class="ui filter_txn fluid scrolling selection dropdown">
+					<div class="ui filter_txn fluid dropdown basic button">
 						<input type="hidden" name="category" value="<%=req.query.category?req.query.category:'' %>">
 						<div class="text">All</div>
 						<i class="dropdown icon"></i>
@@ -39,7 +34,7 @@
 
 				<div class="field">
 					<label>Transaction Type: </label>
-					<div class="ui compact selection filter_txn dropdown">
+					<div class="ui filter_txn fluid dropdown basic button">
 						<input type="hidden" name="txn_type" value="<%=req.query.txn_type?req.query.txn_type:'' %>">
 						<i class="dropdown icon"></i>
 						<div class="text">All</div>
@@ -296,7 +291,7 @@
 			console.log('hi');
 			$(this).parents('tr').find('.edit_tags').show();
 		})
-		$('.filter_txn.dropdown').dropdown();
+		$('.filter_txn.dropdown').dropdown({ allowCategorySelection: true });
 		$('.extra_options.dropdown').dropdown();
 		$('.filter.dropdown').dropdown({
 			onChange:function(value, text, $choice){
