@@ -35,7 +35,11 @@
 							<td><%=t.third_party%></td>
 							<td class='single line'><%=new Date(t.occuredAt).toISOString().substring(0,10)%></td>
 							<td class='single line'><%=t.amount_inr%></td>
-							<td class='single line'><%=sli.dt?sli.dt.similar_transactions.length:''%></td>
+							<%if(sli.dt){%>
+								<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
+							<%}else{%>
+								<td></td>
+							<%}%>
 						</tr>
 						<!-- <%if(!t_created_flag){%>
 							<tr style="background-color:yellow;" >

@@ -1319,4 +1319,46 @@ module.exports = {
 		});
 		
 	},
+	viewDoubtfulTransaction:function(req,res){
+		Doubtful_transaction.findOne({id:req.params.id}).exec(function(err,dt){
+			var locals={
+				dt:dt
+			};
+			res.view('view_doubtful_transaction',locals);
+		})
+	},
+	markDTAsUnique:function(req,res){
+		async.auto({
+			getDT:function(callback){
+				Doubtful_transaction.findOne({id:req.params.id}).exec(callback);
+			},
+			createTransaction:['getDT',function(results,callback){
+				var t = results.getDT.transaction;
+				Transaction.create(t).exec(callback);
+			}],
+			updateDoubtfulTransaction:['getDT','createTransaction',function(results,callback){
+				var dt = results.getDT;
+				if(!dt.details)
+					dt.details={};
+				dt.details.status='unique';
+				dt.details.related_txn_id=results.createTransaction.id;
+				Doubtful_transaction.update({id:dt.id},{details:dt.details}).exec(callback);
+			}],
+			updateSLI:['getDT','createTransaction',function(results,callback){
+				var sli_id = results.getDT.sli;
+				Statement_line_item.update({id:sli_id},{transaction:results.createTransaction.id}).exec(callback);
+			}]
+		},function(err,results){
+			if(err)
+				throw err;
+			res.send('new transaction is created');
+		})
+		// create transaction
+		// update doubtful transaction - mark as unique and add the transaction id
+		// update sli or parsed email with the transaction id
+	},
+	markDTAsDuplicate:function(req,res){
+		// update doubtful transaction - mark as duplicate, and mention the transction id
+		// update sli or parsed email with the transaction id
+	}
 }

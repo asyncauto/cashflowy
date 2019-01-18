@@ -107,6 +107,11 @@ module.exports.routes = {
   'POST /document/:id/delete':'MainController.deleteDocument',
   
 
+  'GET /dt/:id':'MainController.viewDoubtfulTransaction',
+  'POST /dt/:id/mark_as_unique':'MainController.markDTAsUnique',
+  'POST /dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate',
+
+
   'GET /rule/:id':'MainController.viewRule',
   'GET /rule/:id/edit':'MainController.editRule',
   'POST /rule/:id/edit':'MainController.editRule',

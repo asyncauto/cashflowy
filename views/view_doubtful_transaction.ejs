@@ -1,0 +1,22 @@
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='sixteen wide column'>
+			<h3>Details of a doubtful transaction: </h3>
+			<pre><%=JSON.stringify(dt.transaction,null,'  ')%></pre>
+			<h3>Similar transactions: </h3>
+		</div>
+		<%dt.similar_transactions.forEach(function(st){%>
+			<div class='eight wide column'>
+				<pre><%=JSON.stringify(st,null,'  ')%></pre>
+			</div>
+			<div class='eight wide column'>
+				<button class='ui button'>Doubtful txn is same as this</button>
+			</div>
+			<div class='sixteen wide column'>
+				<div class='ui divider'></div>
+			</div>
+		<%})%>
+		<button class='ui button'>Doubtful txn is unique</button>
+	</div>
+	
+</div>
