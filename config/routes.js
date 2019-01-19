@@ -108,8 +108,8 @@ module.exports.routes = {
   
 
   'GET /dt/:id':'MainController.viewDoubtfulTransaction',
-  'POST /dt/:id/mark_as_unique':'MainController.markDTAsUnique',
-  'POST /dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate',
+  'POST /dt/:id/mark_as_unique':'MainController.markDTAsUnique', // api
+  'POST /dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate', // api
 
 
   'GET /rule/:id':'MainController.viewRule',

@@ -243,7 +243,9 @@
 									</div>
 								</td>
 								<td>
-									<button class='ui button'>Doubtful txn is same as this</button>
+									<form class="ui form " action="/dt/<%=dt.id%>/mark_as_duplicate_of/<%=t.id%>" method='post'>
+										<input type="submit" class="ui button" value="Doubtful txn is same as this">
+									</form>
 								</td>
 								<!-- <td></td>
 								<td></td> -->
@@ -252,6 +254,11 @@
 					<%})%>
 				</tbody>
 			</table>
+		</div>
+		<div class='sixteen wide column'>
+			<form class="ui form " action="/dt/<%=dt.id%>/mark_as_unique" method='post'>
+				<input type="submit" class="ui button" value="Doubtful txn is unique">
+			</form>
 		</div>
 		<!-- <%dt.similar_transactions.forEach(function(st){%>
 			<div class='eight wide column'>

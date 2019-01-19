@@ -1382,6 +1382,31 @@ module.exports = {
 		// update sli or parsed email with the transaction id
 	},
 	markDTAsDuplicate:function(req,res){
+		console.log('came here');
+		console.log(req.params.id);
+		console.log(req.params.orig_txn_id);
+		async.auto({
+			getDT:function(callback){
+				Doubtful_transaction.findOne({id:req.params.id}).exec(callback);
+			},
+			updateDoubtfulTransaction:['getDT',function(results,callback){
+				var dt = results.getDT;
+				if(!dt.details)
+					dt.details={};
+				dt.details.status='duplicate';
+				dt.details.related_txn_id=req.params.orig_txn_id;
+				Doubtful_transaction.update({id:dt.id},{details:dt.details}).exec(callback);
+			}],
+			updateSLI:['getDT',function(results,callback){
+				var sli_id = results.getDT.sli;
+				Statement_line_item.update({id:sli_id},{transaction:req.params.orig_txn_id}).exec(callback);
+			}]
+		},function(err,results){
+			if(err)
+				throw err;
+			res.send('marked as duplicate');
+		})
+		// res.send('all done');
 		// update doubtful transaction - mark as duplicate, and mention the transction id
 		// update sli or parsed email with the transaction id
 	}
