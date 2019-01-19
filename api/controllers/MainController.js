@@ -1320,9 +1320,33 @@ module.exports = {
 		
 	},
 	viewDoubtfulTransaction:function(req,res){
-		Doubtful_transaction.findOne({id:req.params.id}).exec(function(err,dt){
+		async.auto({
+			getDT:function(callback){
+				Doubtful_transaction.findOne({id:req.params.id}).exec(callback);
+			},
+			getAccounts:['getDT',function(results,callback){
+				var dt = results.getDT;
+				var account_ids = _.map(dt.similar_transactions,'account');
+				account_ids.push(dt.transaction.account);
+				console.log(account_ids);
+				Account.find({id:account_ids}).exec(callback);
+			}]
+		},function(err,results){
+			
+			results.getAccounts.forEach(function(account){
+				if(account.id==results.getDT.transaction.account)
+					results.getDT.transaction.account=account;
+			});
+			results.getDT.similar_transactions.forEach(function(st){
+				results.getAccounts.forEach(function(account){
+					if(account.id==st.account)
+						st.account=account;
+				});
+			})
+
 			var locals={
-				dt:dt
+				dt:results.getDT,
+				moment:require('moment-timezone'),
 			};
 			res.view('view_doubtful_transaction',locals);
 		})
