@@ -27,20 +27,22 @@
 								t_created_flag=true;
 								t=sli.transaction;
 							}
-							else
+							else if(sli.dt)
 								t=sli.dt.transaction;
 						%>	
-						<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>style="background-color:yellow;"<%}%> >
-							<td><%=sli.pos+1%></td>
-							<td><%=t.third_party%></td>
-							<td class='single line'><%=new Date(t.occuredAt).toISOString().substring(0,10)%></td>
-							<td class='single line'><%=t.amount_inr%></td>
-							<%if(sli.dt){%>
-								<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
-							<%}else{%>
-								<td></td>
-							<%}%>
-						</tr>
+						<%if(t){%>
+							<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>style="background-color:yellow;"<%}%> >
+								<td><%=sli.pos+1%></td>
+									<td><%=t.third_party%></td>
+									<td class='single line'><%=new Date(t.occuredAt).toISOString().substring(0,10)%></td>
+									<td class='single line'><%=t.amount_inr%></td>
+								<%if(sli.dt){%>
+									<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
+								<%}else{%>
+									<td></td>
+								<%}%>
+							</tr>
+						<%}%>
 						<!-- <%if(!t_created_flag){%>
 							<tr style="background-color:yellow;" >
 								additional data
