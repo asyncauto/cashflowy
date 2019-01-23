@@ -61,6 +61,6 @@
     "expect": "^23.6.0",
     "inquirer": "^6.2.0",
     "mocha": "^3.5.3",
-    "sails-business-stack-generator": "file:../sails-business-stack-generator"
+    "sails-business-stack-generator": "^1.1.2"
   }
 }
