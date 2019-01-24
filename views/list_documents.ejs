@@ -18,19 +18,19 @@
 					</tr>
 				</thead>
 				<tbody>
-					<%documents.forEach(function(a){%>
-						<tr data-tid='<%=a.id%>'>
-							<td><a href="/document/<%=a.id%>"><%=a.id%></a></td>
+					<%documents.forEach(function(doc){%>
+						<tr data-tid='<%=doc.id%>'>
+							<td><a href="/document/<%=doc.id%>"><%=doc.id%></a></td>
                             <td>
-                                <span style="font-size: 1.1rem;"><%-a.parsed_data ? moment(a.parsed_data.statement_date).tz('Asia/Kolkata').format('ll') : '-'%></span>
+                                <span style="font-size: 1.1rem;"><%-doc.parsed_data ? moment(doc.parsed_data.statement_date).tz('Asia/Kolkata').format('ll') : '-'%></span>
 								</td>
-							<td><%=a.parsed_data ? a.parsed_data.file_name : '-' %></td>
-							<td><%=a.parsed_data ? a.parsed_data.account_id : '-' %></td>
-                            <td><%=a.parsed_data ? a.parsed_data.account_holder : '-'%></td>
-                            <td><span style="font-size: 1.1rem;"><%-a.parsed_data ? moment(a.parsed_data.uploaded_at).tz('Asia/Kolkata').format('lll') : '-'%></span></td>
-                            <td><span style="font-size: 1.1rem;"><%-a.parsed_data ? moment(a.parsed_data.processed_at).tz('Asia/Kolkata').format('lll') : '-'%></span></td>
-                            <td><a href="<%=a.parsed_data ? a.parsed_data.media_link_original : '#' %>" target="_blank"><i class="blue large download icon"></i></a></td>
-                            <td><i class="<%=a.parsed_data ? a.parsed_data.transactions.length ? 'green large thumbs up icon' :  'red large thumbs down icon' : new Date() - new Date(a.createdAt) < 60000 ? 'large history icon':  'red large thumbs down icon'%>"></i> </td>
+							<td><%=doc.parsed_data ? doc.parsed_data.file_name : '-' %></td>
+							<td><%=doc.parsed_data ? doc.parsed_data.account_id : '-' %></td>
+                            <td><%=doc.parsed_data ? doc.parsed_data.account_holder : '-'%></td>
+                            <td><span style="font-size: 1.1rem;"><%-doc.parsed_data ? moment(doc.parsed_data.uploaded_at).tz('Asia/Kolkata').format('lll') : '-'%></span></td>
+                            <td><span style="font-size: 1.1rem;"><%-doc.parsed_data ? moment(doc.parsed_data.processed_at).tz('Asia/Kolkata').format('lll') : '-'%></span></td>
+                            <td><a href="<%=doc.parsed_data ? doc.parsed_data.media_link_original : '#' %>" target="_blank"><i class="blue large download icon"></i></a></td>
+                            <td><i class="<%=doc.parsed_data ? doc.parsed_data.transactions.length ? 'green large thumbs up icon' :  'red large thumbs down icon' : new Date() - new Date(doc.createdAt) < 60000 ? 'large history icon':  'red large thumbs down icon'%>"></i> </td>
 						</tr>
 					<%})%>
 				</tbody>
