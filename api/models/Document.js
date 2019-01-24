@@ -21,7 +21,17 @@ module.exports = {
 		},
 		type:{
 			type:'text'
-		}
+		},
+		name:{
+			type:'text'
+		},
+		details: {
+			type: 'json',
+		},
+		accounts:{
+			collection:'account',
+			via:'docs',
+		},
 	}
 };
 
