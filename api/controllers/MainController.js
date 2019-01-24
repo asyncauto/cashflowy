@@ -869,34 +869,49 @@ module.exports = {
 		// });
 	},
 	editDescription:function(req,res){
-		// do you have permission to edit description of that transaction?
-		async.auto({
-			getAccounts:function(callback){
-				Account.find({user:req.user.id}).exec(callback);
-			},
-			getTransactionDetails:function(callback){
-				Transaction.findOne({id:req.body.t}).exec(callback);
-			},
-		},function(err,results){
-			if(err)
-				throw err;
-			var t = results.getTransactionDetails;
-			var flag=false;
-			results.getAccounts.forEach(function(account){
-				if(t.account==account.id) // transaction in account of the user
-					flag=true;
-			});
-			if(flag){
-				Transaction.update({id:t.id},{description:req.body.description}).exec(function(err,result){
-					if(err)
-						throw err;
-					else
-						res.send('ok');
-				})
-			}else{
-				res.send(400,'you cant edit that transaction');
-			}
-		})
+		if(req.body.t){
+			// do you have permission to edit description of that transaction?
+			async.auto({
+				getAccounts:function(callback){
+					Account.find({user:req.user.id}).exec(callback);
+				},
+				getTransactionDetails:function(callback){
+					Transaction.findOne({id:req.body.t}).exec(callback);
+				},
+			},function(err,results){
+				if(err)
+					throw err;
+				var t = results.getTransactionDetails;
+				var flag=false;
+				results.getAccounts.forEach(function(account){
+					if(t.account==account.id) // transaction in account of the user
+						flag=true;
+				});
+				if(flag){
+					Transaction.update({id:t.id},{description:req.body.description}).exec(function(err,result){
+						if(err)
+							throw err;
+						else
+							res.send('ok');
+					})
+				}else{
+					res.send(400,'you cant edit that transaction');
+				}
+			})
+		}else if(req.body.doc){
+			Document.findOne({id:req.body.doc}).exec(function(err,doc){
+				if(doc.user==req.user.id){
+					Document.update({id:doc.id},{description:req.body.description}).exec(function(err,result){
+						if(err)
+							throw err;
+						else
+							res.send('ok');
+					});
+				}else{
+					res.send(400,'you cant edit that document');
+				}
+			})
+		}
 	},
 	listSnapshots:function(req,res){
 		
