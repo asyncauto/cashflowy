@@ -649,8 +649,12 @@ module.exports = {
 				} catch(err){
 					sails.log.error('error while parsing the dates', err);
 				}
+				//sort filter
+				var sort = 'occuredAt DESC';
+				if(req.query.sort)
+					sort = req.query.sort
 
-				Transaction.find(filter).sort('occuredAt DESC').limit(limit).populate('tags').exec(callback);
+				Transaction.find(filter).sort(sort).limit(limit).populate('tags').exec(callback);
 			}],
 			getCategories:function(callback){
 				Category.find({user:req.user.id}).exec(callback);
@@ -1051,7 +1055,7 @@ module.exports = {
 	viewDocument:function(req,res){
 		async.auto({
 			getDoc:function(callback){
-				Document.findOne({id:req.params.id}).exec(callback);
+				Document.findOne({id:req.params.id, user:req.user.id}).exec(callback);
 			},
 			getSLIs:function(callback){
 				Statement_line_item.find({document:req.params.id}).populate('transaction').sort('pos ASC').exec(callback);
