@@ -6,13 +6,12 @@
 				<div class="field">
 						<label>Sort by: </label>
 						<div class="ui filter_txn fluid dropdown basic button">
-							<input type="hidden" name="sort" value="<%=req.query.sort?req.query.sort:'' %>">
+							<input type="hidden" name="sort" value="<%=req.query.sort?req.query.sort:'occuredAt DESC' %>">
 							<i class="dropdown icon"></i>
 							<div class="text">All</div>
 							<div class="menu transition hidden" tabindex="-1">
-								<div class="item active selected" data-value='occuredAt DESC'>Date DESC</div>
 								<div class="item" data-value='occuredAt ASC'>Date ASC</div>
-								<div class="item" data-value='occuredAt DESC'>Date DESC</div>
+								<div class="item active selected" data-value='occuredAt DESC'>Date DESC</div>
 							</div>
 						</div>
 					</div>

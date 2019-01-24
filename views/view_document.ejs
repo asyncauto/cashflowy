@@ -3,12 +3,13 @@
 		<div class='sixteen wide column'>
 			<b>id:</b><%=doc.id%><br>
 			<b>File name:</b><%=doc.parsed_data.file_name%><br>
+			<b>Original File:</b><a href="<%=doc.parsed_data.media_link_original%>" target="_blank"><i class="blue large download icon"></i></a><br>
 			<b>Number of transactions processed:</b><%=doc.parsed_data.transactions.length%><br>
 			<b>Possible duplicates:</b><%=doubtful_transactions.length%><br>
 		</div>
 		<div class='sixteen wide column'>
 			<h4><%=slis.length%> transactions extracted:</h4>
-			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
+			<table class="ui basic fluid unstackable table" style="display: block;overflow-x:scroll;">
 				<thead>
 					<tr>
                         <th>Row</th>
@@ -16,6 +17,7 @@
                         <th>Date</th>
                         <th>Amount</th>
 						<th>Similar transactions</th>
+						<th>Status</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -29,16 +31,26 @@
 							}
 							else if(sli.dt)
 								t=sli.dt.transaction;
+							var dt_status = '';
+							if(sli.dt && sli.dt.details && sli.dt.details.status){
+								dt_status = sli.dt.details.status;
+							}
 						%>	
 						<%if(t){%>
-							<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>style="background-color:yellow;"<%}%> >
+							<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dt_status){%>class="positive"<%}%> >
 								<td><%=sli.pos+1%></td>
 									<td><%=t.third_party%></td>
 									<td class='single line'><%=new Date(t.occuredAt).toISOString().substring(0,10)%></td>
 									<td class='single line'><%=t.amount_inr%></td>
 								<%if(sli.dt){%>
 									<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
+									<% if(dt_status){ %>
+									<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
+									<% }else{ %>
+										<td class="single line"><i class="attention icon"></i> Requires Action</td>
+									<% } %>
 								<%}else{%>
+									<td></td>
 									<td></td>
 								<%}%>
 							</tr>
