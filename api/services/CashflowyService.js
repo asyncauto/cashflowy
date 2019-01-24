@@ -220,8 +220,9 @@ module.exports={
 		},function(err,results){
 			if(err){
 				console.log('\n\n\n_____________');
-				console.log('we got error');
+				console.log('we got error for sli', sli);
 				console.log(err);
+				callback(err);
 			}else
 				callback();
 		})
