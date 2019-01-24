@@ -22,7 +22,7 @@ module.exports = {
 		type:{
 			type:'text'
 		},
-		name:{
+		description:{
 			type:'text'
 		},
 		details: {
