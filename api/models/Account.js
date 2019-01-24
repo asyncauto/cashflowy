@@ -30,7 +30,12 @@ module.exports = {
 		acc_number:{ // credit card last 4 digits or bank acc number
 			type:'text', // 
 			required:true
-		}
+		},
+		docs:{
+			collection:'document',
+			via:'accounts',
+			dominant:true
+		},
 	}
 };
 
