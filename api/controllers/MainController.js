@@ -1346,7 +1346,13 @@ module.exports = {
 			getAccounts:['getDT',function(results,callback){
 				var dt = results.getDT;
 				var account_ids = _.map(dt.similar_transactions,'account');
+				var to_account_ids = _.map(dt.similar_transactions,'to_account');
 				account_ids.push(dt.transaction.account);
+				to_account_ids.forEach(function(acc){
+					if(acc)
+						account_ids.push(acc);
+				});
+
 				console.log(account_ids);
 				Account.find({id:account_ids}).exec(callback);
 			}]
@@ -1360,6 +1366,8 @@ module.exports = {
 				results.getAccounts.forEach(function(account){
 					if(account.id==st.account)
 						st.account=account;
+					if(account.id==st.to_account)
+						st.to_account=account;
 				});
 			})
 
