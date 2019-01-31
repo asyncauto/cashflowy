@@ -36,11 +36,10 @@ module.exports.routes = {
   'GET /dashboard':'MainController.dashboard',
   'GET /debug':'MainController.debug',
   
-  
   'GET /emails':'MainController.listEmails',
   'GET /email/create':'MainController.createEmail',
-  'POST /email/create':'MainController.createEmail',
-  'GET /email/create2':'MainController.createEmail2',
+  'POST /email/create-manual':'MainController.createEmailManual',
+  'GET /email/create-manual':'MainController.createEmailManual',
   'GET /oauth2callback':'MainController.oauth2callback',
   'GET /email/:id/edit':'MainController.editEmail',
   'POST /email/:id/edit':'MainController.editEmail',
