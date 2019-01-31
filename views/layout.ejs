@@ -148,6 +148,7 @@
 
       <!-- Top menu -->
     </div>
+    <%if(req.user){%>
     <div class="ui left demo vertical inverted sidebar labeled icon menu">
       <!-- <a class="item">
         <i class="home icon"></i>
@@ -187,6 +188,7 @@
         Settings
       </a>
     </div>
+    <%}%>
     <div class="pusher">
       <% include partials/warning %>
       <% include partials/navbar %>

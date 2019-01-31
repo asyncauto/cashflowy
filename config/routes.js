@@ -172,6 +172,7 @@ module.exports.routes = {
   'POST /webhook/docparser2':'WebhookController.docparser2',
 
   'GET /privacy': { view: 'privacy' },
+  'GET /terms':{view:'terms'}
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

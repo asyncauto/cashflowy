@@ -1,11 +1,13 @@
 <div class="ui grid" style="padding-bottom: 0.5em">
 	<!-- Definition of the nav bar when seen on a computer -->
 	<div class="ui sixteen wide column">
-		<div class="ui secondary pointing large menu" id="threads" >
+		<div class="ui top fixed stackable menu" id="threads" >
 			<!-- <div class="ui container" > -->
+			<%if(req.user){%>
 			<a class="item click-sidebar"><i class="sidebar icon"></i>Menu</a>
+			<%}%>
 			<a class="item home header <%if(req.page=='home'){%>active<%}%>" href="/">
-				Cashflowy<div class="ui red horizontal label">Beta</div>
+				<img src="/images/apple-touch-icon.png"> &nbsp; Cashflowy<div class="ui red horizontal label">Beta</div>
 			</a>
 			<!-- <a class="item" href="/explore">
 				Explore
@@ -52,10 +54,14 @@
 						<div class="menu" style="margin-top: 0em">
 							<a class="disabled item" href='/settings'><i class="ui wrench icon"></i>Settings</a>
 							<a class="item" href=''><i class="ui lightbulb outlinetop icon"></i>What is new?</a>
+							<a class="item" href="/privacy"><i class="ui lightbulb outlinetop icon"></i>Privacy</a>
+							<a class="item" href="/terms"><i class="ui lightbulb outlinetop icon"></i>Terms</a>
 							<a class="item" href='/logout'><i class="ui stop icon"></i>Logout</a>
 						</div>
 					</div>
 				<%}else{%>
+					<a class="item" href="/privacy">Privacy</a>
+					<a class="item" href="/terms">Terms</a>
 					<a class="item" href="/login">
 						
 						Login
@@ -76,7 +82,9 @@
 	
 	<!-- End of definition of the nav bar when seen on a mobile -->
 </div>
-
+<br>
+<br>
+<br>
 
 <script type="text/javascript">
 	$(document).ready(function(){
