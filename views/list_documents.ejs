@@ -52,7 +52,7 @@
 									<td class='single line'><i class="icon grey spinner"></i>Processing line items<br>
 								<span style="font-size:0.70rem;">&nbsp;&nbsp;<%= doc.statement_line_items.length %> line items processed out of <%= doc.parsed_data.transactions.length %></span></td>
 								<% } %>
-							<% }else if(new Date() - new Date(doc.createdAt) < 60000){ %>
+							<% }else if(new Date() - new Date(doc.createdAt) < 150000){ %>
 								<td class='single line'><i class="icon spinner"></i>Parsing in progress</td>
 							<% }else { %>
 								<td class='single line'><i class="icon yellow attention"></i>Unable to Parse the Document</td>

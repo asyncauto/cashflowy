@@ -1,4 +1,5 @@
 <div class='ui container'>
+	<% if(doc.parsed_data){%>
 	<div class= 'ui grid'>
 		<div class='sixteen wide column'>
 			<b>id:</b><%=doc.id%><br>
@@ -199,6 +200,9 @@
 		
 
 	</div>
+	<% } else{ %>
+	<div class="ui negative message">Not able to parse the document.</div>
+	<% } %>
 	
 </div>
 <script type="text/javascript">
