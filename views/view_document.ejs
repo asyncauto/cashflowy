@@ -15,8 +15,8 @@
 				<a class="item" data-tab="third">Earlier stuff</a>
 			</div>
 			<div class="ui tab active" data-tab="first">
-				<!-- icici bank statements -->
-				<%if(doc.parser_used=='sebtifdmvape'){%> 
+				<!-- icici bank statements && HDFC bank statement-->
+				<%if(doc.parser_used=='sebtifdmvape' || doc.parser_used=='jrvqwmfuhapd'){%> 
 					<table class="ui basic fluid unstackable table" style="display: block;overflow-x:scroll;">
 						<thead>
 							<tr>
@@ -71,7 +71,11 @@
 							<%})%>
 						</tbody>
 					</table>
-				<%}else if(doc.parser_used=='sebtifdmvapesdf'){%>
+				<%}else if(doc.parser_used=='jrvqwmfuhapdsdf'){%>
+					<!--  -->
+					
+				<%}else{%>
+					Oops we forgot to write the display template for this. 
 				<%}%>
 			</div>
 			<div class="ui tab" data-tab="second">
