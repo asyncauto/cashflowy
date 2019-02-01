@@ -1079,6 +1079,11 @@ module.exports = {
 				Doubtful_transaction.find({sli:_.map(results.getSLIs,'id')}).exec(callback);
 			}]
 		},function(err,results){
+			var unresolved_dts=[]
+			results.getDoubtfulTransactions.forEach(function(dt){
+				if(!dt.details.status)
+					unresolved_dts.push(_.cloneDeep(dt));
+			});
 			results.getDoubtfulTransactions.forEach(function(dt){
 				results.getSLIs.forEach(function(sli){
 					if(dt.sli==sli.id){
@@ -1092,6 +1097,7 @@ module.exports = {
 				doc:results.getDoc,
 				slis:results.getSLIs,
 				doubtful_transactions:results.getDoubtfulTransactions,
+				unresolved_dts:unresolved_dts,
 			};
 			// res.send(locals);
 			res.view('view_document',locals);

@@ -6,92 +6,202 @@
 			<b>Original File:</b><a href="<%=doc.parsed_data.media_link_original%>" target="_blank"><i class="blue large download icon"></i></a><br>
 			<b>Number of transactions processed:</b><%=doc.parsed_data.transactions.length%><br>
 			<b>Possible duplicates:</b><%=doubtful_transactions.length%><br>
+			<b>Parser Used:</b> <%=doc.parser_used%><br>
 		</div>
 		<div class='sixteen wide column'>
-			<h4><%=slis.length%> transactions extracted:</h4>
-			<table class="ui basic fluid unstackable table" style="display: block;overflow-x:scroll;">
-				<thead>
-					<tr>
-                        <th>Row</th>
-                        <th>Transaction</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-						<th>Similar transactions</th>
-						<th>Status</th>
-					</tr>
-				</thead>
-				<tbody>
-					<%slis.forEach(function(sli){%>
-						<% 
-							var t;
-							var t_created_flag=false;
-							if(sli.transaction){
-								t_created_flag=true;
-								t=sli.transaction;
-							}
-							else if(sli.dt)
-								t=sli.dt.transaction;
-							var dt_status = '';
-							if(sli.dt && sli.dt.details && sli.dt.details.status){
-								dt_status = sli.dt.details.status;
-							}
-						%>	
-						<%if(t){%>
-							<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dt_status){%>class="positive"<%}%> >
-								<td><%=sli.pos+1%></td>
-									<td><%=t.third_party%></td>
-									<td class='single line'><%=new Date(t.occuredAt).toISOString().substring(0,10)%></td>
-									<td class='single line'><%=t.amount_inr%></td>
-								<%if(sli.dt){%>
-									<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
-									<% if(dt_status){ %>
-									<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
-									<% }else{ %>
-										<td class="single line"><i class="attention icon"></i> Requires Action</td>
-									<% } %>
-								<%}else{%>
-									<td></td>
-									<td></td>
-								<%}%>
+			<div class="ui tabular menu">
+				<a class="item active" data-tab="first">SLI</a>
+				<a class="item" data-tab="second">Transactions</a>
+				<a class="item" data-tab="third">Earlier stuff</a>
+			</div>
+			<div class="ui tab active" data-tab="first">
+				<!-- icici bank statements -->
+				<%if(doc.parser_used=='sebtifdmvape'){%> 
+					<table class="ui basic fluid unstackable table" style="display: block;overflow-x:scroll;">
+						<thead>
+							<tr>
+								<th>row</th>
+								<th>date</th>
+								<th>paid_whom</th>
+								<th>credit</th>
+								<th>debit</th>
+								<th>Balance</th>
+								<th>account no</th>
+								<th>Similar transactions</th>
+								<th>Status</th>
 							</tr>
-						<%}%>
-						<!-- <%if(!t_created_flag){%>
-							<tr style="background-color:yellow;" >
-								additional data
-								<td><%=sli.pos+1%></td>
-							</tr>
-						<%}%> -->
-					<%})%>
-				</tbody>
-			</table>
-		</div>
-		<div class='sixteen wide column'>
-			<h4><%=doubtful_transactions.length%> items needs your attention </h4>
-			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
-				<thead>
-					<tr>
-                        <th>Id</th>
-                        <th>Transaction</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-						<th>Similar transactions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<%doubtful_transactions.forEach(function(dt){%>
-						<tr data-tid='<%=dt.id%>'>
-							<td><%=dt.id%></td>
-                            <td><%=dt.transaction.third_party%></td>
-                            <td><%=dt.transaction.occuredAt.substring(0,10)%></td>
-                            <td>INR <%=dt.transaction.amount_inr%></td>
-                            <td><%=dt.similar_transactions.length%></td>
+						</thead>
+						<tbody>
+							<%slis.forEach(function(sli){%>
+								<% 
+									var t_created_flag=false;
+									if(sli.transaction)
+										t_created_flag=true;
+									var dt_status = '';
+									if(sli.dt && sli.dt.details && sli.dt.details.status){
+										dt_status = sli.dt.details.status;
+									}
+								%>	
+								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dt_status){%>class="positive"<%}%> >
+									<td><%=sli.pos+1%></td>
+										<td class='single line'><%=sli.extracted_data.date%></td>
+										<td class=''><%=sli.extracted_data.paid_whom%></td>
+										<td class='single line'><%=sli.extracted_data.credit%></td>
+										<td class='single line'><%=sli.extracted_data.debit%></td>
+										<td class='single line'><%=sli.extracted_data.balance%></td>
+										<td class='single line'><%=sli.extracted_data.acc_no%></td>
+									<%if(sli.dt){%>
+										<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
+										<% if(dt_status){ %>
+										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
+										<% }else{ %>
+											<td class="single line"><i class="attention icon"></i> Requires Action</td>
+										<% } %>
+									<%}else{%>
+										<td></td>
+										<td></td>
+									<%}%>
+								</tr>
+								<!-- <%if(!t_created_flag){%>
+									<tr style="background-color:yellow;" >
+										additional data
+										<td><%=sli.pos+1%></td>
+									</tr>
+								<%}%> -->
+							<%})%>
+						</tbody>
+					</table>
+				<%}else if(doc.parser_used=='sebtifdmvapesdf'){%>
+				<%}%>
+			</div>
+			<div class="ui tab" data-tab="second">
+				<table class="ui basic fluid unstackable table" style="display: block;overflow-x:scroll;">
+					<thead>
+						<tr>
+	                        <th>Row</th>
+	                        <th>Transaction</th>
+	                        <th>Date</th>
+	                        <th>Amount</th>
+							<th>Similar transactions</th>
+							<th>Status</th>
 						</tr>
-					<%})%>
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						<%slis.forEach(function(sli){%>
+							<% 
+								var t;
+								var t_created_flag=false;
+								if(sli.transaction){
+									t_created_flag=true;
+									t=sli.transaction;
+								}
+								else if(sli.dt)
+									t=sli.dt.transaction;
+								var dt_status = '';
+								if(sli.dt && sli.dt.details && sli.dt.details.status){
+									dt_status = sli.dt.details.status;
+								}
+							%>	
+							<%if(t){%>
+								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dt_status){%>class="positive"<%}%> >
+									<td><%=sli.pos+1%></td>
+										<td><%=t.third_party%></td>
+										<td class='single line'><%=new Date(t.occuredAt).toISOString().substring(0,10)%></td>
+										<td class='single line'><%=t.amount_inr%></td>
+									<%if(sli.dt){%>
+										<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
+										<% if(dt_status){ %>
+										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
+										<% }else{ %>
+											<td class="single line"><i class="attention icon"></i> Requires Action</td>
+										<% } %>
+									<%}else{%>
+										<td></td>
+										<td></td>
+									<%}%>
+								</tr>
+							<%}%>
+							<!-- <%if(!t_created_flag){%>
+								<tr style="background-color:yellow;" >
+									additional data
+									<td><%=sli.pos+1%></td>
+								</tr>
+							<%}%> -->
+						<%})%>
+					</tbody>
+				</table>
+			</div>
+			<div class="ui tab" data-tab="third">
+				<table class="ui basic fluid unstackable table" style="display: block;overflow-x:scroll;">
+					<thead>
+						<tr>
+	                        <th>Row</th>
+	                        <th>Transaction</th>
+	                        <th>Date</th>
+	                        <th>Amount</th>
+							<th>Similar transactions</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<%slis.forEach(function(sli){%>
+							<% 
+								var t;
+								var t_created_flag=false;
+								if(sli.transaction){
+									t_created_flag=true;
+									t=sli.transaction;
+								}
+								else if(sli.dt)
+									t=sli.dt.transaction;
+								var dt_status = '';
+								if(sli.dt && sli.dt.details && sli.dt.details.status){
+									dt_status = sli.dt.details.status;
+								}
+							%>	
+							<%if(t){%>
+								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dt_status){%>class="positive"<%}%> >
+									<td><%=sli.pos+1%></td>
+										<td><%=t.third_party%></td>
+										<td class='single line'><%=new Date(t.occuredAt).toISOString().substring(0,10)%></td>
+										<td class='single line'><%=t.amount_inr%></td>
+									<%if(sli.dt){%>
+										<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
+										<% if(dt_status){ %>
+										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
+										<% }else{ %>
+											<td class="single line"><i class="attention icon"></i> Requires Action</td>
+										<% } %>
+									<%}else{%>
+										<td></td>
+										<td></td>
+									<%}%>
+								</tr>
+							<%}%>
+							<!-- <%if(!t_created_flag){%>
+								<tr style="background-color:yellow;" >
+									additional data
+									<td><%=sli.pos+1%></td>
+								</tr>
+							<%}%> -->
+						<%})%>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class='sixteen wide column'>
+			<h4><%=unresolved_dts.length%> items needs your attention </h4>
 		</div>
 		
 
 	</div>
 	
 </div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.tabular.menu .item').tab();
+	});
+
+
+
+</script>
