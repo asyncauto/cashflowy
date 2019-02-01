@@ -54,6 +54,13 @@ module.exports = {
 
 	password_reset_secret: process.env.PASSWORD_RESET_SECRET,
 	
-	app_url: process.env.APP_URL
+	app_url: process.env.APP_URL,
+
+	aws: {
+		key: process.env.AWS_ACCESS_KEY,
+		secret: process.env.AWS_ACCESS_SECRET, 
+		region: process.env.AWS_REGION, 
+		bucket: process.env.AWS_BUCKET
+	}
 
 };

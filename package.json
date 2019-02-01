@@ -43,6 +43,7 @@
     "sails-disk": "~0.10.9",
     "sails-helper": "^1.2.1",
     "sails-postgresql": "^0.11.4",
+    "skipper-s3": "^0.5.11",
     "textract": "^2.4.0"
   },
   "scripts": {

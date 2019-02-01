@@ -1121,6 +1121,7 @@ module.exports = {
 			// transactions created from each of the statement line item
 			// ones that has been marked as 
 	},
+	
 	createDocument: function(req, res) {
 		if (req.method == 'GET') {
 			var locals = {
@@ -1142,9 +1143,24 @@ module.exports = {
 						cb(null, uploadedFiles)
 					});
 				},
-				createDocument: function (cb) {
-					Document.create({ user: req.user.id, parser_used: req.body.type }).exec(cb);
-				},
+				uploadFileToS3: ['uploadFile', function(results, cb){
+					req.file('file').upload({
+						adapter: require('skipper-s3'),
+						key: sails.config.aws.key,
+						secret: sails.config.aws.secret,
+						region: sails.config.aws.region,
+						bucket: sails.config.aws.bucket,
+						headers: {
+							"content-type": req.file('file')._files[0].stream.headers['content-type']
+						}
+					}, function (err, uploadedFiles) {
+						if (err) return cb(err);
+						cb(null, uploadedFiles)
+					});
+				}],
+				createDocument: ['uploadFileToS3', function (results, cb) {
+					Document.create({ user: req.user.id, parser_used: req.body.type, details:{s3:results.uploadFileToS3[0].extra} }).exec(cb);
+				}],
 				sendToDocParser: ['createDocument', 'uploadFile', function (results, cb) {
 	
 					var options = {
