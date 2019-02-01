@@ -1155,6 +1155,8 @@ module.exports = {
 	
 					request(options, function (error, response, body) {
 						if (error) return cb(error);
+						if(body && body.error)
+							return cb(new Error(body.error));
 						cb(null, body);
 					});
 	
