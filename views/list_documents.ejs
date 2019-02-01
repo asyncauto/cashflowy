@@ -9,7 +9,7 @@
 						<th>Id</th>
 						<th>Uploaded On</th>
 						<th>Description</th>
-						<th>LineItems</th>
+						<th>Line Items<br>(processed/parsed)</th>
 						<th>Uploaded File</th>
                         <th>Accounts</th>
                         <th>Status</th>
@@ -42,7 +42,7 @@
 								</div>
 
 							</td>
-							<td><%=doc.statement_line_items.length %></td>
+							<td><%= doc.statement_line_items.length + '/' + (doc.parsed_data? doc.parsed_data.transactions.length: 0) %></td>
 							<td><a href="<%=doc.parsed_data ? doc.parsed_data.media_link_original : '#' %>" target="_blank"><%=doc.parsed_data ? doc.parsed_data.file_name : '-' %></a></td>
 							<td><%=doc.parsed_data ? doc.parsed_data.account_id : '-' %></td>
 							<% if(doc.parsed_data && doc.parsed_data.transactions){ %>
