@@ -1077,7 +1077,10 @@ module.exports = {
 			},
 			getDoubtfulTransactions:['getSLIs',function(results,callback){
 				Doubtful_transaction.find({sli:_.map(results.getSLIs,'id')}).exec(callback);
-			}]
+			}],
+			getAccounts:function(callback){
+				Account.find({user:req.user.id}).exec(callback);
+			}
 		},function(err,results){
 			var unresolved_dts=[]
 			results.getDoubtfulTransactions.forEach(function(dt){
@@ -1089,15 +1092,25 @@ module.exports = {
 					if(dt.sli==sli.id){
 						sli.dt=dt;
 						// dt.sli=sli;
-
 					}
 				})
 			});
+			results.getSLIs.forEach(function(sli){
+				results.getAccounts.forEach(function(account){
+					if(sli.transaction){
+						if(sli.transaction.account==account.id)
+							sli.transaction.account=account;
+						if(sli.transaction.to_account==account.id)
+							sli.transaction.to_account=account;
+					}
+				})
+			})
 			var locals={
 				doc:results.getDoc,
 				slis:results.getSLIs,
 				doubtful_transactions:results.getDoubtfulTransactions,
 				unresolved_dts:unresolved_dts,
+				moment:require('moment-timezone'),
 			};
 			// res.send(locals);
 			res.view('view_document',locals);
