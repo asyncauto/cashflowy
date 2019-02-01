@@ -32,6 +32,10 @@ module.exports = {
 			collection:'account',
 			via:'docs',
 		},
+		statement_line_items:{
+			collection: 'statement_line_item',
+			via: 'document'
+		}
 	}
 };
 

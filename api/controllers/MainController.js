@@ -1059,7 +1059,7 @@ module.exports = {
 		})
 	},
 	listDocuments: function(req, res){
-		Document.find({user:req.user.id}).sort('id DESC').exec(function(err,documents){
+		Document.find({user:req.user.id}).populate('accounts').populate('statement_line_items').sort('id DESC').exec(function(err,documents){
 			var locals={
 				documents:documents,
 				moment: require('moment-timezone')

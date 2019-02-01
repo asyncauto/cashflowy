@@ -6,15 +6,12 @@
 			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
 				<thead>
 					<tr>
-                        <th>Id</th>
-                        <th>Statement_date</th>
+						<th>Id</th>
+						<th>Uploaded On</th>
 						<th>Description</th>
-						<th>File Name</th>
-                        <th>Acc_number</th>
-                        <th>Acc_holder</th>
-                        <th>Uploaded_at</th>
-                        <th>Processed_at</th>
-                        <th>Original_file</th>
+						<th>LineItems</th>
+						<th>Uploaded File</th>
+                        <th>Accounts</th>
                         <th>Status</th>
 					</tr>
 				</thead>
@@ -23,8 +20,12 @@
 						<tr data-d_id='<%=doc.id%>' class='document'>
 							<td><a href="/document/<%=doc.id%>"><%=doc.id%></a></td>
                             <td>
-                                <span style="font-size: 1.1rem;"><%-doc.parsed_data ? moment(doc.parsed_data.statement_date).tz('Asia/Kolkata').format('ll') : '-'%></span>
-								</td>
+								<span class='popup' data-html="<%-moment(doc.createdAt).tz('Asia/Kolkata').format('h:mm a')%>">
+									
+								<span style="font-size: 1.05rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD MMM, YYYY')%></span></br>
+								<!-- <span style="font-size: 1.2rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD')%></span></br> -->
+								<!-- <span style="font-size: 0.75rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('YYYY')%></span> -->
+								</span></td>
 							<td>
 								<!-- describe the document -->
 								<span class='description'><%-doc.description?doc.description:''%></span>
@@ -41,13 +42,21 @@
 								</div>
 
 							</td>
-							<td><%=doc.parsed_data ? doc.parsed_data.file_name : '-' %></td>
+							<td><%=doc.statement_line_items.length %></td>
+							<td><a href="<%=doc.parsed_data ? doc.parsed_data.media_link_original : '#' %>" target="_blank"><%=doc.parsed_data ? doc.parsed_data.file_name : '-' %></a></td>
 							<td><%=doc.parsed_data ? doc.parsed_data.account_id : '-' %></td>
-                            <td><%=doc.parsed_data ? doc.parsed_data.account_holder : '-'%></td>
-                            <td><span style="font-size: 1.1rem;"><%-doc.parsed_data ? moment(doc.parsed_data.uploaded_at).tz('Asia/Kolkata').format('lll') : '-'%></span></td>
-                            <td><span style="font-size: 1.1rem;"><%-doc.parsed_data ? moment(doc.parsed_data.processed_at).tz('Asia/Kolkata').format('lll') : '-'%></span></td>
-                            <td><a href="<%=doc.parsed_data ? doc.parsed_data.media_link_original : '#' %>" target="_blank"><i class="blue large download icon"></i></a></td>
-                            <td><i class="<%=doc.parsed_data ? doc.parsed_data.transactions.length ? 'green large thumbs up icon' :  'red large thumbs down icon' : new Date() - new Date(doc.createdAt) < 60000 ? 'large history icon':  'red large thumbs down icon'%>"></i> </td>
+							<% if(doc.parsed_data && doc.parsed_data.transactions){ %>
+								<% if(doc.statement_line_items.length == doc.parsed_data.transactions.length) {%>
+									<td class='single line'><i class="icon green checkmark"></i>Document processed successfully</td>
+								<% }else if(doc.statement_line_items.length < doc.parsed_data.transactions.length){ %>
+									<td class='single line'><i class="icon grey spinner"></i>Processing line items<br>
+								<span style="font-size:0.70rem;">&nbsp;&nbsp;<%= doc.statement_line_items.length %> line items processed out of <%= doc.parsed_data.transactions.length %></span></td>
+								<% } %>
+							<% }else if(new Date() - new Date(doc.createdAt) < 60000){ %>
+								<td class='single line'><i class="icon spinner"></i>Parsing in progress</td>
+							<% }else { %>
+								<td class='single line'><i class="icon yellow attention"></i>Unable to Parse the Document</td>
+							<% } %>
 						</tr>
 					<%})%>
 				</tbody>
