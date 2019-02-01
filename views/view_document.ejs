@@ -14,6 +14,7 @@
 				<a class="item active" data-tab="first">SLI</a>
 				<a class="item" data-tab="second">Transactions</a>
 				<a class="item" data-tab="third">Earlier stuff</a>
+				<a class="item" data-tab="fourth">Original File</a>
 			</div>
 			<div class="ui tab active" data-tab="first">
 				<!-- icici bank statements && HDFC bank statement-->
@@ -274,6 +275,9 @@
 						<%})%>
 					</tbody>
 				</table>
+			</div>
+			<div class="ui tab" data-tab="fourth">
+				<embed src="<%=doc.parsed_data.media_link_original%>" type="application/pdf"   height="1000px" width="95%">
 			</div>
 		</div>
 		<div class='sixteen wide column'>
