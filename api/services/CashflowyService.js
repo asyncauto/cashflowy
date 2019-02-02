@@ -82,8 +82,10 @@ var convertSliToTransaction = function(sli){
 	return t;
 }
 
-var findSimilarTransactions = function(t,callback){
+var findSimilarTransactions = function(options,callback){
 	// console.log('this is the thing that is done');
+	var t=options.t;
+	var accounts=options.accounts;
 	var escape=[];
 	var query = 'select * from transaction';
 	query+=' where';
@@ -93,6 +95,7 @@ var findSimilarTransactions = function(t,callback){
 	var from = new Date(temp.setDate(t.occuredAt.getDate()-2)).toISOString();
 	var to = new Date(temp.setDate(t.occuredAt.getDate()+2)).toISOString();
 	query+=` AND "occuredAt">'${from}' AND "occuredAt"<'${to}'`;
+	query+=` AND "account" in (${accounts.join(',')})`;
 	
 	// query+=` AND account ='${results.getSnapshot.account}'`;
 	query+=' ORDER BY "occuredAt" DESC';
@@ -192,9 +195,15 @@ module.exports={
 				});
 				
 			},
-			findSimilarTransactions:function(callback){
-				findSimilarTransactions(t,callback);
+			getUserAccounts:function(callback){ 
+				// needed for finding similar transactions
+				// to compare with transactions from accounts that belong to the same user. 
+				Account.find({user:sli.user}).exec(callback);
 			},
+			findSimilarTransactions:['getUserAccounts',function(results,callback){
+				var options={t:t,accounts:_.map(results.getUserAccounts,'id')};
+				findSimilarTransactions(options,callback);
+			}],
 			createTransactionIfNew:['getAccount','findSimilarTransactions',function(results,callback){
 				sli.transaction=null;
 				t.account=results.getAccount.id;
