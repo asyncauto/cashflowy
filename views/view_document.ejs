@@ -277,7 +277,9 @@
 				</table>
 			</div>
 			<div class="ui tab" data-tab="fourth">
-				<embed src="<%=doc.parsed_data.media_link_original%>" type="application/pdf"   height="1000px" width="95%">
+				<object data="<%=doc.parsed_data.media_link_original%>" type="application/pdf" width="100%" height="500px">
+					alt : <a href="<%=doc.parsed_data.media_link_original%>"><%=doc.parsed_data.file_name%></a>
+				</object>
 			</div>
 		</div>
 		<div class='sixteen wide column'>
@@ -287,7 +289,7 @@
 
 	</div>
 	<% } else{ %>
-	<div class="ui negative message">Not able to parse the document.</div>
+	<div class="ui negative message">No data found</div>
 	<% } %>
 	
 </div>
