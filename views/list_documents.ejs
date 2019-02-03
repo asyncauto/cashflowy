@@ -7,11 +7,12 @@
 				<thead>
 					<tr>
 						<th>Id</th>
-						<th>Uploaded On</th>
-						<th>Description</th>
-						<th>Line Items<br>(processed/parsed)</th>
+						<th>Doc type</th>
 						<th>Uploaded File</th>
+						<th>Description</th>
                         <th>Accounts</th>
+						<th>Line Items<br>(processed/parsed)</th>
+						<th>Uploaded On</th>
                         <th>Status</th>
 					</tr>
 				</thead>
@@ -19,13 +20,10 @@
 					<%documents.forEach(function(doc){%>
 						<tr data-d_id='<%=doc.id%>' class='document'>
 							<td><a href="/document/<%=doc.id%>"><%=doc.id%></a></td>
-                            <td>
-								<span class='popup' data-html="<%-moment(doc.createdAt).tz('Asia/Kolkata').format('h:mm a')%>">
-									
-								<span style="font-size: 1.05rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD MMM, YYYY')%></span></br>
-								<!-- <span style="font-size: 1.2rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD')%></span></br> -->
-								<!-- <span style="font-size: 0.75rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('YYYY')%></span> -->
-								</span></td>
+							<td><%=doc.type%></td>
+							<td>
+								<a href="<%=doc.parsed_data ? doc.parsed_data.media_link_original : '#' %>" target="_blank"><%=doc.parsed_data ? doc.parsed_data.file_name : '-' %></a>
+							</td>
 							<td>
 								<!-- describe the document -->
 								<span class='description'><%-doc.description?doc.description:''%></span>
@@ -42,9 +40,19 @@
 								</div>
 
 							</td>
-							<td><%= doc.statement_line_items.length + '/' + (doc.parsed_data? doc.parsed_data.transactions.length: 0) %></td>
-							<td><a href="<%=doc.parsed_data ? doc.parsed_data.media_link_original : '#' %>" target="_blank"><%=doc.parsed_data ? doc.parsed_data.file_name : '-' %></a></td>
 							<td><%=doc.parsed_data ? doc.parsed_data.account_id : '-' %></td>
+							<td>
+								<%= doc.statement_line_items.length + '/' + (doc.parsed_data? doc.parsed_data.transactions.length: 0) %>
+							</td>
+							
+							<td>
+								<span class='popup' data-html="<%-moment(doc.createdAt).tz('Asia/Kolkata').format('h:mm a')%>">
+									
+								<span style="font-size: 1.05rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD MMM, YYYY')%></span></br>
+								<!-- <span style="font-size: 1.2rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD')%></span></br> -->
+								<!-- <span style="font-size: 0.75rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('YYYY')%></span> -->
+								</span>
+							</td>
 							<% if(doc.parsed_data && doc.parsed_data.transactions){ %>
 								<% if(doc.statement_line_items.length == doc.parsed_data.transactions.length) {%>
 									<td class='single line'><i class="icon green checkmark"></i>Document processed successfully</td>
