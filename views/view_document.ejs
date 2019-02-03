@@ -74,9 +74,58 @@
 							<%})%>
 						</tbody>
 					</table>
-				<%}else if(doc.parser_used=='jrvqwmfuhapdsdf'){%>
-					<!--  -->
-					
+				<%}else if(doc.parser_used=='bzqxicqhpsrk'){%>
+					<!-- HDFC credit card -->
+					<table class="ui basic fluid unstackable table" style="display: block;overflow-x:scroll;">
+						<thead>
+							<tr>
+								<th>row</th>
+								<th>date</th>
+								<th>details</th>
+								<th>amount</th>
+								<th>dr_cr</th>
+								<th>Similar transactions</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%slis.forEach(function(sli){%>
+								<% 
+									var t_created_flag=false;
+									if(sli.transaction)
+										t_created_flag=true;
+									var dt_status = '';
+									if(sli.dt && sli.dt.details && sli.dt.details.status){
+										dt_status = sli.dt.details.status;
+									}
+								%>	
+								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dt_status){%>class="positive"<%}%> >
+									<td><%=sli.pos+1%></td>
+										<td class='single line'><%=sli.extracted_data.date%></td>
+										<td class=''><%=sli.extracted_data.details%></td>
+										<td class='single line' style='font-color:red;'><%=sli.extracted_data.amount%></td>
+										<td class='single line'><%=sli.extracted_data.dr_cr%></td>
+									<%if(sli.dt){%>
+										<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
+										<% if(dt_status){ %>
+										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
+										<% }else{ %>
+											<td class="single line"><i class="attention icon"></i> Requires Action</td>
+										<% } %>
+									<%}else{%>
+										<td></td>
+										<td></td>
+									<%}%>
+								</tr>
+								<!-- <%if(!t_created_flag){%>
+									<tr style="background-color:yellow;" >
+										additional data
+										<td><%=sli.pos+1%></td>
+									</tr>
+								<%}%> -->
+							<%})%>
+						</tbody>
+					</table>
 				<%}else{%>
 					Oops we forgot to write the display template for this. 
 				<%}%>
