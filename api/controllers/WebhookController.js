@@ -14,6 +14,7 @@ module.exports = {
             'bzqxicqhpsrk':'hdfc_credit_card',
             'sebtifdmvape':'icici_bank',
             'jrvqwmfuhapd':'hdfc_bank',
+            'kelnksvuxwcv':'yes_bank_credit_card',
             'mzbvtiryowtr':'sbi_bank'
         }
 
