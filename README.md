@@ -70,3 +70,10 @@ You can find out long term road map here - https://workflowy.com/s/DO_A.23p98lkv
 
 ## Self hosting guideline
 - https://github.com/alexjv89/cashflowy/blob/master/docs/self_hosting.md
+
+## Steps to create a parser for a document
+- create the parser on docparser.com
+- update config with docparser id
+- update create_document.ejs to contain the doc filter id
+- update convertSliToTransaction function in CashflowyService
+- create the table view in viewDocument

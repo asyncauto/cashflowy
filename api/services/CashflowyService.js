@@ -72,6 +72,18 @@ var convertSliToTransaction = function(sli){
 		t.third_party=sli.data.description;
 		if(sli.data.ref_cheque_no)
 			t.third_party+='('+sli.data.ref_cheque_no+')';
+	}else if(sli.details.type=='yes_bank_credit_card' && sli.details.parser_used=='kelnksvuxwcv'){
+		sli.data.amount=sli.data.amount.replace(',','');
+		sli.data.amount=sli.data.amount.replace(',','');
+		sli.data.amount=sli.data.amount.replace(',','');
+		if(sli.data.dr_cr=='Cr') // amount is creditted
+			t.original_amount=parseFloat(sli.data.amount);
+		else if(sli.data.dr_cr=='Dr')
+			t.original_amount=-parseFloat(sli.data.amount);
+		t.third_party=sli.data.details;
+		if(sli.data.date){
+			t.occuredAt = moment(sli.data.date, 'MM/DD/YYYY').tz('Asia/Kolkata').toDate()
+		}
 	}
 
 
