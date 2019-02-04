@@ -1208,7 +1208,7 @@ module.exports = {
 					});
 				}],
 				createDocument: ['uploadFileToS3', function (results, cb) {
-					Document.create({ user: req.user.id, parser_used: req.body.type, details:{s3:results.uploadFileToS3[0].extra} }).exec(cb);
+					Document.create({ user: req.user.id, parser_used: req.body.type, details:{s3:results.uploadFileToS3[0].fd, original_filename:results.uploadFile[0].filename} }).exec(cb);
 				}],
 				sendToDocParser: ['createDocument', 'uploadFile', function (results, cb) {
 	

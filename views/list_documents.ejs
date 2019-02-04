@@ -22,7 +22,7 @@
 							<td><a href="/document/<%=doc.id%>"><%=doc.id%></a></td>
 							<td><%=doc.type%></td>
 							<td>
-								<a href="<%=doc.parsed_data ? doc.parsed_data.media_link_original : '#' %>" target="_blank"><%=doc.parsed_data ? doc.parsed_data.file_name : '-' %></a>
+								<a href="<%=doc.parsed_data ? doc.parsed_data.media_link_original : '#' %>" target="_blank"><%=doc.parsed_data ? doc.parsed_data.file_name : doc.details && doc.details.original_filename? doc.details.original_filename:'-'  %></a>
 							</td>
 							<td>
 								<!-- describe the document -->
