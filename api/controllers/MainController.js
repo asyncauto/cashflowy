@@ -405,14 +405,15 @@ module.exports = {
 			getCategories:function(callback){
 				Category.find({user:req.user.id}).exec(callback);
 			},
-			getTransactionsWithOutDescription: function(callback){
-				Transaction.findOne({description: {'!': null }}).exec(callback);
-			},
+			getTransactionsWithOutDescription: ['getAccounts', function(results, callback){
+				var  accounts =  _.map(results.getAccounts,'id')
+				Transaction.findOne({description: {'!': null }, account:accounts}).exec(callback);
+			}],
 			getDocumentsCount: function(callback){
-				Document.count().exec(callback);
+				Document.count({user:req.user.id}).exec(callback);
 			},
 			getEmailCount: function(callback){
-				Email.count().exec(callback);
+				Email.count({user:req.user.id}).exec(callback);
 			},
 			getCategorySpending:['getAccounts',function(results,callback){
 
@@ -505,12 +506,11 @@ module.exports = {
 				description: results.getTransactionsWithOutDescription? 'completed':'disabled',
 				document: results.getDocumentsCount? 'completed':'disabled'
 			}
-			var is_setup_completed = true
+			
 			_.forEach(setup_checklist, function(value, key){
 				if(value == 'disabled'){
-					setup_checklist[key] = 'active'
-					is_setup_completed = false;
-					return;
+					setup_checklist[key] = 'active';
+					return false;
 				}
 			});
 
