@@ -1,9 +1,152 @@
 <div class='ui container'>
-
-	
 	<div class='ui stackable grid'>
 		<div class='ui two wide column'></div>
 		<div class='ui twelve wide column'>
+				<div class="ui two column center aligned grid">
+				<!-- <div class='ui one wide column'></div> -->
+				<div class="fourteen wide column">
+					<div class="ui small progress" data-value="<%= setup_checklist.percentage_completed%>" data-total="100" id="setup">
+						<div class="label">
+							Your setup checklist <%= setup_checklist.percentage_completed/20%>/5.
+						</div>
+						<div class="bar">
+							<div class="progress"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="two wide column">
+					<i class="ui centered large chevron circle up show_hide_setup icon"></i>
+				</div>
+				
+				</div>
+				
+				<div class="ui two column stackable grid setup_detail" style="display:none;">
+					<div class="six wide column">
+						<div class="ui fluid mini vertical steps">
+							<div class="<%=setup_checklist.verify_email%> step">
+								<i class="mail icon"></i>
+								<div class="content">
+								<div class="title">Verify your email address</div>
+								</div>
+							</div>
+						<div class="<%=setup_checklist.email%> step">
+							<i class="mail icon"></i>
+							<div class="content">
+							<div class="title">Setup email syncing </div>
+							</div>
+						</div>
+						<div class="<%=setup_checklist.categories%> step">
+							<i class="block layout icon"></i>
+							<div class="content">
+							<div class="title">Setup few categories</div>
+							</div>
+						</div>
+						<div class="<%=setup_checklist.description%> step">
+							<i class="pencil alternate icon"></i>
+							<div class="content">
+							<div class="title">Write description</div>
+							</div>
+						</div>
+						<div class="<%=setup_checklist.document%> step">
+							<i class="file alternate outline icon"></i>
+							<div class="content">
+							<div class="title">Upload a document</div>
+							<div class="description"></div>
+							</div>
+						</div>
+						</div>
+					</div>
+					<div class="ten wide column">
+						<div class="ui segment setup_email" style=<%=setup_checklist.email == 'active'? "display:'';" : "display:none;" %>>
+							<h5 class="ui header">
+								Authorize cashflowy to fetch your bank and other financial account transaction emails.
+								<div class="sub header">Enabling this will help get all you transaction in realtime.</div>
+							</h5>
+							<br>
+							<br>
+							<a class="ui google plus button" href='/email/create'>
+							<i class="google icon"></i>
+								Sign In
+							</a>
+						</div>
+						<div class="ui segment setup_category" style=<%=setup_checklist.categories == 'active'? "display:'';" : "display:none;" %>>
+							<h5 class="ui header">
+								Setup few categories to start with.
+							</h5>
+							<div class="list">
+								<div class="item">
+									<div class="ui child checkbox">
+									<input type="checkbox" id='cat_eating_out' name="eating_out">
+									<label>Eating Out</label>
+									</div>
+								</div>
+								<div class="item">
+									<div class="ui child checkbox">
+									<input type="checkbox" id='cat_grocery' name="grocery">
+									<label>Grocery</label>
+									</div>
+								</div>
+								<div class="item">
+									<div class="ui child checkbox">
+									<input type="checkbox" id='cat_rent' name="rent">
+									<label>Rent</label>
+									</div>
+								</div>
+								<div class="item">
+									<div class="ui child checkbox">
+									<input type="checkbox" id='cat_gift' name="gift">
+									<label>Gift</label>
+									</div>
+								</div>
+								<div class="item">
+									<div class="ui child checkbox">
+									<input type="checkbox" id='cat_commute' name="commute">
+									<label>Commute</label>
+									</div>
+								</div>
+							</div>
+							<br>
+							<button class="ui button create_categories">Create</button>
+						</div>
+						<div class="ui segment setup_description" style=<%=setup_checklist.description == 'active'? "display:'';" : "display:none;" %>>
+							<h5 class="ui header">
+								Write your first description about an Expense. 
+							</h5>
+							<a href="/transactions"><i class="rupee icon"></i>Go to transactions to complete the step.</a>
+						</div>
+						<div class="ui segment setup_doc_upload" style=<%=setup_checklist.document == 'active'? "display:'';" : "display:none;" %>>
+								<h5 class="ui header">
+									Upload you first bank/credit-card statement.
+								</h5>
+								<a href="/document/create"><i class="file outline icon"></i>Upload statement</a>
+						</div>
+						<div class="ui placeholder segment" style=<%=setup_checklist.percentage_completed == 100 ? "display:'';" : "display:none;" %>>
+								<div class="ui one column stackable center aligned grid">
+								<div class="middle aligned row">
+										<div class="column">
+								<div class="ui icon header">
+										<i class="check circle outline grey icon"></i>
+										All done.
+									  </div>
+								</div>
+								</div>
+								</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='ui two wide column'></div>
+	<br>
+
+	
+	<div class='ui stackable grid'>
+		
+		
+		<div class='ui two wide column'></div>
+		<div class='ui twelve wide column'>
+			
 			<div class='ui center aligned segment'>
 				<a href="/dashboard/?month=<%=prev%>">
 					<i class="angle left icon big"></i>
@@ -257,6 +400,57 @@
 	};
 	$(document).ready(function(){
 		$('.popup').popup();
+		$('#setup').progress();
+		$('.show_hide_setup.icon').click(function(){
+			// $('.setup_detail').css('display', '');
+			// $('.show_hide_setup.icon').removeClass('up').addClass('down');
+			$(this).removeClass('chevron circle').addClass('chevron circle').toggleClass('up down').addClass('icon');
+            $('.setup_detail').toggle();
+		});
+		$('.create_categories').click(function(){
+			var categories_to_add = [];
+			if($('#cat_eating_out').is(":checked"))
+				categories_to_add.push({
+					name: 'Eating Out',
+					budget: 100,
+					description: '-'
+				})
+			if($('#cat_rent').is(":checked"))
+				categories_to_add.push({
+					name: 'Rent',
+					budget: 100,
+					description: '-'
+				});
+			if($('#cat_grocery').is(":checked"))
+				categories_to_add.push({
+					name: 'Grocery',
+					budget: 100,
+					description: '-'
+				})
+			if($('#cat_gift').is(":checked"))
+				categories_to_add.push({
+					name: 'Gift',
+					budget: 100,
+					description: '-'
+				})
+			if($('#cat_commute').is(":checked"))
+				categories_to_add.push({
+					name: 'Commute',
+					budget: 100,
+					description: '-'
+				})
+			
+			$.ajax({
+				type: 'POST',
+				url: '/category/create',
+				data: JSON.stringify(categories_to_add),
+				contentType: "application/json",
+				dataType: 'json',
+				success: function(resultData) { 
+				window.location.replace('/categories'); }
+			})
+			
+		})
 	})
 </script>
 <%}%>

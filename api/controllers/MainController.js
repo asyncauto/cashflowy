@@ -35,7 +35,20 @@ module.exports = {
 		});
 	},
 	createCategory:function(req,res){
-		Category.find({user:req.user.id}).exec(function(err,categories){
+		if(_.isArray(req.body)){
+			_.forEach(req.body, function(c){
+				c.user = req.user.id
+			});
+
+			Category.create(req.body).exec(function(err, cats){
+				if(err)
+					return res.status(500).json({error: err.message})
+				return res.json(cats);
+			});
+		}
+		else{
+
+			Category.find({user:req.user.id}).exec(function(err,categories){
 			if(req.body){ // post request
 
 				var c={
@@ -70,6 +83,7 @@ module.exports = {
 				res.view('create_category',locals);
 			}
 		})
+		}
 	},
 	viewCategory:function(req,res){
 		// get account of the user
@@ -391,6 +405,15 @@ module.exports = {
 			getCategories:function(callback){
 				Category.find({user:req.user.id}).exec(callback);
 			},
+			getTransactionsWithOutDescription: function(callback){
+				Transaction.findOne({description: {'!': null }}).exec(callback);
+			},
+			getDocumentsCount: function(callback){
+				Document.count().exec(callback);
+			},
+			getEmailCount: function(callback){
+				Email.count().exec(callback);
+			},
 			getCategorySpending:['getAccounts',function(results,callback){
 
 				var escape=[year];
@@ -474,10 +497,36 @@ module.exports = {
 				// console.log(cat);
 			});
 
+			//setup checklist
+			var setup_checklist = {
+				verify_email: 'completed',
+				email: results.getEmailCount? 'completed':'disabled',
+				categories: results.getCategories.length? 'completed':'disabled',
+				description: results.getTransactionsWithOutDescription? 'completed':'disabled',
+				document: results.getDocumentsCount? 'completed':'disabled'
+			}
+			var is_setup_completed = true
+			_.forEach(setup_checklist, function(value, key){
+				if(value == 'disabled'){
+					setup_checklist[key] = 'active'
+					is_setup_completed = false;
+					return;
+				}
+			});
+
+			var percentage_completed = 0;
+			_.forEach(setup_checklist, function(value, key){
+				if(value =='completed')
+					percentage_completed += 20;
+			});
+
+			setup_checklist.percentage_completed = percentage_completed;
+
 			var locals={
 				current:year+'-'+month,
 				accounts:results.getAccounts,
 				categories:GeneralService.orderCategories(results.getCategories),
+				setup_checklist: setup_checklist
 			}
 			if(month==1)
 				locals.prev=(parseInt(year)-1)+'-12';
