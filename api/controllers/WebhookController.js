@@ -10,19 +10,18 @@ module.exports = {
     // this is the new doc parser - needs clean up - written by Alex
     docparser2: function (req, res) {
 
-        var doc_filter_type={
-            'bzqxicqhpsrk':'hdfc_credit_card',
-            'sebtifdmvape':'icici_bank',
-            'jrvqwmfuhapd':'hdfc_bank',
-            'kelnksvuxwcv':'yes_bank_credit_card',
-            'mzbvtiryowtr':'sbi_bank'
-        }
 
         console.log(req.body);
         if (req.query.secret != sails.config.docparser.webhook_secret)
             return res.status(403).json({ status: 'failure', error: 'athorization failed' });
         // req.body.remote_id?req.body.remote_id:1;
         // req.body.remote_id=1;
+        var transformExtractedDataFromDocument=function(extracted_data){
+            var data;
+            return data;
+        }
+        var parsed_data=transformExtractedDataFromDocument(req.body);
+        
         async.auto({
             findDocument: function (cb) {
                 // req.body.remote_id = 5;
@@ -30,7 +29,9 @@ module.exports = {
             },
             updateDocument: ['findDocument',function (results,cb) {
                 // cb(null);
-                Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: parsed_data, type:doc_filter_type[results.findDocument.parser_used]}).exec(cb);
+                // type:doc_filter_type[results.findDocument.parser_used]
+                var type= _.find(sails.config.docparser.filters,{docparser_id:results.findDocument.parser_used}).type;
+                Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: parsed_data, type:type}).exec(cb);
             }],
             // check if the document entered is duplicate of something else
             createStatementLineItems:['findDocument',function(results,cb){
@@ -52,7 +53,7 @@ module.exports = {
                         pos:pos,
                         details:{
                             parser_used:results.findDocument.parser_used,
-                            type:doc_filter_type[results.findDocument.parser_used],
+                            type:_.find(sails.config.docparser.filters,{docparser_id:results.findDocument.parser_used}).type,
                         },
                         user:results.findDocument.user // this is sort of reduntant
                     }

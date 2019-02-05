@@ -20,12 +20,9 @@
 						<i class="dropdown icon"></i>
 						<div class="default text">Select type</div>
 						<div class="menu">
-							<div class="item" data-value="<%=sails.config.docparser.filters.hsbc_credit_card%>"></i>HSBC credit card statement</div>
-							<div class="item" data-value="<%=sails.config.docparser.filters.yes_bank_credit_card%>"></i>Yes Bank credit card statement</div>
-							<div class="item" data-value="<%=sails.config.docparser.filters.hdfc_credit_card%>"></i>HDFC credit card statement</div>
-							<div class="item" data-value="<%=sails.config.docparser.filters.icici_bank%>"></i>ICICI bank statement</div>
-							<div class="item" data-value="<%=sails.config.docparser.filters.hdfc_bank%>"></i>HDFC bank statement</div>
-							<div class="item" data-value="<%=sails.config.docparser.filters.sbi_bank%>"></i>SBI bank statement</div>
+							<%sails.config.docparser.filters.forEach(function(filter){%>
+								<div class="item" data-value="<%=filter.docparser_id%>"></i><%=filter.name%></div>
+							<%})%>
 						</div>
 					</div>
 				</div>

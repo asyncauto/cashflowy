@@ -1175,14 +1175,12 @@ module.exports = {
 		if (req.method == 'GET') {
 			var locals = {
 				type: '',
-				options:sails.config.docparser.filters,
 				message: ''
 			}
 			res.view('create_document', locals)
 		} else {
 			var locals = {
 				type: '',
-				options:sails.config.docparser.filters,
 				message: ''
 			}
 			async.auto({
