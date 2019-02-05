@@ -1175,14 +1175,14 @@ module.exports = {
 		if (req.method == 'GET') {
 			var locals = {
 				type: '',
-				options:sails.config.docparser_filters,
+				options:sails.config.docparser.filters,
 				message: ''
 			}
 			res.view('create_document', locals)
 		} else {
 			var locals = {
 				type: '',
-				options:sails.config.docparser_filters,
+				options:sails.config.docparser.filters,
 				message: ''
 			}
 			async.auto({
@@ -1214,7 +1214,7 @@ module.exports = {
 	
 					var options = {
 						method: 'POST',
-						url: `https://${sails.config.docparser_api_key}:@api.docparser.com/v1/document/upload/${req.body.type}`,
+						url: `https://${sails.config.docparser.api_key}:@api.docparser.com/v1/document/upload/${req.body.type}`,
 						json:true,
 						formData:
 							{

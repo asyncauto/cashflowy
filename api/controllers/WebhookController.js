@@ -19,7 +19,7 @@ module.exports = {
         }
 
         console.log(req.body);
-        if (req.query.secret != sails.config.docparser_webhook_secret)
+        if (req.query.secret != sails.config.docparser.webhook_secret)
             return res.status(403).json({ status: 'failure', error: 'athorization failed' });
         // req.body.remote_id?req.body.remote_id:1;
         // req.body.remote_id=1;
@@ -30,7 +30,7 @@ module.exports = {
             },
             updateDocument: ['findDocument',function (results,cb) {
                 // cb(null);
-                Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: req.body, type:doc_filter_type[results.findDocument.parser_used]}).exec(cb);
+                Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: parsed_data, type:doc_filter_type[results.findDocument.parser_used]}).exec(cb);
             }],
             // check if the document entered is duplicate of something else
             createStatementLineItems:['findDocument',function(results,cb){
