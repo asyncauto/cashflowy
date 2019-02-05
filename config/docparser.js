@@ -51,6 +51,13 @@ module.exports.docparser={
 			},
 			// before it is saved in the database
 			modifyParsedData:function(parsed_data){
+				parsed_data.transactions.forEach(function(t){
+					var year=parsed_data.transaction_from_date.substring(0,4);
+					if(t.date.substring(2,5)=='JAN')
+						year=parsed_data.transaction_to_date.substring(0,4);
+					t.date+=year;
+					t.date=new Date(t.date).toISOString().substring(0,10);
+				})
 				return parsed_data;
 			}
 		},
