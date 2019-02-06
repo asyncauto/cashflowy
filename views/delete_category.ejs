@@ -1,0 +1,44 @@
+<div class='ui container'>
+	<br>
+	<h2>Do you really want to confirm deleting this Category?</h2>
+	This action is permanent. You cant reverse this. All transactions under this category will be un-categorized when you delete this category.
+	<div class='ui segment'>
+		<b>Name:</b> <%=category.name%><br>
+		<b>Description:</b> <%=category.description%><br>
+		<b>Budget:</b> <%=category.budget%><br>
+		<b>Parent:</b> <%=category.parent?category.parent.name:''%><br>
+		<b>Number of sub-categories:</b><%=children.length%><br>
+		<b>Transactions with this category:</b><b style='color:red'><%=transactions_count%></b><br>
+		<%if(transactions_count>0){%>
+			<b style='color:red'>On deletion of this category, all transactions with this category will become un-categorized. </b>
+		<%}%>
+		<br>
+		<br>
+		<br>
+
+		<form class="ui form " action="" method='post'>
+			<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
+			<div class="field">
+				<div class="ui checkbox">
+					<input name="confirm" type="checkbox">
+					<label>Confirm delete</label>
+				</div>
+			</div>
+			<a href="/transactions" class='ui button'>Cancel</a>
+			<input type="submit" class="ui red <%-(children.length>0)?'disabled':''%> button" value="Delete">
+			<%if(children.length>0){%>
+				This category cant be deleted as it has sub-categories. Delete the sub-categories first.
+			<%}%>
+		</form>
+	</div>
+</div>
+</script>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		console.log('hi');
+		var a = moment('<%=category.createdAt%>');
+		$('#date').text(a.format('DD-MMM-YYYY h:mm a'))
+	})
+
+</script>

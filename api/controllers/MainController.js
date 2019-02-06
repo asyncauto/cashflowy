@@ -192,6 +192,53 @@ module.exports = {
 			}
 		});
 	},
+	deleteCategory:function(req,res){
+		async.auto({
+			getCategory:function(callback){
+				Category.findOne({id:req.params.id,user:req.user.id}).populate('parent').exec(callback);
+			},
+			getTransactionsCount:function(callback){
+				Transaction.count({category:req.params.id}).exec(callback);
+			},
+			getChildrenCategories:function(callback){
+				Category.find({parent:req.params.id,user:req.user.id}).exec(callback);
+			}
+		},function(err,results){
+			if(err)
+				throw err;
+			if(req.body && req.body.confirm){ // confirming delete
+				if(results.getChildrenCategories.length>0)
+					res.send('this category has sub-categories. Delete all the sub-categories first');
+				async.auto({
+					getTransactions:function(callback){
+						Transaction.find({category:req.params.id}).exec(callback);
+					},
+					updateTransactions:['getTransactions',function(results,callback){
+						var t_ids=_.map(results.getTransactions,'id');
+						Transaction.update({id:t_ids},{category:null}).exec(callback);
+					}],
+					deleteCategory:['updateTransactions',function(results,callback){
+						Category.destroy({id:req.params.id}).exec(callback);
+					}]
+				},function(err,results){
+					if(err)
+						throw(err);
+					res.redirect('/categories');
+				})
+				
+			}else{ // showing the warning page
+				
+				var locals={
+					category:results.getCategory,
+					transactions_count:results.getTransactionsCount,
+					children:results.getChildrenCategories,
+				};
+				console.log(locals);
+				res.view('delete_category',locals);
+			}
+		})
+		
+	},
 	listEmails:function(req,res){
 		Email.find({user:req.user.id}).exec(function(err,emails){
 			var locals={

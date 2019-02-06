@@ -78,6 +78,8 @@ module.exports.routes = {
   'GET /category/:id':'MainController.viewCategory',
   'GET /category/:id/edit':'MainController.editCategory',
   'POST /category/:id/edit':'MainController.editCategory',
+  'GET /category/:id/delete':'MainController.deleteCategory',
+  'POST /category/:id/delete':'MainController.deleteCategory',
 
   'GET /tags':'MainController.listTags',
   'GET /tag/create':'MainController.createTag',

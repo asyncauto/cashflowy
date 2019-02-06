@@ -14,6 +14,7 @@
 						<th>Description</th>
 						<th class="right aligned">Budget(INR)</th>
 						<th>Edit</th>
+						<th>Delete</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -26,24 +27,26 @@
 							<td><%=c.description%></td>
 							<td class="right aligned"><%=parseFloat(c.budget).toFixed(2)%></td>
 							<td><a href="/category/<%=c.id%>/edit">edit</a></td>
+							<td><a href="/category/<%=c.id%>/delete">delete</a></td>
 						</tr>
 						<% var parent = c;%>
-						<%parent.children.forEach(function(c){%>
-							<tr data-tid='<%=c.id%>'>
+						<%parent.children.forEach(function(c2){%>
+							<tr data-tid='<%=c2.id%>'>
 								<td class="single line">
 									<i class="icon inverted caret right"></i>
 									<i class="icon caret right"></i>
 								</td>
 								<!-- <td><%=c.id%></td> -->
-								<td><a href="/category/<%=c.id%>"><%=c.name%></a></td>
+								<td><a href="/category/<%=c2.id%>"><%=c2.name%></a></td>
 								<td><%=parent.name%></td>
-								<td><%=c.description%></td>
-								<td class="right aligned"><%=parseFloat(c.budget).toFixed(2)%></td>
-								<td><a href="/category/<%=c.id%>/edit">edit</a></td>
+								<td><%=c2.description%></td>
+								<td class="right aligned"><%=parseFloat(c2.budget).toFixed(2)%></td>
+								<td><a href="/category/<%=c2.id%>/edit">edit</a></td>
+								<td><a href="/category/<%=c2.id%>/delete">delete</a></td>
 							</tr>
-							<% var parent2 = c;%>
-							<%parent2.children.forEach(function(c){%>
-								<tr data-tid='<%=c.id%>'>
+							<% var parent2 = c2;%>
+							<%parent2.children.forEach(function(c3){%>
+								<tr data-tid='<%=c3.id%>'>
 									
 									<td class="single line">
 										<i class="icon inverted caret right"></i>
@@ -51,11 +54,12 @@
 										<i class="icon caret right"></i>
 									</td>
 									<!-- <td><%=c.id%></td> -->
-									<td><a href="/category/<%=c.id%>"><%=c.name%></a></td>
+									<td><a href="/category/<%=c3.id%>"><%=c3.name%></a></td>
 									<td><%=parent2.name%></td>
-									<td><%=c.description%></td>
-									<td class="right aligned"><%=parseFloat(c.budget).toFixed(2)%></td>
-									<td><a href="/category/<%=c.id%>/edit">edit</a></td>
+									<td><%=c3.description%></td>
+									<td class="right aligned"><%=parseFloat(c3.budget).toFixed(2)%></td>
+									<td><a href="/category/<%=c3.id%>/edit">edit</a></td>
+									<td><a href="/category/<%=c3.id%>/delete">delete</a></td>
 								</tr>
 							<%})%>
 						<%})%>
