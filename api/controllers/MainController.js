@@ -50,7 +50,8 @@ module.exports = {
 
 			Category.find({user:req.user.id}).exec(function(err,categories){
 			if(req.body){ // post request
-
+				if(!req.body.budget)
+					req.body.budget='10000';
 				var c={
 					name:req.body.name,
 					description:req.body.description,
@@ -75,7 +76,7 @@ module.exports = {
 					message:'',
 					name:'',
 					description:'',
-					budget:'',
+					budget:'10000',
 					parent_id:0,
 					categories:categories
 				}
