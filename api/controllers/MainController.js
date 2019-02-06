@@ -26,7 +26,7 @@ module.exports = {
 			res.redirect('/login')
 	},
 	listCategories:function(req,res){
-		Category.find({user:req.user.id}).exec(function(err,categories){
+		Category.find({user:req.user.id}).sort('name ASC').exec(function(err,categories){
 			var locals={
 				categories:categories
 			}
