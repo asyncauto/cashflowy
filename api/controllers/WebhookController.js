@@ -33,7 +33,27 @@ module.exports = {
                 // req.body.remote_id = 5;
                 Document.findOne({ id: parseInt(req.body.remote_id) }).exec(cb);
             },
-            updateDocument: ['findDocument',function (results,cb) {
+            findAccounts: ['findDocument', function(results, cb){
+                var accouts = [];
+                if(req.body.account_id)
+                    accouts.push(req.body.account_id.substr(-4));
+                else if(results.findDocument.parser_used=='sebtifdmvape')
+                    _.forEach(req.body.accounts, function(account){
+                        accouts.push(account.acc_no.substr(-4))
+                    })
+                var account_ids = [];
+                async.forEach(accouts, function(ac, cb){
+                    Account.findOrCreate({acc_number: ac, user: results.findDocument.user},
+                        {acc_number: ac, user: results.findDocument.user, name: 'Auto Generated: '+ ac, type: "bank"}).exec(function(e, a){
+                            if(e) return cb(e);
+                            account_ids.push(a.id);
+                            return cb(null);
+                        })
+                }, function(err){
+                    cb(err, account_ids);
+                })
+            }],
+            updateDocument: ['findAccounts' ,function (results,cb) {
                 // cb(null);
                 // type:doc_filter_type[results.findDocument.parser_used]
                 var filter = _.find(sails.config.docparser.filters,{docparser_id:results.findDocument.parser_used});
@@ -41,10 +61,10 @@ module.exports = {
                 // console.log('\n\n------------------');
                 // console.log(parsed_data);
                 // console.log('------------------');
-                Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: parsed_data, type:filter.type}).exec(cb);
+                Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: parsed_data, type:filter.type, accounts: results.findAccounts}).exec(cb);
             }],
             // check if the document entered is duplicate of something else
-            createStatementLineItems:['findDocument',function(results,cb){
+            createStatementLineItems:['updateDocument',function(results,cb){
                 console.log('statement line items will be created here\n\n\n\n');
                 // Line items will only be created if they dont already exist. 
                 var pos=0;

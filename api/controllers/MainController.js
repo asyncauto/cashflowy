@@ -1157,9 +1157,34 @@ module.exports = {
 	},
 	listDocuments: function(req, res){
 		Document.find({user:req.user.id}).populate('accounts').populate('statement_line_items').sort('id DESC').exec(function(err,documents){
+			var timeline = {
+				groups:[],
+				items:[]
+			}
+
+			_.forEach(documents, function(d){
+				if(d.parsed_data && d.parsed_data.transactions_from_date && d.parsed_data.transactions_to_date){
+					_.forEach(d.accounts, function(a){
+						timeline.items.push({
+							id: d.id,
+							content: `${d.id}: ${d.details.original_filename}`,
+							start: d.parsed_data.transactions_from_date,
+							end: d.parsed_data.transactions_to_date,
+							group: a.id
+						})
+						if(!_.find(timeline.groups, {id:a.id}))
+							timeline.groups.push({
+								id: a.id,
+								content: `<a href=/account/${a.id}>${a.name}<a>`
+							})
+					})
+				}
+			});
+
 			var locals={
 				documents:documents,
-				moment: require('moment-timezone')
+				moment: require('moment-timezone'),
+				timeline: timeline
 			}
 			res.view('list_documents',locals);
 		})

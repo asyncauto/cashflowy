@@ -2,9 +2,8 @@
 	<div class='ui stackable grid'>
 		<div class='ui two wide column'></div>
 		<div class='ui twelve wide column'>
-				<div class="ui two column center aligned grid">
-				<!-- <div class='ui one wide column'></div> -->
-				<div class="fourteen wide column">
+				<!-- <div class="ui two column center aligned grid"> -->
+				<div class="ui row">
 					<div class="ui small progress" data-value="<%= setup_checklist.percentage_completed%>" data-total="100" id="setup">
 						<div class="label">
 							Your setup checklist <%= setup_checklist.percentage_completed/20%>/5.
@@ -14,13 +13,10 @@
 						</div>
 					</div>
 				</div>
-
-				<div class="two wide column">
-					<i class="ui centered large chevron circle up show_hide_setup icon"></i>
-				</div>
-				
-				</div>
-				
+				<i class="ui right floated large chevron circle up show_hide_setup icon"></i>
+				<br>
+				<br>
+				<!-- </div> -->
 				<div class="ui two column stackable grid setup_detail" style="display:none;">
 					<div class="six wide column">
 						<div class="ui fluid mini vertical steps">
@@ -61,7 +57,7 @@
 						<div class="ui segment setup_email" style=<%=setup_checklist.email == 'active'? "display:'';" : "display:none;" %>>
 							<h5 class="ui header">
 								Authorize cashflowy to fetch your bank and other financial account transaction emails.
-								<div class="sub header">Enabling this will help get all you transaction in realtime.</div>
+								<div class="sub header">Enabling this will help get all your transactions in realtime.</div>
 							</h5>
 							<br>
 							<br>

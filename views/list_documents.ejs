@@ -1,6 +1,44 @@
 <div class='ui container'>
 	<div class='ui grid'>
 		<!-- <div class='three wide tablet computer only column'></div> -->
+		<div class="sixteen wide computer sixteen wide mobile  column">
+				  <style type="text/css">
+					.vis-item .vis-item-content {
+						padding: 1px !important;
+					}
+				  </style>
+				  <script src="http://visjs.org/dist/vis.js"></script>
+				  <link href="http://visjs.org/dist/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+
+				<div id="visualization" class="ui segment"></div>
+				
+				<script type="text/javascript">
+
+					// create a data set with groups
+					var names = ['HDFC 7711', 'HDFC 0971', 'HDFC 0392'];
+					var groups = new vis.DataSet(<%-JSON.stringify(timeline.groups)%>);
+					console.log(groups)
+					var items = new vis.DataSet(<%-JSON.stringify(timeline.items)%>);
+
+
+					// create visualization
+					var container = document.getElementById('visualization');
+					var options = {
+						groupOrder: 'content'  // groupOrder can be a property name or a sorting function
+					};
+
+					var timeline = new vis.Timeline(container);
+					timeline.setOptions(options);
+					timeline.setGroups(groups);
+					timeline.setItems(items);
+					timeline.on('click', function (properties) {
+						console.log('click', properties);
+						$('tr').removeClass('active');
+						$('tr[data-d_id='+properties.item+']').addClass('active');
+						});
+				</script>
+				
+		</div>
 		<div class='sixteen wide computer sixteen wide mobile  column'>
 			<h1>Your Documents: </h1>
 			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
@@ -40,7 +78,12 @@
 								</div>
 
 							</td>
-							<td><%=doc.parsed_data ? doc.parsed_data.account_id : '-' %></td>
+							<td><% doc.accounts.forEach(function(a){%>
+								<span>
+									<a href="/account/<%=a.id%>"><%=a.name%></a>
+								</span><br>
+								<%})%>
+							</td>
 							<td>
 								<%= doc.statement_line_items.length + '/' + (doc.parsed_data? doc.parsed_data.transactions.length: 0) %>
 							</td>
