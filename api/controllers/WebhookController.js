@@ -18,7 +18,7 @@ module.exports = {
         // req.body.remote_id=1;
         var transformExtractedDataFromDocument=function(parsed_data,filter){
             Object.keys(parsed_data).forEach(function(key){
-                if(parsed_data[key].formatted)
+                if(parsed_data[key] && parsed_data[key].formatted)
                     parsed_data[key]=parsed_data[key].formatted;
             })
             if(filter.modifyParsedData)
