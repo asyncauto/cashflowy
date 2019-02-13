@@ -7,27 +7,28 @@
 var kue = require( 'kue' );
 var async = require('async');
 
- // create our job queue
-
-// var queue = kue.createQueue({
-// 	prefix: 'q',
-// 	redis: sails.config.redis_kue
-// });
 var Bull = require( 'bull' );
 	// create our job queue
-var queue = new Bull('queue',{redis:sails.config.redis_bull});
+var queue = new Bull('queue',{redis:sails.config.bull.redis});
 module.exports = {
 	index:function(req,res){
-		var job_types=_.uniq(sails.config.kue_admin?sails.config.kue_admin.job_types:[]);
 		var job_stats=[];
+		
 		queue.getJobCounts().then(function(counts){
-			var locals={
-				job_stats:[],
-				overall_stats:counts
-			}
-			res.view('bull/index',locals);
+			queue.getRepeatableJobs().then(function(repeats){
+
+				var locals={
+					job_stats:[],
+					overall_stats:counts,
+					repeats: repeats,
+					moment: require('moment-timezone')
+				}
+				res.view('bull/index',locals);
+			})
+			
 		});
 	},
+
 	listItems:function(req,res){
 		// var JSON = require('flatted');
 		console.log('\n\n\n\n\n\n======================');
@@ -127,10 +128,20 @@ module.exports = {
 	},
 	restartQueueConnection:function(req,res){
 		sails.config.queue.close().then(function(){
-			sails.config.queue=new Bull('queue',{redis:sails.config.redis_bull});
+			sails.config.queue=new Bull('queue',{redis:sails.config.bull.redis});
 		}).catch(function(err){
 			console.log(err);
 		})
+	},
+
+	deleteRepeatJob: function(req, res){
+		var name = req.body.name?req.body.name:'';
+		if(!name)
+			return res.send(400,'bad request');
+		queue.removeRepeatableByKey(name).then(function(r){
+			console.log('removed completed job #%d', r);
+			res.send(200,'ok')
+		});
 	}
 };
 

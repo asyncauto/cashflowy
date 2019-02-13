@@ -80,7 +80,7 @@ module.exports = {
 		// if not create a tranction
 		var Bull = require( 'bull' );
 		// create our job queue
-		var queue = new Bull('queue',{redis:sails.config.redis_bull});
+		var queue = new Bull('queue',{redis:sails.config.bull.redis});
 		var data={
 			title:'afterCreate_sli, document ='+sli.document+', row='+sli.pos,
 			sli:sli,

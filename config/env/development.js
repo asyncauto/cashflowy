@@ -30,12 +30,14 @@ module.exports = {
 		port: 6379,
 		db: 4,
 	},
-	redis_bull: {
-		host: '127.0.0.1',
-		port: 6379,
-		db: 4,
-		maxRetriesPerRequest: null,
-    	enableReadyCheck: false
+	bull:{ 
+		redis: {
+			host: '127.0.0.1',
+			port: 6379,
+			db: 4,
+			maxRetriesPerRequest: null,
+    		enableReadyCheck: false
+		}
 	},
 	session: {
 		adapter: 'connect-redis',
@@ -59,5 +61,10 @@ module.exports = {
 		secret: process.env.AWS_ACCESS_SECRET, 
 		region: process.env.AWS_REGION, 
 		bucket: process.env.AWS_BUCKET
-	}
+	},
+
+	metabase:{
+        site_url:process.env.METABASE_SITE_URL,
+        secret_key:process.env.METABASE_SECRET_KEY
+    }
 };

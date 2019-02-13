@@ -1,4 +1,9 @@
 var async = require('async');
+
+var Bull = require( 'bull' );
+	// create our job queue
+var queue = new Bull('queue',{redis:sails.config.bull.redis});
+
 module.exports={
 	/**
 	 * this calculates unaccounted money in a particular snapshot
@@ -152,5 +157,41 @@ module.exports={
 				calculateUAMForEachSnapshot(snapshots,callback);
 			});
 		}
+	},
+
+	/**
+	 * filter: exmple: {user:id}
+	 */
+	surfaceCrawl: function(filter, callback){
+		async.auto({
+			getEmails: function(cb){
+				Email.find(filter).exec(cb);
+			},
+			addToBull:['getEmails', function(results, cb){
+				var tasks=[];
+				sails.config.filters.active.forEach(function(filter){
+					results.getEmails.forEach(function(email){
+						var data={
+							title:'surface_crawl, email ='+email.id+', filter='+filter,
+							options:{ // this is used
+								email_id:email.id,
+								email_type:filter,
+								pageToken:null,
+							},
+							info:{ // this is for readability
+								user:filter.user ? filter.user:''
+							}
+						}
+						tasks.push(data);
+					});
+				});
+				async.eachLimit(tasks,1,function(data,next){
+					var promise = queue.add('surface_crawl',data);
+					GeneralService.p2c(promise,next);
+				},function(err){
+					cb(err,tasks);
+				})
+			}]
+		}, callback);
 	}
 }

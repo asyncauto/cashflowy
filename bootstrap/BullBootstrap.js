@@ -5,35 +5,24 @@
 const async = require('async');
 module.exports = function (callback) {
 
-	var Bull = require( 'bull' );
+	var Bull = require('bull');
 	// create our job queue
-	var queue = new Bull('queue',{redis:sails.config.redis_bull});
+	var queue = new Bull('queue',{redis:sails.config.bull.redis});
 	sails.config.queue=queue;
-	// var queue = kue.createQueue({redis:{
-	// 	redis: sails.config.redis_bull
-	// }});
-
-	var updateES=function(job,callback){
-		job.duration=parseInt(job.duration);
-		job.delay=parseInt(job.delay);
-		job.created_at=new Date(parseInt(job.created_at));
-		job.promote_at=new Date(parseInt(job.promote_at));
-		job.updated_at=new Date(parseInt(job.updated_at));
-		job.started_at=new Date(parseInt(job.started_at));
-		if(job.failed_at)
-			job.failed_at=new Date(parseInt(job.failed_at));
-		var esInput={
-			index: 'mts_kue_jobs',
-			type: 'job',
-			id: job.id,
-			body: job
-		};
-		// ElasticSearchService.createOrUpdate(esInput,function(err,result){
-			// callback(err);
-		// });
-		callback(null);
-		
-	};
+	
+	 // Repeat check for hung charging sessions  once every hour
+	 _.forEach(sails.config.bull.repeats, function (task) {
+        if (task.active) {
+            queue.add(task.name, task.data, { repeat: task.repeat });
+            sails.log.info(`registered bull repeatable job: ${task.name}`);
+        }
+	});
+	
+	queue.process('surface_crawl_all_users', 1,function(job,done){
+		BackgroundService.surfaceCrawl({}, function(err, result){
+			done(err,result);
+		});
+	});
 
 	queue.process('surface_crawl',1,function(job,done){
 		GmailService.getMessagesAndProcessEach(job.data.options,function(err,result){
@@ -52,9 +41,6 @@ module.exports = function (callback) {
 
 
 	queue.process('afterCreate_sli',1,function(job,done){
-		// TransactionService.createTransactionFromSLI(job.data, function(err, result){
-		// 	done(err, result);
-		// })
 		CashflowyService.afterCreate_SLI(job.data,function(err,result){
 		// CashflowyService.afterCreate_SLI(job.data.sli,function(err,result){
 			// if(err) // uncomment for debugging when the kue has errors

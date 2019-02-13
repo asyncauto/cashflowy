@@ -14,7 +14,7 @@ const async = require('async');
 // });
 var Bull = require( 'bull' );
 	// create our job queue
-var queue = new Bull('queue',{redis:sails.config.redis_bull});
+var queue = new Bull('queue',{redis:sails.config.bull.redis});
 var moment = require('moment-timezone');
 
 module.exports = {
@@ -40,40 +40,12 @@ module.exports = {
 		res.send('background test');
 	},
 	surfaceCrawl:function(req,res){
-		async.auto({
-			getEmails:function(callback){
-				Email.find({user:req.body.user_id}).exec(callback);
-			},
-			addToKue:['getEmails',function(results,callback){
-				var kue_configs=[];
-				sails.config.filters.active.forEach(function(filter){
-					results.getEmails.forEach(function(email){
-						var data={
-							title:'surface_crawl, email ='+email.id+', filter='+filter,
-							options:{ // this is used
-								email_id:email.id,
-								email_type:filter,
-								pageToken:null,
-							},
-							info:{ // this is for readability
-								user:req.body.user_id
-							}
-						}
-						kue_configs.push(data);
-					});
-				});
-				async.eachLimit(kue_configs,1,function(data,next){
-					var promise = queue.add('surface_crawl',data);
-					GeneralService.p2c(promise,next);
-				},function(err){
-					callback(err,kue_configs);
-				})
-			}]
-		},function(err,results){
-			if(err)
-				throw err;
-			res.send('added '+results.addToKue.length+' tasks to surface_crawl kue');
-		})
+		BackgroundService.surfaceCrawl({user:req.body.user_id}, 
+			function(err, results){
+				if(err)
+					throw err;
+				res.send('added '+results.addToBull.length+' tasks to surface_crawl bull');
+		});
 	},
 	sendWeeklyEmails:function(req,res){
 		// get all users 

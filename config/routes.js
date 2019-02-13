@@ -160,6 +160,7 @@ module.exports.routes = {
   'GET /bull/:state':'BullController.listItems',
   'POST /bull/retry':'BullController.retryJob',
   'POST /bull/delete':'BullController.deleteJob',
+	'POST /bull/repeat/delete':'BullController.deleteRepeatJob',
 
   'GET /testBull':'MainController.testBull',
 
