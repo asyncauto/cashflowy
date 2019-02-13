@@ -4,7 +4,9 @@
 	<div class='ui container'>
 	 
 			
-		<h3>Stats</h3>
+		<h2>Stats:</h2>
+
+		<h3>Queue:</h3>
 		<table class="ui celled structured table">
 			<thead>
 				<tr>
@@ -29,17 +31,69 @@
 				<!--  -->
 			</tbody>
 		</table>
+		
+
+		<h3>Repeats:</h3>
+		<table class="ui celled structured table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Cron</th>
+					<th>Every(Sec)</th>
+					<th>Next Execution</th>
+					<th>End Date</th>
+					<th>Delete Repeat</th>
+				</tr>
+			</thead>
+			<tbody>
+				<%repeats.forEach(function(repeat){%>
+				<tr>
+					<td><%=repeat.name %></td>
+					<td><%=repeat.cron ? repeat.cron : '-' %></td>
+					<td><%=repeat.tz ? repeat.tz/1000: '-' %></td>
+					<td><%=repeat.next? moment(repeat.next).fromNow() :'-'%></td>
+					<td><%=repeat.endDate?repeat.endDate : '-' %></td>
+					<td class="center aligned">
+						<button class="circular red ui icon button delete_repeat" data-id='<%=repeat.key%>'>
+							<i class="icon delete"></i>
+						</button>
+					</td>
+				</tr>
+				<%})%>
+				<!--  -->
+			</tbody>
+		</table>
+		<br><br><br>
 		<h3> Some parameters that you can use</h3>
 		- n - number of items per page (default 30) <br>
 		- job_state - items of a particular state <br>
 		- page - the next page of items (default 1) <br>
 		- order_by - order the items after they are selected (default asc) <br>
-			
+		<br>
 	</div>
-	<br><br><br>
+
+	
 </div>
 <script type="text/javascript">
 	$(document).ready(function(){
-		
+		$('.delete_repeat').click(function(){
+			var button = this;
+			$(button).addClass('loading');
+			var repeat_name=$(this).attr('data-id');
+			// var job_id='';
+			var r = confirm("Delete this permanently ?");
+			if (r == true) {
+				$.post("/bull/repeat/delete", {name: repeat_name}, function(result,status){
+				console.log('result = '+result);
+				console.log('status = '+status);// this runs only on sucess
+				if(status=='success'){
+					$(button).removeClass('loading');
+					$(button).addClass('disabled');
+				}
+			});
+			} else {
+				$(button).removeClass('loading');
+			}
+		});
 	});
 </script>
