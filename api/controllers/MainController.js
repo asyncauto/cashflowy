@@ -824,8 +824,12 @@ module.exports = {
 				Transaction.create(t).exec(function(err,transaction){
 					if(err)
 						throw err;
-					else
-						res.redirect('/transactions');
+					else{
+						if(req.body.referer && req.body.referer.includes('/transactions'))
+							res.redirect(req.body.referer);
+						else 
+							res.redirect('/transactions');
+					}
 				});
 			}else{ // view the form
 				var locals={
