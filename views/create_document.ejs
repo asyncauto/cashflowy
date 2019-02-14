@@ -75,7 +75,10 @@
 		$('.ui.form').form({
 			fields: {
 				type: 'empty',
-			}
+			},
+			onSuccess:function(e,fields){
+				$(this).addClass('loading');
+			},
 		});
 	})
 

@@ -43,3 +43,13 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.dropdown').dropdown();
+		$('.ui.form').form({
+			onSuccess:function(e,fields){
+				$(this).addClass('loading');
+			},
+		});
+	})
+</script>

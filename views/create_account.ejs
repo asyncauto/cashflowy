@@ -70,7 +70,10 @@
 				name: 'empty',
 				acc_number: 'empty',
 				type: 'empty',
-			}
+			},
+			onSuccess:function(e,fields){
+				$(this).addClass('loading');
+			},
 		});
 	})
 

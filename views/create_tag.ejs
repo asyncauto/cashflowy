@@ -59,7 +59,10 @@
 			fields: {
 				name     : 'empty',
 				description : 'empty',
-			}
+			},
+			onSuccess:function(e,fields){
+				$(this).addClass('loading');
+			},
 		});
 		console.log('what is going on');
 	})
