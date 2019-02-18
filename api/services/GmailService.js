@@ -97,7 +97,7 @@ module.exports={
 			// q:options.q,
 		}, (err, res) => {
 			console.log('get messages responded');
-			if (err) throw err;
+			if (err) return callback(err);
 			// const messages = res.data.messages;
 			// // if (messages.length) {
 			// // 	console.log('messages:');

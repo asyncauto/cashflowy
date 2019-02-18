@@ -1,10 +1,9 @@
 /**
- * KueController
+ * BullController
  * this controller shows things that are in the queue
- * @description :: Server-side logic for managing kues
+ * @description :: Server-side logic for managing queues
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-var kue = require( 'kue' );
 var async = require('async');
 
 var Bull = require( 'bull' );
@@ -33,7 +32,7 @@ module.exports = {
 		// var JSON = require('flatted');
 		console.log('\n\n\n\n\n\n======================');
 		console.log('inside listItemsInBull');
-		var n = req.query.n?req.query.n:30;
+		var n = req.query.n?req.query.n:100;
 		var page = req.query.page?req.query.page:1;
 		var state = req.params.state?req.params.state:'active'
 		var order_by=req.query.order_by?req.query.order_by:'asc';
@@ -59,27 +58,6 @@ module.exports = {
 				getJobs=queue.getDelayed();
 				break; 
 		}
-		// if(req.query.job_type){
-		// 	queue[job_type]().then(function(err,result){
-		// 		console.log(err);
-		// 		console.log(result);
-		// 	})
-			// kue.Job.rangeByType( req.query.job_type, req.params.state, start, end, order_by, function( err, jobs ) {
-			// 	var new_jobs=[];
-			// 	jobs.forEach(function(job){
-			// 		var nj=JSON.parse(JSON.stringify(job));
-			// 		nj.created_at=GeneralService.timeAgo(parseInt(job.created_at));
-			// 		nj.updated_at=GeneralService.timeAgo(parseInt(job.updated_at));
-			// 		new_jobs.push(nj);
-			// 	})
-			// 	var locals={
-			// 		state:req.params.state,
-			// 		req:req,
-			// 		jobs:new_jobs,
-			// 	}
-			// 	res.view('kue/list_items',locals);
-			// });	
-		// }else{
 		console.log('came until here');
 			
 		getJobs.then(function(jobs){

@@ -25,11 +25,6 @@ module.exports = {
 			database: process.env.DB_DATABASE //optional
 		}
 	},
-	redis_kue: {
-		host: '127.0.0.1',
-		port: 6379,
-		db: 4,
-	},
 	bull:{ 
 		redis: {
 			host: '127.0.0.1',

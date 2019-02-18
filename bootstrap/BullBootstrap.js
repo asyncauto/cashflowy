@@ -1,5 +1,5 @@
 /**
- * KueBootstrap.js
+ * BullBootstrap.js
  * Bootstrap module that setups the queue and worker
  */ 
 const async = require('async');

@@ -147,14 +147,6 @@ module.exports.routes = {
   'POST /background/calculate_uam':'Background.calculateUAM',
   'POST /background/delete_tasks':'Background.deleteTasks',
 
-
-
-  'GET /kue':'KueController.index',
-  'GET /kue/:state':'KueController.listItemsInKue',
-  'POST /kue/retry':'KueController.retryJob',
-  'POST /kue/delete':'KueController.deleteJob',
-
-
   'GET /bull':'BullController.index',
   'GET /bull/restartQueueConnection':'BullController.restartQueueConnection',
   'GET /bull/:state':'BullController.listItems',

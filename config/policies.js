@@ -56,9 +56,6 @@ module.exports.policies = {
     // dashboard:['isAuthenticated'],
     // editDescription:['isAuthenticated'],
     // listCategories:['isAuthenticated'],
-  }, 
-  KueController:{
-    '*':['isAuthenticated','isAdmin']
   },
   BullController:{
     '*':['isAuthenticated','isAdmin']

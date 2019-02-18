@@ -318,496 +318,496 @@ module.exports={
 			},
 		],
 	},
-	findSimilarTransactions:{
-		return_or_callback:'callback',
-		internal:true,
-		tests:[
-			{
-				description:'UPI payment',
-				input:{
-					"account":"0651",
-					"amount_inr":-100,
-					"createdBy":"parsed_document",
-					"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
-					"original_amount":-100,
-					"original_currency":"INR",
-					"third_party":"UPI/833443528673/NA/Nadeer Muhammed/Paytm Payments",
-					"type":"income_expense"
-				},
-				output:[  
-					{  
-						"account":1,
-						"amount_inr":-100,
-						"category":null,
-						"createdAt":new Date("2018-12-21T10:39:27.000Z"),
-						"createdBy":"parsed_document",
-						"description":null,
-						"id":52,
-						"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
-						"original_amount":-100,
-						"original_currency":"INR",
-						"third_party":"UPI/833443528673/NA/Nadeer Muhammed/Paytm Payments",
-						"to_account":null,
-						"type":"income_expense",
-						"updatedAt":new Date("2018-12-21T10:39:27.000Z")
-					}
-				]
-			},
-			{
-				description:'NEFT income salary',
-				input:{
-					"account":"0651",
-					"amount_inr":252000,
-					"createdBy":"parsed_document",
-					"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
-					"original_amount":252000,
-					"original_currency":"INR",
-					"third_party":"NEFT-CITIN18956860937-ATHER ENERGY PVT LTD-PYM ATH ER SALARY NOV 18-0712074019-CITI0000004",
-					"type":"income_expense"
-				},
-				output:[  
-					{  
-						"account":1,
-						"amount_inr":252000,
-						"category":null,
-						"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-						"createdBy":"parsed_document",
-						"description":null,
-						"id":57,
-						"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
-						"original_amount":252000,
-						"original_currency":"INR",
-						"third_party":"NEFT-CITIN18956860937-ATHER ENERGY PVT LTD-PYM ATH ER SALARY NOV 18-0712074019-CITI0000004",
-						"to_account":null,
-						"type":"income_expense",
-						"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-					}
-				]
-			},
-			{
-				description:'UPI incoming',
-				input:{
-					"account":"0651",
-					"amount_inr":2611,
-					"createdBy":"parsed_document",
-					"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
-					"original_amount":2611,
-					"original_currency":"INR",
-					"third_party":"UPI/830819336337/NO REMARKS/7022625221@upi/Citiban k",
-					"type":"income_expense"
-				},
-				output:[  
-					{  
-						"account":1,
-						"amount_inr":2611,
-						"category":null,
-						"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-						"createdBy":"parsed_document",
-						"description":null,
-						"id":53,
-						"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
-						"original_amount":2611,
-						"original_currency":"INR",
-						"third_party":"UPI/830819336337/NO REMARKS/7022625221@upi/Citiban k",
-						"to_account":null,
-						"type":"income_expense",
-						"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-					}
-				]
-			},
-			{
-				description:'Netbanking outgoing',
-				input:{
-					"account":"0651",
-					"amount_inr":-30000,
-					"createdBy":"parsed_document",
-					"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
-					"original_amount":-30000,
-					"original_currency":"INR",
-					"third_party":"BIL/001570697506/SIPG/AUYTV7CZRRYE0A",
-					"type":"income_expense"
-				},
-				output:[  
-					{  
-						"account":1,
-						"amount_inr":-30000,
-						"category":null,
-						"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-						"createdBy":"parsed_document",
-						"description":null,
-						"id":54,
-						"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
-						"original_amount":-30000,
-						"original_currency":"INR",
-						"third_party":"BIL/001570697506/SIPG/AUYTV7CZRRYE0A",
-						"to_account":null,
-						"type":"income_expense",
-						"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-					}
-				]
-			},
-			{
-				description:'Mobile banking IMPS outgoing',
-				input:{
-					"account":"0651",
-					"amount_inr":-15005.9,
-					"createdBy":"parsed_document",
-					"occuredAt":new Date("2018-11-21T06:30:00.000Z"),
-					"original_amount":-15005.9,
-					"original_currency":"INR",
-					"third_party":"MMT/IMPS/832514541249/living expense/SOUMYA THO/HD FC0001759/chgRs5.00GSTRs0.90",
-					"type":"income_expense"
-				},
-				output:[  
-					{  
-						"account":1,
-						"amount_inr":-15005.9,
-						"category":null,
-						"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-						"createdBy":"parsed_document",
-						"description":null,
-						"id":55,
-						"occuredAt":new Date("2018-11-21T06:30:00.000Z"),
-						"original_amount":-15005.9,
-						"original_currency":"INR",
-						"third_party":"MMT/IMPS/832514541249/living expense/SOUMYA THO/HD FC0001759/chgRs5.00GSTRs0.90",
-						"to_account":null,
-						"type":"income_expense",
-						"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-					}
-				]
-			},
-			{
-				description:'NEFT incoming zerodha',
-				input:{
-					"account":"0651",
-					"amount_inr":21667.96,
-					"createdBy":"parsed_document",
-					"occuredAt":new Date("2018-11-22T06:30:00.000Z"),
-					"original_amount":21667.96,
-					"original_currency":"INR",
-					"third_party":"NEFT-N326180684665465-ZERODHA  NSE CLIENT AC-21112 018 KEPA5334 17-05230340003662-HDFC0000240",
-					"type":"income_expense"
-				},
-				output:[  
-					{  
-						"account":1,
-						"amount_inr":21668,
-						"category":null,
-						"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-						"createdBy":"parsed_document",
-						"description":null,
-						"id":56,
-						"occuredAt":new Date("2018-11-22T06:30:00.000Z"),
-						"original_amount":21668,
-						"original_currency":"INR",
-						"third_party":"NEFT-N326180684665465-ZERODHA  NSE CLIENT AC-21112 018 KEPA5334 17-05230340003662-HDFC0000240",
-						"to_account":null,
-						"type":"income_expense",
-						"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-					}
-				]
-			},
-		]
-	},
-	identifyExistingTransaction:{
-		return_or_callback:'return',
-		internal:true,
-		tests:[
-			{
-				description:'UPI payment',
-				input:{	
-					new_t:{
-						"account":1,
-						"amount_inr":-100,
-						"createdBy":"parsed_document",
-						"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
-						"original_amount":-100,
-						"original_currency":"INR",
-						"third_party":"UPI/833443528673/NA/Nadeer Muhammed/Paytm Payments",
-						"type":"income_expense"
-					},
-					similar_transactions:[  
-						{  
-							"account":1,
-							"amount_inr":-100,
-							"category":null,
-							"createdAt":new Date("2018-12-21T10:39:27.000Z"),
-							"createdBy":"parsed_document",
-							"description":null,
-							"id":52,
-							"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
-							"original_amount":-100,
-							"original_currency":"INR",
-							"third_party":"UPI/833443528673/NA/Nadeer Muhammed/Paytm Payments",
-							"to_account":null,
-							"type":"income_expense",
-							"updatedAt":new Date("2018-12-21T10:39:27.000Z")
-						}
-					]
-				},
-				output:{
-					"account":1,
-					"amount_inr":-100,
-					"category":null,
-					"createdAt":new Date("2018-12-21T10:39:27.000Z"),
-					"createdBy":"parsed_document",
-					"description":null,
-					"id":52,
-					"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
-					"original_amount":-100,
-					"original_currency":"INR",
-					"third_party":"UPI/833443528673/NA/Nadeer Muhammed/Paytm Payments",
-					"to_account":null,
-					"type":"income_expense",
-					"updatedAt":new Date("2018-12-21T10:39:27.000Z")
-				}
-			},
-			{
-				description:'NEFT income salary',
-				input:{	
-					new_t:{
-						"account":1,
-						"amount_inr":252000,
-						"createdBy":"parsed_document",
-						"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
-						"original_amount":252000,
-						"original_currency":"INR",
-						"third_party":"NEFT-CITIN18956860937-ATHER ENERGY PVT LTD-PYM ATH ER SALARY NOV 18-0712074019-CITI0000004",
-						"type":"income_expense"
-					},
-					similar_transactions:[  
-						{  
-							"account":1,
-							"amount_inr":252000,
-							"category":null,
-							"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-							"createdBy":"parsed_document",
-							"description":null,
-							"id":57,
-							"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
-							"original_amount":252000,
-							"original_currency":"INR",
-							"third_party":"NEFT-CITIN18956860937-ATHER ENERGY PVT LTD-PYM ATH ER SALARY NOV 18-0712074019-CITI0000004",
-							"to_account":null,
-							"type":"income_expense",
-							"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-						}
-					]
-				},
-				output:{
-					"account":1,
-					"amount_inr":252000,
-					"category":null,
-					"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-					"createdBy":"parsed_document",
-					"description":null,
-					"id":57,
-					"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
-					"original_amount":252000,
-					"original_currency":"INR",
-					"third_party":"NEFT-CITIN18956860937-ATHER ENERGY PVT LTD-PYM ATH ER SALARY NOV 18-0712074019-CITI0000004",
-					"to_account":null,
-					"type":"income_expense",
-					"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-				}
-			},
-			{
-				description:'UPI incoming',
-				input:{	
-					new_t:{
-						"account":1,
-						"amount_inr":2611,
-						"createdBy":"parsed_document",
-						"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
-						"original_amount":2611,
-						"original_currency":"INR",
-						"third_party":"UPI/830819336337/NO REMARKS/7022625221@upi/Citiban k",
-						"type":"income_expense"
-					},
-					similar_transactions:[  
-						{  
-							"account":1,
-							"amount_inr":2611,
-							"category":null,
-							"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-							"createdBy":"parsed_document",
-							"description":null,
-							"id":53,
-							"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
-							"original_amount":2611,
-							"original_currency":"INR",
-							"third_party":"UPI/830819336337/NO REMARKS/7022625221@upi/Citiban k",
-							"to_account":null,
-							"type":"income_expense",
-							"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-						}
-					]
-				},
-				output:{
-					"account":1,
-					"amount_inr":2611,
-					"category":null,
-					"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-					"createdBy":"parsed_document",
-					"description":null,
-					"id":53,
-					"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
-					"original_amount":2611,
-					"original_currency":"INR",
-					"third_party":"UPI/830819336337/NO REMARKS/7022625221@upi/Citiban k",
-					"to_account":null,
-					"type":"income_expense",
-					"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-				}
-			},
-			{
-				description:'Netbanking outgoing',
-				input:{	
-					new_t:{
-						"account":1,
-						"amount_inr":-30000,
-						"createdBy":"parsed_document",
-						"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
-						"original_amount":-30000,
-						"original_currency":"INR",
-						"third_party":"BIL/001570697506/SIPG/AUYTV7CZRRYE0A",
-						"type":"income_expense"
-					},
-					similar_transactions:[  
-						{  
-							"account":1,
-							"amount_inr":-30000,
-							"category":null,
-							"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-							"createdBy":"parsed_document",
-							"description":null,
-							"id":54,
-							"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
-							"original_amount":-30000,
-							"original_currency":"INR",
-							"third_party":"BIL/001570697506/SIPG/AUYTV7CZRRYE0A",
-							"to_account":null,
-							"type":"income_expense",
-							"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-						}
-					]
-				},
-				output:{
-					"account":1,
-					"amount_inr":-30000,
-					"category":null,
-					"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-					"createdBy":"parsed_document",
-					"description":null,
-					"id":54,
-					"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
-					"original_amount":-30000,
-					"original_currency":"INR",
-					"third_party":"BIL/001570697506/SIPG/AUYTV7CZRRYE0A",
-					"to_account":null,
-					"type":"income_expense",
-					"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-				}
-			},
-			{
-				description:'Mobile banking IMPS outgoing',
-				input:{	
-					new_t:{
-						"account":1,
-						"amount_inr":-15005.9,
-						"createdBy":"parsed_document",
-						"occuredAt":new Date("2018-11-21T06:30:00.000Z"),
-						"original_amount":-15005.9,
-						"original_currency":"INR",
-						"third_party":"MMT/IMPS/832514541249/living expense/SOUMYA THO/HD FC0001759/chgRs5.00GSTRs0.90",
-						"type":"income_expense"
-					},
-					similar_transactions:[  
-						{  
-							"account":1,
-							"amount_inr":-15005.9,
-							"category":null,
-							"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-							"createdBy":"parsed_document",
-							"description":null,
-							"id":55,
-							"occuredAt":new Date("2018-11-21T06:30:00.000Z"),
-							"original_amount":-15005.9,
-							"original_currency":"INR",
-							"third_party":"MMT/IMPS/832514541249/living expense/SOUMYA THO/HD FC0001759/chgRs5.00GSTRs0.90",
-							"to_account":null,
-							"type":"income_expense",
-							"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-						}
-					]
-				},
-				output:{
-					"account":1,
-					"amount_inr":-15005.9,
-					"category":null,
-					"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-					"createdBy":"parsed_document",
-					"description":null,
-					"id":55,
-					"occuredAt":new Date("2018-11-21T06:30:00.000Z"),
-					"original_amount":-15005.9,
-					"original_currency":"INR",
-					"third_party":"MMT/IMPS/832514541249/living expense/SOUMYA THO/HD FC0001759/chgRs5.00GSTRs0.90",
-					"to_account":null,
-					"type":"income_expense",
-					"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-				}
-			},
-			{
-				description:'NEFT incoming zerodha',
-				input:{	
-					new_t:{
-						"account":1,
-						"amount_inr":21667.96,
-						"createdBy":"parsed_document",
-						"occuredAt":new Date("2018-11-22T06:30:00.000Z"),
-						"original_amount":21667.96,
-						"original_currency":"INR",
-						"third_party":"NEFT-N326180684665465-ZERODHA  NSE CLIENT AC-21112 018 KEPA5334 17-05230340003662-HDFC0000240",
-						"type":"income_expense"
-					},
-					similar_transactions:[  
-						{  
-							"account":1,
-							"amount_inr":21668,
-							"category":null,
-							"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-							"createdBy":"parsed_document",
-							"description":null,
-							"id":56,
-							"occuredAt":new Date("2018-11-22T06:30:00.000Z"),
-							"original_amount":21668,
-							"original_currency":"INR",
-							"third_party":"NEFT-N326180684665465-ZERODHA  NSE CLIENT AC-21112 018 KEPA5334 17-05230340003662-HDFC0000240",
-							"to_account":null,
-							"type":"income_expense",
-							"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-						}
-					]
-				},
-				output:{
-					"account":1,
-					"amount_inr":21668,
-					"category":null,
-					"createdAt":new Date("2018-12-29T04:57:37.000Z"),
-					"createdBy":"parsed_document",
-					"description":null,
-					"id":56,
-					"occuredAt":new Date("2018-11-22T06:30:00.000Z"),
-					"original_amount":21668,
-					"original_currency":"INR",
-					"third_party":"NEFT-N326180684665465-ZERODHA  NSE CLIENT AC-21112 018 KEPA5334 17-05230340003662-HDFC0000240",
-					"to_account":null,
-					"type":"income_expense",
-					"updatedAt":new Date("2018-12-29T04:57:37.000Z")
-				}
-			},
-		]
-	}
+	// findSimilarTransactions:{
+	// 	return_or_callback:'callback',
+	// 	internal:true,
+	// 	tests:[
+	// 		{
+	// 			description:'UPI payment',
+	// 			input:{
+	// 				"account":"0651",
+	// 				"amount_inr":-100,
+	// 				"createdBy":"parsed_document",
+	// 				"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
+	// 				"original_amount":-100,
+	// 				"original_currency":"INR",
+	// 				"third_party":"UPI/833443528673/NA/Nadeer Muhammed/Paytm Payments",
+	// 				"type":"income_expense"
+	// 			},
+	// 			output:[  
+	// 				{  
+	// 					"account":1,
+	// 					"amount_inr":-100,
+	// 					"category":null,
+	// 					"createdAt":new Date("2018-12-21T10:39:27.000Z"),
+	// 					"createdBy":"parsed_document",
+	// 					"description":null,
+	// 					"id":52,
+	// 					"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
+	// 					"original_amount":-100,
+	// 					"original_currency":"INR",
+	// 					"third_party":"UPI/833443528673/NA/Nadeer Muhammed/Paytm Payments",
+	// 					"to_account":null,
+	// 					"type":"income_expense",
+	// 					"updatedAt":new Date("2018-12-21T10:39:27.000Z")
+	// 				}
+	// 			]
+	// 		},
+	// 		{
+	// 			description:'NEFT income salary',
+	// 			input:{
+	// 				"account":"0651",
+	// 				"amount_inr":252000,
+	// 				"createdBy":"parsed_document",
+	// 				"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
+	// 				"original_amount":252000,
+	// 				"original_currency":"INR",
+	// 				"third_party":"NEFT-CITIN18956860937-ATHER ENERGY PVT LTD-PYM ATH ER SALARY NOV 18-0712074019-CITI0000004",
+	// 				"type":"income_expense"
+	// 			},
+	// 			output:[  
+	// 				{  
+	// 					"account":1,
+	// 					"amount_inr":252000,
+	// 					"category":null,
+	// 					"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 					"createdBy":"parsed_document",
+	// 					"description":null,
+	// 					"id":57,
+	// 					"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
+	// 					"original_amount":252000,
+	// 					"original_currency":"INR",
+	// 					"third_party":"NEFT-CITIN18956860937-ATHER ENERGY PVT LTD-PYM ATH ER SALARY NOV 18-0712074019-CITI0000004",
+	// 					"to_account":null,
+	// 					"type":"income_expense",
+	// 					"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 				}
+	// 			]
+	// 		},
+	// 		{
+	// 			description:'UPI incoming',
+	// 			input:{
+	// 				"account":"0651",
+	// 				"amount_inr":2611,
+	// 				"createdBy":"parsed_document",
+	// 				"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
+	// 				"original_amount":2611,
+	// 				"original_currency":"INR",
+	// 				"third_party":"UPI/830819336337/NO REMARKS/7022625221@upi/Citiban k",
+	// 				"type":"income_expense"
+	// 			},
+	// 			output:[  
+	// 				{  
+	// 					"account":1,
+	// 					"amount_inr":2611,
+	// 					"category":null,
+	// 					"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 					"createdBy":"parsed_document",
+	// 					"description":null,
+	// 					"id":53,
+	// 					"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
+	// 					"original_amount":2611,
+	// 					"original_currency":"INR",
+	// 					"third_party":"UPI/830819336337/NO REMARKS/7022625221@upi/Citiban k",
+	// 					"to_account":null,
+	// 					"type":"income_expense",
+	// 					"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 				}
+	// 			]
+	// 		},
+	// 		{
+	// 			description:'Netbanking outgoing',
+	// 			input:{
+	// 				"account":"0651",
+	// 				"amount_inr":-30000,
+	// 				"createdBy":"parsed_document",
+	// 				"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
+	// 				"original_amount":-30000,
+	// 				"original_currency":"INR",
+	// 				"third_party":"BIL/001570697506/SIPG/AUYTV7CZRRYE0A",
+	// 				"type":"income_expense"
+	// 			},
+	// 			output:[  
+	// 				{  
+	// 					"account":1,
+	// 					"amount_inr":-30000,
+	// 					"category":null,
+	// 					"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 					"createdBy":"parsed_document",
+	// 					"description":null,
+	// 					"id":54,
+	// 					"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
+	// 					"original_amount":-30000,
+	// 					"original_currency":"INR",
+	// 					"third_party":"BIL/001570697506/SIPG/AUYTV7CZRRYE0A",
+	// 					"to_account":null,
+	// 					"type":"income_expense",
+	// 					"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 				}
+	// 			]
+	// 		},
+	// 		{
+	// 			description:'Mobile banking IMPS outgoing',
+	// 			input:{
+	// 				"account":"0651",
+	// 				"amount_inr":-15005.9,
+	// 				"createdBy":"parsed_document",
+	// 				"occuredAt":new Date("2018-11-21T06:30:00.000Z"),
+	// 				"original_amount":-15005.9,
+	// 				"original_currency":"INR",
+	// 				"third_party":"MMT/IMPS/832514541249/living expense/SOUMYA THO/HD FC0001759/chgRs5.00GSTRs0.90",
+	// 				"type":"income_expense"
+	// 			},
+	// 			output:[  
+	// 				{  
+	// 					"account":1,
+	// 					"amount_inr":-15005.9,
+	// 					"category":null,
+	// 					"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 					"createdBy":"parsed_document",
+	// 					"description":null,
+	// 					"id":55,
+	// 					"occuredAt":new Date("2018-11-21T06:30:00.000Z"),
+	// 					"original_amount":-15005.9,
+	// 					"original_currency":"INR",
+	// 					"third_party":"MMT/IMPS/832514541249/living expense/SOUMYA THO/HD FC0001759/chgRs5.00GSTRs0.90",
+	// 					"to_account":null,
+	// 					"type":"income_expense",
+	// 					"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 				}
+	// 			]
+	// 		},
+	// 		{
+	// 			description:'NEFT incoming zerodha',
+	// 			input:{
+	// 				"account":"0651",
+	// 				"amount_inr":21667.96,
+	// 				"createdBy":"parsed_document",
+	// 				"occuredAt":new Date("2018-11-22T06:30:00.000Z"),
+	// 				"original_amount":21667.96,
+	// 				"original_currency":"INR",
+	// 				"third_party":"NEFT-N326180684665465-ZERODHA  NSE CLIENT AC-21112 018 KEPA5334 17-05230340003662-HDFC0000240",
+	// 				"type":"income_expense"
+	// 			},
+	// 			output:[  
+	// 				{  
+	// 					"account":1,
+	// 					"amount_inr":21668,
+	// 					"category":null,
+	// 					"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 					"createdBy":"parsed_document",
+	// 					"description":null,
+	// 					"id":56,
+	// 					"occuredAt":new Date("2018-11-22T06:30:00.000Z"),
+	// 					"original_amount":21668,
+	// 					"original_currency":"INR",
+	// 					"third_party":"NEFT-N326180684665465-ZERODHA  NSE CLIENT AC-21112 018 KEPA5334 17-05230340003662-HDFC0000240",
+	// 					"to_account":null,
+	// 					"type":"income_expense",
+	// 					"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 				}
+	// 			]
+	// 		},
+	// 	]
+	// },
+	// identifyExistingTransaction:{
+	// 	return_or_callback:'return',
+	// 	internal:true,
+	// 	tests:[
+	// 		{
+	// 			description:'UPI payment',
+	// 			input:{	
+	// 				new_t:{
+	// 					"account":1,
+	// 					"amount_inr":-100,
+	// 					"createdBy":"parsed_document",
+	// 					"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
+	// 					"original_amount":-100,
+	// 					"original_currency":"INR",
+	// 					"third_party":"UPI/833443528673/NA/Nadeer Muhammed/Paytm Payments",
+	// 					"type":"income_expense"
+	// 				},
+	// 				similar_transactions:[  
+	// 					{  
+	// 						"account":1,
+	// 						"amount_inr":-100,
+	// 						"category":null,
+	// 						"createdAt":new Date("2018-12-21T10:39:27.000Z"),
+	// 						"createdBy":"parsed_document",
+	// 						"description":null,
+	// 						"id":52,
+	// 						"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
+	// 						"original_amount":-100,
+	// 						"original_currency":"INR",
+	// 						"third_party":"UPI/833443528673/NA/Nadeer Muhammed/Paytm Payments",
+	// 						"to_account":null,
+	// 						"type":"income_expense",
+	// 						"updatedAt":new Date("2018-12-21T10:39:27.000Z")
+	// 					}
+	// 				]
+	// 			},
+	// 			output:{
+	// 				"account":1,
+	// 				"amount_inr":-100,
+	// 				"category":null,
+	// 				"createdAt":new Date("2018-12-21T10:39:27.000Z"),
+	// 				"createdBy":"parsed_document",
+	// 				"description":null,
+	// 				"id":52,
+	// 				"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
+	// 				"original_amount":-100,
+	// 				"original_currency":"INR",
+	// 				"third_party":"UPI/833443528673/NA/Nadeer Muhammed/Paytm Payments",
+	// 				"to_account":null,
+	// 				"type":"income_expense",
+	// 				"updatedAt":new Date("2018-12-21T10:39:27.000Z")
+	// 			}
+	// 		},
+	// 		{
+	// 			description:'NEFT income salary',
+	// 			input:{	
+	// 				new_t:{
+	// 					"account":1,
+	// 					"amount_inr":252000,
+	// 					"createdBy":"parsed_document",
+	// 					"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
+	// 					"original_amount":252000,
+	// 					"original_currency":"INR",
+	// 					"third_party":"NEFT-CITIN18956860937-ATHER ENERGY PVT LTD-PYM ATH ER SALARY NOV 18-0712074019-CITI0000004",
+	// 					"type":"income_expense"
+	// 				},
+	// 				similar_transactions:[  
+	// 					{  
+	// 						"account":1,
+	// 						"amount_inr":252000,
+	// 						"category":null,
+	// 						"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 						"createdBy":"parsed_document",
+	// 						"description":null,
+	// 						"id":57,
+	// 						"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
+	// 						"original_amount":252000,
+	// 						"original_currency":"INR",
+	// 						"third_party":"NEFT-CITIN18956860937-ATHER ENERGY PVT LTD-PYM ATH ER SALARY NOV 18-0712074019-CITI0000004",
+	// 						"to_account":null,
+	// 						"type":"income_expense",
+	// 						"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 					}
+	// 				]
+	// 			},
+	// 			output:{
+	// 				"account":1,
+	// 				"amount_inr":252000,
+	// 				"category":null,
+	// 				"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 				"createdBy":"parsed_document",
+	// 				"description":null,
+	// 				"id":57,
+	// 				"occuredAt":new Date("2018-11-30T06:30:00.000Z"),
+	// 				"original_amount":252000,
+	// 				"original_currency":"INR",
+	// 				"third_party":"NEFT-CITIN18956860937-ATHER ENERGY PVT LTD-PYM ATH ER SALARY NOV 18-0712074019-CITI0000004",
+	// 				"to_account":null,
+	// 				"type":"income_expense",
+	// 				"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 			}
+	// 		},
+	// 		{
+	// 			description:'UPI incoming',
+	// 			input:{	
+	// 				new_t:{
+	// 					"account":1,
+	// 					"amount_inr":2611,
+	// 					"createdBy":"parsed_document",
+	// 					"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
+	// 					"original_amount":2611,
+	// 					"original_currency":"INR",
+	// 					"third_party":"UPI/830819336337/NO REMARKS/7022625221@upi/Citiban k",
+	// 					"type":"income_expense"
+	// 				},
+	// 				similar_transactions:[  
+	// 					{  
+	// 						"account":1,
+	// 						"amount_inr":2611,
+	// 						"category":null,
+	// 						"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 						"createdBy":"parsed_document",
+	// 						"description":null,
+	// 						"id":53,
+	// 						"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
+	// 						"original_amount":2611,
+	// 						"original_currency":"INR",
+	// 						"third_party":"UPI/830819336337/NO REMARKS/7022625221@upi/Citiban k",
+	// 						"to_account":null,
+	// 						"type":"income_expense",
+	// 						"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 					}
+	// 				]
+	// 			},
+	// 			output:{
+	// 				"account":1,
+	// 				"amount_inr":2611,
+	// 				"category":null,
+	// 				"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 				"createdBy":"parsed_document",
+	// 				"description":null,
+	// 				"id":53,
+	// 				"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
+	// 				"original_amount":2611,
+	// 				"original_currency":"INR",
+	// 				"third_party":"UPI/830819336337/NO REMARKS/7022625221@upi/Citiban k",
+	// 				"to_account":null,
+	// 				"type":"income_expense",
+	// 				"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 			}
+	// 		},
+	// 		{
+	// 			description:'Netbanking outgoing',
+	// 			input:{	
+	// 				new_t:{
+	// 					"account":1,
+	// 					"amount_inr":-30000,
+	// 					"createdBy":"parsed_document",
+	// 					"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
+	// 					"original_amount":-30000,
+	// 					"original_currency":"INR",
+	// 					"third_party":"BIL/001570697506/SIPG/AUYTV7CZRRYE0A",
+	// 					"type":"income_expense"
+	// 				},
+	// 				similar_transactions:[  
+	// 					{  
+	// 						"account":1,
+	// 						"amount_inr":-30000,
+	// 						"category":null,
+	// 						"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 						"createdBy":"parsed_document",
+	// 						"description":null,
+	// 						"id":54,
+	// 						"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
+	// 						"original_amount":-30000,
+	// 						"original_currency":"INR",
+	// 						"third_party":"BIL/001570697506/SIPG/AUYTV7CZRRYE0A",
+	// 						"to_account":null,
+	// 						"type":"income_expense",
+	// 						"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 					}
+	// 				]
+	// 			},
+	// 			output:{
+	// 				"account":1,
+	// 				"amount_inr":-30000,
+	// 				"category":null,
+	// 				"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 				"createdBy":"parsed_document",
+	// 				"description":null,
+	// 				"id":54,
+	// 				"occuredAt":new Date("2018-11-05T06:30:00.000Z"),
+	// 				"original_amount":-30000,
+	// 				"original_currency":"INR",
+	// 				"third_party":"BIL/001570697506/SIPG/AUYTV7CZRRYE0A",
+	// 				"to_account":null,
+	// 				"type":"income_expense",
+	// 				"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 			}
+	// 		},
+	// 		{
+	// 			description:'Mobile banking IMPS outgoing',
+	// 			input:{	
+	// 				new_t:{
+	// 					"account":1,
+	// 					"amount_inr":-15005.9,
+	// 					"createdBy":"parsed_document",
+	// 					"occuredAt":new Date("2018-11-21T06:30:00.000Z"),
+	// 					"original_amount":-15005.9,
+	// 					"original_currency":"INR",
+	// 					"third_party":"MMT/IMPS/832514541249/living expense/SOUMYA THO/HD FC0001759/chgRs5.00GSTRs0.90",
+	// 					"type":"income_expense"
+	// 				},
+	// 				similar_transactions:[  
+	// 					{  
+	// 						"account":1,
+	// 						"amount_inr":-15005.9,
+	// 						"category":null,
+	// 						"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 						"createdBy":"parsed_document",
+	// 						"description":null,
+	// 						"id":55,
+	// 						"occuredAt":new Date("2018-11-21T06:30:00.000Z"),
+	// 						"original_amount":-15005.9,
+	// 						"original_currency":"INR",
+	// 						"third_party":"MMT/IMPS/832514541249/living expense/SOUMYA THO/HD FC0001759/chgRs5.00GSTRs0.90",
+	// 						"to_account":null,
+	// 						"type":"income_expense",
+	// 						"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 					}
+	// 				]
+	// 			},
+	// 			output:{
+	// 				"account":1,
+	// 				"amount_inr":-15005.9,
+	// 				"category":null,
+	// 				"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 				"createdBy":"parsed_document",
+	// 				"description":null,
+	// 				"id":55,
+	// 				"occuredAt":new Date("2018-11-21T06:30:00.000Z"),
+	// 				"original_amount":-15005.9,
+	// 				"original_currency":"INR",
+	// 				"third_party":"MMT/IMPS/832514541249/living expense/SOUMYA THO/HD FC0001759/chgRs5.00GSTRs0.90",
+	// 				"to_account":null,
+	// 				"type":"income_expense",
+	// 				"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 			}
+	// 		},
+	// 		{
+	// 			description:'NEFT incoming zerodha',
+	// 			input:{	
+	// 				new_t:{
+	// 					"account":1,
+	// 					"amount_inr":21667.96,
+	// 					"createdBy":"parsed_document",
+	// 					"occuredAt":new Date("2018-11-22T06:30:00.000Z"),
+	// 					"original_amount":21667.96,
+	// 					"original_currency":"INR",
+	// 					"third_party":"NEFT-N326180684665465-ZERODHA  NSE CLIENT AC-21112 018 KEPA5334 17-05230340003662-HDFC0000240",
+	// 					"type":"income_expense"
+	// 				},
+	// 				similar_transactions:[  
+	// 					{  
+	// 						"account":1,
+	// 						"amount_inr":21668,
+	// 						"category":null,
+	// 						"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 						"createdBy":"parsed_document",
+	// 						"description":null,
+	// 						"id":56,
+	// 						"occuredAt":new Date("2018-11-22T06:30:00.000Z"),
+	// 						"original_amount":21668,
+	// 						"original_currency":"INR",
+	// 						"third_party":"NEFT-N326180684665465-ZERODHA  NSE CLIENT AC-21112 018 KEPA5334 17-05230340003662-HDFC0000240",
+	// 						"to_account":null,
+	// 						"type":"income_expense",
+	// 						"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 					}
+	// 				]
+	// 			},
+	// 			output:{
+	// 				"account":1,
+	// 				"amount_inr":21668,
+	// 				"category":null,
+	// 				"createdAt":new Date("2018-12-29T04:57:37.000Z"),
+	// 				"createdBy":"parsed_document",
+	// 				"description":null,
+	// 				"id":56,
+	// 				"occuredAt":new Date("2018-11-22T06:30:00.000Z"),
+	// 				"original_amount":21668,
+	// 				"original_currency":"INR",
+	// 				"third_party":"NEFT-N326180684665465-ZERODHA  NSE CLIENT AC-21112 018 KEPA5334 17-05230340003662-HDFC0000240",
+	// 				"to_account":null,
+	// 				"type":"income_expense",
+	// 				"updatedAt":new Date("2018-12-29T04:57:37.000Z")
+	// 			}
+	// 		},
+	// 	]
+	// }
 }

@@ -9,11 +9,7 @@ const async = require('async');
 const fx = require('money');
 fx.base='INR';
 fx.rates=sails.config.fx_rates;
-var kue = require( 'kue' );
-var queue = kue.createQueue({
-	prefix: 'q',
-	redis: sails.config.redis_kue
-});
+
 var temp_count = 10;
 
 var request = require("request");
