@@ -24,6 +24,36 @@ module.exports = function (callback) {
 		});
 	});
 
+	queue.process('send_weekly_email_all_users', 1,function(job,done){
+		BackgroundService.sendWeeklyEmails({}, function(err, result){
+			done(err,result);
+		});
+	});
+
+	queue.process('calculate_uam_all_users', 1, function(job, done){
+		User.find({}).exec(function(err, users){
+			async.eachLimit(users, 1, function(u, cb){
+				var data = {
+					title:'calculate_uam, user ='+u.id+', name='+u.name,
+					options:{ // this is used
+						user:u.id
+					},
+					info:{ // this is for readability
+						user:u.id
+					}
+				}
+				var promise = queue.add('calculate_uam', data);
+				GeneralService.p2c(promise,cb);
+			}, done);
+		});
+	});
+
+	queue.process('calculate_uam', 1, function(job, done){
+		BackgroundService.calculateUAM(job.data.options, function(err){
+			done(err);
+		});
+	});
+
 	queue.process('surface_crawl',1,function(job,done){
 		GmailService.getMessagesAndProcessEach(job.data.options,function(err,result){
 			// if(err) // uncomment for debugging when the kue has errors
@@ -31,6 +61,7 @@ module.exports = function (callback) {
 			done(err,result);
 		});
 	});
+
 	queue.process('send_email_report',1,function(job,done){
 		NotificationService.sendEmailReport(job.data.options,function(err,result){
 			// if(err) // uncomment for debugging when the kue has errors
@@ -50,8 +81,6 @@ module.exports = function (callback) {
 	});
 
 	
-
-
-	// console.log('\n\n\n\n ******** kue setup ********');
+	// console.log('\n\n\n\n ******** bull setup ********');
 	callback(null);
-};
+}

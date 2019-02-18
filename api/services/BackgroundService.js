@@ -193,5 +193,69 @@ module.exports={
 				})
 			}]
 		}, callback);
+	},
+
+	sendWeeklyEmails: function(filter, callback){
+		// get all users 
+		// subtract disabled users - Mayank
+		// identify the right week
+		// add to quey
+		var prevMonday = new Date();
+		prevMonday.setDate(prevMonday.getDate() - (prevMonday.getDay() + 6) % 7);
+		prevMonday=moment(prevMonday).tz('Asia/Kolkata').format();
+		var end = new Date(prevMonday.substring(0,10)+'T00:00:00.000+0530');
+		var start = new Date(end);
+		start.setDate(start.getDate()-7);
+		// '2018-09-24T00:00:00.000+0530'
+		User.find(filter).exec(function(err,users){
+			var bull_configs=[];
+			users.forEach(function(user){
+				var data={
+					title:'Send weekly email to '+user.name,
+					options:{
+						start_date:start,
+						end_date:end,
+						user:user.id,
+						type:'Weekly'
+					},
+					info:{}
+				};
+				bull_configs.push(data);
+			})
+			async.eachLimit(bull_configs,1,function(data,next){
+				var promise = queue.add('send_email_report',data);
+				GeneralService.p2c(promise,next);
+			}, callback);
+		});
+	},
+
+	sendMonthlyEmails: function(filter, callback){
+		var temp = new Date();
+		temp.setDate(1);
+		temp=moment(temp).tz('Asia/Kolkata').format();
+		var end = new Date(temp.substring(0,10)+'T00:00:00.000+0530');
+		var start = new Date(end);
+		start.setDate(-5);
+		start.setDate(1);
+		User.find(filter).exec(function(err,users){
+			var bull_configs=[];
+			users.forEach(function(user){
+				var data={
+					title:'Send monthly email to '+user.name,
+					options:{
+						start_date:start,
+						end_date:end,
+						user:user.id,
+						type:'Monthly'
+					},
+					info:{}
+				};
+				bull_configs.push(data);
+			})
+			async.eachLimit(bull_configs,1,function(data,next){
+				var promise = queue.add('send_email_report',data);
+				GeneralService.p2c(promise,next);
+			}, callback);
+		});
 	}
 }
