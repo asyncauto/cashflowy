@@ -226,8 +226,20 @@
 						<td></td> -->
 						</tr>
 						<tr class='top aligned' id='details_<%=t.id%>' style='display: none;'>
-							<td colspan="6">
-								this is the details of this transaction
+							<td></td>
+							<td colspan="5" style="opacity: 0.7">
+								<%if(t.parsed_emails.length==0 && t.slis.length==0){%>
+									this transactions was created manually<br>
+								<%}else{%>
+									<%t.parsed_emails.forEach(function(pe){ %>
+										<i class='mail icon'></i>extracted from email - <%=pe.email%><br>
+									<%}) %>
+									<%t.slis.forEach(function(sli){ %>
+										<i class='file alternate outline icon'></i>extracted from document - <a href="/document/<%=sli.document.id%>"><%=sli.document.id%></a> - line no - <%=sli.pos+1%><br>
+									<%}) %>
+								<%}%>
+								<!-- <pre><%=JSON.stringify(t.parsed_emails,null,'    ')%></pre> -->
+								<!-- <pre><%=JSON.stringify(t.slis,null,'    ')%></pre> -->
 							</td>
 						</tr>
 						

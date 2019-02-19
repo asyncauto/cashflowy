@@ -754,8 +754,18 @@ module.exports = {
 			},
 			getTags:function(callback){
 				Tag.find({user:req.user.id}).exec(callback);
-			}
+			},
+			getParsedEmails:['getTransactions',function(results,callback){
+				var t_ids=_.map(results.getTransactions,'id');
+				Parsed_email.find({transaction:t_ids}).exec(callback);
+			}],
+			getSLIs:['getTransactions',function(results,callback){
+				var t_ids=_.map(results.getTransactions,'id');
+				Statement_line_item.find({transaction:t_ids}).populate('document').exec(callback);
+			}]
 		},function(err,results){
+			if (err)
+				throw err;
 			locals.transactions=results.getTransactions;
 			var accounts=results.getAccounts;
 			locals.transactions.forEach(function(t){
@@ -765,6 +775,17 @@ module.exports = {
 					if(t.to_account==account.id)
 						t.to_account=account;
 				});
+				t.parsed_emails=[];
+				// console.log(results.getParsedEmails);
+				results.getParsedEmails.forEach(function(pe){
+					if(t.id == pe.transaction)
+						t.parsed_emails.push(pe);
+				})
+				t.slis=[];
+				results.getSLIs.forEach(function(sli){
+					if(t.id==sli.transaction)
+						t.slis.push(sli);
+				})
 				var moment = require('moment-timezone');
 				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
 			})
