@@ -307,6 +307,7 @@ module.exports = {
 				user:req.query.state, // user id is passed into this variable
 				email:id_token_data.email,
 				token:result.tokens,
+				details: {token_status: 'active'}
 			}
 			console.log(email);
 			Email.findOrCreate({email:email.email},email).exec(function(err,result){
@@ -689,11 +690,16 @@ module.exports = {
 				// category filter
 				if(!_.isNaN(parseInt(req.query.category)))
 					filter.category=req.query.category;
+				else if(req.query.category == 'empty')
+					filter.category = null;
 
 				// description filter
-				if(req.query.description){
-					filter.description = {contains: req.query.description.split(' ') }
-				}
+				if(req.query.description)
+					filter.description = {contains: req.query.description }
+
+				if(req.query.description == 'empty')
+					filter.description = null;
+
 
 				// txn type filter
 				if(req.query.txn_type){

@@ -38,6 +38,8 @@
 						<div class="text">All</div>
 						<i class="dropdown icon"></i>
 						<div class="fluid menu">
+							<div class="item" data-value="">All</div>
+							<div class="item" data-value="empty">- Empty -</div>
 							<%categories.forEach(function(category){%>
 								<%- partial('partials/category_dropdown', {category: category}) %>
 							<%})%>
@@ -63,6 +65,8 @@
 
 				<div class="field">
 					<label>Description contains:</label>
+					<span style="font-size: 0.8em">(<b>empty</b>: to filter blank descriptions)</span>
+					<span> </span>
 					<input type="text" name="description" placeholder="ex: house loan" value="<%= req.query.description ? req.query.description: ''%>">
 				</div>
 
