@@ -1196,13 +1196,28 @@ module.exports = {
 		})
 	},
 	listDocuments: function(req, res){
-		Document.find({user:req.user.id}).populate('accounts').populate('statement_line_items').sort('id DESC').exec(function(err,documents){
+		async.auto({
+			getDocuments: function(cb){
+				Document.find({user:req.user.id}).populate('accounts').populate('statement_line_items').sort('id DESC').exec(cb);
+			},
+			getUnresolvedDoubtfullTransaction: function(cb){
+				var query = `SELECT count(*) AS unresolved_dts, sli.document FROM doubtful_transaction AS dt INNER JOIN statement_line_item AS sli ON dt.sli = sli.id 
+				WHERE sli.user =${req.user.id} AND json_extract_path(dt.details::json, 'status') IS NULL GROUP BY sli.document`
+				Doubtful_transaction.query(query,cb);
+			}
+		}, function(err, results){
+			if(err) return res.view('500', err);
+			
 			var timeline = {
 				groups:[],
 				items:[]
 			}
 
-			_.forEach(documents, function(d){
+			_.forEach(results.getDocuments, function(d){
+				var udt = _.find(results.getUnresolvedDoubtfullTransaction.rows, {document: d.id});
+				if(udt)
+					d.unresolved_dts = udt.unresolved_dts
+			
 				if(d.parsed_data && d.parsed_data.transactions_from_date && d.parsed_data.transactions_to_date){
 					_.forEach(d.accounts, function(a){
 						timeline.items.push({
@@ -1220,9 +1235,9 @@ module.exports = {
 					})
 				}
 			});
-
+			
 			var locals={
-				documents:documents,
+				documents:results.getDocuments,
 				moment: require('moment-timezone'),
 				timeline: timeline
 			}

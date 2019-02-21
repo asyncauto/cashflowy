@@ -50,6 +50,7 @@
 						<th>Description</th>
                         <th>Accounts</th>
 						<th>Line Items<br>(processed/parsed)</th>
+						<th>Unresolved LineItems</th>
 						<th>Uploaded On</th>
                         <th>Status</th>
 					</tr>
@@ -87,13 +88,14 @@
 							<td>
 								<%= doc.statement_line_items.length + '/' + (doc.parsed_data? doc.parsed_data.transactions.length: 0) %>
 							</td>
+							<td>
+								<a href="/document/<%=doc.id%>"><%= doc.unresolved_dts %></a>
+							</td>
 							
 							<td>
 								<span class='popup' data-html="<%-moment(doc.createdAt).tz('Asia/Kolkata').format('h:mm a')%>">
 									
 								<span style="font-size: 1.05rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD MMM, YYYY')%></span></br>
-								<!-- <span style="font-size: 1.2rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD')%></span></br> -->
-								<!-- <span style="font-size: 0.75rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('YYYY')%></span> -->
 								</span>
 							</td>
 							<% if(doc.parsed_data && doc.parsed_data.transactions){ %>

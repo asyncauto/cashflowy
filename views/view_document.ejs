@@ -14,8 +14,7 @@
 			<div class="ui tabular menu">
 				<a class="item active" data-tab="first">SLI</a>
 				<a class="item" data-tab="second">Transactions</a>
-				<a class="item" data-tab="third">Earlier stuff</a>
-				<a class="item" data-tab="fourth">Original File</a>
+				<a class="item" data-tab="third">Original File</a>
 			</div>
 			<div class="ui tab active" data-tab="first">
 				<!-- icici bank statements && HDFC bank statement-->
@@ -270,63 +269,6 @@
 				</table>
 			</div>
 			<div class="ui tab" data-tab="third">
-				<table class="ui basic fluid unstackable table" style="display: block;overflow-x:scroll;">
-					<thead>
-						<tr>
-	                        <th>Row</th>
-	                        <th>Transaction</th>
-	                        <th>Date</th>
-	                        <th>Amount</th>
-							<th>Similar transactions</th>
-							<th>Status</th>
-						</tr>
-					</thead>
-					<tbody>
-						<%slis.forEach(function(sli){%>
-							<% 
-								var t;
-								var t_created_flag=false;
-								if(sli.transaction){
-									t_created_flag=true;
-									t=sli.transaction;
-								}
-								else if(sli.dt)
-									t=sli.dt.transaction;
-								var dt_status = '';
-								if(sli.dt && sli.dt.details && sli.dt.details.status){
-									dt_status = sli.dt.details.status;
-								}
-							%>	
-							<%if(t){%>
-								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dt_status){%>class="positive"<%}%> >
-									<td><%=sli.pos+1%></td>
-										<td><%=t.third_party%></td>
-										<td class='single line'><%=new Date(t.occuredAt).toISOString().substring(0,10)%></td>
-										<td class='single line'><%=t.amount_inr%></td>
-									<%if(sli.dt){%>
-										<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
-										<% if(dt_status){ %>
-										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
-										<% }else{ %>
-											<td class="single line"><i class="attention icon"></i> Requires Action</td>
-										<% } %>
-									<%}else{%>
-										<td></td>
-										<td></td>
-									<%}%>
-								</tr>
-							<%}%>
-							<!-- <%if(!t_created_flag){%>
-								<tr style="background-color:yellow;" >
-									additional data
-									<td><%=sli.pos+1%></td>
-								</tr>
-							<%}%> -->
-						<%})%>
-					</tbody>
-				</table>
-			</div>
-			<div class="ui tab" data-tab="fourth">
 				<object data="<%=doc.parsed_data.media_link_original%>" type="application/pdf" width="100%" height="500px">
 					alt : <a href="<%=doc.parsed_data.media_link_original%>"><%=doc.parsed_data.file_name%></a>
 				</object>
