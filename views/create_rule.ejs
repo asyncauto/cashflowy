@@ -1,0 +1,105 @@
+<div class='ui container'>
+	<form class="ui form " action="" method='post' enctype="multipart/form-data">
+		<div class='ui grid'>
+			<div class='seven wide column'>
+				<h3>What should trigger this rule?</h3>
+				<div class='ui segment'>
+					<div class="field">
+						<label>Event or hook:</label>
+						<div class="ui fluid search selection dropdown" id='trigger_dropdown'>
+							<input type="hidden" name="trigger">
+							<i class="dropdown icon"></i>
+							<div class="default text">Select rule</div>
+							<div class="menu">
+								<%sails.config.rule.triggers.forEach(function(trigger){%>
+									<div class="item" data-value="<%=trigger.slug%>">
+										<%=trigger.title%>
+										<br><br>
+										<span style='opacity:0.5'><%=trigger.description%></span>
+									</div>
+								<%});%>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class='two wide column'>
+				<div class='ui basic center aligned segment'>
+					
+				<br><br><br><br>
+				<!-- <i class='huge arrow alternate circle right outline icon'></i> -->
+				<i class='big arrow right icon'></i>
+				</div>
+			</div>
+			<div class='seven wide column'>
+				<h3>What actions should we perform?</h3>
+				<div class='ui segment'>
+					<div class="field">
+						<label>Action to perform:</label>
+						<div class="ui fluid search selection dropdown" id='action_dropdown'>
+							<input type="hidden" name="action" id='test'>
+							<i class="dropdown icon"></i>
+							<div class="default text">Select rule</div>
+							<div class="menu">
+								<%sails.config.rule.actions.forEach(function(action){%>
+									<div class="item <%action.allowed_triggers.forEach(function(at){%>trig_<%=at%> <%})%>" data-value="<%=action.slug%>" style='display: none'>
+										<%=action.title%>
+										<br><br>
+										<span style='opacity:0.5'><%=action.description%></span>
+									</div>
+								<%});%>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.dropdown').dropdown();
+		$('#trigger_dropdown').dropdown({
+			onChange: function(value, text, $selectedItem) {
+				console.log(value);
+				$('#action_dropdown').find('.item').hide(); // hide all drop down
+				$('#action_dropdown .text').text(''); // sets the text to null
+				$('#action_dropdown input').val(''); // set input to null
+				$('#action_dropdown').find('.trig_'+value).show(); // show the right ones
+				// console.log(text);
+				// 
+				// switch(value){
+				// 	case 'expense':
+				// 		$('#account label').text('Expensed from');
+				// 		$('#paid_whom label').text('Paid whom');
+				// 		$('#paid_whom').show();
+				// 		$('#to_account').hide();
+				// 		$('#select_type').attr('style','color:red');
+				// 		$('#select_type').prev().attr('style','color:red');
+				// 		break;
+				// 	case 'income':
+				// 		$('#account label').text('Deposited to');
+				// 		$('#paid_whom label').text('Source of income');
+				// 		$('#paid_whom').show();
+				// 		$('#to_account').hide();
+				// 		$('#select_type').attr('style','color:#5bc5a2');
+				// 		$('#select_type').prev().attr('style','color:#5bc5a2');
+				// 		break;
+				// 	case 'transfer':
+				// 		$('#account label').text('From account');
+				// 		$('#paid_whom').hide();
+				// 		$('#to_account').show();
+				// 		$('#select_type').attr('style','color:black');
+				// 		$('#select_type').prev().attr('style','color:black');
+				// 		break;
+				// }
+				// $('.people_in_submenu').hide();
+				// if(value=='staff_curated_list')
+				// 	$('#staff_list').show();
+				// // else if(value=='people_i_follow')
+				// else if(value=='my_list')
+				// 	$('#your_list').show();
+			}
+		});
+	})
+</script>

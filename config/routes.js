@@ -113,12 +113,15 @@ module.exports.routes = {
   'POST /dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate', // api
 
 
-  'GET /rule/:id':'MainController.viewRule',
+  'GET /rules':'MainController.listRules',
+  // 'GET /rule/:id':'MainController.viewRule',
+  'POST /rule/create':'MainController.createRule',
   'GET /rule/:id/edit':'MainController.editRule',
   'POST /rule/:id/edit':'MainController.editRule',
   'GET /rule/:id/delete':'MainController.deleteRule',
   'POST /rule/:id/delete':'MainController.deleteRule',
-
+  
+  
   '/test':'MainController.test',
 
   // api patterns needs rewrite later
