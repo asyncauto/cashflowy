@@ -701,6 +701,10 @@ module.exports = {
 					filter.category=req.query.category;
 				else if(req.query.category == 'empty')
 					filter.category = null;
+				
+				// third party filter
+				if(req.query.third_party)
+					filter.third_party = {contains: req.query.third_party }
 
 				// description filter
 				if(req.query.description)

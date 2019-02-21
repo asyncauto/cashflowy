@@ -66,12 +66,16 @@
 				<div class="field">
 					<label>Description contains:</label>
 					<span style="font-size: 0.8em">(<b>empty</b>: to filter blank descriptions)</span>
-					<span> </span>
 					<input type="text" name="description" placeholder="ex: house loan" value="<%= req.query.description ? req.query.description: ''%>">
 				</div>
 
 				<div class="field">
-					<label>Amount Range(INR):</label>
+					<label>Merchant/Third Party contains:</label>
+					<input type="text" name="third_party" placeholder="ex: funds transfer" value="<%= req.query.third_party ? req.query.third_party: ''%>">
+				</div>
+
+				<div class="field">
+					<label>Amount(INR):</label>
 					<div class="two fields">
 						<div class="field">
 							<input type="number" placeholder="greater than"  name="amount_greater_than" value="<%= req.query.amount_greater_than ? req.query.amount_greater_than: ''%>">
