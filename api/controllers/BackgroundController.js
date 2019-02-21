@@ -87,7 +87,6 @@ module.exports = {
 				throw err;
 			res.send('snapshots updated');
 		})
-			
 	},
 	
 	deleteTasks:function(req,res){

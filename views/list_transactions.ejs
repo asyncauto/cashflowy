@@ -91,6 +91,19 @@
 					<label>Date to:</label>
 					<input type="date" placeholder="YYYY-MM-DD" name="date_to" value="<%= req.query.date_to ? req.query.date_to: ''%>">
 				</div>
+				<div class="field">
+					<label>Extracted from document: </label>
+					<div class="ui filter_txn fluid dropdown basic button">
+						<input type="hidden" name="document" value="<%=req.query.document?req.query.document:'' %>">
+						<div class="text">All</div>
+						<i class="dropdown icon"></i>
+						<div class="fluid menu">
+							<%documents.forEach(function(doc){%>
+								<div class="item" data-value='<%= doc.id %>'><%=doc.parsed_data ? doc.parsed_data.file_name : doc.details && doc.details.original_filename? doc.details.original_filename:'-'%> (<%=doc.type%>)</div>
+							<%})%>
+						</div>
+					</div>
+				</div>
 				<!-- <div class="field">
 					<label>Tags:</label>
 					<select class="ui fluid selection dropdown filter_txn" multiple="" name="tags">

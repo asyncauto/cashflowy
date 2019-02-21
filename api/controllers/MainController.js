@@ -317,10 +317,8 @@ module.exports = {
 		})
 	},
 	editEmail:function(req,res){
-
 	},
 	viewEmail:function(req,res){
-
 	},
 	
 	listAccounts:function(req,res){
@@ -332,7 +330,6 @@ module.exports = {
 		})
 	},
 	viewAccount:function(req,res){
-
 		Account.findOne({id:req.params.id,user:req.user.id}).exec(function(err,account){
 			if(!account)
 				return res.send('you dont have the permission to view this account');
@@ -442,7 +439,6 @@ module.exports = {
 			year=new Date().toISOString().substring(0,4);
 			month=new Date().toISOString().substring(5,7);
 		}
-
 		async.auto({
 			getAccounts:function(callback){
 				Account.find({user:req.user.id}).sort('name ASC').exec(callback);
@@ -674,7 +670,16 @@ module.exports = {
 			getAccounts:function(callback){
 				Account.find({user:req.user.id}).exec(callback);
 			},
-			getTransactions:['getAccounts',function(results,callback){
+			getDocuments:function(callback){ // only for filter
+				Document.find({user:req.user.id}).sort('createdAt DESC').exec(callback);
+			},
+			getTransactionsInDocument:function(callback){
+				if(req.query.document){
+					Statement_line_item.find({document:req.query.document}).exec(callback);
+				}else
+					callback(null);
+			},
+			getTransactions:['getAccounts','getTransactionsInDocument',function(results,callback){
 				//account filter
 				var accounts=[];
 				if(!_.isNaN(parseInt(req.query.account))){
@@ -686,6 +691,10 @@ module.exports = {
 				}
 				var filter={
 					account:accounts,
+				}
+				if(req.query.document){
+					filter.id=_.map(results.getTransactionsInDocument,'transaction');
+					console.log(filter.id);
 				}
 				// category filter
 				if(!_.isNaN(parseInt(req.query.category)))
@@ -798,6 +807,7 @@ module.exports = {
 			// locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.accounts=results.getAccounts;
 			locals.tags=results.getTags;
+			locals.documents=results.getDocuments;
 			locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.moment=require('moment-timezone');
 			res.view('list_transactions',locals);
@@ -982,7 +992,6 @@ module.exports = {
 		},function(err,results){
 			res.send(results);
 		})
-
 		// GmailService.getMessageDetails(options,function(err,data){
 		// 	var log={
 		// 		user:1,

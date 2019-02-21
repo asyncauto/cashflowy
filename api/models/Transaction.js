@@ -49,7 +49,6 @@ module.exports = {
 			via:'transactions',
 			dominant:true
 		},
-
 	}
 };
 
