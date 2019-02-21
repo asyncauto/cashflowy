@@ -1657,5 +1657,12 @@ module.exports = {
 		// res.send('all done');
 		// update doubtful transaction - mark as duplicate, and mention the transction id
 		// update sli or parsed email with the transaction id
+	},
+	listRules:function(req,res){
+
+	},
+	editRule:function(req,res){
+		var locals={}
+		res.view('create_rule',locals);
 	}
 }
