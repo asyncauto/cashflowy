@@ -257,5 +257,12 @@ module.exports={
 				GeneralService.p2c(promise,next);
 			}, callback);
 		});
+	},
+
+	deleteBullTasks: function(grace, state){
+		var state = state ? state:'completed';
+		var grace = grace ? grace :10000; // 10 sec ago
+		queue.clean(grace,state);
+		console.log(`cleaning all jobs that ${state} over ${grace/1000} seconds ago.`);
 	}
 }

@@ -24,6 +24,12 @@ module.exports.bull = {
             active: true,
             repeat: { cron: "0 0 1 * *" },
             data: {}
+        },
+        {
+            name: 'clean_completed_jobs',
+            active: true,
+            repeat: { cron: "0 1 * * *" },
+            data: {}
         }
     ]
 }

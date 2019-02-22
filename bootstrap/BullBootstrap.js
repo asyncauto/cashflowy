@@ -17,6 +17,11 @@ module.exports = function (callback) {
             sails.log.info(`registered bull repeatable job: ${task.name}`);
         }
 	});
+
+	queue.process('clean_completed_jobs', 1, function(job,done){
+		BackgroundService.deleteBullTasks(1000, 'completed')
+		done();
+	})
 	
 	queue.process('surface_crawl_all_users', 1,function(job,done){
 		BackgroundService.surfaceCrawl({}, function(err, result){
