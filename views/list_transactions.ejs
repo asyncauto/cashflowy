@@ -122,7 +122,25 @@
 			</form>
 		</div>
 		<div class='eleven wide computer sixteen wide tablet sixteen wide mobile column'>
-			<h2>Transactions</h2>
+			
+			<%
+				req.query.download_csv='true';
+				var download_path = req.path+'?'+query_string.stringify(req.query);
+			%>
+			<div class='ui grid'>
+				<div class='eight wide column'>
+					<h2>Transactions</h2>
+				</div>
+				<div class='eight wide column right aligned'>
+					<!-- <div class='ui basic right aligned compact segment'> -->
+						
+						<a href="<%=download_path%>" data-tooltip="Download as csv">
+							<i class='large download icon'></i>
+						</a>
+					<!-- </div> -->
+				</div>
+			</div>
+			
 			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
 				<tbody>
 					<%transactions.forEach(function(t){%>

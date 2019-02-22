@@ -814,7 +814,16 @@ module.exports = {
 			locals.documents=results.getDocuments;
 			locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.moment=require('moment-timezone');
-			res.view('list_transactions',locals);
+			locals.query_string=require('query-string');
+			if(req.query.download_csv=='true'){
+				const json2csv = require('json2csv').parse;
+				const csvString = json2csv(locals.transactions);
+				res.setHeader('Content-disposition', 'attachment; filename=transactions-filtered.csv');
+				res.set('Content-Type', 'text/csv');
+				res.status(200).send(csvString);
+			}
+			else
+				res.view('list_transactions',locals);
 			
 		});
 	},
@@ -1648,5 +1657,12 @@ module.exports = {
 		// res.send('all done');
 		// update doubtful transaction - mark as duplicate, and mention the transction id
 		// update sli or parsed email with the transaction id
+	},
+	listRules:function(req,res){
+
+	},
+	editRule:function(req,res){
+		var locals={}
+		res.view('create_rule',locals);
 	}
 }
