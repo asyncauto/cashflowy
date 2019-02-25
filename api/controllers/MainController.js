@@ -448,7 +448,7 @@ module.exports = {
 			},
 			getTransactionsWithOutDescription: ['getAccounts', function(results, callback){
 				var  accounts =  _.map(results.getAccounts,'id')
-				Transaction.findOne({description: {'!': null }, account:accounts}).exec(callback);
+				Transaction.find({description: {'!': null }, account:accounts}).exec(callback);
 			}],
 			getDocumentsCount: function(callback){
 				Document.count({user:req.user.id}).exec(callback);
@@ -544,7 +544,7 @@ module.exports = {
 				verify_email: 'completed',
 				email: results.getEmailCount? 'completed':'disabled',
 				categories: results.getCategories.length? 'completed':'disabled',
-				description: results.getTransactionsWithOutDescription? 'completed':'disabled',
+				description: results.getTransactionsWithOutDescription && results.getTransactionsWithOutDescription.length ? 'completed':'disabled',
 				document: results.getDocumentsCount? 'completed':'disabled'
 			}
 			
