@@ -49,6 +49,22 @@ module.exports = {
 			via:'transactions',
 			dominant:true
 		},
-	}
+	},
+
+	afterCreate: function(created, cb){
+		//if category present return
+		if(created.category) return cb(null);
+		
+		MLService.predictCategory(created, cb);
+	},
+
+	afterUpdate: function(updated, cb){
+		//if category present return
+		if(updated.category) return cb(null);
+		
+		MLService.predictCategory(updated, cb);
+	},
+
+	
 };
 
