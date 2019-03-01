@@ -39,18 +39,19 @@ module.exports = {
                 });
             }],
             findOrCreateCategory: ['getPrediction', function (results, cb) {
+                // for initial trail, only categorize if category belongs to user
                 var category_name = results.getPrediction.Prediction.predictedLabel
-                Category.findOrCreate({ name: category_name, user: results.getAccount.user }, {
-                    user: results.getAccount.user, name: category_name, budget: 1000,
-                    description: 'created by category prediction, update per your usecase'
-                }).exec(cb);
+                Category.findOne({ name: category_name, user: results.getAccount.user }).exec(cb);
             }],
             addCategoryToTransaction: ['findOrCreateCategory', function (results, cb) {
+                if (!results.findOrCreateCategory) return cb(null);
                 Transaction.update(transaction.id, { category: results.findOrCreateCategory.id }).exec(cb);
             }],
             addPredictionTag: ['findOrCreateCategory', function (results, cb) {
-                Tag.findOrCreate({ name: 'predicted_category', user: results.getAccount.user },
-                    { name: 'predicted_category', user: results.getAccount.user }).exec(function (err, tag) {
+                if (!results.findOrCreateCategory) return cb(null);
+
+                Tag.findOrCreate({ name: 'predicted_category', type: 'global' },
+                    { name: 'predicted_category', type: 'global' }).exec(function (err, tag) {
                         tag.transactions.add(transaction.id)
                         tag.save(cb);
                     })
