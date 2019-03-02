@@ -7,6 +7,8 @@
 const fs = require('fs');
 const async = require('async');
 const fx = require('money');
+const AWS = require('aws-sdk');
+
 fx.base='INR';
 fx.rates=sails.config.fx_rates;
 
@@ -1328,22 +1330,25 @@ module.exports = {
 					});
 				},
 				uploadFileToS3: ['uploadFile', function(results, cb){
-					req.file('file').upload({
-						adapter: require('skipper-s3'),
-						key: sails.config.aws.key,
-						secret: sails.config.aws.secret,
-						region: sails.config.aws.region,
-						bucket: sails.config.aws.bucket,
-						headers: {
-							"content-type": req.file('file')._files[0].stream.headers['content-type']
-						}
-					}, function (err, uploadedFiles) {
-						if (err) return cb(err);
-						cb(null, uploadedFiles)
+					var s3 = new AWS.S3({
+						accessKeyId: sails.config.aws.key,
+						secretAccessKey: sails.config.aws.secret,
+						region: sails.config.aws.region
+					});
+					var params = {Bucket: sails.config.aws.bucket, 
+						Key: results.uploadFile[0].fd, 
+						Body: fs.createReadStream(`.tmp/uploads/${results.uploadFile[0].fd}`)
+					};
+					s3.upload(params, function(err, data) {
+						cb(err, data);
 					});
 				}],
 				createDocument: ['uploadFileToS3', function (results, cb) {
-					Document.create({ user: req.user.id, parser_used: req.body.type, details:{s3:results.uploadFileToS3[0].fd, original_filename:results.uploadFile[0].filename} }).exec(cb);
+					Document.create({ user: req.user.id, parser_used: req.body.type, 
+						details:{s3_key:results.uploadFileToS3.key, 
+							original_filename:results.uploadFile[0].filename, 
+							s3_location: results.uploadFileToS3.Location, 
+							s3_bucket: results.uploadFileToS3.Bucket} }).exec(cb);
 				}],
 				sendToDocParser: ['createDocument', 'uploadFile', function (results, cb) {
 	
