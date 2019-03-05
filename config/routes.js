@@ -166,7 +166,9 @@ module.exports.routes = {
 
   //webhooks
 
-  'POST /webhook/docparser2':'WebhookController.docparser2',
+  'POST /webhook/docparser':'WebhookController.docparser',
+  'POST /webhook/mailgun-inbound-parser': 'WebhookController.mailgunInboudParser',
+
 
   'GET /privacy': { view: 'privacy' },
   'GET /terms':{view:'terms'}

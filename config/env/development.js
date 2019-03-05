@@ -43,7 +43,8 @@ module.exports = {
 	slack_webhook: process.env.SLACK_WEBHOOK,
 	mailgun: {
 		api_key: process.env.MAILGUN_APIKEY,
-		domain: process.env.MAILGUN_DOMAIN
+		domain: process.env.MAILGUN_DOMAIN,
+		webhook_secret: process.env.MAILGUN_WEBHOOK_SECRET
 	},
 	background_secret:process.env.BACKGROUND_SECRET,
 

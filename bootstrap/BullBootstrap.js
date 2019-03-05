@@ -84,7 +84,7 @@ module.exports = function (callback) {
 			done(err,result);
 		})
 	});
-
+	
 	
 	// console.log('\n\n\n\n ******** bull setup ********');
 	callback(null);

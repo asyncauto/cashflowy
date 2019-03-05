@@ -8,7 +8,7 @@ var async = require('async')
 module.exports = {
 
     // this is the new doc parser - needs clean up - written by Alex
-    docparser2: function (req, res) {
+    docparser: function (req, res) {
 
 
         // console.log(req.body);
@@ -114,6 +114,17 @@ module.exports = {
         })
         // res.send('ok');
 
+    },
+
+    mailgunInboudParser: function(req, res){
+        // console.log(req.body);
+        if (req.query.secret != sails.config.mailgun.webhook_secret)
+            return res.status(403).json({ status: 'failure', error: 'athorization failed' });
+
+        MailgunService.parseInboundEmail(req.body, function(err){
+            if(err) return res.status(500).json({error: err.message});
+            res.ok();
+        })
     }
 
 };

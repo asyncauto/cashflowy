@@ -3,7 +3,7 @@ module.exports.bull = {
     repeats: [
         {
             name: 'surface_crawl_all_users',
-            active: true,
+            active: false,
             repeat: { cron: "*/10 * * * *" },
             data: {}
         },
