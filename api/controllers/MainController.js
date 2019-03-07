@@ -158,6 +158,7 @@ module.exports = {
 					description:req.body.description,
 					budget:parseInt(req.body.budget),
 					user:req.user.id,
+					type:req.body.type,
 					parent:0,
 				}
 				if(req.body.parent_id)
