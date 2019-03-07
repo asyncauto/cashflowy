@@ -76,6 +76,7 @@ module.exports = {
 					description:'',
 					budget:'10000',
 					parent_id:0,
+					type:'expense',
 					categories:categories
 				}
 				console.log(locals);
@@ -184,6 +185,7 @@ module.exports = {
 					description:c.description,
 					budget:c.budget,
 					parent_id:c.parent,
+					type:c.type,
 					categories:categories
 				}
 				res.view('create_category',locals);

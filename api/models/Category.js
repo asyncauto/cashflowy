@@ -22,6 +22,10 @@ module.exports = {
 		description:{
 			type:'text',
 		},
+		type:{
+			type:'text',
+			defaultsTo:'expense'
+		},
 		budget:{
 			type:'integer'
 		}
