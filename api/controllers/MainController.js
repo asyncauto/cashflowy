@@ -1779,10 +1779,10 @@ module.exports = {
 			getAllCategories:function(callback){
 				Category.find({user:req.user.id}).exec(callback);
 			},
-			getCategorySpending:['getAccounts',function(results,callback){
+			getCategorySpendingPerMonth:['getAccounts',function(results,callback){
 
 				var escape=[req.query.date_from,req.query.date_to];
-				var query = 'select count(*),sum(amount_inr),category from transaction';
+				var query = 'select count(*),sum(amount_inr),EXTRACT(YEAR FROM "occuredAt") as "year",EXTRACT(MONTH FROM "occuredAt") as "month",category from transaction';
 				query+=' where';
 				query+=" type='income_expense'";
 				// if(year){
@@ -1797,7 +1797,8 @@ module.exports = {
 				if(_.map(results.getAccounts,'id').length)
 					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				// in the accounts that belong to you
-				query+=' group by category';
+				query+=' group by category, "year", "month"';
+				query+=' order by "year" , "month" '
 				console.log(query);
 				Transaction.query(query,escape,function(err, rawResult) {
 					if(err)
@@ -1827,47 +1828,185 @@ module.exports = {
 		},function(err,results){
 			if(err)
 				throw err;
-			results.getAllCategories.forEach(function(cat){
-				cat.t_count=0;
-				cat.t_sum=0;
-				// console.log(results.getCategorySpending);
-				results.getCategorySpending.forEach(function(spend){
-					if(cat.id==spend.category){
-						cat.t_count=spend.count;
-						cat.t_sum=spend.sum;
-					}
+			var time_periods=[];
+			// getting time periods
+			results.getCategorySpendingPerMonth.forEach(function(row){
+				var time_period_exists=false;
+				time_periods.forEach(function(time_period){
+					if(time_period.year==row.year && time_period.month==row.month)
+						time_period_exists=true;
 				})
-				// console.log(cat);
+				if(!time_period_exists)
+					time_periods.push({year:row.year,month:row.month});
+			})
+			console.log(time_periods);
+			locals.time_periods=time_periods;
+			var temp = {};
+			var temp2={};
+			time_periods.forEach(function(tp){
+				temp[tp.year+'-'+tp.month]=_.cloneDeep(results.getAllCategories);
+				temp[tp.year+'-'+tp.month].forEach(function(cat){
+
+					cat.t_count=0;
+					cat.t_sum=0;
+					// console.log(results.getCategorySpending);
+					results.getCategorySpendingPerMonth.forEach(function(spend){
+						if(cat.id==spend.category && tp.year==spend.year && tp.month==spend.month){
+							cat.t_count=spend.count;
+							cat.t_sum=spend.sum;
+						}
+					})
+					// console.log(cat);
+				});
+				temp2[tp.year+'-'+tp.month]=_.cloneDeep(GeneralService.orderCategories(temp[tp.year+'-'+tp.month]));
+				// var head_cat=_.find(temp[tp.year+'-'+tp.month],{id:results.getPnl.details.pnl_head_category});
+				// head_cat.children.forEach(function(c_cat){
+				// 	if(c_cat.type=="income"){
+				// 		locals.pnl.statement.income.push({
+				// 			cat_id_id:c_cat.id,
+				// 			name:c_cat.name,
+				// 			values:c_cat.t_sum
+				// 		});
+				// 	}else if(c_cat.type=='expense'){
+				// 		locals.pnl.statement.expense.push({
+				// 			cat_id_id:c_cat.id,
+				// 			name:c_cat.name,
+				// 			values:c_cat.t_sum
+				// 		});
+				// 	}
+				// })
 			});
+			var categories=[];
+			Object.keys(temp2).forEach(function(key,i){
+
+				var head_cat=_.find(temp2[key],{id:results.getPnl.details.pnl_head_category});
+				if(i==0){
+					categories=head_cat.children;
+					categories.forEach(function(c_cat){
+						c_cat.columns={};	
+					})
+				}
+				categories.forEach(function(c_cat){
+					head_cat.children.forEach(function(cat2){
+						if(cat2.id==c_cat.id)
+							c_cat.columns[key]=cat2.super_sum;
+					})
+					
+				})
+			})
+
+			console.log('\n\n\n\n=========');
+			console.log(temp2);
+			console.log('\n\n\n\n=========');
+			console.log(categories);
+			// results.getAllCategories.forEach(function(cat){
+
+			// 	cat.t_count={};
+			// 	cat.t_sum={};
+			// 	// console.log(results.getCategorySpending);
+			// 	results.getCategorySpendingPerMonth.forEach(function(spend){
+			// 		if(cat.id==spend.category){
+			// 			cat.t_count[spend.year+'-'+spend.month]=spend.count;
+			// 			cat.t_sum[spend.year+'-'+spend.month]=spend.sum;
+			// 		}
+			// 	})
+			// 	// console.log(cat);
+			// });
 			locals.pnl=results.getPnl;
-			var categories = GeneralService.orderCategories(results.getAllCategories);
-			var head_cat=_.find(categories,{id:results.getPnl.details.pnl_head_category});
-			// var head = Math.floor(Math.random() * categories.length);
-			locals.pnl.statement={
-				head:[
-					{
-						cat_id_is:head_cat.id,
-						name:head_cat.name
-					}
-				],
-				income:[],
-				expense:[],
-			}
-			head_cat.children.forEach(function(c_cat){
-				if(c_cat.type=="income"){
-					locals.pnl.statement.income.push({
-						cat_id_id:c_cat.id,
-						name:c_cat.name,
-						value:c_cat.super_sum
+			// locals.pnl.statement={
+			// 	head:[
+			// 		{
+			// 			cat_id_is:head_cat.id,
+			// 			name:head_cat.name
+			// 		}
+			// 	],
+			// 	income:[],
+			// 	expense:[],
+			// }
+			locals.pnl.header=time_periods;
+			locals.pnl.rows=[];
+			locals.pnl.rows.push({name:'Income',type:'header',columns:[]});
+			var income_row = locals.pnl.rows.length-1;
+			categories.forEach(function(cat){
+				if(cat.type=="income"){
+					locals.pnl.rows.push({
+						name:cat.name,
+						type:'income',
+						columns:cat.columns,
+					})
+				}
+			});
+			locals.pnl.rows.push({name:'Expense',type:'header',columns:[]});
+			var expense_row = locals.pnl.rows.length-1;
+			categories.forEach(function(cat){
+				if(cat.type=="expense"){
+					locals.pnl.rows.push({
+						name:cat.name,
+						type:'expense',
+						columns:cat.columns,
+					})
+				}
+			});
+			locals.pnl.rows.push({name:'Surplus',type:'header',columns:[]});
+			var surplus_row = locals.pnl.rows.length-1;
+
+			// Summing all incomes 
+			var income_total=[];
+			var expense_total=[];
+			time_periods.forEach(function(tp){
+				income_total[tp.year+'-'+tp.month]=0;
+				expense_total[tp.year+'-'+tp.month]=0;
+			});
+			locals.pnl.rows.forEach(function(row){
+				if(row.type=='income'){
+					time_periods.forEach(function(tp){
+						income_total[tp.year+'-'+tp.month]+=row.columns[tp.year+'-'+tp.month];
 					});
-				}else if(c_cat.type=='expense'){
-					locals.pnl.statement.expense.push({
-						cat_id_id:c_cat.id,
-						name:c_cat.name,
-						value:c_cat.super_sum
+				}
+				if(row.type=='expense'){
+					time_periods.forEach(function(tp){
+						expense_total[tp.year+'-'+tp.month]+=row.columns[tp.year+'-'+tp.month];
 					});
 				}
 			})
+			locals.pnl.rows[income_row].columns=income_total;
+			locals.pnl.rows[expense_row].columns=expense_total;
+			time_periods.forEach(function(tp){
+				var surplus=income_total[tp.year+'-'+tp.month]+expense_total[tp.year+'-'+tp.month];
+				locals.pnl.rows[surplus_row].columns[tp.year+'-'+tp.month]=surplus	
+			})
+			
+			// locals.pnl.rows
+			// head_cat.children.forEach(function(c_cat){
+			// 	if(c_cat.type=="income"){
+			// 		locals.pnl.statement.income.push({
+			// 			cat_id_id:c_cat.id,
+			// 			name:c_cat.name,
+			// 			values:c_cat.t_sum
+			// 		});
+			// 	}else if(c_cat.type=='expense'){
+			// 		locals.pnl.statement.expense.push({
+			// 			cat_id_id:c_cat.id,
+			// 			name:c_cat.name,
+			// 			values:c_cat.t_sum
+			// 		});
+			// 	}
+			// })
+			// head_cat.children.forEach(function(c_cat){
+			// 	if(c_cat.type=="income"){
+			// 		locals.pnl.statement.income.push({
+			// 			cat_id_id:c_cat.id,
+			// 			name:c_cat.name,
+			// 			values:c_cat.t_sum
+			// 		});
+			// 	}else if(c_cat.type=='expense'){
+			// 		locals.pnl.statement.expense.push({
+			// 			cat_id_id:c_cat.id,
+			// 			name:c_cat.name,
+			// 			values:c_cat.t_sum
+			// 		});
+			// 	}
+			// })
 			// res.view('create_pnl',locals);
 			res.view('view_pnl',locals);
 		});
