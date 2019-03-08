@@ -55,6 +55,7 @@ module.exports = {
 					description:req.body.description,
 					budget:parseInt(req.body.budget),
 					user:req.user.id,
+					type:req.body.type,
 				}
 				if(req.body.parent_id)
 					c.parent=req.body.parent_id;
