@@ -1820,21 +1820,6 @@ module.exports = {
 			getPnl:function(callback){
 				Pnl.findOne({id:req.params.id}).exec(callback);
 			},
-			// getCategories:['getPnl',function(results,callback){
-			// 	if(results.getPnl.type=='single_pnl_head'){
-			// 		var filter={
-			// 			where:{
-			// 				user:req.user.id,
-			// 				'or':[
-			// 					{id:results.getPnl.details.pnl_head_category},
-			// 					{parent:results.getPnl.details.pnl_head_category},
-			// 				]
-			// 			}
-			// 		}
-			// 		Category.find(filter).sort('name ASC').exec(callback);
-			// 	}else
-			// 		callback(null);
-			// }],
 		},function(err,results){
 			if(err)
 				throw err;
@@ -1869,70 +1854,45 @@ module.exports = {
 					// console.log(cat);
 				});
 				temp2[tp.year+'-'+tp.month]=_.cloneDeep(GeneralService.orderCategories(temp[tp.year+'-'+tp.month]));
-				// var head_cat=_.find(temp[tp.year+'-'+tp.month],{id:results.getPnl.details.pnl_head_category});
-				// head_cat.children.forEach(function(c_cat){
-				// 	if(c_cat.type=="income"){
-				// 		locals.pnl.statement.income.push({
-				// 			cat_id_id:c_cat.id,
-				// 			name:c_cat.name,
-				// 			values:c_cat.t_sum
-				// 		});
-				// 	}else if(c_cat.type=='expense'){
-				// 		locals.pnl.statement.expense.push({
-				// 			cat_id_id:c_cat.id,
-				// 			name:c_cat.name,
-				// 			values:c_cat.t_sum
-				// 		});
-				// 	}
-				// })
+				
 			});
 			var categories=[];
-			Object.keys(temp2).forEach(function(key,i){
+			if(results.getPnl.type=='single_pnl_head'){
+				Object.keys(temp2).forEach(function(key,i){
 
-				var head_cat=_.find(temp2[key],{id:results.getPnl.details.pnl_head_category});
-				if(i==0){
-					categories=head_cat.children;
+					var head_cat=_.find(temp2[key],{id:results.getPnl.details.pnl_head_category});
+					if(i==0){
+						categories=head_cat.children;
+						categories.forEach(function(c_cat){
+							c_cat.columns={};	
+						})
+					}
 					categories.forEach(function(c_cat){
-						c_cat.columns={};	
+						head_cat.children.forEach(function(cat2){
+							if(cat2.id==c_cat.id)
+								c_cat.columns[key]=cat2.super_sum;
+						})
+						
 					})
-				}
-				categories.forEach(function(c_cat){
-					head_cat.children.forEach(function(cat2){
-						if(cat2.id==c_cat.id)
-							c_cat.columns[key]=cat2.super_sum;
-					})
-					
 				})
-			})
-
-			console.log('\n\n\n\n=========');
-			console.log(temp2);
-			console.log('\n\n\n\n=========');
-			console.log(categories);
-			// results.getAllCategories.forEach(function(cat){
-
-			// 	cat.t_count={};
-			// 	cat.t_sum={};
-			// 	// console.log(results.getCategorySpending);
-			// 	results.getCategorySpendingPerMonth.forEach(function(spend){
-			// 		if(cat.id==spend.category){
-			// 			cat.t_count[spend.year+'-'+spend.month]=spend.count;
-			// 			cat.t_sum[spend.year+'-'+spend.month]=spend.sum;
-			// 		}
-			// 	})
-			// 	// console.log(cat);
-			// });
+				
+			}else if(results.getPnl.type=='no_pnl_head'){
+				Object.keys(temp2).forEach(function(key,i){
+					if(i==0){
+						categories=temp2[key];
+						categories.forEach(function(c_cat){
+							c_cat.columns={};	
+						})
+					}
+					categories.forEach(function(c_cat){
+						temp2[key].forEach(function(cat2){
+							if(cat2.id==c_cat.id)
+								c_cat.columns[key]=cat2.super_sum;
+						})
+					})
+				})
+			}
 			locals.pnl=results.getPnl;
-			// locals.pnl.statement={
-			// 	head:[
-			// 		{
-			// 			cat_id_is:head_cat.id,
-			// 			name:head_cat.name
-			// 		}
-			// 	],
-			// 	income:[],
-			// 	expense:[],
-			// }
 			locals.pnl.header=time_periods;
 			locals.pnl.rows=[];
 			locals.pnl.rows.push({name:'Income',type:'header',columns:[]});
@@ -1985,40 +1945,8 @@ module.exports = {
 				var surplus=income_total[tp.year+'-'+tp.month]+expense_total[tp.year+'-'+tp.month];
 				locals.pnl.rows[surplus_row].columns[tp.year+'-'+tp.month]=surplus	
 			})
-			
-			// locals.pnl.rows
-			// head_cat.children.forEach(function(c_cat){
-			// 	if(c_cat.type=="income"){
-			// 		locals.pnl.statement.income.push({
-			// 			cat_id_id:c_cat.id,
-			// 			name:c_cat.name,
-			// 			values:c_cat.t_sum
-			// 		});
-			// 	}else if(c_cat.type=='expense'){
-			// 		locals.pnl.statement.expense.push({
-			// 			cat_id_id:c_cat.id,
-			// 			name:c_cat.name,
-			// 			values:c_cat.t_sum
-			// 		});
-			// 	}
-			// })
-			// head_cat.children.forEach(function(c_cat){
-			// 	if(c_cat.type=="income"){
-			// 		locals.pnl.statement.income.push({
-			// 			cat_id_id:c_cat.id,
-			// 			name:c_cat.name,
-			// 			values:c_cat.t_sum
-			// 		});
-			// 	}else if(c_cat.type=='expense'){
-			// 		locals.pnl.statement.expense.push({
-			// 			cat_id_id:c_cat.id,
-			// 			name:c_cat.name,
-			// 			values:c_cat.t_sum
-			// 		});
-			// 	}
-			// })
-			// res.view('create_pnl',locals);
 			res.view('view_pnl',locals);
+			
 		});
 	},
 	deletePnL:function(req,res){
