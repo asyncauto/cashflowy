@@ -378,13 +378,20 @@
 		window.myLine2 = new Chart(ctx2, config2);
 		var ctx3 = document.getElementById('canvas3').getContext('2d');
 		window.myLine3 = new Chart(ctx3, config3);
+		var canvas2 = document.getElementById('canvas2');
+		var canvas3 = document.getElementById('canvas3');
+		if(canvas2.height < 400){
+			window.myLine2.options.legend.display=false;
+			window.myLine3.options.legend.display=false;
+			window.myLine2.update();
+			window.myLine3.update();
+
+		}
 	};
 	$(document).ready(function(){
 		$('.popup').popup();
 		$('#setup').progress();
 		$('.show_hide_setup.icon').click(function(){
-			// $('.setup_detail').css('display', '');
-			// $('.show_hide_setup.icon').removeClass('up').addClass('down');
 			$(this).removeClass('chevron circle').addClass('chevron circle').toggleClass('up down').addClass('icon');
             $('.setup_detail').toggle();
 		});
