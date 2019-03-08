@@ -5,7 +5,6 @@ module.exports.rule={
 			title:'After creating a transaction',
 			description:'This event is fired after a transaction is created',
 			model:'transaction',
-			// event:'after_create',
 		},
 		{
 			slug:'parsed_email_before_create',

@@ -2,9 +2,8 @@
 	<div class='ui stackable grid'>
 		<div class='ui two wide column'></div>
 		<div class='ui twelve wide column'>
-				<!-- <div class="ui two column center aligned grid"> -->
 				<div class="ui row">
-					<div class="ui small progress" data-value="<%= setup_checklist.percentage_completed%>" data-total="100" id="setup">
+					<div class="ui tiny progress" data-value="<%= setup_checklist.percentage_completed%>" data-total="100" id="setup">
 						<div class="label">
 							Your setup checklist <%= setup_checklist.percentage_completed/20%>/5.
 						</div>
@@ -162,7 +161,7 @@
 					</div> -->
 					<div class='ui sixteen wide column'>
 						<div class='ui segment'>
-							<div class='ui header'>Expenses</div>
+							<div class='ui header'>Income & Expense</div>
 							<div style="width:100%;">
 								<canvas id="canvas"></canvas>
 							</div>
@@ -241,16 +240,35 @@
 </style>
 <%if(typeof chart !='undefined'){%>
 <script>
+	window.chartColors = {
+		red: 'rgb(255, 99, 132)',
+		orange: 'rgb(255, 159, 64)',
+		yellow: 'rgb(255, 205, 86)',
+		green: 'rgb(75, 192, 192)',
+		blue: 'rgb(54, 162, 235)',
+		purple: 'rgb(153, 102, 255)',
+		grey: 'rgb(201, 203, 207)'
+	};
+	var color = Chart.helpers.color;
 	var config = {
-		type: 'line',
+		type: 'bar',
 		data: {
 			labels: <%-JSON.stringify(chart.x)%>,
 			datasets: [{
 				label: 'Expense',
-				backgroundColor: 'teal',
-				borderColor: 'teal',
+				backgroundColor: color(window.chartColors.red).alpha(0.7).rgbString(),
+				borderColor: window.chartColors.red,
 				data: [
-					<%-chart.y%>
+					<%-chart.y_expense%>
+				],
+				fill: false,
+			},
+			{
+				label: 'Income',
+				backgroundColor: color(window.chartColors.green).alpha(0.7).rgbString(),
+				borderColor: window.chartColors.green,
+				data: [
+					<%-chart.y_income%>
 				],
 				fill: false,
 			}]
@@ -291,28 +309,11 @@
 	var config2 = {
 		type: 'line',
 		data: {
-			// labels: <%-JSON.stringify(chart2.x)%>,
 			datasets:<%-JSON.stringify(chart2.datasets)%>
 		},
 		options: {
 			responsive: true,
 			maintainAspectRatio:true,
-			title: {
-				display: false,
-				text: 'Expense'
-			},
-			legend:{
-				display:false, // TODO - later, this needs to be done by device type
-				boxWidth:20,
-			},
-			tooltips: {
-				mode: 'index',
-				intersect: false,
-			},
-			hover: {
-				mode: 'nearest',
-				intersect: true
-			},
 			scales: {
 				xAxes: [{
 					type: 'linear',
@@ -346,22 +347,6 @@
 		options: {
 			responsive: true,
 			maintainAspectRatio:true,
-			title: {
-				display: false,
-				text: 'Expense'
-			},
-			legend:{
-				display:false, // TODO - later, this needs to be done by device type
-				boxWidth:20,
-			},
-			tooltips: {
-				mode: 'index',
-				intersect: false,
-			},
-			hover: {
-				mode: 'nearest',
-				intersect: true
-			},
 			scales: {
 				xAxes: [{
 					type: 'linear',

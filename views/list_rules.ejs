@@ -1,0 +1,29 @@
+<div class='ui container'>
+        <div class='ui grid'>
+            <!-- <div class='three wide tablet computer only column'></div> -->
+            <div class='sixteen wide table six wide computer sixteen wide mobile  column'>
+                <h1>Your Rules: </h1>
+                <div class="ui celled list">
+                    <%rules.forEach(function(r){%>
+                        <div class="item">
+                            <div class="right floated content">
+                            <a class="ui button" href="/rule/<%=r.id%>/edit">Edit</a>
+                            </div>
+                            <div class="content">
+                            <%=r.description%>
+                            </div>
+                        </div>
+                    <%}%>
+                </div>
+                
+            </div>
+            <!-- <div class='three wide tablet computer only column'></div> -->
+        </div>
+    </div>
+    <a class="circular ui icon right floated primary big button" href="/rule/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new rule" data-position="left center" data-inverted=""><i class="icon cogs"></i></a>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.popup').popup();
+            $('.extra_options.dropdown').dropdown();
+        });
+    </script>

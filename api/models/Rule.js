@@ -11,6 +11,10 @@ module.exports = {
 		user: {
 			model: 'user', // user id mentioned when it is a user specific rule
 		},
+		description:{
+			type: 'string',
+			required: true
+		},
 		type:{
 			type:'string',
 			enum:[
@@ -30,6 +34,11 @@ module.exports = {
 			enum: [
 				"modify_data"
 			]
+		},
+		status:{
+			type:'string',
+			required: true,
+			enum:['active', 'paused']
 		},
 		details: {
 		  type: "json",

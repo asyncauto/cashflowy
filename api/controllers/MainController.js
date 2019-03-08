@@ -502,7 +502,7 @@ module.exports = {
 			}],
 			getExpenseChartData:['getAccounts',function(results,callback){
 				var escape=[year];
-				var query = 'select count(*),sum(amount_inr),EXTRACT(Day from "occuredAt") as day from transaction';
+				var query = 'select count(*),sum(CASE WHEN amount_inr < 0 THEN amount_inr ELSE 0 END) expense_sum,sum(CASE WHEN amount_inr > 0 THEN amount_inr ELSE 0 END) income_sum,EXTRACT(Day from "occuredAt") as day from transaction';
 				query+=' where';
 				query+=" type='income_expense'";
 				query+=' AND EXTRACT(YEAR FROM "occuredAt") = $1';
@@ -588,16 +588,20 @@ module.exports = {
 			
 			locals.chart={
 				x:[],
-				y:[]
+				y_income:[],
+				y_expense:[]
 			}
 			var i=1;
 			results.getExpenseChartData.forEach(function(row){
 				for(;i<row.day;i++){
 					locals.chart.x.push(i);
-					locals.chart.y.push(0);
+					locals.chart.y_income.push(0);
+					locals.chart.y_expense.push(0);
 				}
 				locals.chart.x.push(row.day);
-				locals.chart.y.push(-row.sum);
+
+				locals.chart.y_income.push(row.income_sum);
+				locals.chart.y_expense.push(-row.expense_sum);
 				i++;
 			});
 			// locals.chart.x.forEach()
@@ -610,13 +614,14 @@ module.exports = {
 				datasets:[],
 			};
 			results.getAccounts.forEach(function(account,i){
-				var colors = ['teal','blue','red','green','violet','orange','black','brown'];
+				var colors = ['rgb(255, 205, 86)','rgb(75, 192, 192)','rgb(54, 162, 235)', 'rgb(153, 102, 255)', 'rgb(201, 203, 207)','rgb(255, 99, 132)', 'rgb(255, 159, 64)'];
 				var dataset2 ={
 					label: account.name,
 					backgroundColor: colors[i],
 					borderColor: colors[i],
 					data: [],
 					fill: false,
+					// steppedLine: 'before'
 				}
 				var dataset3 ={
 					label: account.name,
@@ -624,6 +629,7 @@ module.exports = {
 					borderColor: colors[i],
 					data: [],
 					fill: false,
+					// steppedLine: 'before'
 				}
 				// ########## logic for one snapshot per day
 				var temp=null;
@@ -1664,7 +1670,16 @@ module.exports = {
 		// update sli or parsed email with the transaction id
 	},
 	listRules:function(req,res){
-
+		Rule.find({user: req.user.id}).exec(function(err, rules){
+			var locals={
+				rules:rules
+			}
+			res.view('list_rules',locals);
+		})
+	},
+	createRule:function(req,res){
+		var locals={}
+		res.view('create_rule',locals);
 	},
 	editRule:function(req,res){
 		var locals={}
