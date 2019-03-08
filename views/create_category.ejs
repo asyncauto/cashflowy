@@ -48,22 +48,36 @@
 						<input type="number" step="any" name="budget" placeholder="100" value="<%=budget%>">
 					</div>
 				</div>
-				<div class="field">
-					<label>Parent category</label>
-					<div class="ui fluid search selection dropdown">
-						<input type="hidden" name="parent_id" value="<%=parent_id%>">
-						<i class="dropdown icon"></i>
-						<div class="default text">Select Parent Category</div>
-						<div class="menu">
-							<div class="item" data-value="0">No parent</div>
-							<%categories.forEach(function(account){%>
-								<div class="<%-parent_id?'active':''%> item" data-value="<%=account.id%>"><%=account.name%></div>
-							<%})%>
+				<div class='two fields'>
+					<div class="field">
+						<label>Parent category</label>
+						<div class="ui fluid search selection dropdown">
+							<input type="hidden" name="parent_id" value="<%=parent_id%>">
+							<i class="dropdown icon"></i>
+							<div class="default text">Select Parent Category</div>
+							<div class="menu">
+								<div class="item" data-value="0">No parent</div>
+								<%categories.forEach(function(account){%>
+									<div class="<%-parent_id?'active':''%> item" data-value="<%=account.id%>"><%=account.name%></div>
+								<%})%>
+							</div>
+						</div>
+						
+					</div>
+					<div class='field'>
+						<label> Type </label>
+						<div class="ui fluid search selection dropdown">
+							<input type="hidden" name="type" value="<%=type%>">
+							<i class="dropdown icon"></i>
+							<div class="default text">Select Type</div>
+							<div class="menu">
+								<div class="item" data-value="expense">Expense</div>
+								<div class="item" data-value="income">Income</div>
+								<div class="item" data-value="pnl_head">PnL Head</div>
+							</div>
 						</div>
 					</div>
-					
 				</div>
-
 				
 				<div class="ui error message">
 					<div class="header">Error</div>

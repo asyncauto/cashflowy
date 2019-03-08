@@ -108,6 +108,16 @@ module.exports.routes = {
   'POST /document/:id/delete':'MainController.deleteDocument',
   
 
+  'GET /pnls':'MainController.listPnLs',
+  'GET /pnl/create':'MainController.createPnL',
+  'POST /pnl/create':'MainController.createPnL',
+  'GET /pnl/:id':'MainController.viewPnL',
+  'GET /pnl/:id/edit':'MainController.editPnL',
+  'POST /pnl/:id/edit':'MainController.editPnL',
+  'GET /pnl/:id/delete':'MainController.deletePnL',
+  'POST /pnl/:id/delete':'MainController.deletePnL',
+
+
   'GET /dt/:id':'MainController.viewDoubtfulTransaction',
   'POST /dt/:id/mark_as_unique':'MainController.markDTAsUnique', // api
   'POST /dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate', // api

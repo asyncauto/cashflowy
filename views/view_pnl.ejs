@@ -1,0 +1,65 @@
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='three wide column'></div>
+		<div class='ten wide column'>
+			<h2>P&L - <%=pnl.name%></h3>
+			<table class="ui celled padded unstackable definition table" id='daily_report'>
+				<thead>
+					<th></th>
+					<%pnl.statement.head.forEach(function(head){%>
+						<th data-override="name">
+							<%=head.name%>
+						</th>
+					<%})%>
+					
+					<!-- <th data-override="time">Time (in mins)</th> -->
+					<!-- <th data-override="status">Status (Open / Done)</th> -->
+				</thead>
+				<tbody>
+					<tr>
+						<td class='active'>Income</td>
+						<td></td>
+					</tr>
+					<%pnl.statement.income.forEach(function(c){%>
+						<tr>
+							<td>
+								<%=c.name%> 
+							</td>
+							<td><%=c.value%></td>
+						</tr>
+					<%})%>
+					<tr>
+						<td class='active'>Expense</td>
+						<td></td>
+					</tr>
+					<%pnl.statement.expense.forEach(function(c){%>
+						<tr>
+							<td>
+								<%=c.name%>
+							</td>
+							<td><%=c.value%></td>
+						</tr>
+					<%})%>
+					<tr>
+						<td class='active'>Surplus</td>
+						<td></td>
+					</tr>
+					<!-- <tr>
+						<td>Travel <a href="#" class='edit_row'><i class='pencil alternate outline icon'></i></a> | <a href="#" class='delete_row'><i class='red trash alternate outline icon'></i></a></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Food <a href="#" class='edit_row'><i class='pencil alternate outline icon'></i></a> | <a href="#" class='delete_row'><i class='red trash alternate outline icon'></i></a></td>
+						<td></td>
+						<td></td>
+					</tr> -->
+				</tbody>
+			</table>
+			<pre><%=JSON.stringify(pnl,null,'    ')%></pre>
+		</div>
+		<div class='three wide column'></div>
+		
+	</div>
+	
+</div>

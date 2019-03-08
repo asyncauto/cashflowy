@@ -11,24 +11,19 @@ module.exports = {
 		user:{
 			model:'user',
 			required:true
-		},
-		parent:{
-			model:'category'
-		},		
+		},	
 		name:{
 			type:'text',
 			required:true
 		},
-		description:{
-			type:'text',
-		},
 		type:{
 			type:'text',
-			defaultsTo:'expense'
+			defaultsTo:'single_pnl_head'
 		},
-		budget:{
-			type:'integer'
-		}
+		details:{ 
+			type:'json',
+			defaultsTo:{}
+		},
 	}
 };
 
