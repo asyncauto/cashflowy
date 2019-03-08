@@ -1751,6 +1751,16 @@ module.exports = {
 		var locals={}
 		res.view('create_pnl',locals);
 	},
+	indexPnL:function(req,res){
+		locals={};
+		Pnl.findOne({id:req.params.id}).exec(function(err,pnl){
+			if(err)
+				throw err;
+			console.log(pnl);
+			locals.pnl=pnl;
+			res.view('index_pnl',locals);
+		})
+	},
 	viewPnL:function(req,res){
 		var locals={
 			pnl:{}
