@@ -16,7 +16,7 @@ module.exports.rule={
 		{
 			slug:'mark_as_transfer',
 			title:'Mark as transfer',
-			description:'change a income or expense transaction as transfer',
+			description:'change the transaction type to transfer',
 			allowed_triggers:['transaction_after_create'],
 		},
 		// {
