@@ -1,5 +1,5 @@
 <div class='ui container'>
-	<form class="ui form " action="" method='post' enctype="multipart/form-data">
+	<form class="ui form" action="" method='post'>
 		<div class="ui basic segment">
 		<div class="ui four fields">
 			<div class="ui field">
@@ -29,10 +29,10 @@
 			<div class='seven wide column'>
 				<h3>What should trigger this rule?</h3>
 				<div class='ui segment'>
-					<div class="field">
+					<div class="ui field">
 						<label>Event or hook:</label>
 						<div class="ui fluid search selection dropdown" id='trigger_dropdown'>
-							<input type="hidden" name="trigger" value="<%=rule.trigger%>">
+							<input type=hidden name="trigger" value="<%=rule.trigger?rule.trigger:''%>">
 							<i class="dropdown icon"></i>
 							<div class="default text">Select rule</div>
 							<div class="menu">
@@ -63,10 +63,10 @@
 			<div class='seven wide column'>
 				<h3>What actions should we perform?</h3>
 				<div class='ui segment'>
-					<div class="field">
+					<div class="required field">
 						<label>Action to perform:</label>
 						<div class="ui fluid search selection dropdown" id='action_dropdown'>
-							<input type="hidden" name="action" value="<%=rule.action%>">
+							<input name="action" value="<%=rule.action?rule.action:''%>" type="hidden">
 							<i class="dropdown icon"></i>
 							<div class="default text">Select rule</div>
 							<div class="menu">
@@ -96,12 +96,41 @@
 </div>
 <script type="text/javascript">
 	$(document).ready(function(){
+		$('.ui.form')
+		.form({
+			fields: {
+			trigger: {
+				identifier: 'trigger',
+				rules: [
+				{
+					type   : 'empty',
+					prompt : 'Please select a trigger'
+				}
+				]
+			},
+			action: {
+				identifier: 'action',
+				rules: [
+				{
+					type   : 'empty',
+					prompt : 'Please select an action'
+				}
+				]
+			}
+			},
+			onSuccess:function(e,fields){
+				$(this).addClass('loading');
+			}
+		})
+		;
 		// initialize trigger criterias
 		$('.rule_trigger').hide();
-		$(`[data-rule-trigger=${$("input[name=trigger]").val()}]`).show()
+		if($("input[name=trigger]").val())
+			$(`[data-rule-trigger=${$("input[name=trigger]").val()}]`).show()
 		// initialize action criterias
 		$('.rule_action').hide();
-		$(`[data-rule-action=${$("input[name=action]").val()}]`).show()
+		if($("input[name=action]").val())
+			$(`[data-rule-action=${$("input[name=action]").val()}]`).show()
 
 		$('.dropdown').dropdown();
 		$('#trigger_dropdown').dropdown({
