@@ -11,6 +11,8 @@
 			<b>Doc type:</b> <%=doc.type%><br>
 		</div>
 		<div class='sixteen wide column'>
+			<h4><%=unresolved_dts.length%> items needs your attention </h4>
+			
 			<div class="ui tabular menu">
 				<a class="item active" data-tab="first">SLI</a>
 				<a class="item" data-tab="second">Transactions</a>
@@ -273,9 +275,6 @@
 					alt : <a href="<%=doc.parsed_data.media_link_original%>"><%=doc.parsed_data.file_name%></a>
 				</object>
 			</div>
-		</div>
-		<div class='sixteen wide column'>
-			<h4><%=unresolved_dts.length%> items needs your attention </h4>
 		</div>
 		
 

@@ -115,9 +115,8 @@ var findSimilarTransactions = function(options,callback){
 	query+=' where';
 	query+=` (("original_amount">${t.original_amount-10} AND "original_amount"<${t.original_amount+10}) `;
 	query+=` OR ("original_amount">${-t.original_amount-10} AND "original_amount"<${-t.original_amount+10})) `;
-	var temp = new Date(t.occuredAt);
-	var from = new Date(temp.setDate(t.occuredAt.getDate()-2)).toISOString();
-	var to = new Date(temp.setDate(t.occuredAt.getDate()+2)).toISOString();
+	var from = new Date(new Date(t.occuredAt).setDate(t.occuredAt.getDate()-2)).toISOString();
+	var to = new Date(new Date(t.occuredAt).setDate(t.occuredAt.getDate()+2)).toISOString();
 	query+=` AND "occuredAt">'${from}' AND "occuredAt"<'${to}'`;
 	query+=` AND "account" in (${accounts.join(',')})`;
 	

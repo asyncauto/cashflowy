@@ -89,7 +89,7 @@
 								<%= doc.statement_line_items? doc.statement_line_items.length:0 + '/' + (doc.parsed_data && doc.parsed_data.transactions? doc.parsed_data.transactions.length: 0) %>
 							</td>
 							<td>
-								<a href="/document/<%=doc.id%>"><%= doc.unresolved_dts %></a>
+								<a href="/document/<%=doc.id%>"><%= doc.unresolved_dts?doc.unresolved_dts: '0'%></a>
 							</td>
 							
 							<td>
