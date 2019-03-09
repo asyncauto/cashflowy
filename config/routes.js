@@ -91,7 +91,6 @@ module.exports.routes = {
 
   'GET /rules':'MainController.listRules',
   'GET /rule/create':'MainController.createRule',
-  'POST /rule/create':'MainController.createRule',
   'GET /rule/:id':'MainController.viewRule',
   'GET /rule/:id/edit':'MainController.editRule',
   'POST /rule/:id/edit':'MainController.editRule',

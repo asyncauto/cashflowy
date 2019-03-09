@@ -1,0 +1,32 @@
+<div class="ui segment rule_action" data-rule-action='mark_as_transfer'>
+    <div class="field">
+        <label>From Account:</label>
+        <div class="ui fluid scrolling dropdown basic button <%=rule.details.trigger_txn_type == 'expense'?'disabled':''%>" id='action_account'>
+            <input type="hidden" name="action_account" value='<%=rule.details.action_account%>' required>
+            <i class="dropdown icon"></i>
+            <div class="text"></div>
+            <div class="menu transition hidden" tabindex="-1">
+                <%accounts.forEach(function(a){%>
+                    <div class="item" data-value='<%= a.id %>'>
+                        <%= a.name %>
+                    </div>
+                    <%})%>
+            </div>
+        </div>
+    </div>
+    <div class="field">
+        <label>To Account:</label>
+        <div class="ui fluid scrolling dropdown basic button" id='action_to_account'>
+            <input type="hidden" name="action_to_account" value='<%=rule.details.action_to_account%>' required>
+            <i class="dropdown icon"></i>
+            <div class="text"></div>
+            <div class="menu transition hidden" tabindex="-1">
+                <%accounts.forEach(function(a){%>
+                    <div class="item" data-value='<%= a.id %>'>
+                        <%= a.name %>
+                    </div>
+                    <%})%>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,30 @@
 <div class='ui container'>
 	<form class="ui form " action="" method='post' enctype="multipart/form-data">
+		<div class="ui basic segment">
+		<div class="ui four fields">
+			<div class="ui field">
+				<label>Description</label>
+				<div class="ui transparent input">
+					<input type="text" name="description" value="<%=rule.description%>">
+				</div>
+			</div>
+			<div class="ui field">
+				<label>Status</label>
+				<div class="ui dropdown">
+						<input type="hidden" name="status" value="<%=rule.status%>">
+						<div class="text"><%=rule.status%></div>
+						 <i class="dropdown icon"></i>
+						<div class="fluid menu">
+						  <div class="item" data-value="active">Active</div>
+						  <div class="item" data-value="paused">Paused</div>
+						</div>
+					  </div>
+			</div>
+		</div>
+		</div>
+		<% if(rule.status != 'active') {%>
+		<div class="ui compact message"><i class="ui warning icon"></i>This rule will not run until you activate it.</div>
+		<%}%>
 		<div class='ui grid'>
 			<div class='seven wide column'>
 				<h3>What should trigger this rule?</h3>
@@ -7,7 +32,7 @@
 					<div class="field">
 						<label>Event or hook:</label>
 						<div class="ui fluid search selection dropdown" id='trigger_dropdown'>
-							<input type="hidden" name="trigger">
+							<input type="hidden" name="trigger" value="<%=rule.trigger%>">
 							<i class="dropdown icon"></i>
 							<div class="default text">Select rule</div>
 							<div class="menu">
@@ -20,6 +45,10 @@
 								<%});%>
 							</div>
 						</div>
+					</div>
+					<div class="field">
+						<label>Matches Where</label>
+						<%- partial('partials/rule_triggers') %>
 					</div>
 				</div>
 			</div>
@@ -37,7 +66,7 @@
 					<div class="field">
 						<label>Action to perform:</label>
 						<div class="ui fluid search selection dropdown" id='action_dropdown'>
-							<input type="hidden" name="action" id='test'>
+							<input type="hidden" name="action" value="<%=rule.action%>">
 							<i class="dropdown icon"></i>
 							<div class="default text">Select rule</div>
 							<div class="menu">
@@ -51,55 +80,73 @@
 							</div>
 						</div>
 					</div>
+					<div class="field">
+						<label>Changes To</label>
+						<%- partial('partials/rule_actions') %>
+					</div>
 				</div>
+				
 			</div>
+		</div>
+		<div class="ui field">
+			<br>
+			<input type="submit" class="ui green submit large button" value="save">
 		</div>
 	</form>
 </div>
 <script type="text/javascript">
 	$(document).ready(function(){
+		// initialize trigger criterias
+		$('.rule_trigger').hide();
+		$(`[data-rule-trigger=${$("input[name=trigger]").val()}]`).show()
+		// initialize action criterias
+		$('.rule_action').hide();
+		$(`[data-rule-action=${$("input[name=action]").val()}]`).show()
+
 		$('.dropdown').dropdown();
 		$('#trigger_dropdown').dropdown({
 			onChange: function(value, text, $selectedItem) {
-				console.log(value);
+				console.log(value, text);
 				$('#action_dropdown').find('.item').hide(); // hide all drop down
 				$('#action_dropdown .text').text(''); // sets the text to null
 				$('#action_dropdown input').val(''); // set input to null
 				$('#action_dropdown').find('.trig_'+value).show(); // show the right ones
-				// console.log(text);
-				// 
-				// switch(value){
-				// 	case 'expense':
-				// 		$('#account label').text('Expensed from');
-				// 		$('#paid_whom label').text('Paid whom');
-				// 		$('#paid_whom').show();
-				// 		$('#to_account').hide();
-				// 		$('#select_type').attr('style','color:red');
-				// 		$('#select_type').prev().attr('style','color:red');
-				// 		break;
-				// 	case 'income':
-				// 		$('#account label').text('Deposited to');
-				// 		$('#paid_whom label').text('Source of income');
-				// 		$('#paid_whom').show();
-				// 		$('#to_account').hide();
-				// 		$('#select_type').attr('style','color:#5bc5a2');
-				// 		$('#select_type').prev().attr('style','color:#5bc5a2');
-				// 		break;
-				// 	case 'transfer':
-				// 		$('#account label').text('From account');
-				// 		$('#paid_whom').hide();
-				// 		$('#to_account').show();
-				// 		$('#select_type').attr('style','color:black');
-				// 		$('#select_type').prev().attr('style','color:black');
-				// 		break;
-				// }
-				// $('.people_in_submenu').hide();
-				// if(value=='staff_curated_list')
-				// 	$('#staff_list').show();
-				// // else if(value=='people_i_follow')
-				// else if(value=='my_list')
-				// 	$('#your_list').show();
+				$('.rule_trigger').hide();
+				$(`[data-rule-trigger=${value}]`).show()
 			}
 		});
+		$('#action_dropdown').dropdown({
+			onChange: function(value, text, $selectedItem) {
+				console.log(value, text);
+				$('.rule_action').hide();
+				$(`[data-rule-action=${value}]`).show()
+			}
+		});
+		$('#trigger_account').dropdown({
+            onChange: function (value, text, $selectedItem) {
+                var ttt = $("input[name=trigger_txn_type]").val();
+                console.log('inside trigger_account onChange', 'value', value, 'ttt', ttt)
+				if(ttt == 'expense')
+					$('#action_account').dropdown('set selected', value);
+                else    
+					$('#action_to_account').dropdown('set selected', value);
+            }
+        })
+        $('#trigger_txn_type').dropdown({
+            onChange: function (value, text, $selectedItem) {
+                var a = $("input[name=trigger_account]").val();
+                console.log('inside trigger_txn_type onChange', 'value', value, 'a', a)
+                if(value == 'expense'){
+					$('#action_account').dropdown('set selected', a);
+					$('#action_account').addClass("disabled"); // don't allow to change if its income
+					$('#action_to_account').removeClass("disabled");
+				}
+                else {   
+					$('#action_to_account').dropdown('set selected', a);
+					$('#action_to_account').addClass("disabled"); // don't allow to change if its expense
+					$('#action_account').removeClass("disabled");
+				}
+            }
+        })
 	})
 </script>

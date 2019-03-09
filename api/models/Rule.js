@@ -12,8 +12,7 @@ module.exports = {
 			model: 'user', // user id mentioned when it is a user specific rule
 		},
 		description:{
-			type: 'string',
-			required: true
+			type: 'string'
 		},
 		type:{
 			type:'string',
@@ -23,22 +22,23 @@ module.exports = {
 		},
 		trigger:{
 			type:'string',
-			required:true,
 			enum: [
-				"parsed_email_before_create"
+				"parsed_email_before_create",
+				"transaction_after_create"
 			]
 		},
 		action:{
 			type:'string',
-			required:true,
 			enum: [
-				"modify_data"
+				"modify_data",
+				"set_category",
+				"mark_as_transfer"
 			]
 		},
 		status:{
 			type:'string',
 			required: true,
-			enum:['active', 'paused']
+			enum:['active', 'paused', 'draft']
 		},
 		details: {
 		  type: "json",

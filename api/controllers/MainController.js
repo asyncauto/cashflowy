@@ -1681,12 +1681,44 @@ module.exports = {
 		})
 	},
 	createRule:function(req,res){
-		var locals={}
-		res.view('create_rule',locals);
+		Rule.create({user:req.user.id, status: 'draft', type:'user', description:'rule #drafted'}).exec(
+			function(err, r){
+				if(err) return res.view('500', err);
+				res.redirect(`/rule/${r.id}/edit`);
+			})
 	},
 	editRule:function(req,res){
-		var locals={}
-		res.view('create_rule',locals);
+		async.auto({
+			findRule: function(cb){
+				Rule.findOne({user:req.user.id, id: req.params.id}).exec(cb)
+			},
+			getAccounts: function(cb){
+				Account.find({user:req.user.id}).exec(cb);
+			}
+		},function(err, results){
+			if(err) return res.serverError(err);
+			if(!results.findRule) return res.view('404');
+			if(req.body){
+				var update = _.pick(req.body, ['trigger' , 'action', 'description', 'status', 'type']);
+				var details = _.omit(req.body, ['trigger' , 'action', 'description', 'status', 'type']);
+				update.details = details;
+				Rule.update({id: results.findRule.id, user: req.user.id}, update).exec(function(err, u_r){
+					if(err) return res.serverError(err);
+					if(!u_r.length) return res.view('404');
+					var locals = {
+						rule: u_r[0],
+						accounts: results.getAccounts
+					}
+					res.view('create_rule', locals);
+				})
+			}else{
+				var locals = {
+					rule: results.findRule,
+					accounts: results.getAccounts
+				}
+				res.view('create_rule', locals);
+			}
+		});
 	},
 	listPnLs:function(req,res){
 		var locals={}

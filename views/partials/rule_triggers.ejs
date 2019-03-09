@@ -1,0 +1,37 @@
+<div class="ui segment rule_trigger" data-rule-trigger='transaction_after_create'>
+    <div class="field">
+        <label>Transaction Type: </label>
+        <div class="ui fluid dropdown basic button" id='trigger_txn_type'>
+            <input type="hidden" name="trigger_txn_type" required value='<%=rule.details.trigger_txn_type%>'>
+            <i class="dropdown icon"></i>
+            <div class="text"></div>
+            <div class="menu transition hidden" tabindex="-1">
+                <div class="item" data-value='income'>Income</div>
+                <div class="item" data-value='expense'>Expense</div>
+            </div>
+        </div>
+    </div>
+    <div class="field accout">
+        <label>Account:</label>
+        <div class="ui fluid scrolling dropdown basic button" id="trigger_account">
+            <input type="hidden" name="trigger_account" value='<%=rule.details.trigger_account%>' required>
+            <i class="dropdown icon"></i>
+            <div class="text"></div>
+            <div class="menu transition hidden" tabindex="-1">
+                <%accounts.forEach(function(a){%>
+                    <div class="item" data-value='<%= a.id %>'>
+                        <%= a.name %>
+                    </div>
+                    <%})%>
+            </div>
+        </div>
+    </div>
+    <div class="field">
+        <label>Merchant/Third Party contains:</label>
+        <input type="text" name="trigger_third_party" placeholder="ex: funds transfer" value="<%=rule.details.trigger_third_party?rule.details.trigger_third_party:''%>" required>
+    </div>
+    <div class="field">
+        <label>Amount(INR):</label>
+        <input type="number" placeholder="amount" name="trigger_amount" value="<%=rule.details.trigger_amount?rule.details.trigger_amount:''%>">
+    </div>
+</div>
