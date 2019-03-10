@@ -48,11 +48,7 @@ module.exports = {
 	beforeCreate:function(pe,cb){
 		pe.data=_.cloneDeep(pe.extracted_data);
 		// console.log('before create parsed email');
-		Rule.find({user:pe.user}).exec(function(err,rules){
-			// console.log('inside list of rules');
-			// console.log(pe.user);
-			// console.log(err);
-			// console.log(rules);
+		Rule.find({user:pe.user, status: 'active', trigger: 'parsed_email_before_create'}).exec(function(err,rules){
 			rules.forEach(function(rule){
 				// console.log('\n\nrule:')
 				// console.log(rule);
