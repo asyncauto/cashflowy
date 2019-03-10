@@ -62,7 +62,16 @@ module.exports.docparser={
 		{
 			docparser_id:'cyfaymeukchi',
 			type:'icici_bank_credit_card',
-			name:'ICICI Credit card'
+			name:'ICICI Credit card',
+			modifyParsedData:function(parsed_data){
+				if(parsed_data.transactions && parsed_data.transactions.length){
+					if(!parsed_data.transactions_from_date) // if transaction_from_date does not exist
+						parsed_data.transactions_from_date = moment(parsed_data.transactions[0].date, 'MM/DD/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
+					if(!parsed_data.transactions_to_date) // if transaction_end_date does not exist
+						parsed_data.transactions_to_date = moment(parsed_data.transactions[parsed_data.transactions.length -1].date, 'MM/DD/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
+				}
+				return parsed_data;
+			}
 		},
 
 	]
