@@ -59,6 +59,11 @@ module.exports.docparser={
 				return parsed_data;
 			}
 		},
+		{
+			docparser_id:'cyfaymeukchi',
+			type:'icici_bank_credit_card',
+			name:'ICICI Credit card'
+		},
 
 	]
 }

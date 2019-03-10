@@ -96,11 +96,27 @@ var convertSliToTransaction = function(sli){
 		if(sli.data.date){
 			t.occuredAt = moment(sli.data.date, 'YYYY-MM-DD').tz('Asia/Kolkata').toDate()
 		}
+	}else if(sli.details.type=='icici_bank_credit_card' && sli.details.parser_used=='cyfaymeukchi'){
+		if(!sli.data.original_amount)
+			sli.data.original_amount=sli.data.amount_inr;
+
+		if(sli.data.dr_cr=='CR'){ // amount is creditted
+			t.original_amount=parseFloat(sli.data.original_amount);
+			t.amount_inr=parseFloat(sli.data.amount_inr);
+		}
+		else if(sli.data.dr_cr=='DR'){
+			t.original_amount=-parseFloat(sli.data.original_amount);
+			t.amount_inr=-parseFloat(sli.data.amount_inr);
+		}
+		t.third_party=sli.data.details;
+		if(sli.data.date){
+			t.occuredAt = moment(sli.data.date, 'YYYY-MM-DD').tz('Asia/Kolkata').toDate()
+		}
 	}
 
 
 	// t.amount_inr=t.original_amount;
-	if(t.original_amount)
+	if(t.original_amount && !t.amount_inr)
 		t.amount_inr=fx.convert(t.original_amount, {from: sli.data.currency, to: "INR"});
 
 	return t;
