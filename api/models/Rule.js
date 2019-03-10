@@ -30,7 +30,7 @@ module.exports = {
 		action:{
 			type:'string',
 			enum: [
-				"modify_data",
+				"modify_pe_data",
 				"set_category",
 				"mark_as_transfer"
 			]

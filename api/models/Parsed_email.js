@@ -47,28 +47,15 @@ module.exports = {
 	},
 	beforeCreate:function(pe,cb){
 		pe.data=_.cloneDeep(pe.extracted_data);
-		// console.log('before create parsed email');
 		Rule.find({user:pe.user, status: 'active', trigger: 'parsed_email_before_create'}).exec(function(err,rules){
 			rules.forEach(function(rule){
-				// console.log('\n\nrule:')
-				// console.log(rule);
-				// console.log('\ncondition:')
-				// console.log(rule.details.trigger.condition)
-				var status = RuleService.evaluateCondition(rule.details.trigger.condition,pe);
-				// console.log("\nstatus = "+status);
+				// check if criteria matches the condition
+				var status = _.isMatch(pe, _.get(rule, 'details.trigger.condition',{}));
 				if(status){
 					// executing action here. 
-					if(rule.action=='modify_data'){
-						if(rule.details.action.type=='modify_pe_data'){
-							Object.keys(rule.details.action.set).forEach(function(s_key){
-								// console.log(s_key);
-								if(s_key=='data.account_last_4_digits')
-									pe.data.account_last_4_digits=rule.details.action.set[s_key];
-							});
-						}
+					if(rule.action=='modify_pe_data'){
+						_.merge(pe,  _.get(rule, 'details.action.set',{}))
 					}
-					// console.log('\n\n\n -------');
-					// console.log(pe.data);
 				}
 			});
 			cb(null);

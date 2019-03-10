@@ -1,8 +1,8 @@
-<div class="ui segment rule_trigger" data-rule-trigger='transaction_after_create'>
+<div class="ui segment rule_condition" data-rule-trigger='transaction_after_create'>
     <div class="field">
         <label>Transaction Type: </label>
-        <div class="ui fluid dropdown basic button" id='trigger_txn_type'>
-            <input type="hidden" name="trigger_txn_type" value='<%=rule.details.trigger_txn_type%>'>
+        <div class="ui fluid scrolling dropdown basic button" id='details.trigger.condition.type'>
+            <input type="hidden" name="details.trigger.condition.type" value="<%=_.get(rule, 'details.trigger.condition.type', '')%>">
             <i class="dropdown icon"></i>
             <div class="text"></div>
             <div class="menu transition hidden" tabindex="-1">
@@ -13,8 +13,8 @@
     </div>
     <div class="field accout">
         <label>Account:</label>
-        <div class="ui fluid scrolling dropdown basic button" id="trigger_account">
-            <input type="hidden" name="trigger_account" value='<%=rule.details.trigger_account%>'>
+        <div class="ui fluid scrolling dropdown basic button" id="details.trigger.condition.account">
+            <input type="hidden" name="details.trigger.condition.account" value="<%=_.get(rule, 'details.trigger.condition.account', '')%>">
             <i class="dropdown icon"></i>
             <div class="text"></div>
             <div class="menu transition hidden" tabindex="-1">
@@ -27,11 +27,37 @@
         </div>
     </div>
     <div class="field">
-        <label>Merchant/Third Party contains:</label>
-        <input type="text" name="trigger_third_party" placeholder="ex: funds transfer" value="<%=rule.details.trigger_third_party?rule.details.trigger_third_party:''%>">
+        <label>Third Party contains:</label>
+        <input type="text" name="details.trigger.condition.third_party" placeholder="ex: funds transfer" value="<%=_.get(rule, 'details.trigger.condition.third_party', '')%>">
     </div>
     <div class="field">
         <label>Amount(INR):</label>
-        <input type="number" placeholder="amount" name="trigger_amount" value="<%=rule.details.trigger_amount?rule.details.trigger_amount:''%>">
+        <input type="number" placeholder="amount" name="details.trigger.condition.amount" value="<%=_.get(rule, 'details.trigger.condition.amount', '')%>">
     </div>
 </div>
+
+<div class="ui segment rule_condition" data-rule-trigger='parsed_email_before_create'>
+        <div class="field">
+            <label>Debit Card Last 4 Digits: </label>
+            <input type="text" name="details.trigger.condition.extracted_data.debit_card_last_4_digits" value="<%=_.get(rule, 'details.trigger.condition.extracted_data.debit_card_last_4_digits', '')%>">
+        </div>
+        <div class="field">
+            <label>Filter Type:</label>
+            <div class="ui fluid scrolling dropdown basic button" id="details.trigger.condition.type">
+                <input type="hidden" name="details.trigger.condition.type" value="<%=_.get(rule, 'details.trigger.condition.type', '')%>">
+                <i class="dropdown icon"></i>
+                <div class="text"></div>
+                <div class="menu transition hidden" tabindex="-1">
+                    <%sails.config.filters.active.forEach(function(f){%>
+                        <div class="item" data-value='<%= f %>'>
+                            <%= f %>
+                        </div>
+                        <%})%>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <label>Body Parser Used:</label>
+            <input type="text" name="details.trigger.condition.body_parser_used" placeholder="ex: bill_pay_v1" value="<%=_.get(rule, 'details.trigger.condition.body_parser_used', '')%>">
+        </div>
+    </div>

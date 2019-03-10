@@ -1,8 +1,8 @@
-<div class="ui segment rule_action" data-rule-action='mark_as_transfer'>
+<div class="ui segment rule_set" data-rule-action='mark_as_transfer'>
     <div class="field">
         <label>From Account:</label>
-        <div class="ui fluid scrolling dropdown basic button <%=rule.details.trigger_txn_type == 'expense'?'disabled':''%>" id='action_account'>
-            <input type="hidden" name="action_account" value='<%=rule.details.action_account%>' required>
+        <div class="ui fluid scrolling dropdown basic button <%=_.get(rule, 'details.trigger.condition.type', '') == 'expense'?'disabled':''%>" id='details.action.set.account'>
+            <input type="hidden" name="details.action.set.account" value="<%=_.get(rule, 'details.action.set.account', '')%>">
             <i class="dropdown icon"></i>
             <div class="text"></div>
             <div class="menu transition hidden" tabindex="-1">
@@ -16,8 +16,8 @@
     </div>
     <div class="field">
         <label>To Account:</label>
-        <div class="ui fluid scrolling dropdown basic button" id='action_to_account'>
-            <input type="hidden" name="action_to_account" value='<%=rule.details.action_to_account%>' required>
+        <div class="ui fluid scrolling dropdown basic button" id='details.action.set.to_account'>
+            <input type="hidden" name="details.action.set.to_account" value="<%=_.get(rule, 'details.action.set.to_account', '')%>">
             <i class="dropdown icon"></i>
             <div class="text"></div>
             <div class="menu transition hidden" tabindex="-1">
@@ -28,5 +28,12 @@
                     <%})%>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="ui segment rule_set" data-rule-action='modify_pe_data'>
+    <div class="field">
+        <label>Account Last 4 Digits</label>
+        <input type="number" placeholder="account" name="details.action.set.data.account_last_4_digits" value="<%=_.get(rule, 'details.action.set.data.account_last_4_digits', '')%>">
     </div>
 </div>

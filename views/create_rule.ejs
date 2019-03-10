@@ -1,15 +1,20 @@
 <div class='ui container'>
+	<div class="ui breadcrumb compact basic segment">
+		<a class="section" href="/rules">Rules</a>
+		<i class="right angle icon divider"></i>
+		<div class="active section">Edit rule</div>
+	</div>
 	<form class="ui form" action="" method='post'>
 		<div class="ui basic segment">
-		<div class="ui four fields">
+		<div class="ui two fields">
 			<div class="ui field">
-				<label>Description</label>
+				<label style="font-size:1.3rem;opacity:0.7;">Description</label>
 				<div class="ui transparent input">
 					<input type="text" name="description" value="<%=rule.description%>">
 				</div>
 			</div>
-			<div class="ui field">
-				<label>Status</label>
+			<div class="ui right floated field">
+				<label style="font-size:1.3rem;opacity:0.7;">Status</label>
 				<div class="ui dropdown">
 						<input type="hidden" name="status" value="<%=rule.status%>">
 						<div class="text"><%=rule.status%></div>
@@ -47,7 +52,7 @@
 						</div>
 					</div>
 					<div class="field">
-						<label>Matches Where</label>
+						<label>Condition:</label>
 						<%- partial('partials/rule_triggers') %>
 					</div>
 				</div>
@@ -81,7 +86,7 @@
 						</div>
 					</div>
 					<div class="field">
-						<label>Changes To</label>
+						<label>Set:</label>
 						<%- partial('partials/rule_actions') %>
 					</div>
 				</div>
@@ -123,14 +128,18 @@
 			}
 		})
 		;
+
 		// initialize trigger criterias
-		$('.rule_trigger').hide();
-		if($("input[name=trigger]").val())
-			$(`[data-rule-trigger=${$("input[name=trigger]").val()}]`).show()
+		$('.rule_condition').hide().find(":input").prop('disabled', true);
+		if($("input[name=trigger]").val()){
+			$(`[data-rule-trigger=${$("input[name=trigger]").val()}]`).show().find(":input").prop('disabled', false)
+		}
 		// initialize action criterias
-		$('.rule_action').hide();
-		if($("input[name=action]").val())
-			$(`[data-rule-action=${$("input[name=action]").val()}]`).show()
+		$('.rule_set').hide();
+		$(".rule_set:hidden").find(":input").prop('disabled', true)
+		if($("input[name=action]").val()){
+			$(`[data-rule-action=${$("input[name=action]").val()}]`).show().find(":input").prop('disabled', false)
+		}
 
 		$('.dropdown').dropdown();
 		$('#trigger_dropdown').dropdown({
@@ -140,40 +149,41 @@
 				$('#action_dropdown .text').text(''); // sets the text to null
 				$('#action_dropdown input').val(''); // set input to null
 				$('#action_dropdown').find('.trig_'+value).show(); // show the right ones
-				$('.rule_trigger').hide();
-				$(`[data-rule-trigger=${value}]`).show()
+				$('.rule_condition').hide().find(":input").prop('disabled', true);
+				$(`[data-rule-trigger=${value}]`).show().find(":input").prop('disabled', false)
+				$('.rule_set').hide().find(":input").prop('disabled', true);
 			}
 		});
 		$('#action_dropdown').dropdown({
 			onChange: function(value, text, $selectedItem) {
 				console.log(value, text);
-				$('.rule_action').hide();
-				$(`[data-rule-action=${value}]`).show()
+				$('.rule_set').hide().find(":input").prop('disabled', true);
+				$(`[data-rule-action=${value}]`).show().find(":input").prop('disabled', false)
 			}
 		});
-		$('#trigger_account').dropdown({
+		$("[id='details.trigger.condition.account']").dropdown({
             onChange: function (value, text, $selectedItem) {
-                var ttt = $("input[name=trigger_txn_type]").val();
+                var ttt = $("input[name='details.trigger.condition.type']").val();
                 console.log('inside trigger_account onChange', 'value', value, 'ttt', ttt)
 				if(ttt == 'expense')
-					$('#action_account').dropdown('set selected', value);
+					$("[id='details.action.set.account']").dropdown('set selected', value);
                 else    
-					$('#action_to_account').dropdown('set selected', value);
+					$("[id='details.action.set.to_account']").dropdown('set selected', value);
             }
         })
-        $('#trigger_txn_type').dropdown({
+        $("[id='details.trigger.condition.type']").dropdown({
             onChange: function (value, text, $selectedItem) {
-                var a = $("input[name=trigger_account]").val();
+                var a = $("input[name='details.trigger.condition.account']").val();
                 console.log('inside trigger_txn_type onChange', 'value', value, 'a', a)
                 if(value == 'expense'){
-					$('#action_account').dropdown('set selected', a);
-					$('#action_account').addClass("disabled"); // don't allow to change if its income
-					$('#action_to_account').removeClass("disabled");
+					$("[id='details.action.set.account']").dropdown('set selected', a);
+					$("[id='details.action.set.account']").addClass("disabled"); // don't allow to change if its income
+					$("[id='details.action.set.to_account']").removeClass("disabled");
 				}
                 else {   
-					$('#action_to_account').dropdown('set selected', a);
-					$('#action_to_account').addClass("disabled"); // don't allow to change if its expense
-					$('#action_account').removeClass("disabled");
+					$("[id='action.set.to_account']").dropdown('set selected', a);
+					$("[id='action.set.to_account']").addClass("disabled"); // don't allow to change if its expense
+					$("[id='action.set.account']").removeClass("disabled");
 				}
             }
         })

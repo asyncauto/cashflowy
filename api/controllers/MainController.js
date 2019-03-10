@@ -1702,7 +1702,10 @@ module.exports = {
 			if(req.body){
 				var update = _.pick(req.body, ['trigger' , 'action', 'description', 'status', 'type']);
 				var details = _.omit(req.body, ['trigger' , 'action', 'description', 'status', 'type']);
-				update.details = details;
+				_.forEach(details, function(v, k){
+					if(v)
+						_.set(update, k, v);
+				});
 				Rule.update({id: results.findRule.id, user: req.user.id}, update).exec(function(err, u_r){
 					if(err) return res.serverError(err);
 					if(!u_r.length) return res.view('404');

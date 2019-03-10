@@ -7,6 +7,7 @@
                     <%rules.forEach(function(r){%>
                         <div class="item">
                             <div class="right floated content">
+                                <i class="<%=r.status=='active'?'green pause':'play'%> icon"></i>
                                 <a class="ui button" href="/rule/<%=r.id%>/edit">Edit</a>
                             </div>
                             <div class="content">
