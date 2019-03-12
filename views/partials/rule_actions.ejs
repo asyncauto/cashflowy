@@ -1,4 +1,5 @@
 <div class="ui segment rule_set" data-rule-action='mark_as_transfer'>
+    <input type="hidden" placeholder="type" name="details.action.set.type" value="transfer">
     <div class="field">
         <label>From Account:</label>
         <div class="ui fluid scrolling dropdown basic button <%=_.get(rule, 'details.trigger.condition.type', '') == 'expense'?'disabled':''%>" id='details.action.set.account'>
