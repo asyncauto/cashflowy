@@ -342,7 +342,7 @@
 				var t_id=$(this).parents('.transaction').attr('data-tid');
 				console.log(t_id);
 				$.ajax({
-					url:"/api/transaction/"+t_id,
+					url:"/transaction/"+t_id,
 					data:{category: value},
 					type:'PUT',
 					success:function(response){

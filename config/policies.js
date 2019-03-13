@@ -68,5 +68,8 @@ module.exports.policies = {
   },
   WebhookController:{
     '*':true
+  },
+  AuthController:{
+    '*': ['rateLimit']
   }
 };

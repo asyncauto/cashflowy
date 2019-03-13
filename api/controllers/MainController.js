@@ -908,6 +908,31 @@ module.exports = {
 			}
 		})
 	},
+	putTransaction: function(req,res){
+		async.auto({
+			getTransaction: function(cb){
+				Transaction.findOne(req.params.id).populate('account').exec(cb)
+			},
+			updateTransactions: ['getTransaction', function(results, cb){
+				if(_.get(results, 'getTransaction.account.user') != req.user.id)
+					return cb(new Error('INVALID_ACCESS'));
+				Transaction.update({id: req.params.id}, req.body).exec(cb);
+			}]
+		}, function(err, results){
+			if(err){
+				switch (err.message) {
+					case 'INVALID_ACCESS':
+						return res.status(401).json({error: 'INVALID_ACCESS'});
+						break;
+					default:
+						return res.status(500).json({error: err.message});
+						break;
+				}
+			}
+			var updated = _.get(results, 'updateTransactions[0]', {})
+			return res.status(200).json(updated)
+		})
+	},
 	editTransaction:function(req,res){
 		Account.find({user:req.user.id}).exec(function(err,accounts){
 			if(req.body){ // post request

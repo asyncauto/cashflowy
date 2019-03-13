@@ -60,6 +60,7 @@ module.exports.routes = {
   'POST /transaction/create':'MainController.createTransaction',
   'GET /transaction/:id/edit':'MainController.editTransaction',
   'POST /transaction/:id/edit':'MainController.editTransaction',
+  'PUT /transaction/:id':'MainController.putTransaction',
   'GET /transaction/:id/delete':'MainController.deleteTransaction',
   'POST /transaction/:id/delete':'MainController.deleteTransaction',
 
