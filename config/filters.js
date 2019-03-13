@@ -19,6 +19,6 @@ module.exports.filters = {
 		'SBIToSBIFilter',
 		'SBIRtgsFilter',
 		'SBINeftFilter',
-		// 'PaytmFilter',
+		'PaytmFilter',
 	]
 }
