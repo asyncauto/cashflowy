@@ -11,6 +11,27 @@ var async = require('async');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 
+// TODO replace with: https://www.npmjs.com/package/es6-promisify
+/**
+ * Runs a callback driven task and returns its result as a promise.
+ * Assumes callback syntax is (error, result) => {}
+ * @param {Function} task 
+ */
+function go(task) {
+    return new Promise((resolve, reject) => {
+        // Wish setImmediate or nextTick becomes standard :(
+        setTimeout(() => {
+            task((err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            })
+        }, 0);
+    })
+}
+
 module.exports = {
 
 	// _config: {
@@ -148,7 +169,8 @@ module.exports = {
 	/**
 	 * Triggers an email to help reset the forgotten password
 	 */
-	forgot: function (req, res) {
+	forgot: async function (req, res) {
+
 		var email = req.body.email;
 		
 		if (!email) return res.view('reset', {
@@ -156,46 +178,41 @@ module.exports = {
 			message:''
 		});
 
-		async.auto({
-			findUser: function(cb){
-				User.findOne({email:email}).exec(function(err, user){
-					if(err) return cb(err);
-					if(!user) return cb(new Error('user not found'));
-					return cb(null, user);
-				})
-			},
-			generateToken: ['findUser', function(results, cb){
-				jwt.sign({
-					email: results.findUser.email,
-					for:'forgot_password'
-				}, 
-					sails.config.password_reset_secret, 
-					{expiresIn: 60*10},  //10 mins or 600 seconds
-					cb);
-			}],
-			sendMail:['generateToken', function(results, cb){
-				var reset_url = sails.config.app_url + '/reset?token='+ results.generateToken;
-				var opts={
-					template:'reset',
-					to:results.findUser.email,
-					from:'Cashflowy<no-reply@cashflowy.in>',
-					subject: 'Reset Password',
-					locals:{
-						name: results.findUser.name,
-						url: reset_url
-					}
-				}
-				MailgunService.sendEmail(opts,function(err){
-					cb(err)
-				})
-			}]
-		}, function(err, results){
-			var locals = {
-				error: err ? err.message : '',
-				message: !err ? 'link sent successfully' : ''
+		try {
+			const user = await go(cb => User.findOne({email:email}).exec(cb))
+
+			if (!user) {
+				throw new Error('user not found'); 
 			}
-			res.view('forgot', locals);
-		})
+	
+			const token = await go(cb => jwt.sign({
+					email: user.email,
+					for: 'forgot_password'
+				}, 
+				sails.config.password_reset_secret, 
+				{expiresIn: 60*10},  //10 mins or 600 seconds
+				cb));
+			
+			var reset_url = sails.config.app_url + '/reset?token='+ token;
+	
+			var opts = {
+				template:'reset',
+				to: user.email,
+				from:'Cashflowy<no-reply@cashflowy.in>',
+				subject: 'Reset Password',
+				locals: {
+					name: user.name,
+					url: reset_url
+				}
+			}
+	
+			await go(cb => MailgunService.sendEmail(opts, cb));
+			
+			res.view('forgot', { message: 'link sent successfully' });
+
+		} catch(err) {
+			res.view('forgot', { error: err.message });
+		}
 	},
 
 	view_reset: function(req, res){
