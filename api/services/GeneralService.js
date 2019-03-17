@@ -151,13 +151,14 @@ module.exports={
 				parents.push(category);
 		});
 		parents.forEach(function(pc){
+			pc.fullname=pc.name;
 			pc.children=[];
 			categories.forEach(function(c){ // level 2
 				if(c.parent==pc.id)
 					pc.children.push(c);
 			});
 			pc.children.forEach(function(p2c){ // level 2
-
+				p2c.fullname=pc.fullname+'->'+p2c.name;
 				p2c.children=[];
 				categories.forEach(function(c){
 					if(c.parent==p2c.id)
@@ -166,7 +167,7 @@ module.exports={
 				p2c.super_count=_.sum(p2c.children,'t_count')+p2c.t_count;
 				p2c.super_sum=_.sum(p2c.children,'t_sum')+p2c.t_sum;
 				p2c.children.forEach(function(p3c){ // level 3
-
+					p3c.fullname=p2c.fullname+'->'+p3c.fullname;
 					p3c.children=[];
 					categories.forEach(function(c){
 						if(c.parent==p3c.id)
