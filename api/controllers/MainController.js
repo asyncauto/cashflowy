@@ -1750,8 +1750,16 @@ module.exports = {
 		});
 	},
 	listPnLs:function(req,res){
-		var locals={}
-		res.view('list_pnls',locals);
+		async.auto({
+			getPnls:function(callback){
+				Pnl.find({user:req.user.id}).exec(callback);
+			}
+		},function(err,results){
+			var locals={
+				pnls:results.getPnls
+			}
+			res.view('list_pnls',locals);
+		})
 	},
 	createPnL:function(req,res){
 		var locals={

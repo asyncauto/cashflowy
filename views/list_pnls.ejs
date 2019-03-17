@@ -1,1 +1,10 @@
-list pnls
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='sixteen wide column'>
+			<%pnls.forEach(function(pnl){%>
+				<a href="/pnl/<%=pnl.id%>"><%=pnl.name%></a><br>
+			<%})%>
+		</div>
+	</div>
+	
+</div>
