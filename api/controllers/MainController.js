@@ -781,7 +781,7 @@ module.exports = {
 				Transaction.find(filter).sort(sort).limit(limit).populate('tags').exec(callback);
 			}],
 			getCategories:function(callback){
-				Category.find({user:req.user.id}).exec(callback);
+				Category.find({user:req.user.id}).sort('name ASC').exec(callback);
 			},
 			getTags:function(callback){
 				Tag.find({user:req.user.id}).exec(callback);
