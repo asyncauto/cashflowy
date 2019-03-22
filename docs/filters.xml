@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8'?><feed xmlns='http://www.w3.org/2005/Atom' xmlns:apps='http://schemas.google.com/apps/2006'>
+	<title>Mail Filters</title>
+	<updated>2019-03-22T16:09:05Z</updated>	
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='from' value='customercare@icicibank.com'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='from' value='noreply-cashier@mailer.zerodha.net'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='from' value='credit_cards@icicibank.com'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='from' value='no-reply@amazon.com amazon pay'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='hasTheWord' value='no-reply@qmailer.zerodha.net'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='from' value='samfd@karvy.com'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='from' value='info@bseindia.in'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='from' value='no-reply@paytm.com'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='from' value='AmazonPay-balance@amazon.in'/>
+		<apps:property name='hasTheWord' value='AmazonPay-balance@amazon.in'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='from' value='eCAS@cdslstatement.com'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+	<entry>
+		<category term='filter'></category>
+		<title>Mail Filter</title>
+		<content></content>
+		<apps:property name='from' value='noreply@coinmailer.zerodha.net'/>
+		<apps:property name='label' value='cashflowy'/>
+		<apps:property name='forwardTo' value='postmaster@mail.cashflowy.in'/>
+		<apps:property name='sizeOperator' value='s_sl'/>
+		<apps:property name='sizeUnit' value='s_smb'/>
+	</entry>
+</feed>
