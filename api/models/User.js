@@ -14,9 +14,10 @@ module.exports = {
 			required:true,
 		},
 		email:{
-			type:'email',
+			type:'string',
 			required:true,
 			unique:true,
+			isEmail: true
 		},
 		details:{ 
 			type:'json',
@@ -36,12 +37,13 @@ module.exports = {
 		processed_emails: {
 			collection: 'email',
 			via: 'user',
-		},
-		toJSON: function() {
-			var obj = this.toObject();
-			delete obj.password;
-			return obj;
 		}
+	},
+	
+	customToJSON: function() {
+		var obj = this;
+		delete obj.password;
+		return obj;
 	},
 
 	beforeUpdate: function(data, cb){

@@ -16,20 +16,20 @@ module.exports = {
 		},
 		type:{
 			type:'string',
-			enum:[
+			isIn:[
 				"user","global" // helps specify if the rule is unique to a user or generic
 			]
 		},
 		trigger:{
 			type:'string',
-			enum: [
+			isIn: [
 				"parsed_email_before_create",
 				"transaction_after_create"
 			]
 		},
 		action:{
 			type:'string',
-			enum: [
+			isIn: [
 				"modify_pe_data",
 				"set_category",
 				"mark_as_transfer"
@@ -38,7 +38,7 @@ module.exports = {
 		status:{
 			type:'string',
 			required: true,
-			enum:['active', 'paused', 'draft']
+			isIn:['active', 'paused', 'draft']
 		},
 		details: {
 		  type: "json",

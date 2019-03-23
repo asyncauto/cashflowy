@@ -35,25 +35,19 @@ module.exports.http = {
     // sentryRequestHandler: Raven.requestHandler(),
     // sentryerrorHandler: Raven.errorHandler(),
     order: [
-      'sentryRequestHandler',
-      'startRequestTimer',
+      // 'sentryRequestHandler',
       'cookieParser',
       'session',
       'passportInit',
       'passportSession',
       'bodyParser',
       'myRequestLogger',
-      'handleBodyParserError',
       'compress',
-      'methodOverride',
       'poweredBy',
       '$custom',
       'router',
       'www',
-      'favicon',
-      '404',
-      // 'sentryerrorHandler',
-      '500'
+      'favicon'
     ],
 
     /****************************************************************************
@@ -61,8 +55,6 @@ module.exports.http = {
     * Example custom middleware; logs each request to the console.              *
     *                                                                           *
     ****************************************************************************/
-
-    startRequestTimer: require('sails-helper').startRequestTimer,
     myRequestLogger: require('sails-helper').requestLogger,
 
 
