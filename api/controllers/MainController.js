@@ -452,9 +452,9 @@ module.exports = {
 			getCategories:function(callback){
 				Category.find({user:req.user.id}).exec(callback);
 			},
-			getTransactionsWithOutDescription: ['getAccounts', function(results, callback){
+			getTlisWithOutDescription: ['getAccounts', function(results, callback){
 				var  accounts =  _.map(results.getAccounts,'id')
-				Transaction.find({description: {'!': null }, account:accounts}).exec(callback);
+				Transaction_line_item.find({description: {'!': null }, account:accounts}).exec(callback);
 			}],
 			getDocumentsCount: function(callback){
 				Document.count({user:req.user.id}).exec(callback);
@@ -465,7 +465,7 @@ module.exports = {
 			getCategorySpending:['getAccounts',function(results,callback){
 
 				var escape=[year];
-				var query = 'select count(*),sum(amount_inr),category from transaction';
+				var query = 'select count(*),sum(amount_inr),category from transaction_line_item';
 				query+=' where';
 				query+=" type='income_expense'";
 				query+=' AND EXTRACT(YEAR FROM "occuredAt") = $1';
@@ -477,7 +477,7 @@ module.exports = {
 					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				// in the accounts that belong to you
 				query+=' group by category';
-				Transaction.query(query,escape,function(err, rawResult) {
+				sails.sendNativeQuery(query,escape,function(err, rawResult) {
 					if(err)
 						callback(err);
 					else
@@ -497,7 +497,7 @@ module.exports = {
 					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				query+=' ORDER BY "takenAt" ASC';
 				// where accounts in the accounts that belong to you
-				Snapshot.query(query,escape,function(err, rawResult) {
+				sails.sendNativeQuery(query,escape,function(err, rawResult) {
 					if(err)
 						callback(err);
 					else
@@ -518,7 +518,7 @@ module.exports = {
 					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				query+=' group by day';
 				query+=' order by day';
-				Transaction.query(query,escape,function(err, rawResult) {
+				sails.sendNativeQuery(query,escape,function(err, rawResult) {
 					console.log('\n\n\n\n');
 					if(err)
 						callback(err,[]);
@@ -550,7 +550,7 @@ module.exports = {
 				verify_email: 'completed',
 				email: results.getEmailCount? 'completed':'disabled',
 				categories: results.getCategories.length? 'completed':'disabled',
-				description: results.getTransactionsWithOutDescription && results.getTransactionsWithOutDescription.length ? 'completed':'disabled',
+				description: results.getTlisWithOutDescription && results.getTlisWithOutDescription.length ? 'completed':'disabled',
 				document: results.getDocumentsCount? 'completed':'disabled'
 			}
 			
@@ -778,7 +778,7 @@ module.exports = {
 				if(req.query.sort)
 					sort = req.query.sort
 
-				Transaction.find(filter).sort(sort).limit(limit).populate('tags').exec(callback);
+				Transaction_line_item.find(filter).sort(sort).limit(limit).populate('tags').exec(callback);
 			}],
 			getCategories:function(callback){
 				Category.find({user:req.user.id}).sort('name ASC').exec(callback);
@@ -787,11 +787,11 @@ module.exports = {
 				Tag.find({user:req.user.id}).exec(callback);
 			},
 			getParsedEmails:['getTransactions',function(results,callback){
-				var t_ids=_.map(results.getTransactions,'id');
+				var t_ids=_.map(results.getTransactions,'transaction');
 				Parsed_email.find({transaction:t_ids}).exec(callback);
 			}],
 			getSLIs:['getTransactions',function(results,callback){
-				var t_ids=_.map(results.getTransactions,'id');
+				var t_ids=_.map(results.getTransactions,'transaction');
 				Statement_line_item.find({transaction:t_ids}).populate('document').exec(callback);
 			}]
 		},function(err,results){

@@ -141,7 +141,7 @@ var findSimilarTransactions = function(options,callback){
 	query+=' LIMIT 100';
 	// console.log('\n\n\n\n '+query);
 	// callback(null);
-	Transaction.query(query,escape,function(err, rawResult) {
+	sails.sendNativeQuery(query,escape,function(err, rawResult) {
 		// console.log('\n\n\n\n');
 		// console.log(results.getSnapshot);
 		// console.log('\n\n\n\n')
