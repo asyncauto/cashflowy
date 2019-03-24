@@ -13,11 +13,11 @@ module.exports = {
 			required:true
 		},	
 		name:{
-			type:'text',
+			type:'string',
 			required:true
 		},
 		type:{
-			type:'text',
+			type:'string',
 			defaultsTo:'single_pnl_head'
 		},
 		details:{ 

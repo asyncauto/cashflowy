@@ -16,18 +16,19 @@ module.exports = {
 			model:'category'
 		},		
 		name:{
-			type:'text',
+			type:'string',
 			required:true
 		},
 		description:{
-			type:'text',
+			type:'string',
 		},
 		type:{
-			type:'text',
+			type:'string',
 			defaultsTo:'expense'
 		},
 		budget:{
-			type:'integer'
+			type:'number',
+			columnType: 'int4'
 		}
 	}
 };

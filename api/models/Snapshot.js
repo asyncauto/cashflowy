@@ -13,19 +13,21 @@ module.exports = {
 	    	required:true,
 		},
 		createdBy:{
-			type:'text',
-			enum:['user','parsed_email']
+			type:'string',
+			isIn:['user','parsed_email']
 		},
 		details: {
 		  type: "json",
 		  defaultsTo:{}
 		},
 		balance:{ // the balance in an account
-			type:'float', // 
-			required:true
+			type:'number', // 
+			required:true,
+			columnType: 'float4'
 		},
 		takenAt:{ // defaults to createdAt. Useful when creating manually. 
-			type:'datetime'
+			type:'string',
+			columnType:'timestamptz'
 		},
 	},
 	afterCreate:function(snapshot,cb){

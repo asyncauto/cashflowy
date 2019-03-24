@@ -10,27 +10,30 @@ module.exports = {
 
 	attributes: {
 		original_currency:{
-			type:'text',
+			type:'string',
 		},
 		original_amount:{
-			type:'float',
+			type:'number',
+			columnType:'float8'
 		},
 		amount_inr:{
-			type:'float',	
+			type:'number',	
+			columnType:'float8'
 		},
 		occuredAt:{ // defaults to createdAt. Useful when creating manually. 
-			type:'datetime'
+			type:'string',
+			columnType: 'timestamptz'
 		},
 		createdBy:{
-			type:'text',
-			enum:['user','parsed_email', 'parsed_document']
+			type:'string',
+			isIn:['user','parsed_email', 'parsed_document']
 		},
 		type:{
-			type:'text',
-			enum:['income_expense','transfer']
+			type:'string',
+			isIn:['income_expense','transfer']
 		},
 		description:{
-			type:'text',
+			type:'string',
 		},
 		account:{ // from where the transaction is made
 			model:'account',
@@ -40,7 +43,7 @@ module.exports = {
 			model:'account',
 		},
 		third_party:{ // only for income/expense. 
-			type:'text',
+			type:'string',
 		},
 		category:{
 			model:'category'
