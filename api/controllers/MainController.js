@@ -2066,39 +2066,13 @@ module.exports = {
 				locals.pnl.header.level_1.push(tp.year + '-' + tp.month);
 			});
 			locals.pnl.header.level_2.push(_.find(categories_by_time[locals.pnl.header.level_1[0]], { id: results.getPnl.details.pnl_head_category }).name);
-			// generate rows scafolding for single_pnl_heads
-			locals.pnl.body = PnLService.generateRowScafoldingForSinglePNLHead(results.getAllCategories, locals.pnl.details.pnl_head_category);
 			
-			/* ------ filling in data ------ */
 			if (results.getPnl.type == 'single_pnl_head') {
-				locals.pnl.body.forEach(function(row_l1,i){ // income, expense, surplus
-					Object.keys(categories_by_time).forEach(function (month, i) {
-						var head_cat = _.find(categories_by_time[month], { id: results.getPnl.details.pnl_head_category });
-						row_l1.data[month + '__' + head_cat.name]=0;
-						row_l1.children.forEach(function (row_l2) {
-							head_cat.children.forEach(function (cat2) {
-								if (cat2.name == row_l2.name){
-									row_l2.data[month + '__' + head_cat.name] = cat2.super_sum;
-									row_l1.data[month + '__' + head_cat.name] += cat2.super_sum;
-								}
-							})
-							row_l2.children.forEach(function(row_l3){
-								head_cat.children.forEach(function (cat2) {
-									cat2.children.forEach(function (cat3) {
-										if (cat3.name == row_l3.name)
-											row_l3.data[month + '__' + head_cat.name] = cat2.super_sum;
-
-									})	
-								})	
-							})
-						});
-						if(row_l1.name=='surplus'){ // custom calculation for surplus
-							row_l1.data[month + '__' + head_cat.name] = locals.pnl.body[0].data[month + '__' + head_cat.name] + locals.pnl.body[1].data[month + '__' + head_cat.name];
-						}
-					})
-				})
+				// generate rows scafolding for single_pnl_heads
+				locals.pnl.body = PnLService.generateRowScafoldingForSinglePNLHead(results.getAllCategories, locals.pnl.details.pnl_head_category);
+				// filling data
+				locals.pnl.body = PnLService.populateDataForSinglePNLHead(locals.pnl.body, categories_by_time, results.getPnl.details.pnl_head_category);
 			}
-			/* ------ filling in data ------ */
 
 			res.view('view_sample_pnl',locals);
 		});

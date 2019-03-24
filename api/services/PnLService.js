@@ -83,6 +83,35 @@ module.exports={
         })
         return pnl_body;
     },
+    populateDataForSinglePNLHead: function (pnl_body, categories_by_time,pnl_head){
+        pnl_body.forEach(function (row_l1, i) { // income, expense, surplus
+            Object.keys(categories_by_time).forEach(function (month, i) {
+                var head_cat = _.find(categories_by_time[month], { id: pnl_head });
+                row_l1.data[month + '__' + head_cat.name] = 0;
+                row_l1.children.forEach(function (row_l2) {
+                    head_cat.children.forEach(function (cat2) {
+                        if (cat2.name == row_l2.name) {
+                            row_l2.data[month + '__' + head_cat.name] = cat2.super_sum;
+                            row_l1.data[month + '__' + head_cat.name] += cat2.super_sum;
+                        }
+                    })
+                    row_l2.children.forEach(function (row_l3) {
+                        head_cat.children.forEach(function (cat2) {
+                            cat2.children.forEach(function (cat3) {
+                                if (cat3.name == row_l3.name)
+                                    row_l3.data[month + '__' + head_cat.name] = cat2.super_sum;
+
+                            })
+                        })
+                    })
+                });
+                if (row_l1.name == 'surplus') { // custom calculation for surplus
+                    row_l1.data[month + '__' + head_cat.name] = pnl_body[0].data[month + '__' + head_cat.name] + pnl_body[1].data[month + '__' + head_cat.name];
+                }
+            })
+        })
+        return pnl_body;
+    },
     calculateCategorySpendingPerTimePeriod: function (flat_categories,time_periods,spending_per_category_per_month){
         var temp = {};
         var categories_by_time = {};
