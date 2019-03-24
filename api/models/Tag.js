@@ -29,8 +29,8 @@ module.exports = {
 			isIn:["red","orange","yellow","olive","green","teal","blue","violet","purple","pink","brown","grey","black"],
 			defaultsTo:'teal'
 		},
-		transactions:{
-			collection:'transaction',
+		tlis:{
+			collection:'transaction_line_item',
 			via:'tags',
 		},
 	}

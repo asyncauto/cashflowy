@@ -8,18 +8,18 @@ var machinelearning = new AWS.MachineLearning({
 var async = require('async');
 
 module.exports = {
-    predictCategory: function (transaction, cb) {
+    predictCategory: function (tli, cb) {
         async.auto({
             getAccount: function (cb) {
-                Account.findOne(transaction.account).exec(cb);
+                Account.findOne(tli.account).exec(cb);
             },
             createPredictionPayload: ['getAccount', function (results, cb) {
                 var payload = {
-                    // createdBy: transaction.createdBy,
-                    // description: transaction.description,
-                    // account: transaction.account ? transaction.account.toString() : '',
-                    // to_account: transaction.to_account ? transaction.to_account.toString() : '',
-                    third_party: transaction.third_party,
+                    // createdBy: tli.createdBy,
+                    // description: tli.description,
+                    // account: tli.account ? tli.account.toString() : '',
+                    // to_account: tli.to_account ? tli.to_account.toString() : '',
+                    third_party: tli.third_party,
                 }
                 // payload = _.pick(payload, _.identity);
                 cb(null, payload)
@@ -43,17 +43,16 @@ module.exports = {
                 var category_name = results.getPrediction.Prediction.predictedLabel
                 Category.findOne({ name: category_name, user: results.getAccount.user }).exec(cb);
             }],
-            addCategoryToTransaction: ['findOrCreateCategory', function (results, cb) {
+            addCategoryToTli: ['findOrCreateCategory', function (results, cb) {
                 if (!results.findOrCreateCategory) return cb(null);
-                Transaction.update(transaction.id, { category: results.findOrCreateCategory.id }).exec(cb);
+                Transaction_line_item.update(tli.id, { category: results.findOrCreateCategory.id }).exec(cb);
             }],
             addPredictionTag: ['findOrCreateCategory', function (results, cb) {
                 if (!results.findOrCreateCategory) return cb(null);
 
                 Tag.findOrCreate({ name: 'predicted_category', type: 'global' },
                     { name: 'predicted_category', type: 'global' }).exec(function (err, tag) {
-                        Tag.addToCollection.transactions.add(transaction.id)
-                        Tag.addToCollection(tag.id, 'transactions').members([transaction.id]).exec(cb);
+                        Tag.addToCollection(tag.id, 'tlis').members([tli.id]).exec(cb);
                     })
             }]
         }, cb);
