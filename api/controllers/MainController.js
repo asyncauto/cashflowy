@@ -1997,6 +1997,112 @@ module.exports = {
 			
 		});
 	},
+	viewPnL2:function(req,res){
+		var locals={
+			pnl:{}
+		}
+		// var month=null,year=null;
+		// if(req.query.month){
+		//  year=req.query.month.substring(0,4);
+		//  month=req.query.month.substring(5,7);
+		// }
+		// else if(req.query.year)
+		//  year= req.query.year.substring(0,4);
+		// else{
+		//  year=new Date().toISOString().substring(0,4);
+		//  month=new Date().toISOString().substring(5,7);
+		// }
+		if(!req.query.date_from)
+			req.query.date_from='2018-04-01';
+		if(!req.query.date_to)
+			req.query.date_to='2019-04-01';
+
+		async.auto({
+			getAccounts:function(callback){
+				Account.find({user:req.user.id}).sort('name ASC').exec(callback);
+			},
+			getAllCategories:function(callback){
+				Category.find({user:req.user.id}).exec(callback);
+			},
+			getPnl:function(callback){
+				Pnl.findOne({id:req.params.id}).exec(callback);
+			},
+			getCategorySpendingPerMonth:['getAccounts',function(results,callback){
+
+				var escape=[req.query.date_from,req.query.date_to];
+				var query = 'select count(*),sum(amount_inr),EXTRACT(YEAR FROM "occuredAt") as "year",EXTRACT(MONTH FROM "occuredAt") as "month",category from transaction';
+				query+=' where';
+				query+=" type='income_expense'";
+				query+= ' AND CAST("occuredAt" AS date) BETWEEN CAST($1 AS date) AND CAST($2 AS date)';
+					
+				if(_.map(results.getAccounts,'id').length)
+					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
+				// in the accounts that belong to you
+				query+=' group by category, "year", "month"';
+				query+=' order by "year" , "month" '
+				// console.log(query);
+				Transaction.query(query,escape,function(err, rawResult) {
+					if(err)
+						callback(err);
+					else
+						callback(err,rawResult.rows);
+				});
+			}],
+		},function(err,results){
+			if(err)
+				throw err;
+			
+			results.getAllCategories.forEach(function(c){
+				c.data={};
+			})
+			// generate time periods
+			var time_periods = PnLService.generateTimePeriods(results.getCategorySpendingPerMonth);
+			// calculate category spending per time period
+			var categories_by_time = PnLService.calculateCategorySpendingPerTimePeriod(results.getAllCategories, time_periods, results.getCategorySpendingPerMonth);
+			// general scafolding for pnl
+			locals.pnl = PnLService.generatePnLScafolding(results.getPnl);
+			// set headers for this pnl
+			time_periods.forEach(function (tp) {
+				locals.pnl.header.level_1.push(tp.year + '-' + tp.month);
+			});
+			locals.pnl.header.level_2.push(_.find(categories_by_time[locals.pnl.header.level_1[0]], { id: results.getPnl.details.pnl_head_category }).name);
+			// generate rows scafolding for single_pnl_heads
+			locals.pnl.body = PnLService.generateRowScafoldingForSinglePNLHead(results.getAllCategories, locals.pnl.details.pnl_head_category);
+			
+			/* ------ filling in data ------ */
+			if (results.getPnl.type == 'single_pnl_head') {
+				locals.pnl.body.forEach(function(row_l1,i){ // income, expense, surplus
+					Object.keys(categories_by_time).forEach(function (month, i) {
+						var head_cat = _.find(categories_by_time[month], { id: results.getPnl.details.pnl_head_category });
+						row_l1.data[month + '__' + head_cat.name]=0;
+						row_l1.children.forEach(function (row_l2) {
+							head_cat.children.forEach(function (cat2) {
+								if (cat2.name == row_l2.name){
+									row_l2.data[month + '__' + head_cat.name] = cat2.super_sum;
+									row_l1.data[month + '__' + head_cat.name] += cat2.super_sum;
+								}
+							})
+							row_l2.children.forEach(function(row_l3){
+								head_cat.children.forEach(function (cat2) {
+									cat2.children.forEach(function (cat3) {
+										if (cat3.name == row_l3.name)
+											row_l3.data[month + '__' + head_cat.name] = cat2.super_sum;
+
+									})	
+								})	
+							})
+						});
+						if(row_l1.name=='surplus'){ // custom calculation for surplus
+							row_l1.data[month + '__' + head_cat.name] = locals.pnl.body[0].data[month + '__' + head_cat.name] + locals.pnl.body[1].data[month + '__' + head_cat.name];
+						}
+					})
+				})
+			}
+			/* ------ filling in data ------ */
+
+			res.view('view_sample_pnl',locals);
+		});
+	},
 	deletePnL:function(req,res){
 		var locals={}
 		res.view('delete_pnl',locals);

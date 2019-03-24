@@ -113,6 +113,7 @@ module.exports.routes = {
   'POST /pnl/create':'MainController.createPnL',
   'GET /pnl/:id':'MainController.indexPnL',
   'GET /pnl/:id/view':'MainController.viewPnL',
+  'GET /pnl/:id/view2':'MainController.viewPnL2',
   'GET /pnl/:id/edit':'MainController.editPnL',
   'POST /pnl/:id/edit':'MainController.editPnL',
   'GET /pnl/:id/delete':'MainController.deletePnL',
