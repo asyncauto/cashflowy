@@ -2086,13 +2086,23 @@ module.exports = {
 			time_periods.forEach(function (tp) {
 				locals.pnl.header.level_1.push(tp.year + '-' + tp.month);
 			});
-			locals.pnl.header.level_2.push(_.find(categories_by_time[locals.pnl.header.level_1[0]], { id: results.getPnl.details.pnl_head_category }).name);
 			
 			if (results.getPnl.type == 'single_pnl_head') {
+				locals.pnl.header.level_2.push(_.find(categories_by_time[locals.pnl.header.level_1[0]], { id: results.getPnl.details.pnl_head_category }).name);
 				// generate rows scafolding for single_pnl_heads
 				locals.pnl.body = PnLService.generateRowScafoldingForSinglePNLHead(results.getAllCategories, locals.pnl.details.pnl_head_category);
 				// filling data
 				locals.pnl.body = PnLService.populateDataForSinglePNLHead(locals.pnl.body, categories_by_time, results.getPnl.details.pnl_head_category);
+			}else if(results.getPnl.type=='multiple_pnl_heads'){
+				categories_by_time[locals.pnl.header.level_1[0]].forEach(function(c){
+					if(c.type='pnl_head'){
+						locals.pnl.header.level_2.push(c.name);
+					}
+				})
+				// generate rows scafolding for single_pnl_heads
+				locals.pnl.body = PnLService.generateRowScafoldingForMultiplePNLHeads(results.getAllCategories);
+				// filling data
+				locals.pnl.body = PnLService.populateDataForMultiplePNLHeads(locals.pnl.body, categories_by_time);
 			}
 
 			res.view('view_sample_pnl',locals);
