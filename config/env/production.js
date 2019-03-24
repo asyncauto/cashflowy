@@ -16,54 +16,48 @@ module.exports = {
 	 * Set the default database connection for models in the production        *
 	 * environment (see config/connections.js and config/models.js )           *
 	 ***************************************************************************/
-	models: {
-		datastore: 'default',
-		migrate: 'safe'
-	},
-
-	datastores: {
-		default: {
+	connections:{
+		mainPostgresqlServer:{
 			adapter: 'sails-postgresql',
 			host: process.env.DB_HOST,
 			user: process.env.DB_USER, // optional
 			password: process.env.DB_PASSWORD, // optional
-			database: process.env.DB_DATABASE, //optional
-			ssl: true
+			database: process.env.DB_DATABASE //optional
 		}
 	},
-	bull: {
-		redis: {
-			host: process.env.REDIS_HOST,
+	bull:{
+		redis:{
+			host:process.env.REDIS_HOST,
 			port: 6379,
-			db: 1,
+			db:1,
 		}
 	},
-	session: {
+	session:{
 		adapter: 'connect-redis',
 		host: process.env.REDIS_HOST,
 		port: 6379,
 		db: 0,
 	},
-	slack_webhook: process.env.SLACK_WEBHOOK,
-	mailgun: {
-		api_key: process.env.MAILGUN_APIKEY,
-		domain: process.env.MAILGUN_DOMAIN,
+	slack_webhook:process.env.SLACK_WEBHOOK,
+	mailgun:{
+		api_key:process.env.MAILGUN_APIKEY,
+		domain:process.env.MAILGUN_DOMAIN,
 		webhook_secret: process.env.MAILGUN_WEBHOOK_SECRET
 	},
-	background_secret: process.env.BACKGROUND_SECRET,
-	metabase: {
-		site_url: process.env.METABASE_SITE_URL,
-		secret_key: process.env.METABASE_SECRET_KEY
+	background_secret:process.env.BACKGROUND_SECRET,
+	metabase:{
+		site_url:process.env.METABASE_SITE_URL,
+		secret_key:process.env.METABASE_SECRET_KEY
 	},
 
 	password_reset_secret: process.env.PASSWORD_RESET_SECRET,
-
+	
 	app_url: process.env.APP_URL,
 
 	aws: {
 		key: process.env.AWS_ACCESS_KEY,
-		secret: process.env.AWS_ACCESS_SECRET,
-		region: process.env.AWS_REGION,
+		secret: process.env.AWS_ACCESS_SECRET, 
+		region: process.env.AWS_REGION, 
 		bucket: process.env.AWS_BUCKET,
 		category_model_id: process.env.AWS_CATEGORY_MODEL_ID,
 		prediction_endpoint: process.env.AWS_PREDICTION_ENDPOINT

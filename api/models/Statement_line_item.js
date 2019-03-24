@@ -14,8 +14,7 @@ module.exports = {
 			required:true
 		},
 		pos:{
-			type:'number',
-			columnType: 'int4',
+			type:'integer',
 			required:true
 		},
 		extracted_data: { // data originally extracted from statement

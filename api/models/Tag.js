@@ -14,19 +14,19 @@ module.exports = {
 			// this field only need when type=user
 		},
 		name:{
-			type:'string',
+			type:'text',
 			required:true
 		},
 		description:{
-			type:'string',
+			type:'text',
 		},
 		type:{
-			type:'string',
-			isIn:['user','global']
+			type:'text',
+			enum:['user','global']
 		},
 		color:{
-			type:'string',
-			isIn:["red","orange","yellow","olive","green","teal","blue","violet","purple","pink","brown","grey","black"],
+			type:'text',
+			enum:["red","orange","yellow","olive","green","teal","blue","violet","purple","pink","brown","grey","black"],
 			defaultsTo:'teal'
 		},
 		transactions:{

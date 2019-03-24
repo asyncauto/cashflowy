@@ -52,8 +52,8 @@ module.exports = {
 
                 Tag.findOrCreate({ name: 'predicted_category', type: 'global' },
                     { name: 'predicted_category', type: 'global' }).exec(function (err, tag) {
-                        Tag.addToCollection.transactions.add(transaction.id)
-                        Tag.addToCollection(tag.id, 'transactions').members([transaction.id]).exec(cb);
+                        tag.transactions.add(transaction.id)
+                        tag.save(cb);
                     })
             }]
         }, cb);

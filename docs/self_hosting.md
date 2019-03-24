@@ -188,7 +188,7 @@ module.exports = {
       ]
     }
   },
-  datastores:{
+  connections:{
     mainPostgresqlServer:{
       adapter: 'sails-postgresql',
       host: 'localhost', // edit this

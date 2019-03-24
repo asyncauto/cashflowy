@@ -15,7 +15,7 @@ module.exports = {
 		type:{
 			type:'string',
 			required:true,
-			isIn: [
+			enum: [
 				"bank","credit_card","cash","wallet","investment"
 			]
 		},
@@ -24,11 +24,11 @@ module.exports = {
 		  defaultsTo:{}
 		},
 		name:{
-			type:'string',
+			type:'text',
 			required:true
 		},
 		acc_number:{ // credit card last 4 digits or bank acc number
-			type:'string', // 
+			type:'text', // 
 			required:true
 		},
 		docs:{

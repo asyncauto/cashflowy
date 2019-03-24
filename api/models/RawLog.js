@@ -17,16 +17,16 @@ module.exports = {
 			required: true
 		},
 		log_type: {
-			type: 'string',
+			type: 'text',
 			required: true,
-			isIn:[
+			enum:[
 				'credit_card_alert','credit_card_statement','bank_transaction_alert','bank_statement'
 			]
 		},
 		medium: {
-			type: 'string',
+			type: 'text',
 			required: true,
-			isIn:[
+			enum:[
 				'email',
 			]
 		},		

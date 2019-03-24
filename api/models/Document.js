@@ -17,13 +17,13 @@ module.exports = {
 			required: true
 		},
 		parser_used: {
-			type: 'string',
+			type: 'text',
 		},
 		type:{
-			type:'string'
+			type:'text'
 		},
 		description:{
-			type:'string'
+			type:'text'
 		},
 		details: {
 			type: 'json',

@@ -16,27 +16,22 @@ module.exports = {
 	 * Set the default database connection for models in the development       *
 	 * environment (see config/connections.js and config/models.js )           *
 	 ***************************************************************************/
-	models: {
-		datastore: 'default',
-		migrate: 'safe'
-	},
-
-	datastores: {
-		default: {
+	connections: {
+		mainPostgresqlServer: {
 			adapter: 'sails-postgresql',
 			host: process.env.DB_HOST,
 			user: process.env.DB_USER, // optional
 			password: process.env.DB_PASSWORD, // optional
-			database: process.env.DB_DATABASE, //optional
+			database: process.env.DB_DATABASE //optional
 		}
 	},
-	bull: {
+	bull:{ 
 		redis: {
 			host: '127.0.0.1',
 			port: 6379,
 			db: 4,
 			maxRetriesPerRequest: null,
-			enableReadyCheck: false
+    		enableReadyCheck: false
 		}
 	},
 	session: {
@@ -51,7 +46,7 @@ module.exports = {
 		domain: process.env.MAILGUN_DOMAIN,
 		webhook_secret: process.env.MAILGUN_WEBHOOK_SECRET
 	},
-	background_secret: process.env.BACKGROUND_SECRET,
+	background_secret:process.env.BACKGROUND_SECRET,
 
 	password_reset_secret: process.env.PASSWORD_RESET_SECRET,
 
@@ -59,15 +54,15 @@ module.exports = {
 
 	aws: {
 		key: process.env.AWS_ACCESS_KEY,
-		secret: process.env.AWS_ACCESS_SECRET,
-		region: process.env.AWS_REGION,
+		secret: process.env.AWS_ACCESS_SECRET, 
+		region: process.env.AWS_REGION, 
 		bucket: process.env.AWS_BUCKET,
 		category_model_id: process.env.AWS_CATEGORY_MODEL_ID,
 		prediction_endpoint: process.env.AWS_PREDICTION_ENDPOINT
 	},
 
-	metabase: {
-		site_url: process.env.METABASE_SITE_URL,
-		secret_key: process.env.METABASE_SECRET_KEY
-	}
+	metabase:{
+        site_url:process.env.METABASE_SITE_URL,
+        secret_key:process.env.METABASE_SECRET_KEY
+    }
 };

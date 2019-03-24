@@ -1570,13 +1570,34 @@ module.exports = {
 			},
 		},function(err,results){
 			var all_tags=results.getAllTags;
-			Transaction.replaceCollection(results.getTransaction.id, 'tags').members(req.body.new_tags).exec(function(err, txn){
+			var old_tags=results.getTransaction.tags;
+			var new_tags=req.body.new_tags;
+			
+			var t = results.getTransaction;
+			all_tags.forEach(function(a_tag){
+				var action='remove';
+				new_tags.forEach(function(new_tag){
+					if(a_tag.id==new_tag)
+						action='add';
+				})
+				// console.log('\n-----');
+				// console.log(a_tag.name,a_tag.id,action);
+				
+				if(action=='add')
+					t.tags.add(a_tag.id);
+				else
+					t.tags.remove(a_tag.id);
+			});
+			// console.log(t);
+			t.save(function(err) {
+				// console.log(t);
 				Transaction.findOne({id:req.body.t_id}).populate('tags').exec(function(err,new_t){
 					res.view('partials/display_tags', {tags: new_t.tags,layout:false});
 					
 				});
 			});
 		});
+		
 	},
 	viewDoubtfulTransaction:function(req,res){
 		async.auto({

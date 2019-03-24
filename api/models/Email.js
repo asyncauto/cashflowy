@@ -10,7 +10,7 @@ module.exports = {
 	attributes: {
 		
 		email:{
-			type:'string',
+			type:'text',
 		},
 		user: {
 			model: 'user',

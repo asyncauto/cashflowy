@@ -18,25 +18,25 @@ module.exports = {
 			// required: true,	
 		},
 		email:{
-			type:'string',
+			type:'text',
 		},
 		user: {
 			model: 'user',
 			required: true
 		},
 		type: {
-			type: 'string',
+			type: 'text',
 			required: true,
 			// enum:[
 			// 	'credit_card_alert','credit_card_statement','bank_transaction_alert','bank_statement'
 			// ]
 		},
 		body_parser_used:{
-			type:'string',
+			type:'text',
 
 		},
 		message_id:{
-			type:'string',
+			type:'text',
 			required:true,
 			unique:true,
 		},
