@@ -29,13 +29,14 @@ module.exports = {
 		},
 		description: {
 			type: 'string',
+			allowNull: true
 		},
 		account: { // from where the transaction is made
 			model: 'account',
 			required: true
 		},
 		to_account: { // only for transfers. The account to which you transferred the money to.
-			model: 'account',
+			model: 'account'
 		},
 		third_party: { // only for income/expense. 
 			type: 'string',

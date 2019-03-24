@@ -20,10 +20,12 @@ module.exports = {
 			type: 'string',
 		},
 		type:{
-			type:'string'
+			type:'string',
+			allowNull: true
 		},
 		description:{
-			type:'string'
+			type:'string',
+			allowNull: true
 		},
 		details: {
 			type: 'json',
