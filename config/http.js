@@ -20,6 +20,7 @@ module.exports.http = {
   * `customMiddleware` config option.                                         *
   *                                                                           *
   ****************************************************************************/
+  trustProxy: true,
 
   middleware: {
 
