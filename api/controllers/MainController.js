@@ -2030,7 +2030,7 @@ module.exports = {
 			getCategorySpendingPerMonth:['getAccounts',function(results,callback){
 
 				var escape=[req.query.date_from,req.query.date_to];
-				var query = 'select count(*),sum(amount_inr),EXTRACT(YEAR FROM "occuredAt") as "year",EXTRACT(MONTH FROM "occuredAt") as "month",category from transaction';
+				var query = 'select count(*),sum(amount_inr),EXTRACT(YEAR FROM "occuredAt") as "year",EXTRACT(MONTH FROM "occuredAt") as "month",category from transaction_line_item';
 				query+=' where';
 				query+=" type='income_expense'";
 				query+= ' AND CAST("occuredAt" AS date) BETWEEN CAST($1 AS date) AND CAST($2 AS date)';
@@ -2041,7 +2041,7 @@ module.exports = {
 				query+=' group by category, "year", "month"';
 				query+=' order by "year" , "month" '
 				// console.log(query);
-				Transaction.query(query,escape,function(err, rawResult) {
+				sails.sendNativeQuery(query,escape,function(err, rawResult) {
 					if(err)
 						callback(err);
 					else
@@ -2065,6 +2065,9 @@ module.exports = {
 			time_periods.forEach(function (tp) {
 				locals.pnl.header.level_1.push(tp.year + '-' + tp.month);
 			});
+			// var a = {}
+			// console.log(a.name);
+			// console.log(a.name.something)
 			
 			if (results.getPnl.type == 'single_pnl_head') {
 				locals.pnl.header.level_2.push(_.find(categories_by_time[locals.pnl.header.level_1[0]], { id: results.getPnl.details.pnl_head_category }).name);
