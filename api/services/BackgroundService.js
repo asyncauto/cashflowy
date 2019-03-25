@@ -32,7 +32,7 @@ module.exports={
 				query+=' LIMIT 1';
 				// console.log('\n\n\n\n '+query);
 				// callback(null);
-				Snapshot.query(query,escape,function(err, rawResult) {
+				sails.sendNativeQuery(query,escape,function(err, rawResult) {
 					// console.log('\n\n\n\n');
 					// console.log(results.getSnapshot);
 					// console.log('\n\n\n\n')
@@ -57,7 +57,7 @@ module.exports={
 				query+=` AND type ='income_expense'`;
 				// console.log('\n\n\n\n '+query);
 				// callback(null);
-				Transaction.query(query,escape,function(err, rawResult) {
+				sails.sendNativeQuery(query,escape,function(err, rawResult) {
 					// console.log(rawResult.rows)
 					if(err)
 						callback(err);
@@ -75,7 +75,7 @@ module.exports={
 				query+=` AND type ='transfer'`;
 				// console.log('\n\n\n\n '+query);
 				// callback(null);
-				Transaction.query(query,escape,function(err, rawResult) {
+				sails.sendNativeQuery(query,escape,function(err, rawResult) {
 					// console.log(rawResult.rows)
 					if(err)
 						callback(err);

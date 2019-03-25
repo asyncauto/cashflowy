@@ -39,7 +39,7 @@ module.exports={
 					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
 				// in the accounts that belong to you
 				query+=' group by category.name';
-				Transaction.query(query,escape,function(err, rawResult) {
+				sails.sendNativeQuery(query,escape,function(err, rawResult) {
 					if(err)
 						callback(err);
 					else
