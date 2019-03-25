@@ -76,7 +76,7 @@ module.exports = {
 					name:'',
 					description:'',
 					budget:'10000',
-					parent_id:0,
+					parent_id:'',
 					type:'expense',
 					categories:categories
 				}
@@ -454,7 +454,7 @@ module.exports = {
 			},
 			getTlisWithOutDescription: ['getAccounts', function(results, callback){
 				var  accounts =  _.map(results.getAccounts,'id')
-				Transaction_line_item.find({description: {'!': null }, account:accounts}).exec(callback);
+				Transaction_line_item.find({description: {'!=': null }, account:accounts}).exec(callback);
 			}],
 			getDocumentsCount: function(callback){
 				Document.count({user:req.user.id}).exec(callback);
@@ -691,7 +691,7 @@ module.exports = {
 				}else
 					callback(null);
 			},
-			getTransactions:['getAccounts','getTransactionsInDocument',function(results,callback){
+			getTlis:['getAccounts','getTransactionsInDocument',function(results,callback){
 				//account filter
 				var accounts=[];
 				if(!_.isNaN(parseInt(req.query.account))){
@@ -778,7 +778,7 @@ module.exports = {
 				if(req.query.sort)
 					sort = req.query.sort
 
-				Transaction_line_item.find(filter).sort(sort).limit(limit).populate('tags').exec(callback);
+				Transaction_line_item.find(filter).sort(sort).limit(limit).populate('tags').populate('transaction').exec(callback);
 			}],
 			getCategories:function(callback){
 				Category.find({user:req.user.id}).sort('name ASC').exec(callback);
@@ -786,40 +786,46 @@ module.exports = {
 			getTags:function(callback){
 				Tag.find({user:req.user.id}).exec(callback);
 			},
-			getParsedEmails:['getTransactions',function(results,callback){
-				var t_ids=_.map(results.getTransactions,'transaction');
+			getParsedEmails:['getTlis',function(results,callback){
+				var t_ids=_.map(results.getTlis,function(tli){tli.transaction.id});
 				Parsed_email.find({transaction:t_ids}).exec(callback);
 			}],
-			getSLIs:['getTransactions',function(results,callback){
-				var t_ids=_.map(results.getTransactions,'transaction');
+			getSLIs:['getTlis',function(results,callback){
+				var t_ids=_.map(results.getTlis,function(tli){tli.transaction.id});
 				Statement_line_item.find({transaction:t_ids}).populate('document').exec(callback);
 			}]
 		},function(err,results){
 			if (err)
 				throw err;
-			locals.transactions=results.getTransactions;
+			locals.tlis = results.getTlis
 			var accounts=results.getAccounts;
-			locals.transactions.forEach(function(t){
+			locals.tlis.forEach(function(t){
 				accounts.forEach(function(account){ // expanding account in the transaction object
 					if(t.account==account.id)
 						t.account=account;
 					if(t.to_account==account.id)
 						t.to_account=account;
+					
+					if(t.transaction.account==account.id)
+						t.transaction.account=account;
+					if(t.transaction.to_account==account.id)
+						t.transaction.to_account=account;
 				});
-				t.parsed_emails=[];
+				t.transaction.parsed_emails=[];
 				// console.log(results.getParsedEmails);
 				results.getParsedEmails.forEach(function(pe){
-					if(t.id == pe.transaction)
-						t.parsed_emails.push(pe);
+					if(t.transaction.id == pe.transaction)
+						t.transaction.parsed_emails.push(pe);
 				})
-				t.slis=[];
+				t.transaction.slis=[];
 				results.getSLIs.forEach(function(sli){
-					if(t.id==sli.transaction)
-						t.slis.push(sli);
+					if(t.transaction.id==sli.transaction)
+						t.transaction.slis.push(sli);
 				})
 				var moment = require('moment-timezone');
 				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
 			})
+			locals.transactions=_.groupBy(results.getTlis, function(t){return t.transaction.id});
 			// locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.accounts=results.getAccounts;
 			locals.tags=results.getTags;
@@ -829,7 +835,7 @@ module.exports = {
 			locals.query_string=require('query-string');
 			if(req.query.download_csv=='true'){
 				const json2csv = require('json2csv').parse;
-				const csvString = json2csv(locals.transactions);
+				const csvString = json2csv(locals.tlis);
 				res.setHeader('Content-disposition', 'attachment; filename=transactions-filtered.csv');
 				res.set('Content-Type', 'text/csv');
 				res.status(200).send(csvString);
@@ -908,15 +914,15 @@ module.exports = {
 			}
 		})
 	},
-	putTransaction: function(req,res){
+	updateTli: function(req,res){
 		async.auto({
-			getTransaction: function(cb){
-				Transaction.findOne(req.params.id).populate('account').exec(cb)
+			getTli: function(cb){
+				Transaction_line_item.findOne(req.params.id).populate('account').exec(cb)
 			},
-			updateTransactions: ['getTransaction', function(results, cb){
-				if(_.get(results, 'getTransaction.account.user') != req.user.id)
+			updateTli: ['getTli', function(results, cb){
+				if(_.get(results, 'getTli.account.user') != req.user.id)
 					return cb(new Error('INVALID_ACCESS'));
-				Transaction.update({id: req.params.id}, req.body).exec(cb);
+				Transaction_line_item.update({id: req.params.id}, req.body).exec(cb);
 			}]
 		}, function(err, results){
 			if(err){
@@ -929,7 +935,7 @@ module.exports = {
 						break;
 				}
 			}
-			var updated = _.get(results, 'updateTransactions[0]', {})
+			var updated = _.get(results, 'updateTli[0]', {})
 			return res.status(200).json(updated)
 		})
 	},
@@ -1075,7 +1081,7 @@ module.exports = {
 						flag=true;
 				});
 				if(flag){
-					Transaction.update({id:t.id},{description:req.body.description}).exec(function(err,result){
+					Transaction_line_item.update({id:t.id},{description:req.body.description}).exec(function(err,result){
 						if(err)
 							throw err;
 						else
@@ -1564,14 +1570,14 @@ module.exports = {
 			getAllTags:function(callback){
 				Tag.find({user:req.user.id}).exec(callback);
 			},
-			getTransaction:function(callback){
+			getTli:function(callback){
 				// console.log(req.body);
-				Transaction.findOne({id:req.body.t_id}).populate('tags').exec(callback);
+				Transaction_line_item.findOne({id:req.body.tli_id}).populate('tags').exec(callback);
 			},
 		},function(err,results){
 			var all_tags=results.getAllTags;
-			Transaction.replaceCollection(results.getTransaction.id, 'tags').members(req.body.new_tags).exec(function(err, txn){
-				Transaction.findOne({id:req.body.t_id}).populate('tags').exec(function(err,new_t){
+			Transaction_line_item.replaceCollection(results.getTli.id, 'tags').members(req.body.new_tags).exec(function(err, txn){
+				Transaction_line_item.findOne({id:req.body.tli_id}).populate('tags').exec(function(err,new_t){
 					res.view('partials/display_tags', {tags: new_t.tags,layout:false});
 					
 				});

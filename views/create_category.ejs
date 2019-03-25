@@ -56,7 +56,7 @@
 							<i class="dropdown icon"></i>
 							<div class="default text">Select Parent Category</div>
 							<div class="menu">
-								<div class="item" data-value="0">No parent</div>
+								<div class="item" data-value="">No parent</div>
 								<%categories.forEach(function(account){%>
 									<div class="<%-parent_id?'active':''%> item" data-value="<%=account.id%>"><%=account.name%></div>
 								<%})%>
