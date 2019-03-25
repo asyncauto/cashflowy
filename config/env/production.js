@@ -67,6 +67,9 @@ module.exports = {
 		bucket: process.env.AWS_BUCKET,
 		category_model_id: process.env.AWS_CATEGORY_MODEL_ID,
 		prediction_endpoint: process.env.AWS_PREDICTION_ENDPOINT
+	},
+	sockets: {
+		onlyAllowOrigins: ["https://app.cashflowy.in"]
 	}
 
 };
