@@ -40,6 +40,7 @@ module.exports = {
 		},
 		third_party: { // only for income/expense. 
 			type: 'string',
+			allowNull: true
 		},
 		category: {
 			model: 'category'
