@@ -26,7 +26,7 @@ module.exports = {
 			columnType: 'float4'
 		},
 		takenAt:{ // defaults to createdAt. Useful when creating manually. 
-			type:'string',
+			type:'ref',
 			columnType:'timestamptz'
 		},
 	},

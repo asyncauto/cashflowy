@@ -825,7 +825,9 @@ module.exports = {
 				var moment = require('moment-timezone');
 				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
 			})
-			locals.transactions=_.groupBy(results.getTlis, function(t){return t.transaction.id});
+			locals.transactions=_.groupBy(results.getTlis, function(t){return t.transaction.occuredAt});
+			// if(sort == 'occuredAt DESC')
+			//  	locals.transactions = _.sortBy(users, [function(o) { return o.user; }])
 			// locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.accounts=results.getAccounts;
 			locals.tags=results.getTags;
