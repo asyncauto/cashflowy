@@ -211,28 +211,19 @@ module.exports={
 		var unique_transaction_flag=false;
 		async.auto({
 			getAccount:function(callback){
-				var filter = {
-					like:{
-						acc_number:'%'+t.account, // ends with the following number
+				var find = {
+					acc_number:{
+						endsWith: t.account, // ends with the following number
 					},
 					user:sli.user
 				}
-				var account={ // incase the account does not exist, create account.
+				var create={ // incase the account does not exist, create account.
 					acc_number:''+t.account,
 					user:sli.user,
 					type:'bank', // user might need to change this
 					name:'Auto generated account'+t.account,
 				} 
-				Account.findOne(filter).exec(function(err,result){
-					if(result)
-						callback(err,result);
-					else{
-						Account.create(account).exec(function(err,result){
-							callback(err,result);
-						});
-					}
-				});
-				
+				Account.findOrCreate(find, create).exec(callback);	
 			},
 			getUserAccounts:function(callback){ 
 				// needed for finding similar transactions

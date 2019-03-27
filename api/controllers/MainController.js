@@ -377,7 +377,6 @@ module.exports = {
 	},
 	editEmail:function(req,res){
 	},
-	
 	listAccounts:function(req,res){
 		Account.find({user:req.user.id}).exec(function(err,accounts){
 			var locals={
@@ -876,7 +875,11 @@ module.exports = {
 				var moment = require('moment-timezone');
 				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
 			})
-			locals.transactions = _.groupBy(results.getTlis, function(t){return t.transaction.id}, 'desc');
+			locals.transactions = _(results.getTlis)
+				.groupBy(item => item.transaction.id)
+				.sortBy(group => results.getTlis.indexOf(group[0]))
+				.value()
+			// locals.transactions = _.groupBy(results.getTlis, function(t){return t.transaction.id});
 
 			// //sort by occured at desc
 			// var order_by = (req.query.sort == 'occuredAt ASC') ? 'asc': 'desc';

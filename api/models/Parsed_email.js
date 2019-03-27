@@ -97,14 +97,14 @@ module.exports = {
 				}
 
 
-				var filter = {
-					like:{
-						acc_number:'%'+acc_number, // ends with the following number
+				var find = {
+					acc_number:{
+						endsWith: acc_number, // ends with the following number
 					},
 					user:pe.user
 				}
 
-				var account={ // incase the account does not exist, create account.
+				var create={ // incase the account does not exist, create account.
 					acc_number:''+acc_number,
 					user:pe.user,
 					type:'bank', // user might need to change this
@@ -112,14 +112,8 @@ module.exports = {
 				} 
 				// console.log(filter);
 				// console.log(account);
-				Account.findOne(filter).exec(function(err,result){
-					if(result)
-						callback(err,result);
-					else{
-						Account.create(account).exec(function(err,result){
-							callback(err,result);
-						});
-					}
+				Account.findOrCreate(find, create).exec(function(err, result, created){
+					callback(err,result);
 				});
 				
 			},
@@ -127,28 +121,20 @@ module.exports = {
 				// console.log('getToAccount');
 				if(pe.type=='ZerodhaTransferFilter'){
 					var acc_number=pe.email+'-zerodha';
-					var filter = {
-						like:{
-							acc_number:'%'+acc_number, // ends with the following number
+					var find = {
+						acc_number:{
+							endsWith: acc_number, // ends with the following number
 						},
 						user:pe.user
 					}
 
-					var account={ // incase the account does not exist, create account.
+					var create={ // incase the account does not exist, create account.
 						acc_number:''+acc_number,
 						user:pe.user,
 						type:'investment', // user might need to change this
 						name:'Zerodha - Auto generated account',
 					} 
-					Account.findOne(filter).exec(function(err,result){
-						if(result)
-							callback(err,result);
-						else{
-							Account.create(account).exec(function(err,result){
-								callback(err,result);
-							});
-						}
-					});
+					Account.findOrCreate(find, create).exec(callback);
 				}else{
 					callback(null);
 				}
