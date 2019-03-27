@@ -1,0 +1,129 @@
+<div class='ui container'>
+	<% if(email){%>
+	<div class= 'ui grid'>
+		<div class='sixteen wide column'>
+			<b>id:</b><%=email.id%><br>
+			<b>Email:</b><%=email.email%><br>
+		</div>
+		<div class='sixteen wide column'>		
+			<div class="ui tabular menu">
+				<a class="item active" data-tab="first">Parsed Failures</a>
+				<a class="item" data-tab="second">Parsed Emails</a>
+			</div>
+			<div class="ui tab active" data-tab="first">
+                Emails that we are unable to parse. You can retry if you want us to process agian.
+					<table class="ui basic fluid unstackable table" style="display: block;overflow-x:scroll;">
+						<thead>
+							<tr>
+								<th>Id</th>
+                                <th>Forwared At</th>
+								<th>Message Id</th>
+								<th>Subject</th>
+								<th>Status</th>
+								<th>Details</th>
+								<th>Retry</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%parse_failures.forEach(function(pf){%>	
+								<tr class="pf <%=pf.status == 'PARSED'?'positive':''%>" data-id='<%=pf.id%>'>
+									<td class='single line'><%=pf.id%></td>
+                                    <td class='single line'><span><%-moment(pf.createdAt).tz('Asia/Kolkata').format('h:mm a')%></span>,	
+										<%-moment(pf.createdAt).tz('Asia/Kolkata').format('MMM')%>
+										<span><%-moment(pf.createdAt).tz('Asia/Kolkata').format('DD')%></span></br>
+										<span style="font-size: 0.75rem;"><%-moment(pf.createdAt).tz('Asia/Kolkata').format('YYYY')%></span>
+										</span></td>
+                                    <td><%=pf.message_id%></td>
+                                    <td><%=_.get(pf, 'details.inbound.Subject')%></td>
+									<td class='single line'><%=pf.status%></td>
+									<td class='single line'><a href="#" class='show_details pf'>details</a></td>
+									<td class='single line'><button class="ui basic blue <%=pf.status == 'PARSED'?'disabled':''%> button submit_retry" data-retry-id="<%=pf.id%>">Retry</button></td>
+								</tr>
+								<tr id='details_pf_<%=pf.id%>' style='display: none;'>
+									<td colspan='3'><b>Message Body:</b><br><%-_.get(pf, 'details.inbound["body-plain"]')%></td>
+									<td colspan='3'><b>Extacted Data:</b><br><%=JSON.stringify(_.get(pf, 'extracted_data', {}),null,4)%></td>
+								</tr>
+							<%})%>
+						</tbody>
+					</table>
+			</div>
+			<div class="ui tab" data-tab="second">
+				Last 100 Parsed Emails
+				<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
+					<tbody>
+                        <thead>
+                            <tr>
+								<th>Id</th>
+                                <th>Forwared At</th>
+                                <th>Message Id</th>
+								<th>Subject</th>
+								<th>Parser Type</th>
+								<th>Details</th>
+                            </tr>
+                        </thead>
+						<%parsed_emails.forEach(function(pe){%>
+							<tr data-id='<%=pe.id%>' class="pe">
+								<td class='single line'><%=pe.id%></td>
+								<td>
+									<span><%-moment(pe.createdAt).tz('Asia/Kolkata').format('h:mm a')%></span>,	
+									<%-moment(pe.createdAt).tz('Asia/Kolkata').format('MMM')%>
+									<span><%-moment(pe.createdAt).tz('Asia/Kolkata').format('DD')%></span></br>
+									<span style="font-size: 0.75rem;"><%-moment(pe.createdAt).tz('Asia/Kolkata').format('YYYY')%></span>
+									</span>
+                                </td>
+                                <td><%=pe.message_id%></td>
+                                <td><%=_.get(pe, 'details.inbound.Subject')%></td>
+								<td><%=pe.type%></td>
+								<td class='single line'><a href="#" class='show_details pe'>details</a></td>
+							</tr>
+							<tr id='details_pe_<%=pe.id%>' style='display: none;'>
+								<td colspan='3'><b>Message Body:</b><br><%-_.get(pe, 'details.inbound["body-plain"]')%></td>
+								<td colspan='3'><b>Extacted Data:</b><br><%=JSON.stringify(_.get(pe, "extracted_data", {}),null,4)%></td>
+							</tr>
+						<%})%>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<% } else{ %>
+	<div class="ui negative message"><%=error%></div>
+	<% } %>
+	
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.tabular.menu .item').tab();
+		$('.show_details.pf').click(function(e){
+			e.preventDefault();
+			// alert('show details clicked');
+			console.log('show details clicked');
+			var id=$(this).parents('tr.pf').attr('data-id');
+			console.log(id);
+			$('#details_pf_'+id).toggle();
+		})
+		$('.show_details.pe').click(function(e){
+			e.preventDefault();
+			// alert('show details clicked');
+			console.log('show details clicked');
+			var id=$(this).parents('tr.pe').attr('data-id');
+			console.log(id);
+			$('#details_pe_'+id).toggle();
+		})
+		$('.submit_retry').click(function(e){
+			console.log('submit retry button clicked');
+			var pf_id=$(this).attr('data-retry-id');
+			console.log(pf_id);
+			var button = this;
+			$(button).addClass('loading');
+			$(button).addClass('disabled');
+			$.post("/parse_failure/"+pf_id + "/retry",function(result,status){
+				console.log(result, status)
+			}).always(function() {
+				location.reload();
+			});
+		});
+	});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>

@@ -38,12 +38,11 @@ module.exports.routes = {
   
   'GET /emails':'MainController.listEmails',
   'GET /email/create':'MainController.createEmail',
-  'POST /email/create-manual':'MainController.createEmailManual',
-  'GET /email/create-manual':'MainController.createEmailManual',
-  'GET /oauth2callback':'MainController.oauth2callback',
   'GET /email/:id/edit':'MainController.editEmail',
   'POST /email/:id/edit':'MainController.editEmail',
   'GET /email/:id':'MainController.viewEmail',
+
+  'POST /parse_failure/:id/retry': 'MainController.retryParseFailure',
   
   'GET /accounts':'MainController.listAccounts',
   'GET /account/create':'MainController.createAccount',

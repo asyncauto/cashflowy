@@ -1,137 +1,140 @@
-var mailgun = require('mailgun-js')({apiKey: sails.config.mailgun.api_key, domain: sails.config.mailgun.domain});
-var ejs=require('ejs');
+var mailgun = require('mailgun-js')({ apiKey: sails.config.mailgun.api_key, domain: sails.config.mailgun.domain });
+var ejs = require('ejs');
 var async = require('async');
 
-var generateHTML= function(email,cb){
-	if(email.template && email.locals){
+var generateHTML = function (email, cb) {
+	if (email.template && email.locals) {
 		// fs.readFile('emails/'+email.template+'.ejs','utf8', function(err,str){
 		// 	email.content = ejs.render(str, email.locals, {});
 		// 	cb(err,email);
 		// });
-		ejs.renderFile('views/emails/'+email.template+'.ejs', email.locals, function(err, str) {
-			var html ='';
-		    if (!err)
-	    		html = str;
-		    else 
-		        console.log(err);
-		    cb(err,html);	
+		ejs.renderFile('views/emails/' + email.template + '.ejs', email.locals, function (err, str) {
+			var html = '';
+			if (!err)
+				html = str;
+			else
+				console.log(err);
+			cb(err, html);
 		});
 	}
 	else
 		cb('email object is malformed');
 }
 
-module.exports={
-	sendEmail:function(options,callback){
+module.exports = {
+	sendEmail: function (options, callback) {
 		var data = {
 			from: options.from,
 			to: options.to,
 			subject: options.subject,
 			// html:'<b>test</b>. this is a sample email'
 		};
-		generateHTML({template:options.template,locals:options.locals},function(err,result){
+		generateHTML({ template: options.template, locals: options.locals }, function (err, result) {
 			var inlineCss = require('inline-css');
-			inlineCss(result, {url:' '}).then(function(html) {
+			inlineCss(result, { url: ' ' }).then(function (html) {
 				// console.log('\n\n\n\n -------- ');
 				// console.log(html); 
-				data.html=html;
+				data.html = html;
 				// callback(null);
 				mailgun.messages().send(data, function (err, body) {
 					console.log(body);
 					callback(err);
-				});	
+				});
 			});
 		})
-		
+
 	},
-	parseEmailBodyWithBodyParser: function(options, cb){
+	parseEmailBodyWithBodyParser: function (options, cb) {
 		async.auto({
-			extractDataFromMessageBody: function(cb){
-				var opts={
-					email_type:options.email_type,
-					body:options.inbound_data['stripped-text']
+			extractDataFromMessageBody: function (cb) {
+				var opts = {
+					email_type: options.email_type,
+					body: options.inbound_data['stripped-text']
 				}
-				GmailService.extractDataFromMessageBody(opts,cb);
+				GmailService.extractDataFromMessageBody(opts, cb);
 			},
-			findOrCreateParsedEmail: ['extractDataFromMessageBody', function(results, cb){
-				var parsed_email={
-					extracted_data:results.extractDataFromMessageBody.ed,
+			findOrCreateParsedEmail: ['extractDataFromMessageBody', function (results, cb) {
+				var parsed_email = {
+					extracted_data: results.extractDataFromMessageBody.ed,
 					user: options.user,
 					type: options.email_type,
-					body_parser_used:results.extractDataFromMessageBody.body_parser_used,
-					email:options.email_address,
+					body_parser_used: results.extractDataFromMessageBody.body_parser_used,
+					email: options.email_address,
 					message_id: options.inbound_data['Message-Id'],
 					details: {
 						inbound: options.inbound_data
 					}
 				}
-				parsed_email.extracted_data.email_received_time= new Date(options.inbound_data['Date']);
+				parsed_email.extracted_data.email_received_time = new Date(options.inbound_data['Date']);
 
-				if(parsed_email.body_parser_used==''){
-					var parsed_failure = {
-						extracted_data:results.extractDataFromMessageBody.ed,
-						user: options.user,
-						email:options.email_address,
-						message_id: options.inbound_data['Message-Id'],
-						status: 'FAILED',
-						details: {
-							inbound: options.inbound_data
-						}
-					}
-					Parse_failure.findOrCreate({message_id:parsed_email.message_id},parsed_failure).exec(function(err, pe){
-						cb(err);
-					});
-				}else{		
+				if (parsed_email.body_parser_used == '') {
+					cb(null);
+				} else {
 					// console.log('parser success');
-					Parsed_email.findOrCreate({message_id:parsed_email.message_id},parsed_email).exec(function(err, pe){
+					Parsed_email.findOrCreate({ message_id: parsed_email.message_id }, parsed_email).exec(function (err, pe) {
+						Parse_failure.update({ message_id: parsed_email.message_id }, 
+							{ parsed_email: pe.id, 
+							status: 'PARSED', extracted_data: parsed_email.extracted_data }).exec(sails.log.info);
 						cb(err, pe)
 					});
 				}
 			}]
-		},cb)
+		}, cb)
 	},
-	
-	parseInboundEmail: function(inbound_data, callback){
+
+	parseInboundEmail: function (inbound_data, callback) {
 		async.auto({
-			getEmail: function(cb){
-				Email.findOne({email:inbound_data.To}).exec(cb);
+			getEmail: function (cb) {
+				Email.findOne({ email: inbound_data.To }).exec(cb);
 			},
-			parseWithEachFilter:['getEmail', function(results, cb){
-				if(!results.getEmail) return cb(null);
+			parseWithEachFilter: ['getEmail', function (results, cb) {
+				if (!results.getEmail) return cb(null);
 				var parsed_email; // store the Parse_email object in the variable, send to slack if this variable is empty
-				async.someLimit(sails.config.filters.active, 1, function(filter, next){
-					var data={
-							email_id:results.getEmail.id,
-							email_type:filter,
-							inbound_data: inbound_data,
-							user: results.getEmail.user,
-							email_address: results.getEmail.email
+				async.someLimit(sails.config.filters.active, 1, function (filter, next) {
+					var data = {
+						email_id: results.getEmail.id,
+						email_type: filter,
+						inbound_data: inbound_data,
+						user: results.getEmail.user,
+						email_address: results.getEmail.email
 					};
-					MailgunService.parseEmailBodyWithBodyParser(data, function(err, pe){
-						if(err) return next(err, true);
-						if(pe.findOrCreateParsedEmail) {
-							parsed_email=pe.findOrCreateParsedEmail;
+					MailgunService.parseEmailBodyWithBodyParser(data, function (err, pe) {
+						if (err) return next(err, true);
+						if (pe.findOrCreateParsedEmail) {
+							parsed_email = pe.findOrCreateParsedEmail;
 							return next(null, true)
-						}else{
+						} else {
 							next(null, false);
 						}
-					})	
-				},function(err){
+					})
+				}, function (err) {
 					cb(err, parsed_email);
 				})
 			}],
-			parseFailToSlack: ['parseWithEachFilter', function(results, cb){
+			parseFailToSlack: ['parseWithEachFilter', function (results, cb) {
 				// don't send to slack if processEach able to parse the email body
-				if(results.parseWithEachFilter) return cb(null);
-				var text="Parsing email failure\n";
-				text+="<-Email body->\n";
-				text+=inbound_data['stripped-text'].trim();
-				var content = {
-					"icon_emoji": ":robot_face:",
-					"username": "cashflowy_bot",
-					"text":text,
+				if (results.parseWithEachFilter) return cb(null);
+				var parsed_failure = {
+					user: results.getEmail.user,
+					email: results.getEmail.email,
+					message_id: inbound_data['Message-Id'],
+					status: 'FAILED',
+					details: {
+						inbound: inbound_data
+					}
 				}
-				SlackService.pushToSlack('cashflowy',content,cb);
+				Parse_failure.findOrCreate({ message_id: parsed_failure.message_id }, parsed_failure).exec(function (err, pf) {
+					sails.log.info('parse failure created', err, pf);
+					var text = `Parsing email failure ${pf.id}\n`;
+					text += "<-Email body->\n";
+					text += inbound_data['stripped-text'].trim();
+					var content = {
+						"icon_emoji": ":robot_face:",
+						"username": "cashflowy_bot",
+						"text": text,
+					}
+					SlackService.pushToSlack('cashflowy', content, cb);
+				});
 			}]
 		}, callback);
 	},

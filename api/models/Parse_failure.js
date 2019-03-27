@@ -12,8 +12,7 @@ module.exports = {
 
 	attributes: {
 		extracted_data: {
-			type: 'json',
-			required: true,
+			type: 'json'
 		},
 		email:{
 			type:'string',

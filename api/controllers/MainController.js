@@ -249,6 +249,60 @@ module.exports = {
 			res.view('list_emails',locals);
 		});
 	},
+	viewEmail: function(req, res){
+		async.auto({
+			getEmail: function(cb){
+				Email.findOne({id: req.params.id, user: req.user.id})
+					.exec(function(err, e){
+						if(err) return cb(err);
+						if(!e) return cb(new Error('Invalid Email'));
+						return cb(null, e);
+					});
+			},
+			findParsedEmails: ['getEmail', function(results, cb){
+				Parsed_email.find({email: results.getEmail.email, user:req.user.id}).sort('createdAt DESC').limit(100).exec(cb);
+			}],
+			findParseFailures:['getEmail', function(results, cb){
+				Parse_failure.find({email: results.getEmail.email, user:req.user.id}).sort('createdAt DESC').limit(100).exec(cb);
+			}] 
+		}, function(err, results){
+			var locals={
+				error: err? err.message:'',
+				email:results.getEmail,
+				parsed_emails: results.findParsedEmails,
+				parse_failures: results.findParseFailures,
+				moment: require('moment-timezone')
+			}
+			res.view('view_email',locals);
+		})
+	},
+	retryParseFailure: function(req, res){
+		async.auto({
+			getParseFailure: function(cb){
+				Parse_failure.findOne({id: req.params.id, user: req.user.id}).exec(function(err, pf){
+					if(err) return cb(err);
+					if(!pf || !_.get(pf, 'details.inbound')) return cb(new Error("NOT_FOUND"));
+					return cb(null, pf);
+				});
+			},
+			retryParsing: ['getParseFailure', function(results, cb){
+				MailgunService.parseInboundEmail(_.get(results, 'getParseFailure.details.inbound'), cb);
+			}]
+		}, function(err, results){
+			if(err){
+				switch (err.message) {
+					case 'NOT_FOUND':
+						return res.status(404).json({error: 'NOT_FOUND'})
+						break;
+				
+					default:
+						return res.status(500).json({error: err.message});
+						break;
+				}
+			}
+			return res.json({status: 'success'})
+		});
+	},
 	createEmailManual:function(req,res){
 		if(req.body){ // post request
  			var e={
@@ -323,8 +377,6 @@ module.exports = {
 		})
 	},
 	editEmail:function(req,res){
-	},
-	viewEmail:function(req,res){
 	},
 	
 	listAccounts:function(req,res){
@@ -825,7 +877,12 @@ module.exports = {
 				var moment = require('moment-timezone');
 				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
 			})
-			locals.transactions=_.groupBy(results.getTlis, function(t){return t.transaction.occuredAt});
+			locals.transactions = _.groupBy(results.getTlis, function(t){return t.transaction.id}, 'desc');
+
+			// //sort by occured at desc
+			// var order_by = (req.query.sort == 'occuredAt ASC') ? 'asc': 'desc';
+			// locals.transaction = _.orderBy(locals.transactions, function(t){return t[0].transaction.occuredAt}, order_by);
+			
 			locals.accounts=results.getAccounts;
 			locals.tags=results.getTags;
 			locals.documents=results.getDocuments;
