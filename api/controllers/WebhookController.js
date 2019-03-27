@@ -36,14 +36,15 @@ module.exports = {
             findAccounts: ['findDocument', function(results, cb){
                 var accouts = [];
                 if(req.body.account_id)
-                    accouts.push(req.body.account_id.substr(-4));
+                    accouts.push(req.body.account_id);
                 else if(results.findDocument.parser_used=='sebtifdmvape')
                     _.forEach(req.body.accounts, function(account){
-                        accouts.push(account.acc_no.substr(-4))
+                        accouts.push(account.acc_no)
                     })
                 var account_ids = [];
                 async.forEach(accouts, function(ac, cb){
-                    Account.findOrCreate({acc_number: ac, user: results.findDocument.user},
+                    // check for last 4 digits.
+                    Account.findOrCreate({acc_number: {endsWith: ac.substr(-4)}, user: results.findDocument.user},
                         {acc_number: ac, user: results.findDocument.user, name: 'Auto Generated: '+ ac, type: "bank"}).exec(function(e, a){
                             if(e) return cb(e);
                             account_ids.push(a.id);
