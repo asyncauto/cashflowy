@@ -303,11 +303,10 @@ module.exports = {
 			return res.json({status: 'success'})
 		});
 	},
-	createEmailManual:function(req,res){
+	createEmail:function(req,res){
 		if(req.body){ // post request
  			var e={
  				email:req.body.email,
- 				token:req.body.token,
  				user:req.user.id,
  			}
  			// console.log('before transaction find or create');
@@ -331,7 +330,7 @@ module.exports = {
  			res.view('create_email',locals);
  		}
 	},
-	createEmail:function(req,res){
+	createEmailGmail:function(req,res){
 		const {google} = require('googleapis');
 		const {client_secret, client_id, redirect_uris} = sails.config.gmail.installed;
 		const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[1]);

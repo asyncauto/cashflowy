@@ -12,13 +12,7 @@
 				<div class="field">
 					<label>Email address</label>
 					<input type="text" name="email" placeholder="alex@example.com" value="<%=email%>">
-				</div>
-				<div class="field">
-					<label>Auth token</label>
-					<input type="text" name="token" placeholder="auth token" value="<%=token%>">
-				</div>
-
-				
+				</div>				
 				<div class="ui error message">
 					<div class="header">Error</div>
 					<p><%=message%></p>
@@ -35,10 +29,11 @@
 				you are creating an email which we will keep listening for financial transactions
 				<br/><br/>
 				<b>Email:</b> 
-				For now we support only gmail address. The gmail address can be a business gmail address also. 
+				The address can be a business gmail address also. 
 				<br/><br/>
-				<b>Token:</b>
-				You will need to enter token detail here for now. It will be automated later. 
+				<b>Auto Forwarding:</b>
+				Once you add your Email in Cashflowy, you can configure auto forwarding in your email client.
+				Here's how to do in <a href="https://github.com/cashflowy/cashflowy/blob/master/docs/auto_forwarding_filters.md">Gmail</a>
 			</div>
 		</div>
 	</div>

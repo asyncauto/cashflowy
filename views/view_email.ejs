@@ -16,9 +16,9 @@
 						<thead>
 							<tr>
 								<th>Id</th>
-                                <th>Forwared At</th>
-								<th>Message Id</th>
+								<th>Forwared At</th>
 								<th>Subject</th>
+								<th>Message Id</th>
 								<th>Status</th>
 								<th>Details</th>
 								<th>Retry</th>
@@ -32,16 +32,17 @@
 										<%-moment(pf.createdAt).tz('Asia/Kolkata').format('MMM')%>
 										<span><%-moment(pf.createdAt).tz('Asia/Kolkata').format('DD')%></span></br>
 										<span style="font-size: 0.75rem;"><%-moment(pf.createdAt).tz('Asia/Kolkata').format('YYYY')%></span>
-										</span></td>
+										</span>
+									</td>
+									<td><%=_.get(pf, 'details.inbound.Subject')%></td>
                                     <td><%=pf.message_id%></td>
-                                    <td><%=_.get(pf, 'details.inbound.Subject')%></td>
 									<td class='single line'><%=pf.status%></td>
 									<td class='single line'><a href="#" class='show_details pf'>details</a></td>
 									<td class='single line'><button class="ui basic blue <%=pf.status == 'PARSED'?'disabled':''%> button submit_retry" data-retry-id="<%=pf.id%>">Retry</button></td>
 								</tr>
 								<tr id='details_pf_<%=pf.id%>' style='display: none;'>
-									<td colspan='3'><b>Message Body:</b><br><%-_.get(pf, 'details.inbound["body-plain"]')%></td>
-									<td colspan='3'><b>Extacted Data:</b><br><%=JSON.stringify(_.get(pf, 'extracted_data', {}),null,4)%></td>
+									<td colspan='4'><b>Message Body:</b><br><%-_.get(pf, 'details.inbound["body-plain"]')%></td>
+									<td colspan='2'><b>Extacted Data:</b><br><%=JSON.stringify(_.get(pf, 'extracted_data', {}),null,4)%></td>
 								</tr>
 							<%})%>
 						</tbody>
@@ -54,9 +55,9 @@
                         <thead>
                             <tr>
 								<th>Id</th>
-                                <th>Forwared At</th>
-                                <th>Message Id</th>
+								<th>Forwared At</th>
 								<th>Subject</th>
+                                <th>Message Id</th>
 								<th>Parser Type</th>
 								<th>Details</th>
                             </tr>
@@ -70,15 +71,15 @@
 									<span><%-moment(pe.createdAt).tz('Asia/Kolkata').format('DD')%></span></br>
 									<span style="font-size: 0.75rem;"><%-moment(pe.createdAt).tz('Asia/Kolkata').format('YYYY')%></span>
 									</span>
-                                </td>
+								</td>
+								<td><%=_.get(pe, 'details.inbound.Subject')%></td>
                                 <td><%=pe.message_id%></td>
-                                <td><%=_.get(pe, 'details.inbound.Subject')%></td>
 								<td><%=pe.type%></td>
 								<td class='single line'><a href="#" class='show_details pe'>details</a></td>
 							</tr>
 							<tr id='details_pe_<%=pe.id%>' style='display: none;'>
-								<td colspan='3'><b>Message Body:</b><br><%-_.get(pe, 'details.inbound["body-plain"]')%></td>
-								<td colspan='3'><b>Extacted Data:</b><br><%=JSON.stringify(_.get(pe, "extracted_data", {}),null,4)%></td>
+								<td colspan='4'><b>Message Body:</b><br><%-_.get(pe, 'details.inbound["body-plain"]')%></td>
+								<td colspan='2'><b>Extacted Data:</b><br><%=JSON.stringify(_.get(pe, "extracted_data", {}),null,4)%></td>
 							</tr>
 						<%})%>
 					</tbody>

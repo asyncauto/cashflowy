@@ -16,9 +16,6 @@ module.exports = {
 			model: 'user',
 			required: true
 		},
-		token: {
-			type: 'json',
-		},
 		details:{
 			type: 'json',
 		},
