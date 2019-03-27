@@ -61,11 +61,26 @@ module.exports={
 					body_parser_used:results.extractDataFromMessageBody.body_parser_used,
 					email:options.email_address,
 					message_id: options.inbound_data['Message-Id'],
+					details: {
+						inbound: options.inbound_data
+					}
 				}
 				parsed_email.extracted_data.email_received_time= new Date(options.inbound_data['Date']);
 
 				if(parsed_email.body_parser_used==''){
-					cb(null);
+					var parsed_failure = {
+						extracted_data:results.extractDataFromMessageBody.ed,
+						user: options.user,
+						email:options.email_address,
+						message_id: options.inbound_data['Message-Id'],
+						status: 'FAILED',
+						details: {
+							inbound: options.inbound_data
+						}
+					}
+					Parse_failure.findOrCreate({message_id:parsed_email.message_id},parsed_failure).exec(function(err, pe){
+						cb(err);
+					});
 				}else{		
 					// console.log('parser success');
 					Parsed_email.findOrCreate({message_id:parsed_email.message_id},parsed_email).exec(function(err, pe){

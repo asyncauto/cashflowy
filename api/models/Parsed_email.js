@@ -43,6 +43,10 @@ module.exports = {
 		transaction:{ // the accociated transaction
 			model:'transaction',
 			// required is true, but when initially created, it is created without a ref to transaction.
+		},
+		details:{
+			type: 'json',
+			columnType: 'jsonb'
 		}
 	},
 	beforeCreate:function(pe,cb){
