@@ -1,0 +1,123 @@
+<style>
+	.ui.grid>.row{
+	padding: 0.5rem 0;
+	}
+</style>
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='sixteen wide column'>
+			<h1>Invoice</h1>
+			<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Invoice no</th>
+						<th>3rd party</th>
+						<th>Type</th>
+						<th>Original Amount</th>
+						<th>Sub total</th>
+						<th>GST</th>
+						<th>Balance due</th>
+						<th>Category</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%invoices.forEach(function(i){%>
+						<tr data-tid='<%=i.id%>'>
+							<td class='single line'><%=i.date?i.date.toISOString().substring(0,10):''%></td>
+							<td><%=i.remote_id%> </td>
+							<td><%=i.third_party%> </td>
+							<td><%=i.type%></td>
+							<td><%=i.original_currency%> <%=i.original_amount.toFixed(2)%></td>
+							<td>INR <%=i.sub_total_inr.toFixed(2)%></td>
+							<td>INR <%=i.gst_total_inr.toFixed(2)%></td>
+							<td>INR <%=i.balance_due_inr.toFixed(2)%></td>
+							<td><%=i.category?i.category.name:''%></td>
+						</tr>
+					<%})%>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<a class="circular ui icon right floated primary big button" href="/invoice/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new transaction" data-position="left center" data-inverted=""><i class="icon add"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+		var edit_active=false;
+		 
+		$('.filter_txn.dropdown').dropdown({ allowCategorySelection: true });
+		$('.extra_options.dropdown').dropdown();
+		$('.filter.dropdown').dropdown({
+			onChange:function(value, text, $choice){
+				var params = {};
+				if($('input[name="filter_account"]').val())
+					params.account= $('input[name="filter_account"]').val();
+				if($('input[name="filter_category"]').val())
+				    params.category= $('input[name="filter_category"]').val();
+				window.location = '/transactions?'+$.param(params);
+			}
+		});
+		$('.tags_dd.ui.dropdown')
+		  .dropdown({
+		    allowAdditions: true,
+		    onChange:function(value, text, $choice){
+				$(this).parents('.add_tags_popup').find('.submit_edit_tags').removeClass('disabled');
+			}
+		  });
+		$('.popup').popup();
+		$('.add_tags2').popup({
+			on:'click',
+			popup: '.add_tags_popup'
+		});
+		$('.submit_edit_tags').click(function(e){
+			$(this).addClass('disabled');
+			var tli_id=$(this).parents('.tli').attr('data-tli-id');
+			var tags_string=$(this).parents('.tli').find('.add_tags_popup').find('input[name=tags]').val();;
+			console.log(tli_id);
+			console.log(tags_string);
+			var dd = this;
+			$.ajax({
+				url:"/api/edit_tags/",
+				data:{new_tags: tags_string.split(','),tli_id:tli_id},
+				type:'POST',
+				success:function(response){
+					console.log('success');
+					// alert('updated tags');
+					console.log(response);
+					// $(dd).removeClass('disabled').removeClass('loading');
+					$(dd).parents('.tli').find('.tags').html(response);
+					// $(dd).parents('.transaction').find('span.tags').html('hello');
+				},
+				error:function(xhr, textStatus, errorThrown){
+					console.log("An error occured: " + xhr.status + " " + xhr.statusText);
+				}
+			})
+			// update the ui to include the tags.
+			// update details on the backend. 
+		})
+		$('#submit_form').click(function(){
+			console.log('clicked on form submit');
+			$('input').each(function(i) {
+		        var $input = $(this);
+		        if ($input.val() == '')
+		            $input.attr('disabled', 'disabled');
+		    });
+			$( "form" ).submit();
+		});
+		$('#reset_form').click(function(){
+			window.location = '/transactions';
+		});
+		$('.show_details').click(function(e){
+			e.preventDefault();
+			// alert('show details clicked');
+			console.log('show details clicked');
+			var tli_id=$(this).parents('.tli').attr('data-tli-id');
+			console.log(tli_id);
+			$('#details_'+tli_id).toggle();
+		})
+		
+	});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>

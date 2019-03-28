@@ -2158,4 +2158,81 @@ module.exports = {
 		var locals={}
 		res.view('delete_pnl',locals);
 	},
+	listInvoices:function(req,res){
+		var locals={};
+		Invoice.find({user:req.user.id}).populate('category').exec(function(err,invoices){
+			if(err)
+				throw err;
+			locals.invoices=invoices;
+			res.view('list_invoices',locals);
+		})
+	},
+	viewInvoice:function(req,res){
+		var locals={};
+		res.view('view_invoices',locals);
+	},
+	createInvoice:function(req,res){
+		Account.find({ user: req.user.id }).exec(function (err, accounts) {
+			if (req.body) { // post request
+				console.log(req.body);
+				const fx = require('money');
+				fx.base = 'INR';
+				fx.rates = sails.config.fx_rates;
+				var invoice = {
+					original_currency: req.body.original_currency,
+					date: new Date(req.body.date + ' ' + req.body.time + req.body.tz),
+					createdBy: 'user',
+					description: req.body.description,
+					account: req.body.account_id,
+					third_party: req.body.third_party,
+					type:req.body.type,
+					terms:req.body.terms,
+					user:req.user.id,
+					remote_id:req.body.remote_id,
+				}
+				if (req.body.type == 'payable') {
+					invoice.original_amount = -(req.body.original_amount);
+					invoice.amount_inr = -(fx.convert(req.body.original_amount, { from: invoice.original_currency, to: "INR" }));
+					invoice.sub_total_inr = -(fx.convert(req.body.sub_total, { from: invoice.original_currency, to: "INR" }));
+					invoice.gst_total_inr = -(fx.convert(req.body.gst_total, { from: invoice.original_currency, to: "INR" }));
+					invoice.balance_due_inr = -(fx.convert(req.body.balance_due, { from: invoice.original_currency, to: "INR" }));
+				} else if (req.body.type == 'receivable') {
+					invoice.original_amount = (req.body.original_amount);
+					invoice.amount_inr = (fx.convert(req.body.original_amount, { from: invoice.original_currency, to: "INR" }));
+					invoice.sub_total_inr = (fx.convert(req.body.sub_total, { from: invoice.original_currency, to: "INR" }));
+					invoice.gst_total_inr = (fx.convert(req.body.gst_total, { from: invoice.original_currency, to: "INR" }));
+					invoice.balance_due_inr = (fx.convert(req.body.balance_due, { from: invoice.original_currency, to: "INR" }));
+				}
+				// console.log('before transaction find or create');
+				console.log(invoice);
+				Invoice.create(invoice).exec(function (err, inv) {
+					if (err)
+						throw err;
+					else {
+						res.redirect('/invoices');
+					}
+				});
+			} else { // view the form
+				var locals = {
+					invoice: {
+						date: '',
+					},
+					accounts:accounts,
+				};
+				res.view('create_invoice', locals);
+			}
+			
+		})
+		
+		
+	},
+	editInvoice:function(req,res){
+		var locals = {};
+		res.view('create_invoice', locals);
+	},
+	deleteInvoice:function(req,res){
+		var locals = {};
+		res.view('delete_invoice', locals);
+	}
+
 }

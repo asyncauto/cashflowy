@@ -5,7 +5,7 @@
   "description": "a Sails application",
   "keywords": [],
   "dependencies": {
-    "async": "^2.6.1",
+    "async": "^2.6.2",
     "atob": "^2.1.2",
     "aws-sdk": "^2.412.0",
     "bcryptjs": "^2.4.3",
