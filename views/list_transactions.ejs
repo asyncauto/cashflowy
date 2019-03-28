@@ -147,7 +147,7 @@
 			</div>
 			<!-- <div class="ui stacked segments"> -->
 					<%transactions.forEach(function(tlis){
-						var t = tlis[0].transaction; console.log(tlis)%>
+						var t = tlis[0].transaction;%>
 					<div class="ui segment">
 						<div class="ui two column divided centered grid">
 							<div class="one wide middle aligned column">
@@ -337,7 +337,7 @@
 			var button = this;
 			$(button).addClass('loading');
 			$(button).addClass('disabled');
-			$.post("/api/edit_desc", {t: tli_id,description:description}, function(result,status){
+			$.post("/api/edit_desc", {tli: tli_id,description:description}, function(result,status){
 			    console.log('result = '+result);
 			    console.log('status = '+status);// this runs only on sucess
 			    if(status=='success'){
