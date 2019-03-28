@@ -149,6 +149,16 @@ module.exports.routes = {
   'GET /org/:id/delete': 'MainController.deleteOrg',
   'POST /org/:id/delete': 'MainController.deleteOrg',
   
+  'GET /org/:o_id/members': 'MainController.listMembers',
+  'GET /org/:o_id/member/create': 'MainController.createMember',
+  'POST /org/:o_id/member/create': 'MainController.createMember',
+  'GET /org/:o_id/member/:id': 'MainController.viewMember',
+  'GET /org/:o_id/member/:id/edit': 'MainController.editMember',
+  'POST /org/:o_id/member/:id/edit': 'MainController.editMember',
+  'GET /org/:o_id/member/:id/delete': 'MainController.deleteMember',
+  'POST /org/:o_id/member/:id/delete': 'MainController.deleteMember',
+
+
   'GET /dt/:id':'MainController.viewDoubtfulTransaction',
   'POST /dt/:id/mark_as_unique':'MainController.markDTAsUnique', // api
   'POST /dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate', // api

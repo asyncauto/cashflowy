@@ -2286,4 +2286,30 @@ module.exports = {
 		var locals = {};
 		res.view('delete_org', locals);
 	},
+	listMembers: function (req, res) {
+		var locals = {};
+		// Invoice.find({ user: req.user.id }).populate('category').exec(function (err, invoices) {
+		// 	if (err)
+		// 		throw err;
+		// 	locals.invoices = invoices;
+		// 	res.view('list_invoices', locals);
+		// })
+		res.view('list_members', locals);
+	},
+	viewMember: function (req, res) {
+		var locals = {};
+		res.view('view_member', locals);
+	},
+	createMember: function (req, res) {
+		var locals = {};
+		res.view('create_member', locals);
+	},
+	editMember: function (req, res) {
+		var locals = {};
+		res.view('create_member', locals);
+	},
+	deleteMember: function (req, res) {
+		var locals = {};
+		res.view('delete_member', locals);
+	},
 }
