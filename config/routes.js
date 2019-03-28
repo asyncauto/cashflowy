@@ -130,6 +130,15 @@ module.exports.routes = {
   'POST /pnl/:id/delete':'MainController.deletePnL',
 
 
+  'GET /balance_sheets': 'MainController.listBalanceSheets',
+  'GET /balance_sheet/create': 'MainController.createBalanceSheet',
+  'POST /balance_sheet/create': 'MainController.createBalanceSheet',
+  'GET /balance_sheet/:id': 'MainController.viewBalanceSheet',
+  'GET /balance_sheet/:id/edit': 'MainController.editBalanceSheet',
+  'POST /balance_sheet/:id/edit': 'MainController.editBalanceSheet',
+  'GET /balance_sheet/:id/delete': 'MainController.deleteBalanceSheet',
+  'POST /balance_sheet/:id/delete': 'MainController.deleteBalanceSheet',
+
   'GET /dt/:id':'MainController.viewDoubtfulTransaction',
   'POST /dt/:id/mark_as_unique':'MainController.markDTAsUnique', // api
   'POST /dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate', // api
