@@ -850,6 +850,11 @@ module.exports = {
 			locals.tlis = results.getTlis
 			var accounts=results.getAccounts;
 			locals.tlis.forEach(function(t){
+				// set to two decimal number
+				_.set(t, 'original_amount', _.get(t, 'original_amount', 0).toFixed(2))
+				_.set(t, 'amount_inr', _.get(t, 'amount_inr', 0).toFixed(2))
+				_.set(t, 'transaction.original_amount', _.get(t, 'transaction.original_amount', 0).toFixed(2))
+				_.set(t, 'transaction.amount_inr', _.get(t, 'transaction.amount_inr', 0).toFixed(2))
 				accounts.forEach(function(account){ // expanding account in the transaction object
 					if(t.account==account.id)
 						t.account=account;
