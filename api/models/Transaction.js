@@ -32,12 +32,14 @@ module.exports = {
         },
         third_party: { // only for income/expense. 
             type: 'string',
+            allowNull: true
         },
         account: { // from where the transaction is made
             model: 'account',
             required: true
         }
     },
+
     beforeCreate: function (data, cb) {
         if (_.isDate(data.occuredAt))
             data.occuredAt = data.occuredAt.toISOString()

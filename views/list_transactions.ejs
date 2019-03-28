@@ -158,8 +158,8 @@
 								</span>
 							</div>
 							<div class="fifteen wide column">
-								<div class="ui grid container">
-									<div class="three column row">
+								<div class="ui grid">
+									<div class="three column row" style="background:#f8ffff">
 										<div class="column">
 											<%if(t.type=='income_expense'){
 												if(t.original_amount<0){%> 
@@ -199,8 +199,43 @@
 									</div>
 									<div class="ui divider" style="margin:0%;"></div>
 									<%tlis.forEach(function(tli){%>
-										<div class='tli row' data-tli-id='<%=tli.id%>'>
+										<div class='tli row' data-tli-id='<%=tli.id%>' style="font-size: 0.89rem;">
 											<div class="three wide column">
+													<%if(tli.type=='income_expense'){
+														if(tli.original_amount<0){%> 
+															<span style='opacity: 0.5'>You paid</span><br>
+															<b style='color:red' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
+														<%}else{%>
+															<span style='opacity: 0.5'>You got</span><br>
+															<b style='color:#5bc5a2' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%-tli.amount_inr%>"><%=tli.original_currency%> <%=(tli.original_amount)%></b>
+														<%}
+													}else{%>
+														<span style='opacity: 0.5'>You transferred</span><br>
+														<b style='' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
+													<%}%>
+												</div>
+												<div class="two wide column">
+													<%if(tli.original_amount<0){%> 
+														<span style='opacity: 0.5'>from</span><br>
+													<%}else{%>
+														<span style='opacity: 0.5'>deposited to</span><br>
+													<%}%>
+													<%=tli.account.name%>
+												</div>
+												<div class="four wide column">
+													<%if(tli.type=='income_expense'){%> 
+														<%if(tli.original_amount<0){%> 
+															<span style='opacity: 0.5'>to</span><br>
+														<%}else{%>
+															<span style='opacity: 0.5'>from</span><br>
+														<%}%>
+														<%=tli.third_party.substring(0, 30)%>
+													<%}else{%>
+														<span style='opacity: 0.5'>to</span><br>
+														<%=tli.to_account.name%>
+													<%}%>
+												</div>
+											<div class="four wide column">
 												<!-- category  -->
 												<span style="opacity: 0.5;">Category:</span>
 												<div class="ui category dropdown" style="<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>">
@@ -255,41 +290,7 @@
 													<!-- <button class='ui red button cancel_edit_tags' data-id='<%=tli.id%>' >cancel</button> -->
 												</div>
 											</div>	
-											<div class="three wide column">
-												<%if(tli.type=='income_expense'){
-													if(tli.original_amount<0){%> 
-														<span style='opacity: 0.5'>You paid</span><br>
-														<b style='color:red' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
-													<%}else{%>
-														<span style='opacity: 0.5'>You got</span><br>
-														<b style='color:#5bc5a2' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%-tli.amount_inr%>"><%=tli.original_currency%> <%=(tli.original_amount)%></b>
-													<%}
-												}else{%>
-													<span style='opacity: 0.5'>You transferred</span><br>
-													<b style='' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
-												<%}%>
-											</div>
-											<div class="two wide column">
-												<%if(tli.original_amount<0){%> 
-													<span style='opacity: 0.5'>from</span><br>
-												<%}else{%>
-													<span style='opacity: 0.5'>deposited to</span><br>
-												<%}%>
-												<%=tli.account.name%>
-											</div>
-											<div class="five wide column">
-												<%if(tli.type=='income_expense'){%> 
-													<%if(tli.original_amount<0){%> 
-														<span style='opacity: 0.5'>to</span><br>
-													<%}else{%>
-														<span style='opacity: 0.5'>from</span><br>
-													<%}%>
-													<%=tli.third_party.substring(0, 30)+'..'%>
-												<%}else{%>
-													<span style='opacity: 0.5'>to</span><br>
-													<%=tli.to_account.name%>
-												<%}%>
-											</div>
+											
 										</div>
 									<%})%>
 								</div>
