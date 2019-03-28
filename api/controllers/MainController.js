@@ -2260,6 +2260,30 @@ module.exports = {
 		var locals = {};
 		res.view('delete_balance_sheet', locals);
 	},
-
-
+	listOrgs: function (req, res) {
+		var locals = {};
+		// Invoice.find({ user: req.user.id }).populate('category').exec(function (err, invoices) {
+		// 	if (err)
+		// 		throw err;
+		// 	locals.invoices = invoices;
+		// 	res.view('list_invoices', locals);
+		// })
+		res.view('list_orgs', locals);
+	},
+	viewOrg: function (req, res) {
+		var locals = {};
+		res.view('view_org', locals);
+	},
+	createOrg: function (req, res) {
+		var locals = {};
+		res.view('create_org', locals);
+	},
+	editOrg: function (req, res) {
+		var locals = {};
+		res.view('create_org', locals);
+	},
+	deleteOrg: function (req, res) {
+		var locals = {};
+		res.view('delete_org', locals);
+	},
 }
