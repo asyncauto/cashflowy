@@ -214,7 +214,7 @@
 														<b style='' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
 													<%}%>
 												</div>
-												<div class="two wide column">
+												<div class="three wide column">
 													<%if(tli.original_amount<0){%> 
 														<span style='opacity: 0.5'>from</span><br>
 													<%}else{%>
@@ -222,7 +222,7 @@
 													<%}%>
 													<%=tli.account.name%>
 												</div>
-												<div class="four wide column">
+												<div class="five wide column">
 													<%if(tli.type=='income_expense'){%> 
 														<%if(tli.original_amount<0){%> 
 															<span style='opacity: 0.5'>to</span><br>
@@ -235,7 +235,7 @@
 														<%=tli.to_account.name%>
 													<%}%>
 												</div>
-											<div class="four wide column">
+											<div class="five wide column">
 												<!-- category  -->
 												<span style="opacity: 0.5;">Category:</span>
 												<div class="ui category dropdown" style="<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>">
@@ -261,8 +261,6 @@
 													<button class="ui teal button submit_edit_desc" data-id='<%=tli.id%>' >save</button>
 													<button class="ui red button cancel_edit_desc" data-id='<%=tli.id%>' >cancel</button>
 												</div>
-											</div>
-											<div class="three wide column">
 												<span style="opacity: 0.5;">Tags:</span>
 												<span class='tags'>
 													<%- partial('partials/display_tags', {tags: tli.tags}) %>
@@ -289,8 +287,7 @@
 													<br>
 													<!-- <button class='ui red button cancel_edit_tags' data-id='<%=tli.id%>' >cancel</button> -->
 												</div>
-											</div>	
-											
+											</div>				
 										</div>
 									<%})%>
 								</div>
