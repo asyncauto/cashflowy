@@ -837,11 +837,11 @@ module.exports = {
 				Tag.find({user:req.user.id}).exec(callback);
 			},
 			getParsedEmails:['getTlis',function(results,callback){
-				var t_ids=_.map(results.getTlis,function(tli){tli.transaction.id});
+				var t_ids=_.map(results.getTlis,function(tli){return tli.transaction.id});
 				Parsed_email.find({transaction:t_ids}).exec(callback);
 			}],
 			getSLIs:['getTlis',function(results,callback){
-				var t_ids=_.map(results.getTlis,function(tli){tli.transaction.id});
+				var t_ids=_.map(results.getTlis,function(tli){return tli.transaction.id});
 				Statement_line_item.find({transaction:t_ids}).populate('document').exec(callback);
 			}]
 		},function(err,results){

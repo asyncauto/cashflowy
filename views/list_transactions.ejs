@@ -150,148 +150,168 @@
 						var t = tlis[0].transaction;%>
 					<div class="ui segment">
 						<div class="ui two column stackable centered grid">
-							<div class="one wide middle aligned column">
-								<span class='popup' data-html="<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">		
-									<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
-									<span style="font-size: 1.5rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
-									<span style="font-size: 0.75rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
-								</span>
-							</div>
-							<div class="fifteen wide column">
-								<div class="ui grid">
-									<div class="three column row" style="background:#f8ffff">
-										<div class="column">
-											<%if(t.type=='income_expense'){
-												if(t.original_amount<0){%> 
-													<span style='opacity: 0.5'>You paid</span><br>
-													<p style='color:red;font-size: 0.8rem;' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></p>
-												<%}else{%>
-													<span style='opacity: 0.5'>You got</span><br>
-													<p style='color:#5bc5a2;font-size: 0.8rem;' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%-t.amount_inr%>"><%=t.original_currency%> <%=(t.original_amount)%></p>
-												<%}
-											}else{%>
-												<span style='opacity: 0.5'>You transferred</span><br>
-												<p style='font-size: 0.8rem;' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></p>
-											<%}%>
-					
-										</div>
-										<div class="column">
-											<%if(t.original_amount<0){%> 
-												<span style='opacity: 0.5'>from</span><br>
-											<%}else{%>
-												<span style='opacity: 0.5'>deposited to</span><br>
-											<%}%>
-											<p style="font-size: 0.8rem;"><%=t.account.name%></p>
-										</div>
-										<div class="column">
-											<%if(t.type=='income_expense'){%> 
-												<%if(t.original_amount<0){%> 
-													<span style='opacity: 0.5'>to</span><br>
-												<%}else{%>
-													<span style='opacity: 0.5'>from</span><br>
-												<%}%>
-												<p style="font-size: 0.8rem;"><%=t.third_party%></p>
-											<%}else{%>
-												<span style='opacity: 0.5'>to</span><br>
-												<p style="font-size: 0.8rem;"><%=t.account.name%></p>
-											<%}%>
-										</div>
-									</div>
-									<div class="ui divider" style="margin:0%;"></div>
-									<%tlis.forEach(function(tli){%>
-										<div class='tli row' data-tli-id='<%=tli.id%>' style="font-size: 0.89rem;">
-											<div class="three wide column">
-													<%if(tli.type=='income_expense'){
-														if(tli.original_amount<0){%> 
-															<span style='opacity: 0.5'>You paid</span><br>
-															<b style='color:red' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
-														<%}else{%>
-															<span style='opacity: 0.5'>You got</span><br>
-															<b style='color:#5bc5a2' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%-tli.amount_inr%>"><%=tli.original_currency%> <%=(tli.original_amount)%></b>
-														<%}
-													}else{%>
-														<span style='opacity: 0.5'>You transferred</span><br>
-														<b style='' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
-													<%}%>
-												</div>
-												<div class="three wide column">
-													<%if(tli.original_amount<0){%> 
-														<span style='opacity: 0.5'>from</span><br>
-													<%}else{%>
-														<span style='opacity: 0.5'>deposited to</span><br>
-													<%}%>
-													<%=tli.account.name%>
-												</div>
-												<div class="five wide column">
-													<%if(tli.type=='income_expense'){%> 
-														<%if(tli.original_amount<0){%> 
-															<span style='opacity: 0.5'>to</span><br>
-														<%}else{%>
-															<span style='opacity: 0.5'>from</span><br>
-														<%}%>
-														<%=tli.third_party.substring(0, 30)%>
-													<%}else{%>
-														<span style='opacity: 0.5'>to</span><br>
-														<%=tli.to_account.name%>
-													<%}%>
-												</div>
+								<div class="one wide middle aligned column">
+									<span class='popup' data-html="<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">		
+										<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+										<span style="font-size: 1.5rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+										<span style="font-size: 0.75rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
+									</span>
+								</div>
+								<div class="fifteen wide column">
+									<div class="ui grid">
+										<div class="ui row" style="background:#f8ffff">
 											<div class="five wide column">
-												<!-- category  -->
-												<span style="opacity: 0.5;">Category:</span>
-												<div class="ui category dropdown" style="<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>">
-													<input type="hidden" name="category" value="<%=tli.category%>">
-													<div class="text">None</div>
-													<i class="dropdown icon"></i>
+												<%if(t.type=='income_expense'){
+													if(t.original_amount<0){%> 
+														<span style='opacity: 0.5'>You paid</span><br>
+														<p style='color:red;font-size: 0.8rem;' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></p>
+													<%}else{%>
+														<span style='opacity: 0.5'>You got</span><br>
+														<p style='color:#5bc5a2;font-size: 0.8rem;' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%-t.amount_inr%>"><%=t.original_currency%> <%=(t.original_amount)%></p>
+													<%}
+												}else{%>
+													<span style='opacity: 0.5'>You transferred</span><br>
+													<p style='font-size: 0.8rem;' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></p>
+												<%}%>
+											</div>
+											<div class="five wide column">
+												<%if(t.original_amount<0){%> 
+													<span style='opacity: 0.5'>from</span><br>
+												<%}else{%>
+													<span style='opacity: 0.5'>deposited to</span><br>
+												<%}%>
+												<p style="font-size: 0.8rem;"><%=t.account.name%></p>
+											</div>
+											<div class="five wide column">
+												<%if(t.type=='income_expense'){%> 
+													<%if(t.original_amount<0){%> 
+														<span style='opacity: 0.5'>to</span><br>
+													<%}else{%>
+														<span style='opacity: 0.5'>from</span><br>
+													<%}%>
+													<p style="font-size: 0.8rem;"><%=t.third_party%></p>
+												<%}else{%>
+													<span style='opacity: 0.5'>to</span><br>
+													<p style="font-size: 0.8rem;"><%=t.account.name%></p>
+												<%}%>
+											</div>
+											<div class="one wide column">
+												<div class="ui basic icon top right pointing extra_options dropdown">
+													<i class="bars icon"></i>
 													<div class="menu">
-														<%categories.forEach(function(category){%>
-															<%- partial('partials/category_dropdown', {category: category}) %>
-														<%})%>
+														<a class="item" href='/transaction/<%=t.id%>/edit'>Edit</a>
 													</div>
 												</div>
-												<br>
-												<span class='description'><%-tli.description?tli.description:''%></span>
-												<a class='edit' data-id='<%=tli.id%>' href='' style="<%=(!tli.description)?'background:yellow':''%>">edit</a><br>
-				
-												<div class='edit_description' data-id='<%=tli.id%>' style='display:none;'>
-													
-													<div class="ui fluid input">
-														<input type="text" name='description' value='<%-tli.description?tli.description:''%>'>
+											</div>
+										</div>
+										<div class="ui divider" style="margin:0%;"></div>
+										<%tlis.forEach(function(tli){%>
+											<div class='ui tli row' data-tli-id='<%=tli.id%>' style="font-size: 0.89rem;">
+												<div class="three wide column">
+														<%if(tli.type=='income_expense'){
+															if(tli.original_amount<0){%> 
+																<span style='opacity: 0.5'>You paid</span><br>
+																<b style='color:red' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
+															<%}else{%>
+																<span style='opacity: 0.5'>You got</span><br>
+																<b style='color:#5bc5a2' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%-tli.amount_inr%>"><%=tli.original_currency%> <%=(tli.original_amount)%></b>
+															<%}
+														}else{%>
+															<span style='opacity: 0.5'>You transferred</span><br>
+															<b style='' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
+														<%}%><br>
+														<a href="#" data-t-id="<%=t.id%>" class='show_details'>details</a>
 													</div>
-													<br>
-													<button class="ui teal button submit_edit_desc" data-id='<%=tli.id%>' >save</button>
-													<button class="ui red button cancel_edit_desc" data-id='<%=tli.id%>' >cancel</button>
-												</div>
-												<span style="opacity: 0.5;">Tags:</span>
-												<span class='tags'>
-													<%- partial('partials/display_tags', {tags: tli.tags}) %>
-												</span>
-												<i class="add_tags2 link plus icon" style="opacity: 0.5;"></i>
-												<div class="ui add_tags_popup popup">
-													Add tags to this transaction:
-													<button class='ui teal disabled button submit_edit_tags'>update</button>
-													<div class='ui tags_dd fluid multiple search selection dropdown'>
-														<%
-															var tag_names=_.map(tli.tags,'id');
-															var tags_string=tag_names.join(',');
-														%>
-														<input name='tags' type='hidden' value='<%=tags_string%>'>
-														<i class='dropdown icon'></i>
-														<input class='search' autocomplete='off' tabindex='0'><span class='sizer' style=''></span>
-														<div class='default text'>Tags</div>
-														<div class='menu transition hidden' tabindex='-1'>
-															<%tags.forEach(function(tag){%>
-																<div class='item' data-value='<%=tag.id%>'><%=tag.name%></div>
+													<div class="three wide column">
+														<%if(tli.original_amount<0){%> 
+															<span style='opacity: 0.5'>from</span><br>
+														<%}else{%>
+															<span style='opacity: 0.5'>deposited to</span><br>
+														<%}%>
+														<%=tli.account.name%>
+													</div>
+													<div class="five wide column">
+														<%if(tli.type=='income_expense'){%> 
+															<%if(tli.original_amount<0){%> 
+																<span style='opacity: 0.5'>to</span><br>
+															<%}else{%>
+																<span style='opacity: 0.5'>from</span><br>
+															<%}%>
+															<%=tli.third_party.substring(0, 30)%>
+														<%}else{%>
+															<span style='opacity: 0.5'>to</span><br>
+															<%=tli.to_account.name%>
+														<%}%>
+													</div>
+												<div class="five wide column">
+													<!-- category  -->
+													<span style="opacity: 0.5;">Category:</span>
+													<div class="ui category dropdown" style="<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>">
+														<input type="hidden" name="category" value="<%=tli.category%>">
+														<div class="text">None</div>
+														<i class="dropdown icon"></i>
+														<div class="menu">
+															<%categories.forEach(function(category){%>
+																<%- partial('partials/category_dropdown', {category: category}) %>
 															<%})%>
 														</div>
 													</div>
 													<br>
-													<!-- <button class='ui red button cancel_edit_tags' data-id='<%=tli.id%>' >cancel</button> -->
-												</div>
-											</div>				
-										</div>
-									<%})%>
+													<span class='description'><%-tli.description?tli.description:''%></span>
+													<a class='edit' data-id='<%=tli.id%>' href='' style="<%=(!tli.description)?'background:yellow':''%>">edit</a><br>
+					
+													<div class='edit_description' data-id='<%=tli.id%>' style='display:none;'>
+														
+														<div class="ui fluid input">
+															<input type="text" name='description' value='<%-tli.description?tli.description:''%>'>
+														</div>
+														<br>
+														<button class="ui teal button submit_edit_desc" data-id='<%=tli.id%>' >save</button>
+														<button class="ui red button cancel_edit_desc" data-id='<%=tli.id%>' >cancel</button>
+													</div>
+													<span style="opacity: 0.5;">Tags:</span>
+													<span class='tags'>
+														<%- partial('partials/display_tags', {tags: tli.tags}) %>
+													</span>
+													<i class="add_tags2 link plus icon" style="opacity: 0.5;"></i>
+													<div class="ui add_tags_popup popup">
+														Add tags to this transaction:
+														<button class='ui teal disabled button submit_edit_tags'>update</button>
+														<div class='ui tags_dd fluid multiple search selection dropdown'>
+															<%
+																var tag_names=_.map(tli.tags,'id');
+																var tags_string=tag_names.join(',');
+															%>
+															<input name='tags' type='hidden' value='<%=tags_string%>'>
+															<i class='dropdown icon'></i>
+															<input class='search' autocomplete='off' tabindex='0'><span class='sizer' style=''></span>
+															<div class='default text'>Tags</div>
+															<div class='menu transition hidden' tabindex='-1'>
+																<%tags.forEach(function(tag){%>
+																	<div class='item' data-value='<%=tag.id%>'><%=tag.name%></div>
+																<%})%>
+															</div>
+														</div>
+														<br>
+													</div>
+												</div>				
+											</div>
+										<%})%>
+									</div>
 								</div>
-							</div>
+						</div>
+						<div class="ui basic segment" id='details_<%=t.id%>' style='display: none;'>
+								<div class="ui divider" style="margin:0%;"></div>
+								<%if(t.parsed_emails.length==0 && t.slis.length==0){%>
+									this transactions was created manually<br>
+								<%}else{%>
+									<%t.parsed_emails.forEach(function(pe){ %>
+										<i class='mail icon'></i>extracted from email - <%=pe.email%><br>
+									<%}) %>
+									<%t.slis.forEach(function(sli){ %>
+										<i class='file alternate outline icon'></i>extracted from document - <a href="/document/<%=sli.document.id%>"><%=sli.document.id%></a> - line no - <%=sli.pos+1%><br>
+									<%}) %>
+								<%}%>
 						</div>
 					</div>
 					<%})%>
@@ -438,9 +458,8 @@
 			e.preventDefault();
 			// alert('show details clicked');
 			console.log('show details clicked');
-			var tli_id=$(this).parents('.tli').attr('data-tli-id');
-			console.log(tli_id);
-			$('#details_'+tli_id).toggle();
+			var t_id=$(this).attr('data-t-id');
+			$('#details_'+t_id).toggle();
 		})
 		
 	});
