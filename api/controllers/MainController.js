@@ -2233,6 +2233,33 @@ module.exports = {
 	deleteInvoice:function(req,res){
 		var locals = {};
 		res.view('delete_invoice', locals);
-	}
+	},
+	listBalanceSheets: function (req, res) {
+		var locals = {};
+		// Invoice.find({ user: req.user.id }).populate('category').exec(function (err, invoices) {
+		// 	if (err)
+		// 		throw err;
+		// 	locals.invoices = invoices;
+		// 	res.view('list_invoices', locals);
+		// })
+		res.view('list_balance_sheets',locals);
+	},
+	viewBalanceSheet: function (req, res) {
+		var locals = {};
+		res.view('view_balance_sheet', locals);
+	},
+	createBalanceSheet: function (req, res) {
+		var locals={};
+		res.view('create_balance_sheet',locals);
+	},
+	editBalanceSheet: function (req, res) {
+		var locals = {};
+		res.view('create_balance_sheet', locals);
+	},
+	deleteBalanceSheet: function (req, res) {
+		var locals = {};
+		res.view('delete_balance_sheet', locals);
+	},
+
 
 }
