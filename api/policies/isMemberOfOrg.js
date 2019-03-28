@@ -23,5 +23,7 @@ module.exports = function (req, res, next) {
             }
         })
         
+    }else{
+        res.send('you are not part of this org');
     }
 };

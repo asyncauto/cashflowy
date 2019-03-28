@@ -18,9 +18,16 @@ var request = require("request");
 var jwt = require("jsonwebtoken");
 module.exports = {
 	landingPage:function(req,res){
-		if(req.user)
-			res.redirect('/dashboard');
-		else 
+		if(req.user){
+			Member.find({ user: req.user.id }).populate('org').exec(function(err,memberships){
+				if (req.user.details && req.user.details.settings && req.user.details.settings.default_org){
+					res.redirect('/org/' + req.user.details.settings.default_org);
+				} else{
+					res.redirect('/org/'+memberships[0].org.id);
+				}
+			});
+			// res.view('landing_page');
+		} else 
 			res.redirect('/login')
 	},
 	listCategories:function(req,res){
