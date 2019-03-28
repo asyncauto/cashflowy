@@ -149,7 +149,7 @@
 					<%transactions.forEach(function(tlis){
 						var t = tlis[0].transaction;%>
 					<div class="ui segment">
-						<div class="ui two column divided centered grid">
+						<div class="ui two column stackable centered grid">
 							<div class="one wide middle aligned column">
 								<span class='popup' data-html="<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">		
 									<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
