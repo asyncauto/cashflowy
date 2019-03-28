@@ -13,7 +13,7 @@
 				<tbody>
 					<%emails.forEach(function(e){%>
 						<tr data-tid='<%=e.id%>'>
-							<td><%=e.id%> - <a href="/email/<%=e.id%>"><%=e.email%></a></td>
+							<td><%=e.id%> - <a href="/org/<%=req.org.id%>/email/<%=e.id%>"><%=e.email%></a></td>
 						</tr>
 					<%})%>
 				</tbody>
