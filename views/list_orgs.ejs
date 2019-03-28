@@ -1,1 +1,41 @@
-list orgs
+<style>
+	.ui.grid>.row{
+	padding: 0.5rem 0;
+	}
+</style>
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='sixteen wide column'>
+			<h1>Invoice</h1>
+			<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Type</th>
+						<th>Owner</th>
+						<th>My Access</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%memberships.forEach(function(m){%>
+						<tr data-tid='<%=m.id%>'>
+							<td class='single line'><a href='/org/<%=m.org.id%>/members'><%=m.org.name%></a></td>
+							<td><%=m.org.description%> </td>
+							<td><%=m.org.type%></td>
+							<td></td>
+							<td><%=m.type%></td>
+						</tr>
+					<%})%>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<a class="circular ui icon right floated primary big button" href="/org/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new org" data-position="left center" data-inverted=""><i class="icon add"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.popup').popup();
+	});
+</script>

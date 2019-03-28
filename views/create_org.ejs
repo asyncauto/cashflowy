@@ -1,1 +1,76 @@
-create org
+<%
+	var create_or_edit = GeneralService.createOrEdit(req.url);
+%>
+<div class="ui container">
+	<div class="ui grid">
+		<div class='four wide tablet computer only column'></div>
+		<div class='eight wide table eight wide computer sixteen wide mobile column'>
+			<h4 class="ui horizontal divider header">
+				<!-- <i class="list icon"></i> -->
+				<%=create_or_edit%> Org
+			</h4>
+			<form class="ui <%=org.status%> form " action="" method='post'>
+				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
+				<div class="field">
+					<label>Type</label>
+					<div class="ui fluid selection dropdown" id='select_type'>
+						<input type="hidden" name="type" value="business">
+						<i class="dropdown icon"></i>
+						<div class="default text">Choose type of org</div>
+						<div class="menu">
+						    <div class="item" data-value="personal">Personal</div>
+						    <div class="item" data-value="business">Business</div>
+						</div>
+					</div>
+				</div>
+				<div class='ui divider'></div>
+                <div class="field">
+                    <label>Name</label>
+                    <input type="text" name="name" placeholder="org name" value="<%=org.name%>">
+                </div>	
+            	
+				<div class="field">
+					<label>Description</label>
+					<input type="text" name="description" placeholder="What is this org about" value="<%=org.description%>">
+				</div>
+				<div class="ui error message">
+					<div class="header">Error</div>
+					<p><%=org.message%></p>
+				</div>
+				<input type="submit" class="ui button" value="Submit">
+				<div class="ui success message">
+					<div class="header">Org created</div>
+					You just created a organisation
+				</div>
+			</form>
+		</div>
+		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
+			<div class='ui segment'>
+				You are creating an org. 
+				<br/><br/>
+				<!-- <b>Email:</b> 
+				For now we support only gmail address. The gmail address can be a business gmail address also. 
+				<br/><br/>
+				<b>Token:</b>
+				You will need to enter token detail here for now. It will be automated later.  -->
+			</div>
+		</div>
+	</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.dropdown').dropdown();
+		$('.ui.form').form({
+			fields: {
+				name : 'empty',
+			},
+			onSuccess:function(e,fields){
+				$(this).addClass('loading');
+			},
+		});
+	})
+
+</script>
+

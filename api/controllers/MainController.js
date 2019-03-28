@@ -2260,15 +2260,15 @@ module.exports = {
 		var locals = {};
 		res.view('delete_balance_sheet', locals);
 	},
+	// list orgs that loggedin user is part of
 	listOrgs: function (req, res) {
 		var locals = {};
-		// Invoice.find({ user: req.user.id }).populate('category').exec(function (err, invoices) {
-		// 	if (err)
-		// 		throw err;
-		// 	locals.invoices = invoices;
-		// 	res.view('list_invoices', locals);
-		// })
-		res.view('list_orgs', locals);
+		Member.find({ user: req.user.id }).populate('org').exec(function (err, memberships) {
+			if (err)
+				throw err;
+			locals.memberships = memberships;
+			res.view('list_orgs', locals);
+		})
 	},
 	viewOrg: function (req, res) {
 		var locals = {};
@@ -2276,7 +2276,16 @@ module.exports = {
 	},
 	createOrg: function (req, res) {
 		var locals = {};
-		res.view('create_org', locals);
+		if(req.body){
+			var org= req.body;
+			org.owner=req.user.id;
+			Org.create(org).exec(function(err){
+				res.redirect('/orgs');
+			})
+		}else{
+			locals.org={};
+			res.view('create_org', locals);
+		}
 	},
 	editOrg: function (req, res) {
 		var locals = {};
@@ -2288,13 +2297,12 @@ module.exports = {
 	},
 	listMembers: function (req, res) {
 		var locals = {};
-		// Invoice.find({ user: req.user.id }).populate('category').exec(function (err, invoices) {
-		// 	if (err)
-		// 		throw err;
-		// 	locals.invoices = invoices;
-		// 	res.view('list_invoices', locals);
-		// })
-		res.view('list_members', locals);
+		Member.find({ org:req.params.o_id }).populate('user').populate('org').exec(function (err, members) {
+			if (err)
+				throw err;
+			locals.members = members;
+			res.view('list_members', locals);
+		});
 	},
 	viewMember: function (req, res) {
 		var locals = {};
@@ -2302,7 +2310,22 @@ module.exports = {
 	},
 	createMember: function (req, res) {
 		var locals = {};
-		res.view('create_member', locals);
+		if(req.body){
+			var member= req.body;
+			member.org = req.params.o_id;
+			Member.create(member).exec(function(err){
+				if(err)
+					throw err;
+				res.redirect('/org/'+req.params.o_id+'/members');
+			})
+		}else{
+			User.find().exec(function(err,users){
+				locals.users=users;
+				locals.member={};
+				res.view('create_member', locals);
+			})
+			
+		}
 	},
 	editMember: function (req, res) {
 		var locals = {};
