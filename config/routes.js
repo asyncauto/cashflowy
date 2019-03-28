@@ -139,6 +139,16 @@ module.exports.routes = {
   'GET /balance_sheet/:id/delete': 'MainController.deleteBalanceSheet',
   'POST /balance_sheet/:id/delete': 'MainController.deleteBalanceSheet',
 
+
+  'GET /orgs': 'MainController.listOrgs',
+  'GET /org/create': 'MainController.createOrg',
+  'POST /org/create': 'MainController.createOrg',
+  'GET /org/:id': 'MainController.viewOrg',
+  'GET /org/:id/edit': 'MainController.editOrg',
+  'POST /org/:id/edit': 'MainController.editOrg',
+  'GET /org/:id/delete': 'MainController.deleteOrg',
+  'POST /org/:id/delete': 'MainController.deleteOrg',
+  
   'GET /dt/:id':'MainController.viewDoubtfulTransaction',
   'POST /dt/:id/mark_as_unique':'MainController.markDTAsUnique', // api
   'POST /dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate', // api
