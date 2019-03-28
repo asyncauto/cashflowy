@@ -74,7 +74,7 @@ module.exports = {
 						throw err;
 					}
 					else
-						res.redirect('/categories');
+						res.redirect('/org/' + req.org.id +'/categories');
 				});
 			}else{ // view the form
 				var locals={
@@ -179,7 +179,7 @@ module.exports = {
 						throw err;
 					}
 					else
-						res.redirect('/categories');
+						res.redirect('/org/' + req.org.id +'/categories');
 				});
 
 			}else{
@@ -232,7 +232,7 @@ module.exports = {
 				},function(err,results){
 					if(err)
 						throw(err);
-					res.redirect('/categories');
+					res.redirect('/org/' + req.org.id +'/categories');
 				})
 				
 			}else{ // showing the warning page
@@ -324,7 +324,7 @@ module.exports = {
  					throw err;
  				}
  				else
- 					res.redirect('/emails');
+					res.redirect('/org/' + req.org.id +'/emails');
  			});
  		}else{ // view the form
  			var locals={
@@ -378,7 +378,7 @@ module.exports = {
 			console.log(email);
 			Email.findOrCreate({email:email.email},email).exec(function(err,result){
 				console.log(err);
-				res.redirect('/emails');
+				res.redirect('/org/' + req.org.id +'/emails');
 			})
 		})
 	},
@@ -444,7 +444,7 @@ module.exports = {
 				if(err)
 					throw err;
 				else
-					res.redirect('/accounts');
+					res.redirect('/org/' + req.org.id +'/accounts');
 			});
 		}else{ // view the form
 			var locals={
@@ -474,7 +474,7 @@ module.exports = {
 				if(err)
 					throw err;
 				else
-					res.redirect('/accounts');
+					res.redirect('/org/' + req.org.id +'/accounts');
 			});
 		}else{ // view the form
 			Account.findOne({id:req.params.id}).exec(function(err,a){
@@ -957,7 +957,7 @@ module.exports = {
 						if(req.body.referer && req.body.referer.includes('/transactions'))
 							res.redirect(req.body.referer);
 						else 
-							res.redirect('/transactions');
+							res.redirect('/org/' + req.org.id +'/transactions');
 					}
 				});
 			}else{ // view the form
@@ -1042,7 +1042,7 @@ module.exports = {
 					if(err)
 						throw err;
 					else
-						res.redirect('/transactions');
+						res.redirect('/org/' + req.org.id +'/transactions');
 				});
 			}else{ // view the form
 				Transaction.findOne({id:req.params.id}).exec(function(err,t){
@@ -1079,7 +1079,7 @@ module.exports = {
 			Transaction.destroy({id:req.params.id}).exec(function(err,t){
 				if(err)
 					throw(err);
-				res.redirect('/transactions');
+				res.redirect('/org/' + req.org.id +'/transactions');
 			});
 		}else{ // showing the warning page
 			Transaction.findOne({id:req.params.id}).populate('account').exec(function(err,t){
@@ -1229,7 +1229,7 @@ module.exports = {
 					if(err)
 						throw err;
 					else
-						res.redirect('/snapshots');
+						res.redirect('/org/' + req.org.id +'/snapshots');
 				});
 			}else{ // view the form
 				var locals={
@@ -1264,7 +1264,7 @@ module.exports = {
 					if(err)
 						throw err;
 					else
-						res.redirect('/snapshots');
+						res.redirect('/org/' + req.org.id +'/snapshots');
 				});
 			}else{ // view the form
 				Snapshot.findOne({id:req.params.id}).exec(function(err,s){
@@ -1287,7 +1287,7 @@ module.exports = {
 			Snapshot.destroy({id:req.params.id}).exec(function(err,s){
 				if(err)
 					throw(err);
-				res.redirect('/snapshots');
+				res.redirect('/org/' + req.org.id +'/snapshots');
 			});
 		}else{ // showing the warning page
 			Snapshot.findOne({id:req.params.id}).populate('account').exec(function(err,s){
@@ -1496,7 +1496,7 @@ module.exports = {
 					 return res.view('create_document', locals);
 				}
 				else	
-				 	return res.redirect("/documents");
+					return res.redirect('/org/' + req.org.id +"/documents");
 			})
 			
 		}
@@ -1531,7 +1531,7 @@ module.exports = {
 					throw err;
 				}
 				else
-					res.redirect('/tags');
+					res.redirect('/org/' + req.org.id +'/tags');
 			});
 		}else{ // view the form
 			var locals={
@@ -1616,7 +1616,7 @@ module.exports = {
 					if(err)
 						throw err;
 					else
-						res.redirect('/tags');
+						res.redirect('/org/' + req.org.id +'/tags');
 				});
 			}else{ // view the form
 				var locals={
@@ -1760,7 +1760,7 @@ module.exports = {
 		Rule.create({user:req.user.id, status: 'draft', type:'user', description:'rule #drafted'}).exec(
 			function(err, r){
 				if(err) return res.view('500', err);
-				res.redirect(`/rule/${r.id}/edit`);
+				res.redirect('/org/' + req.org.id +`/rule/${r.id}/edit`);
 			})
 	},
 	editRule:function(req,res){
@@ -1829,7 +1829,7 @@ module.exports = {
 
 			}
 			Pnl.create(pnl).exec(function(err,result){
-				res.redirect('/pnls');
+				res.redirect('/org/' + req.org.id +'/pnls');
 			})
 		}else{
 			async.auto({
@@ -2216,7 +2216,7 @@ module.exports = {
 					if (err)
 						throw err;
 					else {
-						res.redirect('/invoices');
+						res.redirect('/org/' + req.org.id +'/invoices');
 					}
 				});
 			} else { // view the form

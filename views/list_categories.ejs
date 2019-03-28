@@ -23,13 +23,13 @@
 						<tr data-tid='<%=c.id%>'>
 							<td class="single line"><i class="icon caret right"></i></td>
 							<!-- <td><%=c.id%></td> -->
-							<td><a href="/category/<%=c.id%>"><%=c.name%></a></td>
+							<td><a href="/org/<%=req.org.id%>/category/<%=c.id%>"><%=c.name%></a></td>
 							<td><%=c.parent?c.parent.name:''%></td>
 							<td><%=c.type%></td>
 							<td><%=c.description%></td>
 							<td class="right aligned"><%=parseFloat(c.budget).toFixed(2)%></td>
-							<td><a href="/category/<%=c.id%>/edit">edit</a></td>
-							<td><a href="/category/<%=c.id%>/delete">delete</a></td>
+							<td><a href="/org/<%=req.org.id%>/category/<%=c.id%>/edit">edit</a></td>
+							<td><a href="/org/<%=req.org.id%>/category/<%=c.id%>/delete">delete</a></td>
 						</tr>
 						<% var parent = c;%>
 						<%parent.children.forEach(function(c2){%>
@@ -39,13 +39,13 @@
 									<i class="icon caret right"></i>
 								</td>
 								<!-- <td><%=c.id%></td> -->
-								<td><a href="/category/<%=c2.id%>"><%=c2.name%></a></td>
+								<td><a href="/org/<%=req.org.id%>/category/<%=c2.id%>"><%=c2.name%></a></td>
 								<td><%=parent.name%></td>
 								<td><%=c2.type%></td>
 								<td><%=c2.description%></td>
 								<td class="right aligned"><%=parseFloat(c2.budget).toFixed(2)%></td>
-								<td><a href="/category/<%=c2.id%>/edit">edit</a></td>
-								<td><a href="/category/<%=c2.id%>/delete">delete</a></td>
+								<td><a href="/org/<%=req.org.id%>/category/<%=c2.id%>/edit">edit</a></td>
+								<td><a href="/org/<%=req.org.id%>/category/<%=c2.id%>/delete">delete</a></td>
 							</tr>
 							<% var parent2 = c2;%>
 							<%parent2.children.forEach(function(c3){%>
@@ -57,13 +57,13 @@
 										<i class="icon caret right"></i>
 									</td>
 									<!-- <td><%=c.id%></td> -->
-									<td><a href="/category/<%=c3.id%>"><%=c3.name%></a></td>
+									<td><a href="/org/<%=req.org.id%>/category/<%=c3.id%>"><%=c3.name%></a></td>
 									<td><%=parent2.name%></td>
 									<td><%=c3.type%></td>
 									<td><%=c3.description%></td>
 									<td class="right aligned"><%=parseFloat(c3.budget).toFixed(2)%></td>
-									<td><a href="/category/<%=c3.id%>/edit">edit</a></td>
-									<td><a href="/category/<%=c3.id%>/delete">delete</a></td>
+									<td><a href="/org/<%=req.org.id%>/category/<%=c3.id%>/edit">edit</a></td>
+									<td><a href="/org/<%=req.org.id%>/category/<%=c3.id%>/delete">delete</a></td>
 								</tr>
 							<%})%>
 						<%})%>
