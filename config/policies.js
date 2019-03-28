@@ -50,7 +50,7 @@ module.exports.policies = {
 	// }
   //
   MainController:{
-    '*':['isAuthenticated'],
+    '*':['isAuthenticated','isMemberOfOrg'],
     landingPage:true,
     // verify:['sessionAuth'],
     // dashboard:['isAuthenticated'],

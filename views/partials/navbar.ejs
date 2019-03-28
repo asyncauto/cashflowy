@@ -10,6 +10,40 @@
 			<a class="item home header <%if(req.page=='home'){%>active<%}%>" href="/">
 				Cashflowy
 			</a>
+			<%if(req.org){%>
+					<!-- <a class="item" href="/subscriptions">
+						
+							<i class="ui arrow circle up icon"></i>
+							Upgrade my account
+						
+					</a>
+					<a class="item" href="/help">
+						<i class="ui help icon"></i>
+						Help
+					</a> -->
+					<div class="ui simple dropdown item" href="">
+						
+						<%=req.org.name%>
+						<!-- Free plan -->
+						<i class="dropdown icon"></i>
+						<div class="menu" style="margin-top: 0em">
+							<%req.user.memberships.forEach(function(membership){%>
+								<a class="item" href='/org/<%=membership.org.id%>/members'><i class="ui lightbulb outlinetop icon"></i><%=membership.org.name%></a>
+							<%})%>
+						</div>
+					</div>
+				<%}else{%>
+					<a class="item" href="/privacy">Privacy</a>
+					<a class="item" href="/terms">Terms</a>
+					<a class="item" href="/login">
+						
+						Login
+					</a>
+					<a class="item" href="/signup">
+						
+						Signup
+					</a>
+				<%}%>
 			<!-- <a class="item" href="/explore">
 				Explore
 			</a>

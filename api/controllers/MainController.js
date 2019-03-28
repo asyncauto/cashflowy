@@ -2280,6 +2280,8 @@ module.exports = {
 			var org= req.body;
 			org.owner=req.user.id;
 			Org.create(org).exec(function(err){
+				if(err)
+					throw(err);
 				res.redirect('/orgs');
 			})
 		}else{
