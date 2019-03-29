@@ -56,7 +56,7 @@ module.exports = {
 			findOrCreateParsedEmail: ['extractDataFromMessageBody', function (results, cb) {
 				var parsed_email = {
 					extracted_data: results.extractDataFromMessageBody.ed,
-					user: options.user,
+					org: options.org,
 					type: options.email_type,
 					body_parser_used: results.extractDataFromMessageBody.body_parser_used,
 					email: options.email_address,
@@ -95,7 +95,7 @@ module.exports = {
 						email_id: results.getEmail.id,
 						email_type: filter,
 						inbound_data: inbound_data,
-						user: results.getEmail.user,
+						org: results.getEmail.org,
 						email_address: results.getEmail.email
 					};
 					MailgunService.parseEmailBodyWithBodyParser(data, function (err, pe) {
@@ -115,7 +115,7 @@ module.exports = {
 				// don't send to slack if processEach able to parse the email body
 				if (results.parseWithEachFilter) return cb(null);
 				var parsed_failure = {
-					user: results.getEmail.user,
+					org: results.getEmail.org,
 					email: results.getEmail.email,
 					message_id: inbound_data['Message-Id'],
 					status: 'FAILED',
