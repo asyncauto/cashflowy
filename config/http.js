@@ -9,6 +9,11 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.http.html
  */
 
+const Sentry = require('@sentry/node');
+
+Sentry.init({ dsn: process.env.SENTRY_DNS });
+
+
 module.exports.http = {
 
   /****************************************************************************
@@ -33,10 +38,11 @@ module.exports.http = {
 
     passportInit: require('passport').initialize(),
     passportSession: require('passport').session(),
-    // sentryRequestHandler: Raven.requestHandler(),
-    // sentryerrorHandler: Raven.errorHandler(),
+    
+    sentryRequestHandler: Sentry.Handlers.requestHandler(),
+    sentryerrorHandler: Sentry.Handlers.errorHandler(),
     order: [
-      // 'sentryRequestHandler',
+      'sentryRequestHandler',
       'cookieParser',
       'session',
       'passportInit',
@@ -48,7 +54,8 @@ module.exports.http = {
       '$custom',
       'router',
       'www',
-      'favicon'
+      'favicon',
+      'sentryerrorHandler'
     ],
 
     /****************************************************************************
