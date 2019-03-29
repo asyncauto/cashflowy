@@ -19,11 +19,11 @@ var jwt = require("jsonwebtoken");
 module.exports = {
 	landingPage:function(req,res){
 		if(req.user){
-			Member.find({ org:req.org.id }).populate('org').exec(function(err,memberships){
+			Member.find({ user:req.user.id }).populate('org').sort('id ASC').exec(function(err,memberships){
 				if (req.user.details && req.user.details.settings && req.user.details.settings.default_org){
-					res.redirect('/org/' + req.user.details.settings.default_org);
+					res.redirect('/org/' + req.user.details.settings.default_org + '/dashboard');
 				} else{
-					res.redirect('/org/'+memberships[0].org.id);
+					res.redirect('/org/'+memberships[0].org.id+'/dashboard');
 				}
 			});
 			// res.view('landing_page');
