@@ -150,45 +150,45 @@
 
       <!-- Top menu -->
     </div>
-    <%if(req.user){%>
+    <%if(req.user && req.org){%>
     <div class="ui left demo vertical inverted sidebar labeled icon menu">
       <!-- <a class="item">
         <i class="home icon"></i>
         Home
       </a> -->
-      <a class="item" href='/transactions'>
+      <a class="item" href='/org/<%=req.org.id%>/transactions'>
         <i class="rupee sign icon"></i>
         TXNs
       </a>
-      <a class="item" href='/emails'> 
+      <a class="item" href='/org/<%=req.org.id%>/emails'> 
         <i class="mail icon"></i>
         Emails
       </a>
-      <a class="item" href='/accounts'>
+      <a class="item" href='/org/<%=req.org.id%>/accounts'>
         <i class="book icon"></i>
         Accounts
       </a>
-      <a class="item" href='/snapshots'>
+      <a class="item" href='/org/<%=req.org.id%>/snapshots'>
         <i class="camera icon"></i>
         Snapshots
       </a>
-      <a class="item" href='/categories'>
+      <a class="item" href='/org/<%=req.org.id%>/categories'>
         <i class="block layout icon"></i>
         Categories
       </a>
-      <a class="item" href='/tags'>
+      <a class="item" href='/org/<%=req.org.id%>/tags'>
         <i class="block tags icon"></i>
         Tags
       </a>
-      <a class="item" href='/documents'>
+      <a class="item" href='/org/<%=req.org.id%>/documents'>
         <i class="file alternate outline icon"></i>
         Documents
       </a>
-      <a class="item" href='/rules'>
+      <a class="item" href='/org/<%=req.org.id%>/rules'>
         <i class="cogs outline icon"></i>
         Rules
       </a>
-      <a class="item" href='/settings'>
+      <a class="item" href='/org/<%=req.org.id%>/settings'>
         <i class="setting icon"></i>
         Settings
       </a>

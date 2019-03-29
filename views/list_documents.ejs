@@ -58,7 +58,7 @@
 				<tbody>
 					<%documents.forEach(function(doc){%>
 						<tr data-d_id='<%=doc.id%>' class='document'>
-							<td><a href="/document/<%=doc.id%>"><%=doc.id%></a></td>
+							<td><a href="/org/<%=req.org.id%>/document/<%=doc.id%>"><%=doc.id%></a></td>
 							<td><%=doc.type%></td>
 							<td>
 								<a href="<%=doc.parsed_data ? doc.parsed_data.media_link_original : '#' %>" target="_blank"><%=doc.parsed_data ? doc.parsed_data.file_name : doc.details && doc.details.original_filename? doc.details.original_filename:'-'  %></a>
@@ -81,7 +81,7 @@
 							</td>
 							<td><% doc.accounts.forEach(function(a){%>
 								<span>
-									<a href="/account/<%=a.id%>"><%=a.name%></a>
+									<a href="/org/<%=req.org.id%>/account/<%=a.id%>"><%=a.name%></a>
 								</span><br>
 								<%})%>
 							</td>
@@ -89,7 +89,7 @@
 								<%= doc.statement_line_items? doc.statement_line_items.length:0 + '/' + (doc.parsed_data && doc.parsed_data.transactions? doc.parsed_data.transactions.length: 0) %>
 							</td>
 							<td>
-								<a href="/document/<%=doc.id%>"><%= doc.unresolved_dts?doc.unresolved_dts: '0'%></a>
+								<a href="/org/<%=req.org.id%>/document/<%=doc.id%>"><%= doc.unresolved_dts?doc.unresolved_dts: '0'%></a>
 							</td>
 							
 							<td>
@@ -118,7 +118,7 @@
 		<!-- <div class='three wide tablet computer only column'></div> -->
 	</div>
 </div>
-<a class="circular ui icon right floated primary big button" href="/document/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new document" data-position="left center" data-inverted=""><i class="file alternate outline icon"></i></a>
+<a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/document/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new document" data-position="left center" data-inverted=""><i class="file alternate outline icon"></i></a>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('.popup').popup();

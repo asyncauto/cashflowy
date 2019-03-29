@@ -12,8 +12,8 @@ module.exports = {
 			type: 'json',
 			required: true,
 		},
-		user: {
-			model: 'user',
+		org: {
+			model: 'org',
 			required: true
 		},
 		log_type: {

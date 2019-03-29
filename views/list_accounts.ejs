@@ -15,14 +15,14 @@
 				<tbody>
 					<%accounts.forEach(function(a){%>
 						<tr data-tid='<%=a.id%>'>
-							<td><a href="/account/<%=a.id%>"><%=a.name%></a></td>
+							<td><a href="/org/<%=req.org.id%>/account/<%=a.id%>"><%=a.name%></a></td>
 							<td><%=a.acc_number%></td>
 							<td><%=a.type%></td>
 							<td>
 								<div class="ui basic icon top right pointing extra_options dropdown">
 									<i class="bars icon"></i>
 									<div class="menu">
-										<a class="item" href='/account/<%=a.id%>/edit'>Edit</a>
+										<a class="item" href='/org/<%=req.org.id%>/account/<%=a.id%>/edit'>Edit</a>
 										<!-- <a class="item" href='/snapshot/<%=a.id%>/delete'>Delete</a> -->
 									</div>
 								</div>

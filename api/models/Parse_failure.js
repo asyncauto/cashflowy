@@ -18,8 +18,8 @@ module.exports = {
 			type:'string',
 			isEmail: true
 		},
-		user: {
-			model: 'user',
+		org: {
+			model: 'org',
 			required: true
 		},
 		message_id:{

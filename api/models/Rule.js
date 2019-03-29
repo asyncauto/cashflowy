@@ -8,8 +8,8 @@
 module.exports = {
 
 	attributes: {
-		user: {
-			model: 'user', // user id mentioned when it is a user specific rule
+		org: {
+			model: 'org', // user id mentioned when it is a user specific rule
 		},
 		description:{
 			type: 'string'

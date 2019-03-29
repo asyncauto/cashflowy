@@ -10,6 +10,19 @@
 			<a class="item home header <%if(req.page=='home'){%>active<%}%>" href="/">
 				Cashflowy
 			</a>
+			<%if(req.org){%>
+				<div class="ui simple dropdown item" href="">
+					
+					<%=req.org.name%>
+					<!-- Free plan -->
+					<i class="dropdown icon"></i>
+					<div class="menu" style="margin-top: 0em">
+						<%req.user.memberships.forEach(function(membership){%>
+							<a class="item" href='/org/<%=membership.org.id%>'><i class="ui lightbulb outlinetop icon"></i><%=membership.org.name%></a>
+						<%})%>
+					</div>
+				</div>
+			<%}%>
 			<!-- <a class="item" href="/explore">
 				Explore
 			</a>

@@ -66,8 +66,8 @@ module.exports = {
             type: 'boolean',
             defaultsTo: false       
         },
-        user:{
-            model:'user',
+        org:{
+            model:'org',
             required:true
         },
     },
