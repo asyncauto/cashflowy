@@ -14,7 +14,8 @@ module.exports = function (req, res, next) {
                 Member.find({user:req.user.id}).populate('org').exec(callback);
             }
         },function(err,results){
-            if (results.checkMembership){ // there is a membership for that user in that org
+            if (results.checkMembership && results.checkMembership.length){ // there is a membership for that user in that org
+            // if (results.checkMembership){ // there is a membership for that user in that org
                 req.org=results.getOrg;
                 req.user.memberships = results.getAllMemberships;
                 next(err);
