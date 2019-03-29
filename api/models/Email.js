@@ -12,8 +12,8 @@ module.exports = {
 		email:{
 			type:'string',
 		},
-		user: {
-			model: 'user',
+		org: {
+			model: 'org',
 			required: true
 		},
 		details:{
