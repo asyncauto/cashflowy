@@ -18,7 +18,7 @@
 					<i class="dropdown icon"></i>
 					<div class="menu" style="margin-top: 0em">
 						<%req.user.memberships.forEach(function(membership){%>
-							<a class="item" href='/org/<%=membership.org.id%>'><i class="ui lightbulb outlinetop icon"></i><%=membership.org.name%></a>
+							<a class="item" href='/org/<%=membership.org.id%>/dashboard'><i class="ui lightbulb outlinetop icon"></i><%=membership.org.name%></a>
 						<%})%>
 					</div>
 				</div>
