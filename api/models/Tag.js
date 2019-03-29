@@ -8,8 +8,8 @@
 module.exports = {
 
 	attributes: {
-		user:{
-			model:'user', // some tags can be globally defined
+		org:{
+			model:'org', // some tags can be globally defined
 			// some tags can be specific to a user, while some tags can be global. 
 			// this field only need when type=user
 		},

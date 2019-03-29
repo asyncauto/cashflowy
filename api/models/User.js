@@ -30,14 +30,14 @@ module.exports = {
 			type:'string',
 			required:true,
 		},
-		rawlogs: {
-			collection: 'rawlog',
-			via: 'user',
-		},
-		processed_emails: {
-			collection: 'email',
-			via: 'user',
-		}
+		// rawlogs: {
+		// 	collection: 'rawlog',
+		// 	via: 'user',
+		// },
+		// processed_emails: {
+		// 	collection: 'email',
+		// 	via: 'user',
+		// }
 	},
 	
 	customToJSON: function() {

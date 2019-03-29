@@ -8,10 +8,10 @@
                         <div class="item">
                             <div class="right floated content">
                                 <i class="<%=r.status=='active'?'green pause':'play'%> icon"></i>
-                                <a class="ui button" href="/rule/<%=r.id%>/edit">Edit</a>
+                                <a class="ui button" href="/org/<%=req.org.id%>/rule/<%=r.id%>/edit">Edit</a>
                             </div>
                             <div class="content">
-                            <%=r.description%>
+                                <%=r.description%>
                             </div>
                         </div>
                     <%})%>
@@ -21,7 +21,7 @@
             <!-- <div class='three wide tablet computer only column'></div> -->
         </div>
     </div>
-    <a class="circular ui icon right floated primary big button" href="/rule/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new rule" data-position="left center" data-inverted=""><i class="icon cogs"></i></a>
+    <a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/rule/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new rule" data-position="left center" data-inverted=""><i class="icon cogs"></i></a>
     <script type="text/javascript">
         $(document).ready(function(){
             $('.popup').popup();

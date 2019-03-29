@@ -8,8 +8,8 @@
 module.exports = {
 
 	attributes: {
-		user:{
-			model:'user',
+		org:{
+			model:'org',
 			required:true
 		},
 		parent:{

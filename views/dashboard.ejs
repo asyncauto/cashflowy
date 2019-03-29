@@ -142,11 +142,11 @@
 		<div class='ui twelve wide column'>
 			
 			<div class='ui center aligned segment'>
-				<a href="/dashboard/?month=<%=prev%>">
+				<a href="/org/<%=req.org.id%>/dashboard/?month=<%=prev%>">
 					<i class="angle left icon big"></i>
 				</a>
 				<%=req.query.month?req.query.month:(req.query.year?req.query.year:new Date().toISOString().substring(0,7))%>
-				<a href="/dashboard/?month=<%=next%>">
+				<a href="/org/<%=req.org.id%>/dashboard/?month=<%=next%>">
 					<i class="angle right icon big"> </i>
 				</a>
 			</div>

@@ -1,1 +1,35 @@
-list member
+<style>
+	.ui.grid>.row{
+	padding: 0.5rem 0;
+	}
+</style>
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='sixteen wide column'>
+			<h1>Members of <%=members[0].org.name%></h1>
+			<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Access</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%members.forEach(function(m){%>
+						<tr data-tid='<%=m.id%>'>
+							<td class='single line'><%=m.user.name%></td>
+							<td><%=m.type%></td>
+						</tr>
+					<%})%>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<a class="circular ui icon right floated primary big button" href="/org/<%=req.params.o_id%>/member/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new member" data-position="left center" data-inverted=""><i class="icon add"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.popup').popup();
+	});
+</script>

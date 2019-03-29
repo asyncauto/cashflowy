@@ -18,13 +18,20 @@ var request = require("request");
 var jwt = require("jsonwebtoken");
 module.exports = {
 	landingPage:function(req,res){
-		if(req.user)
-			res.redirect('/dashboard');
-		else 
+		if(req.user){
+			Member.find({ org:req.org.id }).populate('org').exec(function(err,memberships){
+				if (req.user.details && req.user.details.settings && req.user.details.settings.default_org){
+					res.redirect('/org/' + req.user.details.settings.default_org);
+				} else{
+					res.redirect('/org/'+memberships[0].org.id);
+				}
+			});
+			// res.view('landing_page');
+		} else 
 			res.redirect('/login')
 	},
 	listCategories:function(req,res){
-		Category.find({user:req.user.id}).sort('name ASC').exec(function(err,categories){
+		Category.find({org:req.org.id}).sort('name ASC').exec(function(err,categories){
 			var locals={
 				categories:categories
 			}
@@ -35,7 +42,7 @@ module.exports = {
 	createCategory:function(req,res){
 		if(_.isArray(req.body)){
 			_.forEach(req.body, function(c){
-				c.user = req.user.id
+				c.org = req.org.id
 			});
 
 			Category.create(req.body).exec(function(err, cats){
@@ -46,7 +53,7 @@ module.exports = {
 		}
 		else{
 
-			Category.find({user:req.user.id}).exec(function(err,categories){
+			Category.find({org:req.org.id}).exec(function(err,categories){
 			if(req.body){ // post request
 				if(!req.body.budget)
 					req.body.budget='10000';
@@ -54,7 +61,7 @@ module.exports = {
 					name:req.body.name,
 					description:req.body.description,
 					budget:parseInt(req.body.budget),
-					user:req.user.id,
+					org:req.org.id,
 					type:req.body.type,
 				}
 				if(req.body.parent_id)
@@ -67,7 +74,7 @@ module.exports = {
 						throw err;
 					}
 					else
-						res.redirect('/categories');
+						res.redirect('/org/' + req.org.id +'/categories');
 				});
 			}else{ // view the form
 				var locals={
@@ -98,7 +105,7 @@ module.exports = {
 				Category.find({parent:req.params.id}).exec(callback)
 			},
 			getAccounts:function(callback){
-				Account.find({user:req.user.id}).exec(callback)
+				Account.find({org:req.org.id}).exec(callback)
 			}
 		},function(err,results){
 
@@ -150,7 +157,7 @@ module.exports = {
 		});
 	},
 	editCategory:function(req,res){
-		Category.find({user:req.user.id}).exec(function(err,categories){
+		Category.find({org:req.org.id}).exec(function(err,categories){
 			if(!_.find(categories,{id:parseInt(req.params.id)}))
 				return res.send('you dont have permission to modify this category');
 			if(req.body){
@@ -158,7 +165,7 @@ module.exports = {
 					name:req.body.name,
 					description:req.body.description,
 					budget:parseInt(req.body.budget),
-					user:req.user.id,
+					org:req.org.id,
 					type:req.body.type,
 					parent:0,
 				}
@@ -172,7 +179,7 @@ module.exports = {
 						throw err;
 					}
 					else
-						res.redirect('/categories');
+						res.redirect('/org/' + req.org.id +'/categories');
 				});
 
 			}else{
@@ -197,13 +204,13 @@ module.exports = {
 	deleteCategory:function(req,res){
 		async.auto({
 			getCategory:function(callback){
-				Category.findOne({id:req.params.id,user:req.user.id}).populate('parent').exec(callback);
+				Category.findOne({id:req.params.id,org:req.org.id}).populate('parent').exec(callback);
 			},
 			getTransactionsCount:function(callback){
 				Transaction.count({category:req.params.id}).exec(callback);
 			},
 			getChildrenCategories:function(callback){
-				Category.find({parent:req.params.id,user:req.user.id}).exec(callback);
+				Category.find({parent:req.params.id,org:req.org.id}).exec(callback);
 			}
 		},function(err,results){
 			if(err)
@@ -225,7 +232,7 @@ module.exports = {
 				},function(err,results){
 					if(err)
 						throw(err);
-					res.redirect('/categories');
+					res.redirect('/org/' + req.org.id +'/categories');
 				})
 				
 			}else{ // showing the warning page
@@ -242,7 +249,7 @@ module.exports = {
 		
 	},
 	listEmails:function(req,res){
-		Email.find({user:req.user.id}).exec(function(err,emails){
+		Email.find({org:req.org.id}).exec(function(err,emails){
 			var locals={
 				emails:emails
 			}
@@ -252,7 +259,7 @@ module.exports = {
 	viewEmail: function(req, res){
 		async.auto({
 			getEmail: function(cb){
-				Email.findOne({id: req.params.id, user: req.user.id})
+				Email.findOne({id: req.params.id, org:req.org.id})
 					.exec(function(err, e){
 						if(err) return cb(err);
 						if(!e) return cb(new Error('Invalid Email'));
@@ -260,10 +267,10 @@ module.exports = {
 					});
 			},
 			findParsedEmails: ['getEmail', function(results, cb){
-				Parsed_email.find({email: results.getEmail.email, user:req.user.id}).sort('createdAt DESC').limit(100).exec(cb);
+				Parsed_email.find({email: results.getEmail.email, org:req.org.id}).sort('createdAt DESC').limit(100).exec(cb);
 			}],
 			findParseFailures:['getEmail', function(results, cb){
-				Parse_failure.find({email: results.getEmail.email, user:req.user.id}).sort('createdAt DESC').limit(100).exec(cb);
+				Parse_failure.find({email: results.getEmail.email, org:req.org.id}).sort('createdAt DESC').limit(100).exec(cb);
 			}] 
 		}, function(err, results){
 			var locals={
@@ -279,7 +286,7 @@ module.exports = {
 	retryParseFailure: function(req, res){
 		async.auto({
 			getParseFailure: function(cb){
-				Parse_failure.findOne({id: req.params.id, user: req.user.id}).exec(function(err, pf){
+				Parse_failure.findOne({id: req.params.id, org:req.org.id}).exec(function(err, pf){
 					if(err) return cb(err);
 					if(!pf || !_.get(pf, 'details.inbound')) return cb(new Error("NOT_FOUND"));
 					return cb(null, pf);
@@ -307,7 +314,7 @@ module.exports = {
 		if(req.body){ // post request
  			var e={
  				email:req.body.email,
- 				user:req.user.id,
+ 				org:req.org.id,
  			}
  			// console.log('before transaction find or create');
  			console.log(e);
@@ -317,7 +324,7 @@ module.exports = {
  					throw err;
  				}
  				else
- 					res.redirect('/emails');
+					res.redirect('/org/' + req.org.id +'/emails');
  			});
  		}else{ // view the form
  			var locals={
@@ -371,14 +378,14 @@ module.exports = {
 			console.log(email);
 			Email.findOrCreate({email:email.email},email).exec(function(err,result){
 				console.log(err);
-				res.redirect('/emails');
+				res.redirect('/org/' + req.org.id +'/emails');
 			})
 		})
 	},
 	editEmail:function(req,res){
 	},
 	listAccounts:function(req,res){
-		Account.find({user:req.user.id}).exec(function(err,accounts){
+		Account.find({org:req.org.id}).exec(function(err,accounts){
 			var locals={
 				accounts:accounts
 			}
@@ -386,7 +393,7 @@ module.exports = {
 		})
 	},
 	viewAccount:function(req,res){
-		Account.findOne({id:req.params.id,user:req.user.id}).exec(function(err,account){
+		Account.findOne({id:req.params.id,org:req.org.id}).exec(function(err,account){
 			if(!account)
 				return res.send('you dont have the permission to view this account');
 			var questions=[
@@ -429,7 +436,7 @@ module.exports = {
 				name:req.body.name,
 				acc_number:req.body.acc_number,
 				type:req.body.type,
-				user:req.user.id,
+				org:req.org.id,
 			}
 			// console.log('before transaction find or create');
 			console.log(a);
@@ -437,7 +444,7 @@ module.exports = {
 				if(err)
 					throw err;
 				else
-					res.redirect('/accounts');
+					res.redirect('/org/' + req.org.id +'/accounts');
 			});
 		}else{ // view the form
 			var locals={
@@ -459,7 +466,7 @@ module.exports = {
 				name:req.body.name,
 				acc_number:req.body.acc_number,
 				type:req.body.type,
-				user:req.user.id,
+				org:req.org.id,
 			}
 			// console.log('before transaction find or create');
 			// console.log(a);
@@ -467,7 +474,7 @@ module.exports = {
 				if(err)
 					throw err;
 				else
-					res.redirect('/accounts');
+					res.redirect('/org/' + req.org.id +'/accounts');
 			});
 		}else{ // view the form
 			Account.findOne({id:req.params.id}).exec(function(err,a){
@@ -497,20 +504,20 @@ module.exports = {
 		}
 		async.auto({
 			getAccounts:function(callback){
-				Account.find({user:req.user.id}).sort('name ASC').exec(callback);
+				Account.find({org:req.org.id}).sort('name ASC').exec(callback);
 			},
 			getCategories:function(callback){
-				Category.find({user:req.user.id}).exec(callback);
+				Category.find({org:req.org.id}).exec(callback);
 			},
 			getTlisWithOutDescription: ['getAccounts', function(results, callback){
 				var  accounts =  _.map(results.getAccounts,'id')
 				Transaction_line_item.find({description: {'!=': null }, account:accounts}).exec(callback);
 			}],
 			getDocumentsCount: function(callback){
-				Document.count({user:req.user.id}).exec(callback);
+				Document.count({org:req.org.id}).exec(callback);
 			},
 			getEmailCount: function(callback){
-				Email.count({user:req.user.id}).exec(callback);
+				Email.count({org:req.org.id}).exec(callback);
 			},
 			getCategorySpending:['getAccounts',function(results,callback){
 
@@ -730,10 +737,10 @@ module.exports = {
 		var limit = req.query.limit?req.query.limit:100;
 		async.auto({
 			getAccounts:function(callback){
-				Account.find({user:req.user.id}).exec(callback);
+				Account.find({org:req.org.id}).exec(callback);
 			},
 			getDocuments:function(callback){ // only for filter
-				Document.find({user:req.user.id}).sort('createdAt DESC').exec(callback);
+				Document.find({org:req.org.id}).sort('createdAt DESC').exec(callback);
 			},
 			getTransactionsInDocument:function(callback){
 				if(req.query.document){
@@ -831,10 +838,10 @@ module.exports = {
 				Transaction_line_item.find(filter).sort(sort).limit(limit).populate('tags').populate('transaction').exec(callback);
 			}],
 			getCategories:function(callback){
-				Category.find({user:req.user.id}).sort('name ASC').exec(callback);
+				Category.find({org:req.org.id}).sort('name ASC').exec(callback);
 			},
 			getTags:function(callback){
-				Tag.find({user:req.user.id}).exec(callback);
+				Tag.find({org:req.org.id}).exec(callback);
 			},
 			getParsedEmails:['getTlis',function(results,callback){
 				var t_ids=_.map(results.getTlis,function(tli){return tli.transaction.id});
@@ -904,7 +911,7 @@ module.exports = {
 		});
 	},
 	createTransaction:function(req,res){
-		Account.find({user:req.user.id}).exec(function(err,accounts){
+		Account.find({org:req.org.id}).exec(function(err,accounts){
 			if(req.body){ // post request
 				console.log(req.body);
 				const fx = require('money');
@@ -950,7 +957,7 @@ module.exports = {
 						if(req.body.referer && req.body.referer.includes('/transactions'))
 							res.redirect(req.body.referer);
 						else 
-							res.redirect('/transactions');
+							res.redirect('/org/' + req.org.id +'/transactions');
 					}
 				});
 			}else{ // view the form
@@ -978,7 +985,7 @@ module.exports = {
 				Transaction_line_item.findOne(req.params.id).populate('account').exec(cb)
 			},
 			updateTli: ['getTli', function(results, cb){
-				if(_.get(results, 'getTli.account.user') != req.user.id)
+				if(_.get(results, 'getTli.account.org') != req.org.id)
 					return cb(new Error('INVALID_ACCESS'));
 				Transaction_line_item.update({id: req.params.id}, req.body).exec(cb);
 			}]
@@ -998,7 +1005,7 @@ module.exports = {
 		})
 	},
 	editTransaction:function(req,res){
-		Account.find({user:req.user.id}).exec(function(err,accounts){
+		Account.find({org:req.org.id}).exec(function(err,accounts){
 			if(req.body){ // post request
 				console.log(req.body);
 				const fx = require('money');
@@ -1035,7 +1042,7 @@ module.exports = {
 					if(err)
 						throw err;
 					else
-						res.redirect('/transactions');
+						res.redirect('/org/' + req.org.id +'/transactions');
 				});
 			}else{ // view the form
 				Transaction.findOne({id:req.params.id}).exec(function(err,t){
@@ -1072,7 +1079,7 @@ module.exports = {
 			Transaction.destroy({id:req.params.id}).exec(function(err,t){
 				if(err)
 					throw(err);
-				res.redirect('/transactions');
+				res.redirect('/org/' + req.org.id +'/transactions');
 			});
 		}else{ // showing the warning page
 			Transaction.findOne({id:req.params.id}).populate('account').exec(function(err,t){
@@ -1124,7 +1131,7 @@ module.exports = {
 			// do you have permission to edit description of that transaction?
 			async.auto({
 				getAccounts:function(callback){
-					Account.find({user:req.user.id}).exec(callback);
+					Account.find({org:req.org.id}).exec(callback);
 				},
 				getTliDetails:function(callback){
 					Transaction_line_item.findOne({id:req.body.tli}).exec(callback);
@@ -1151,7 +1158,7 @@ module.exports = {
 			})
 		}else if(req.body.doc){
 			Document.findOne({id:req.body.doc}).exec(function(err,doc){
-				if(doc.user==req.user.id){
+				if(doc.org==req.org.id){
 					Document.update({id:doc.id},{description:req.body.description}).exec(function(err,result){
 						if(err)
 							throw err;
@@ -1171,7 +1178,7 @@ module.exports = {
 		var limit = req.query.limit?req.query.limit:100;
 		async.auto({
 			getAccounts:function(callback){
-				Account.find({user:req.user.id}).exec(callback);
+				Account.find({org:req.org.id}).exec(callback);
 			},
 			getSnapshots:['getAccounts',function(results,callback){
 				var accounts=[];
@@ -1198,7 +1205,7 @@ module.exports = {
 		});
 	},
 	createSnapshot:function(req,res){
-		Account.find({user:req.user.id}).exec(function(err,accounts){
+		Account.find({org:req.org.id}).exec(function(err,accounts){
 			if(req.body){ // post request
 				console.log(req.body);
 				const fx = require('money');
@@ -1222,7 +1229,7 @@ module.exports = {
 					if(err)
 						throw err;
 					else
-						res.redirect('/snapshots');
+						res.redirect('/org/' + req.org.id +'/snapshots');
 				});
 			}else{ // view the form
 				var locals={
@@ -1239,7 +1246,7 @@ module.exports = {
 		})
 	},
 	editSnapshot:function(req,res){
-		Account.find({user:req.user.id}).exec(function(err,accounts){
+		Account.find({org:req.org.id}).exec(function(err,accounts){
 			if(req.body){ // post request
 				console.log(req.body);
 				const fx = require('money');
@@ -1257,7 +1264,7 @@ module.exports = {
 					if(err)
 						throw err;
 					else
-						res.redirect('/snapshots');
+						res.redirect('/org/' + req.org.id +'/snapshots');
 				});
 			}else{ // view the form
 				Snapshot.findOne({id:req.params.id}).exec(function(err,s){
@@ -1280,7 +1287,7 @@ module.exports = {
 			Snapshot.destroy({id:req.params.id}).exec(function(err,s){
 				if(err)
 					throw(err);
-				res.redirect('/snapshots');
+				res.redirect('/org/' + req.org.id +'/snapshots');
 			});
 		}else{ // showing the warning page
 			Snapshot.findOne({id:req.params.id}).populate('account').exec(function(err,s){
@@ -1308,11 +1315,11 @@ module.exports = {
 	listDocuments: function(req, res){
 		async.auto({
 			getDocuments: function(cb){
-				Document.find({user:req.user.id}).populate('accounts').populate('statement_line_items').sort('id DESC').exec(cb);
+				Document.find({org:req.org.id}).populate('accounts').populate('statement_line_items').sort('id DESC').exec(cb);
 			},
 			getUnresolvedDoubtfullTransaction: function(cb){
 				var query = `SELECT count(*) AS unresolved_dts, sli.document FROM doubtful_transaction AS dt INNER JOIN statement_line_item AS sli ON dt.sli = sli.id 
-				WHERE sli.user =${req.user.id} AND json_extract_path(dt.details::json, 'status') IS NULL GROUP BY sli.document`
+				WHERE sli.org =${req.org.id} AND json_extract_path(dt.details::json, 'status') IS NULL GROUP BY sli.document`
 				Doubtful_transaction.query(query,cb);
 			}
 		}, function(err, results){
@@ -1357,7 +1364,7 @@ module.exports = {
 	viewDocument:function(req,res){
 		async.auto({
 			getDoc:function(callback){
-				Document.findOne({id:req.params.id, user:req.user.id}).exec(callback);
+				Document.findOne({id:req.params.id, org:req.org.id}).exec(callback);
 			},
 			getSLIs:function(callback){
 				Statement_line_item.find({document:req.params.id}).populate('transaction').sort('pos ASC').exec(callback);
@@ -1366,7 +1373,7 @@ module.exports = {
 				Doubtful_transaction.find({sli:_.map(results.getSLIs,'id')}).exec(callback);
 			}],
 			getAccounts:function(callback){
-				Account.find({user:req.user.id}).exec(callback);
+				Account.find({org:req.org.id}).exec(callback);
 			}
 		},function(err,results){
 			var unresolved_dts=[]
@@ -1443,7 +1450,7 @@ module.exports = {
 					});
 				}],
 				createDocument: ['uploadFileToS3', function (results, cb) {
-					Document.create({ user: req.user.id, parser_used: req.body.type, 
+					Document.create({ org: req.org.id, parser_used: req.body.type, 
 						details:{s3_key:results.uploadFileToS3.key, 
 							original_filename:results.uploadFile[0].filename, 
 							s3_location: results.uploadFileToS3.Location, 
@@ -1489,7 +1496,7 @@ module.exports = {
 					 return res.view('create_document', locals);
 				}
 				else	
-				 	return res.redirect("/documents");
+					return res.redirect('/org/' + req.org.id +"/documents");
 			})
 			
 		}
@@ -1501,7 +1508,7 @@ module.exports = {
 		res.send('delete a document using this');
 	},
 	listTags:function(req,res){
-		Tag.find({user:req.user.id}).exec(function(err,tags){
+		Tag.find({org:req.org.id}).exec(function(err,tags){
 			var locals={
 				tags:tags
 			}
@@ -1514,7 +1521,7 @@ module.exports = {
 			var t={
 				name:req.body.name,
 				description:req.body.description,
-				user:req.user.id,
+				org:req.org.id,
 				type:'user',
 			}
 			console.log(t);
@@ -1524,7 +1531,7 @@ module.exports = {
 					throw err;
 				}
 				else
-					res.redirect('/tags');
+					res.redirect('/org/' + req.org.id +'/tags');
 			});
 		}else{ // view the form
 			var locals={
@@ -1592,7 +1599,7 @@ module.exports = {
 		});
 	},
 	editTag:function(req,res){
-		Tag.findOne({user:req.user.id,id:req.params.id}).exec(function(err,tag){
+		Tag.findOne({org:req.org.id,id:req.params.id}).exec(function(err,tag){
 			if(err)
 				throw err;
 			if(!tag)
@@ -1602,14 +1609,14 @@ module.exports = {
 				var t={
 					name:req.body.name,
 					description:req.body.description,
-					user:req.user.id,
+					org:req.org.id,
 				}
 				console.log(t);
 				Tag.update({id:req.params.id},t).exec(function(err,transaction){
 					if(err)
 						throw err;
 					else
-						res.redirect('/tags');
+						res.redirect('/org/' + req.org.id +'/tags');
 				});
 			}else{ // view the form
 				var locals={
@@ -1626,7 +1633,7 @@ module.exports = {
 	editTags:function(req,res){
 		async.auto({
 			getAllTags:function(callback){
-				Tag.find({user:req.user.id}).exec(callback);
+				Tag.find({org:req.org.id}).exec(callback);
 			},
 			getTli:function(callback){
 				// console.log(req.body);
@@ -1742,7 +1749,7 @@ module.exports = {
 		// update sli or parsed email with the transaction id
 	},
 	listRules:function(req,res){
-		Rule.find({user: req.user.id}).exec(function(err, rules){
+		Rule.find({org:req.org.id}).exec(function(err, rules){
 			var locals={
 				rules:rules
 			}
@@ -1750,19 +1757,19 @@ module.exports = {
 		})
 	},
 	createRule:function(req,res){
-		Rule.create({user:req.user.id, status: 'draft', type:'user', description:'rule #drafted'}).exec(
+		Rule.create({org:req.org.id, status: 'draft', type:'user', description:'rule #drafted'}).exec(
 			function(err, r){
 				if(err) return res.view('500', err);
-				res.redirect(`/rule/${r.id}/edit`);
+				res.redirect('/org/' + req.org.id +`/rule/${r.id}/edit`);
 			})
 	},
 	editRule:function(req,res){
 		async.auto({
 			findRule: function(cb){
-				Rule.findOne({user:req.user.id, id: req.params.id}).exec(cb)
+				Rule.findOne({org:req.org.id, id: req.params.id}).exec(cb)
 			},
 			getAccounts: function(cb){
-				Account.find({user:req.user.id}).exec(cb);
+				Account.find({org:req.org.id}).exec(cb);
 			}
 		},function(err, results){
 			if(err) return res.serverError(err);
@@ -1774,7 +1781,7 @@ module.exports = {
 					if(v)
 						_.set(update, k, v);
 				});
-				Rule.update({id: results.findRule.id, user: req.user.id}, update).exec(function(err, u_r){
+				Rule.update({id: results.findRule.id, org:req.org.id}, update).exec(function(err, u_r){
 					if(err) return res.serverError(err);
 					if(!u_r.length) return res.view('404');
 					var locals = {
@@ -1795,7 +1802,7 @@ module.exports = {
 	listPnLs:function(req,res){
 		async.auto({
 			getPnls:function(callback){
-				Pnl.find({user:req.user.id}).exec(callback);
+				Pnl.find({org:req.org.id}).exec(callback);
 			}
 		},function(err,results){
 			var locals={
@@ -1813,7 +1820,7 @@ module.exports = {
 		}
 		if(req.body){
 			var pnl={
-				user:req.user.id,
+				org:req.org.id,
 				name:req.body.name,
 				type:'single_pnl_head',
 				details:{
@@ -1822,12 +1829,12 @@ module.exports = {
 
 			}
 			Pnl.create(pnl).exec(function(err,result){
-				res.redirect('/pnls');
+				res.redirect('/org/' + req.org.id +'/pnls');
 			})
 		}else{
 			async.auto({
 				getCategories:function(callback){
-					Category.find({user:req.user.id}).sort('name ASC').exec(callback);
+					Category.find({org:req.org.id}).sort('name ASC').exec(callback);
 				},
 			},function(err,results){
 				var categories = GeneralService.orderCategories(results.getCategories);
@@ -1896,10 +1903,10 @@ module.exports = {
 		
 		async.auto({
 			getAccounts:function(callback){
-				Account.find({user:req.user.id}).sort('name ASC').exec(callback);
+				Account.find({org:req.org.id}).sort('name ASC').exec(callback);
 			},
 			getAllCategories:function(callback){
-				Category.find({user:req.user.id}).exec(callback);
+				Category.find({org:req.org.id}).exec(callback);
 			},
 			getCategorySpendingPerMonth:['getAccounts',function(results,callback){
 
@@ -2083,10 +2090,10 @@ module.exports = {
 
 		async.auto({
 			getAccounts:function(callback){
-				Account.find({user:req.user.id}).sort('name ASC').exec(callback);
+				Account.find({org:req.org.id}).sort('name ASC').exec(callback);
 			},
 			getAllCategories:function(callback){
-				Category.find({user:req.user.id}).exec(callback);
+				Category.find({org:req.org.id}).exec(callback);
 			},
 			getPnl:function(callback){
 				Pnl.findOne({id:req.params.id}).exec(callback);
@@ -2160,7 +2167,7 @@ module.exports = {
 	},
 	listInvoices:function(req,res){
 		var locals={};
-		Invoice.find({user:req.user.id}).populate('category').exec(function(err,invoices){
+		Invoice.find({org:req.org.id}).populate('category').exec(function(err,invoices){
 			if(err)
 				throw err;
 			locals.invoices=invoices;
@@ -2172,7 +2179,7 @@ module.exports = {
 		res.view('view_invoices',locals);
 	},
 	createInvoice:function(req,res){
-		Account.find({ user: req.user.id }).exec(function (err, accounts) {
+		Account.find({ org:req.org.id }).exec(function (err, accounts) {
 			if (req.body) { // post request
 				console.log(req.body);
 				const fx = require('money');
@@ -2187,7 +2194,7 @@ module.exports = {
 					third_party: req.body.third_party,
 					type:req.body.type,
 					terms:req.body.terms,
-					user:req.user.id,
+					org:req.org.id,
 					remote_id:req.body.remote_id,
 				}
 				if (req.body.type == 'payable') {
@@ -2209,7 +2216,7 @@ module.exports = {
 					if (err)
 						throw err;
 					else {
-						res.redirect('/invoices');
+						res.redirect('/org/' + req.org.id +'/invoices');
 					}
 				});
 			} else { // view the form
@@ -2236,7 +2243,7 @@ module.exports = {
 	},
 	listBalanceSheets: function (req, res) {
 		var locals = {};
-		// Invoice.find({ user: req.user.id }).populate('category').exec(function (err, invoices) {
+		// Invoice.find({ org:req.org.id }).populate('category').exec(function (err, invoices) {
 		// 	if (err)
 		// 		throw err;
 		// 	locals.invoices = invoices;
@@ -2260,15 +2267,15 @@ module.exports = {
 		var locals = {};
 		res.view('delete_balance_sheet', locals);
 	},
+	// list orgs that loggedin user is part of
 	listOrgs: function (req, res) {
 		var locals = {};
-		// Invoice.find({ user: req.user.id }).populate('category').exec(function (err, invoices) {
-		// 	if (err)
-		// 		throw err;
-		// 	locals.invoices = invoices;
-		// 	res.view('list_invoices', locals);
-		// })
-		res.view('list_orgs', locals);
+		Member.find({ org:req.org.id }).populate('org').exec(function (err, memberships) {
+			if (err)
+				throw err;
+			locals.memberships = memberships;
+			res.view('list_orgs', locals);
+		})
 	},
 	viewOrg: function (req, res) {
 		var locals = {};
@@ -2276,7 +2283,18 @@ module.exports = {
 	},
 	createOrg: function (req, res) {
 		var locals = {};
-		res.view('create_org', locals);
+		if(req.body){
+			var org= req.body;
+			org.owner=req.user.id;
+			Org.create(org).exec(function(err){
+				if(err)
+					throw(err);
+				res.redirect('/orgs');
+			})
+		}else{
+			locals.org={};
+			res.view('create_org', locals);
+		}
 	},
 	editOrg: function (req, res) {
 		var locals = {};
@@ -2288,13 +2306,12 @@ module.exports = {
 	},
 	listMembers: function (req, res) {
 		var locals = {};
-		// Invoice.find({ user: req.user.id }).populate('category').exec(function (err, invoices) {
-		// 	if (err)
-		// 		throw err;
-		// 	locals.invoices = invoices;
-		// 	res.view('list_invoices', locals);
-		// })
-		res.view('list_members', locals);
+		Member.find({ org:req.params.o_id }).populate('user').populate('org').exec(function (err, members) {
+			if (err)
+				throw err;
+			locals.members = members;
+			res.view('list_members', locals);
+		});
 	},
 	viewMember: function (req, res) {
 		var locals = {};
@@ -2302,7 +2319,22 @@ module.exports = {
 	},
 	createMember: function (req, res) {
 		var locals = {};
-		res.view('create_member', locals);
+		if(req.body){
+			var member= req.body;
+			member.org = req.params.o_id;
+			Member.create(member).exec(function(err){
+				if(err)
+					throw err;
+				res.redirect('/org/'+req.params.o_id+'/members');
+			})
+		}else{
+			User.find().exec(function(err,users){
+				locals.users=users;
+				locals.member={};
+				res.view('create_member', locals);
+			})
+			
+		}
 	},
 	editMember: function (req, res) {
 		var locals = {};

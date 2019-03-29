@@ -12,8 +12,8 @@ module.exports = {
 		parsed_data: {
 			type: 'json',
 		},
-		user: {
-			model: 'user',
+		org: {
+			model: 'org',
 			required: true
 		},
 		parser_used: {

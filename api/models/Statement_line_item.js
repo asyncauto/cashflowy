@@ -25,8 +25,8 @@ module.exports = {
 		transaction:{
 			model:'transaction'
 		},
-		user:{
-			model:'user'
+		org:{
+			model:'org'
 		},
 		data: { // incase you want to write rules
 			type: 'json',
