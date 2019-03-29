@@ -138,14 +138,12 @@
 				</div>
 				<div class='eight wide column right aligned'>
 					<!-- <div class='ui basic right aligned compact segment'> -->
-						
 						<a href="<%=download_path%>" data-tooltip="Download as csv">
 							<i class='large download icon'></i>
 						</a>
 					<!-- </div> -->
 				</div>
 			</div>
-			<!-- <div class="ui stacked segments"> -->
 					<%transactions.forEach(function(tlis){
 						var t = tlis[0].transaction;%>
 					<div class="ui segment">
@@ -155,6 +153,7 @@
 										<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
 										<span style="font-size: 1.5rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
 										<span style="font-size: 0.75rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
+										<a href="#" style="font-size: 0.9rem;" data-t-id="<%=t.id%>" class='show_details'>details</a>
 									</span>
 								</div>
 								<div class="fifteen wide column">
@@ -219,8 +218,7 @@
 														}else{%>
 															<span style='opacity: 0.5'>You transferred</span><br>
 															<b style='' class="<%-tli.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
-														<%}%><br>
-														<a href="#" data-t-id="<%=t.id%>" class='show_details'>details</a>
+														<%}%>
 													</div>
 													<div class="three wide column">
 														<%if(tli.original_amount<0){%> 
