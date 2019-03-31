@@ -51,7 +51,7 @@ module.exports = {
 	},
 	beforeCreate:function(pe,cb){
 		pe.data=_.cloneDeep(pe.extracted_data);
-		Rule.find({user:pe.user, status: 'active', trigger: 'parsed_email_before_create'}).exec(function(err,rules){
+		Rule.find({org:pe.org, status: 'active', trigger: 'parsed_email_before_create'}).exec(function(err,rules){
 			rules.forEach(function(rule){
 				// check if criteria matches the condition
 				var status = _.isMatch(pe, _.get(rule, 'details.trigger.condition',{}));
@@ -101,12 +101,12 @@ module.exports = {
 					acc_number:{
 						endsWith: acc_number, // ends with the following number
 					},
-					user:pe.user
+					org:pe.org
 				}
 
 				var create={ // incase the account does not exist, create account.
 					acc_number:''+acc_number,
-					user:pe.user,
+					org:pe.org,
 					type:'bank', // user might need to change this
 					name:'Auto generated account'+acc_number,
 				} 
@@ -125,12 +125,12 @@ module.exports = {
 						acc_number:{
 							endsWith: acc_number, // ends with the following number
 						},
-						user:pe.user
+						org:pe.org
 					}
 
 					var create={ // incase the account does not exist, create account.
 						acc_number:''+acc_number,
-						user:pe.user,
+						org:pe.org,
 						type:'investment', // user might need to change this
 						name:'Zerodha - Auto generated account',
 					} 

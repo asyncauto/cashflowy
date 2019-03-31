@@ -215,11 +215,11 @@ module.exports={
 					acc_number:{
 						endsWith: t.account, // ends with the following number
 					},
-					user:sli.user
+					org:sli.org
 				}
 				var create={ // incase the account does not exist, create account.
 					acc_number:''+t.account,
-					user:sli.user,
+					org:sli.org,
 					type:'bank', // user might need to change this
 					name:'Auto generated account'+t.account,
 				} 
@@ -228,7 +228,7 @@ module.exports={
 			getUserAccounts:function(callback){ 
 				// needed for finding similar transactions
 				// to compare with transactions from accounts that belong to the same user. 
-				Account.find({user:sli.user}).exec(callback);
+				Account.find({org:sli.org}).exec(callback);
 			},
 			findSimilarTransactions:['getUserAccounts',function(results,callback){
 				var options={t:t,accounts:_.map(results.getUserAccounts,'id')};

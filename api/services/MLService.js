@@ -39,9 +39,9 @@ module.exports = {
                 });
             }],
             findOrCreateCategory: ['getPrediction', function (results, cb) {
-                // for initial trail, only categorize if category belongs to user
+                // for initial trail, only categorize if category belongs to org
                 var category_name = results.getPrediction.Prediction.predictedLabel
-                Category.findOne({ name: category_name, user: results.getAccount.user }).exec(cb);
+                Category.findOne({ name: category_name, org: results.getAccount.org }).exec(cb);
             }],
             addCategoryToTli: ['findOrCreateCategory', function (results, cb) {
                 if (!results.findOrCreateCategory) return cb(null);

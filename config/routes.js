@@ -43,7 +43,7 @@ module.exports.routes = {
   'POST /org/:o_id/email/:id/edit':'MainController.editEmail',
   'GET /org/:o_id/email/:id':'MainController.viewEmail',
 
-  'POST /parse_failure/:id/retry': 'MainController.retryParseFailure',
+  'POST /org/:o_id/parse_failure/:id/retry': 'MainController.retryParseFailure',
   
   'GET /org/:o_id/accounts':'MainController.listAccounts',
   'GET /org/:o_id/account/create':'MainController.createAccount',

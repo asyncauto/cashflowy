@@ -44,8 +44,8 @@ module.exports = {
                 var account_ids = [];
                 async.forEach(accouts, function(ac, cb){
                     // check for last 4 digits.
-                    Account.findOrCreate({acc_number: {endsWith: ac.substr(-4)}, user: results.findDocument.user},
-                        {acc_number: ac, user: results.findDocument.user, name: 'Auto Generated: '+ ac, type: "bank"}).exec(function(e, a){
+                    Account.findOrCreate({acc_number: {endsWith: ac.substr(-4)}, org: results.findDocument.org},
+                        {acc_number: ac, org: results.findDocument.org, name: 'Auto Generated: '+ ac, type: "bank"}).exec(function(e, a){
                             if(e) return cb(e);
                             account_ids.push(a.id);
                             return cb(null);
@@ -86,7 +86,7 @@ module.exports = {
                             parser_used:results.findDocument.parser_used,
                             type:_.find(sails.config.docparser.filters,{docparser_id:results.findDocument.parser_used}).type,
                         },
-                        user:results.findDocument.user // this is sort of reduntant
+                        org:results.findDocument.org // this is sort of reduntant
                     }
                     // statement_line_item.data=_.cloneDeep(t);
                     // statement_line_item.data.acc_no=acc_no;

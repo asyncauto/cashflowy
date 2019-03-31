@@ -141,8 +141,8 @@ module.exports={
 
 		// console.log('\n\n\n\n');
 		// console.log(options);
-		if(options.user){
-			Account.find({user:options.user}).exec(function(err,accounts){
+		if(options.org){
+			Account.find({org:options.org}).exec(function(err,accounts){
 				var acc_ids=_.map(accounts,'id');
 				Snapshot.find({account:acc_ids}).sort('takenAt DESC').exec(function(err,snapshots){
 					calculateUAMForEachSnapshot(snapshots,callback);

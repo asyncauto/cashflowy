@@ -49,7 +49,7 @@ module.exports = {
 			extractDataFromMessageBody: function (cb) {
 				var opts = {
 					email_type: options.email_type,
-					body: options.inbound_data['stripped-text']
+					body: options.inbound_data['body-plain']
 				}
 				GmailService.extractDataFromMessageBody(opts, cb);
 			},
@@ -127,7 +127,7 @@ module.exports = {
 					sails.log.info('parse failure created', err, pf);
 					var text = `Parsing email failure ${pf.id}\n`;
 					text += "<-Email body->\n";
-					text += inbound_data['stripped-text'].trim();
+					text += inbound_data['body-plain'].trim();
 					var content = {
 						"icon_emoji": ":robot_face:",
 						"username": "cashflowy_bot",

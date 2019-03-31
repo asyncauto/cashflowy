@@ -337,51 +337,6 @@ module.exports = {
  			res.view('create_email',locals);
  		}
 	},
-	createEmailGmail:function(req,res){
-		const {google} = require('googleapis');
-		const {client_secret, client_id, redirect_uris} = sails.config.gmail.installed;
-		const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[1]);
-		const authorizeUrl = oAuth2Client.generateAuthUrl({
-			access_type: 'offline',
-			scope: [
-				'https://www.googleapis.com/auth/gmail.readonly',
-				// 'https://www.googleapis.com/auth/plus.me',
-				'https://www.googleapis.com/auth/userinfo.email'
-				],
-			state: req.user.id,
-		});
-		res.redirect(authorizeUrl);
-	},
-	oauth2callback:function(req,res){
-		var Base64 = require('js-base64').Base64;
-		const {google} = require('googleapis');
-		const {client_secret, client_id, redirect_uris} = sails.config.gmail.installed;
-		const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[1]);
-
-		// console.log('\n\n--------');
-		// console.log(req.query.code);
-		// console.log(req.query.state);
-		oAuth2Client.getToken(req.query.code).then(function(result){
-			// console.log(result.tokens);
-			// console.log(result.tokens.id_token);
-			// console.log(result.tokens.id_token.split('.'));
-			// console.log(result.tokens.id_token.split('.')[1]);
-			Base64.extendString();
-			var id_token_data = JSON.parse(result.tokens.id_token.split('.')[1].fromBase64());
-			console.log(result.tokens);
-			var email={
-				user:req.query.state, // user id is passed into this variable
-				email:id_token_data.email,
-				token:result.tokens,
-				details: {token_status: 'active'}
-			}
-			console.log(email);
-			Email.findOrCreate({email:email.email},email).exec(function(err,result){
-				console.log(err);
-				res.redirect('/org/' + req.org.id +'/emails');
-			})
-		})
-	},
 	editEmail:function(req,res){
 	},
 	listAccounts:function(req,res){

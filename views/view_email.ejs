@@ -118,7 +118,7 @@
 			var button = this;
 			$(button).addClass('loading');
 			$(button).addClass('disabled');
-			$.post("/parse_failure/"+pf_id + "/retry",function(result,status){
+			$.post("/org/"+ <%=req.params.o_id%>+"/parse_failure/"+pf_id + "/retry",function(result,status){
 				console.log(result, status)
 			}).always(function() {
 				location.reload();
