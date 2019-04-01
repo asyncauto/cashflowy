@@ -84,8 +84,12 @@ module.exports = function (callback) {
 			done(err,result);
 		})
 	});
-	
-	
-	// console.log('\n\n\n\n ******** bull setup ********');
+
+	queue.process('parse_inbound_mail',1,function(job,done){
+		MailgunService.parseInboundEmail(job.data,function(err, result){
+			done(err,result);
+		});
+	});
+
 	callback(null);
 }

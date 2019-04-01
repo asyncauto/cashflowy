@@ -5,6 +5,10 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 var async = require('async')
+var Bull = require( 'bull' );
+// create our job queue
+var queue = new Bull('queue',{redis:sails.config.bull.redis});
+
 module.exports = {
 
     // this is the new doc parser - needs clean up - written by Alex
@@ -121,11 +125,12 @@ module.exports = {
         // console.log(req.body);
         if (req.query.secret != sails.config.mailgun.webhook_secret)
             return res.status(403).json({ status: 'failure', error: 'athorization failed' });
-
-        MailgunService.parseInboundEmail(req.body, function(err){
-            if(err) return res.status(500).json({error: err.message});
+        
+        queue.add('parse_inbound_mail', req.body).then(function(){        
             res.ok();
-        })
+		}).catch(function(err){
+            if(err) return res.status(500).json({error: err.message});
+        });
     }
 
 };

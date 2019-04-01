@@ -68,13 +68,16 @@ module.exports = {
 				parsed_email.extracted_data.email_received_time = new Date(options.inbound_data['Date']);
 
 				if (parsed_email.body_parser_used == '') {
-					cb(null);
+					cb(new Error('INVALID_FILTER'));
 				} else {
 					// console.log('parser success');
 					Parsed_email.findOrCreate({ message_id: parsed_email.message_id }, parsed_email).exec(function (err, pe) {
-						Parse_failure.update({ message_id: parsed_email.message_id }, 
-							{ parsed_email: pe.id, 
-							status: 'PARSED', extracted_data: parsed_email.extracted_data }).exec(sails.log.info);
+						// log to status of the parsing to success.
+						Parse_failure.update({ message_id: parsed_email.message_id },
+							{
+								parsed_email: pe.id,
+								status: 'PARSED', extracted_data: parsed_email.extracted_data
+							}).exec(sails.log.info);
 						cb(err, pe)
 					});
 				}
@@ -85,10 +88,10 @@ module.exports = {
 	parseInboundEmail: function (inbound_data, callback) {
 		async.auto({
 			getEmail: function (cb) {
-				Email.findOne({ email: inbound_data.To }).exec(function(err, email){
-					if(err) return cb(err);
-					if(!email) return cb(new Error('INVALID_EMAIL'));
-					return cb(null, email); 
+				Email.findOne({ email: inbound_data.To }).exec(function (err, email) {
+					if (err) return cb(err);
+					if (!email) return cb(new Error('EMAIL_NOT_FOUND'));
+					return cb(null, email);
 				});
 			},
 			parseWithEachFilter: ['getEmail', function (results, cb) {
@@ -102,43 +105,58 @@ module.exports = {
 						email_address: results.getEmail.email
 					};
 					MailgunService.parseEmailBodyWithBodyParser(data, function (err, pe) {
-						if (err) return next(err, true);
-						if (pe.findOrCreateParsedEmail) {
-							parsed_email = pe.findOrCreateParsedEmail;
-							return next(null, true)
-						} else {
-							next(null, false);
+						if (err) {
+							if (err.message == 'INVALID_FILTER')
+								return next(null, false);
+							return next(err, true);
 						}
+						parsed_email = pe.findOrCreateParsedEmail;
+						return next(null, true)
 					})
 				}, function (err) {
+					if (!parsed_email)
+						return cb(new Error('UNABLE_TO_PARSE'));
 					cb(err, parsed_email);
 				})
-			}],
-			parseFailToSlack: ['parseWithEachFilter', function (results, cb) {
-				// don't send to slack if processEach able to parse the email body
-				if (results.parseWithEachFilter) return cb(null);
-				var parsed_failure = {
-					org: results.getEmail.org,
-					email: results.getEmail.email,
-					message_id: inbound_data['Message-Id'],
-					status: 'FAILED',
-					details: {
-						inbound: inbound_data
-					}
-				}
-				Parse_failure.findOrCreate({ message_id: parsed_failure.message_id }, parsed_failure).exec(function (err, pf) {
-					sails.log.info('parse failure created', err, pf);
-					var text = `Parsing email failure ${pf.id}\n`;
-					text += "<-Email body->\n";
-					text += inbound_data['body-plain'].trim();
-					var content = {
-						"icon_emoji": ":robot_face:",
-						"username": "cashflowy_bot",
-						"text": text,
-					}
-					SlackService.pushToSlack('cashflowy', content, cb);
-				});
 			}]
-		}, callback);
+		},
+			function (err, results) {
+				if (err) {
+					switch (err.message) {
+						case 'EMAIL_NOT_FOUND':
+							return callback(err);
+							break;
+						case 'UNABLE_TO_PARSE':
+							var parsed_failure = {
+								org: results.getEmail.org,
+								email: results.getEmail.email,
+								message_id: inbound_data['Message-Id'],
+								status: 'FAILED',
+								details: {
+									inbound: inbound_data
+								}
+							}
+							Parse_failure.findOrCreate({ message_id: parsed_failure.message_id }, parsed_failure).exec(function (err, pf) {
+								sails.log.info('parse failure created', err, pf);
+								var text = `Parsing email failure ${pf.id}\n`;
+								text += "<-Email body->\n";
+								text += inbound_data['body-plain'].trim();
+								var content = {
+									"icon_emoji": ":robot_face:",
+									"username": "cashflowy_bot",
+									"text": text,
+								}
+								SlackService.pushToSlack('cashflowy', content, sails.log.info);
+								return callback(err);
+							});
+							break;
+						default:
+							return callback(err);
+							break;
+					}
+				} else {
+					return callback(null, results);
+				}
+			});
 	},
 }
