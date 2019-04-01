@@ -85,10 +85,13 @@ module.exports = {
 	parseInboundEmail: function (inbound_data, callback) {
 		async.auto({
 			getEmail: function (cb) {
-				Email.findOne({ email: inbound_data.To }).exec(cb);
+				Email.findOne({ email: inbound_data.To }).exec(function(err, email){
+					if(err) return cb(err);
+					if(!email) return cb(new Error('INVALID_EMAIL'));
+					return cb(null, email); 
+				});
 			},
 			parseWithEachFilter: ['getEmail', function (results, cb) {
-				if (!results.getEmail) return cb(null);
 				var parsed_email; // store the Parse_email object in the variable, send to slack if this variable is empty
 				async.someLimit(sails.config.filters.active, 1, function (filter, next) {
 					var data = {
