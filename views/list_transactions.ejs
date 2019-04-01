@@ -353,7 +353,7 @@
 			var button = this;
 			$(button).addClass('loading');
 			$(button).addClass('disabled');
-			$.post("/api/edit_desc", {tli: tli_id,description:description}, function(result,status){
+			$.post("/org/"+"<%=req.params.o_id%>"+"/api/edit_desc", {tli: tli_id,description:description}, function(result,status){
 			    console.log('result = '+result);
 			    console.log('status = '+status);// this runs only on sucess
 			    if(status=='success'){
@@ -371,7 +371,7 @@
 				var tli_id=$(this).parents('.tli').attr('data-tli-id');
 				console.log(tli_id);
 				$.ajax({
-					url:"/tli/"+tli_id,
+					url:"/org/"+"<%=req.params.o_id%>"+"/tli/"+tli_id,
 					data:{category: value},
 					type:'PUT',
 					success:function(response){
@@ -399,7 +399,7 @@
 					params.account= $('input[name="filter_account"]').val();
 				if($('input[name="filter_category"]').val())
 				    params.category= $('input[name="filter_category"]').val();
-				window.location = '/transactions?'+$.param(params);
+				window.location = "/org/"+"<%=req.params.o_id%>"+'/transactions?'+$.param(params);
 			}
 		});
 		$('.tags_dd.ui.dropdown')
@@ -422,7 +422,7 @@
 			console.log(tags_string);
 			var dd = this;
 			$.ajax({
-				url:"/api/edit_tags/",
+				url:"/org/"+"<%=req.params.o_id%>"+"/api/edit_tags/",
 				data:{new_tags: tags_string.split(','),tli_id:tli_id},
 				type:'POST',
 				success:function(response){
@@ -450,7 +450,7 @@
 			$( "form" ).submit();
 		});
 		$('#reset_form').click(function(){
-			window.location = '/transactions';
+			window.location = "/org/"+"<%=req.params.o_id%>"+'/transactions';
 		});
 		$('.show_details').click(function(e){
 			e.preventDefault();
@@ -462,5 +462,3 @@
 		
 	});
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>

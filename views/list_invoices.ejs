@@ -78,7 +78,7 @@
 			console.log(tags_string);
 			var dd = this;
 			$.ajax({
-				url:"/api/edit_tags/",
+				url:"/org/"+ "<%=req.params.o_id%>" + "/api/edit_tags/",
 				data:{new_tags: tags_string.split(','),tli_id:tli_id},
 				type:'POST',
 				success:function(response){

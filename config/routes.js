@@ -160,9 +160,9 @@ module.exports.routes = {
   'POST /org/:o_id/member/:id/delete': 'MainController.deleteMember',
 
 
-  'GET /dt/:id':'MainController.viewDoubtfulTransaction',
-  'POST /dt/:id/mark_as_unique':'MainController.markDTAsUnique', // api
-  'POST /dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate', // api
+  'GET /org/:o_id/dt/:id':'MainController.viewDoubtfulTransaction',
+  'POST /org/:o_id/dt/:id/mark_as_unique':'MainController.markDTAsUnique', // api
+  'POST /org/:o_id/dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate', // api
 
 
   'GET /org/:o_id/rules':'MainController.listRules',
@@ -177,8 +177,8 @@ module.exports.routes = {
   '/test':'MainController.test',
 
   // api patterns needs rewrite later
-  'POST /api/edit_desc':'MainController.editDescription',
-  'POST /api/edit_tags':'MainController.editTags',
+  'POST /org/:o_id/api/edit_desc':'MainController.editDescription',
+  'POST /org/:o_id/api/edit_tags':'MainController.editTags',
 
   'GET /email_test':'MainController.emailTest',
   'GET /uam_test':'MainController.testUAM',

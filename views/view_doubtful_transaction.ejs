@@ -398,7 +398,7 @@
 									</div>
 								</td>
 								<td>
-									<form class="ui form " action="/dt/<%=dt.id%>/mark_as_duplicate_of/<%=t.id%>" method='post'>
+									<form class="ui form " action="/org/<%=req.params.o_id%>/dt/<%=dt.id%>/mark_as_duplicate_of/<%=t.id%>" method='post'>
 										<input type="submit" class="ui button <%=dt_status?'disabled':''%>" value="Doubtful txn is same as this">
 									</form>
 								</td>
@@ -412,7 +412,7 @@
 		</div>
 		
 		<div class='sixteen wide column'>
-			<form class="ui form " action="/dt/<%=dt.id%>/mark_as_unique" method='post'>
+			<form class="ui form " action="/org/<%=req.params.o_id%>/dt/<%=dt.id%>/mark_as_unique" method='post'>
 				<input type="submit" class="ui button <%=dt_status?'disabled':''%>" value="Doubtful txn is unique">
 			</form>
 		</div>

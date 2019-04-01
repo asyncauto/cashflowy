@@ -154,7 +154,7 @@
 			var button = this;
 			$(button).addClass('loading');
 			$(button).addClass('disabled');
-			$.post("/api/edit_desc", {doc: doc_id,description:description}, function(result,status){
+			$.post("/org/"+"<%=req.params.o_id%>"+"/api/edit_desc", {doc: doc_id,description:description}, function(result,status){
 			    console.log('result = '+result);
 			    console.log('status = '+status);// this runs only on sucess
 			    if(status=='success'){

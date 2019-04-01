@@ -156,6 +156,15 @@ module.exports={
 							q:'Amazon Pay Transaction ID:'
 						},
 						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'(https://amazonpay.amazon.in)'
+						}, 
+						{
 							type:'trim',
 						},
 					]

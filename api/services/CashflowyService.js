@@ -225,13 +225,13 @@ module.exports={
 				} 
 				Account.findOrCreate(find, create).exec(callback);	
 			},
-			getUserAccounts:function(callback){ 
+			getOrgAccounts:function(callback){ 
 				// needed for finding similar transactions
 				// to compare with transactions from accounts that belong to the same user. 
 				Account.find({org:sli.org}).exec(callback);
 			},
-			findSimilarTransactions:['getUserAccounts',function(results,callback){
-				var options={t:t,accounts:_.map(results.getUserAccounts,'id')};
+			findSimilarTransactions:['getOrgAccounts',function(results,callback){
+				var options={t:t,accounts:_.map(results.getOrgAccounts,'id')};
 				findSimilarTransactions(options,callback);
 			}],
 			createTransactionIfNew:['getAccount','findSimilarTransactions',function(results,callback){
