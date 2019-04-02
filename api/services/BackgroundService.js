@@ -55,8 +55,6 @@ module.exports={
 				query+=` AND "occuredAt"<='${results.getSnapshot.takenAt.toISOString()}'`;
 				query+=` AND account ='${results.getSnapshot.account}'`;
 				query+=` AND type ='income_expense'`;
-				// console.log('\n\n\n\n '+query);
-				// callback(null);
 				sails.sendNativeQuery(query,escape,function(err, rawResult) {
 					// console.log(rawResult.rows)
 					if(err)
@@ -73,8 +71,6 @@ module.exports={
 				query+=` AND "occuredAt"<='${results.getSnapshot.takenAt.toISOString()}'`;
 				query+=` AND (account ='${results.getSnapshot.account}' OR to_account ='${results.getSnapshot.account}')`;
 				query+=` AND type ='transfer'`;
-				// console.log('\n\n\n\n '+query);
-				// callback(null);
 				sails.sendNativeQuery(query,escape,function(err, rawResult) {
 					// console.log(rawResult.rows)
 					if(err)
@@ -156,6 +152,8 @@ module.exports={
 			Snapshot.find({id:options.snapshots}).sort('takenAt DESC').exec(function(err,snapshots){
 				calculateUAMForEachSnapshot(snapshots,callback);
 			});
+		}else{
+			callback(new Error('INVALID_INPUT'));
 		}
 	},
 

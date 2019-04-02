@@ -23,28 +23,28 @@ module.exports = function (callback) {
 		done();
 	})
 	
-	queue.process('surface_crawl_all_users', 1,function(job,done){
+	queue.process('surface_crawl_each_user', 1,function(job,done){
 		BackgroundService.surfaceCrawl({}, function(err, result){
 			done(err,result);
 		});
 	});
 
-	queue.process('send_weekly_email_all_users', 1,function(job,done){
+	queue.process('send_weekly_email_each_user', 1,function(job,done){
 		BackgroundService.sendWeeklyEmails({}, function(err, result){
 			done(err,result);
 		});
 	});
 
-	queue.process('calculate_uam_all_users', 1, function(job, done){
-		User.find({}).exec(function(err, users){
-			async.eachLimit(users, 1, function(u, cb){
+	queue.process('calculate_uam_each_org', 1, function(job, done){
+		Org.find({}).exec(function(err, orgs){
+			async.eachLimit(orgs, 1, function(o, cb){
 				var data = {
-					title:'calculate_uam, user ='+u.id+', name='+u.name,
+					title:'calculate_uam, user ='+o.id+', name='+o.name,
 					options:{ // this is used
-						user:u.id
+						org:o.id
 					},
 					info:{ // this is for readability
-						user:u.id
+						org:o.id
 					}
 				}
 				var promise = queue.add('calculate_uam', data);
