@@ -42,8 +42,8 @@ module.exports = {
 				});
 			});
 		})
-
 	},
+
 	parseEmailBodyWithBodyParser: function (options, cb) {
 		async.auto({
 			extractDataFromMessageBody: function (cb) {
@@ -88,7 +88,7 @@ module.exports = {
 	parseInboundEmail: function (inbound_data, callback) {
 		async.auto({
 			getEmail: function (cb) {
-				Email.findOne({ email: inbound_data.To }).exec(function (err, email) {
+				Email.findOne({ email: inbound_data.To.toLowerCase() }).exec(function (err, email) {
 					if (err) return cb(err);
 					if (!email) return cb(new Error('EMAIL_NOT_FOUND'));
 					return cb(null, email);
