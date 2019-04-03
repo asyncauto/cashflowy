@@ -33,6 +33,7 @@ module.exports.routes = {
   ***************************************************************************/
 
   'GET /': 'MainController.landingPage',
+  'GET /dashboard': 'MainController.landingPage',
   'GET /org/:o_id/dashboard':'MainController.dashboard',
   'GET /debug':'MainController.debug',
   
