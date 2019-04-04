@@ -2262,12 +2262,155 @@ module.exports = {
 		res.view('list_balance_sheets',locals);
 	},
 	viewBalanceSheet: function (req, res) {
-		var locals = {};
-		res.view('view_balance_sheet', locals);
+		var locals = {
+			pnl: {}
+		}
+		if (!req.query.date_from)
+			req.query.date_from = '2018-04-01';
+		if (!req.query.date_to)
+			req.query.date_to = '2019-04-01';
+
+		async.auto({
+			getAccounts: function (callback) {
+				Account.find({ org: req.org.id }).sort('name ASC').exec(callback);
+			},
+			getSnapshots:['getAccounts', function (results,callback) {
+				var acc_ids=_.map(results.getAccounts,'id');
+				Snapshot.find({ id:acc_ids }).exec(callback);
+			}],
+			getAllCategories: function (callback) {
+				Category.find({ org: req.org.id }).exec(callback);
+			},
+			// getPnl: function (callback) {
+			// 	Pnl.findOne({ id: req.params.id }).exec(callback);
+			// },
+			getBS: function (callback) {
+				Balance_sheet.findOne({ id: req.params.id }).exec(callback);
+			},
+			// getCategorySpendingPerMonth: ['getAccounts', function (results, callback) {
+
+			// 	var escape = [req.query.date_from, req.query.date_to];
+			// 	var query = 'select count(*),sum(amount_inr),EXTRACT(YEAR FROM "occuredAt") as "year",EXTRACT(MONTH FROM "occuredAt") as "month",category from transaction_line_item';
+			// 	query += ' where';
+			// 	query += " type='income_expense'";
+			// 	query += ' AND CAST("occuredAt" AS date) BETWEEN CAST($1 AS date) AND CAST($2 AS date)';
+
+			// 	if (_.map(results.getAccounts, 'id').length)
+			// 		query += ' AND account in ' + GeneralService.whereIn(_.map(results.getAccounts, 'id'));
+			// 	// in the accounts that belong to you
+			// 	query += ' group by category, "year", "month"';
+			// 	query += ' order by "year" , "month" '
+			// 	// console.log(query);
+			// 	sails.sendNativeQuery(query, escape, function (err, rawResult) {
+			// 		if (err)
+			// 			callback(err);
+			// 		else
+			// 			callback(err, rawResult.rows);
+			// 	});
+			// }],
+		}, function (err, results) {
+			if (err)
+				throw err;
+
+			results.getAllCategories.forEach(function (c) {
+				c.data = {};
+			})
+			// generate time periods
+			// var time_periods = PnLService.generateTimePeriods(results.getCategorySpendingPerMonth);
+			// calculate category spending per time period
+			// var categories_by_time = PnLService.calculateCategorySpendingPerTimePeriod(results.getAllCategories, time_periods, results.getCategorySpendingPerMonth);
+			// general scafolding for pnl
+			locals.b_s = BalanceSheetService.generateBSScafolding(results.getBS);
+			// set headers for this pnl
+			// time_periods.forEach(function (tp) {
+			// 	locals.b_s.header.level_1.push(tp.year + '-' + tp.month);
+			// });
+			locals.b_s.header.level_1.push('2019-04');
+			locals.b_s.header.level_2.push('all');
+			// var a = {}
+			// console.log(a.name);
+			// console.log(a.name.something)
+
+			if (results.getBS.type == 'single_pnl_head') {
+				// locals.b_s.header.level_2.push(_.find(categories_by_time[locals.b_s.header.level_1[0]], { id: results.getPnl.details.pnl_head_category }).name);
+				// // generate rows scafolding for single_pnl_heads
+				locals.b_s.body = BalanceSheetService.generateRowScafoldingForSinglePNLHead(results.getAccounts, locals.b_s.details.pnl_head_category);
+				// // filling data
+				locals.b_s.body.forEach(function (row_l1) { // income, expense, surplus
+					var row_l1_sum=0;
+					row_l1.children.forEach(function (row_l2) { // bank, wallet, credit_card
+						var row_l2_sum = 0;
+						row_l2.children.forEach(function (row_l3) { // bank, wallet, credit_card
+							row_l2_sum += row_l3.data['2019-04__all'];
+						});
+						row_l2.data['2019-04__all']=row_l2_sum;
+						row_l1_sum += row_l2.data['2019-04__all'];
+					});
+					row_l1.data['2019-04__all'] = row_l1_sum;
+					if (row_l1.name == 'Surplus') { // custom calculation for surplus
+						row_l1.data['2019-04__all'] = locals.b_s.body[0].data['2019-04__all'] + locals.b_s.body[1].data['2019-04__all'];
+					}
+				})
+				// locals.b_s.body = BalanceSheetService.populateDataForSinglePNLHead(locals.b_s.body, results.getAccounts, results.getPnl.details.pnl_head_category);
+			}
+			res.view('view_balance_sheet', locals);
+		});
 	},
 	createBalanceSheet: function (req, res) {
-		var locals={};
-		res.view('create_balance_sheet',locals);
+		var locals = {
+			sub: {},
+			pnl: {},
+			status: '',
+			message: '',
+		}
+		if (req.body) {
+			var pnl = {
+				org: req.org.id,
+				name: req.body.name,
+				type: 'single_pnl_head',
+				details: {
+					pnl_head: 1 // id of the category
+				}
+
+			}
+			Balance_sheet.create(pnl).exec(function (err, result) {
+				res.redirect('/org/' + req.org.id + '/balance_sheets');
+			})
+		} else {
+			async.auto({
+				getCategories: function (callback) {
+					Category.find({ org: req.org.id }).sort('name ASC').exec(callback);
+				},
+			}, function (err, results) {
+				var categories = GeneralService.orderCategories(results.getCategories);
+				var head = Math.floor(Math.random() * categories.length);
+				locals.pnl.statement = {
+					head: [
+						{
+							cat_id_is: categories[head].id,
+							name: categories[head].name
+						}
+					],
+					income: [],
+					expense: [],
+				}
+				categories[head].children.forEach(function (c_cat) {
+					if (c_cat.type == "income") {
+						locals.pnl.statement.income.push({
+							cat_id_id: c_cat.id,
+							name: c_cat.name
+						});
+					} else if (c_cat.type == 'expense') {
+						locals.pnl.statement.expense.push({
+							cat_id_id: c_cat.id,
+							name: c_cat.name
+						});
+					}
+				})
+				res.view('create_balance_sheet', locals);
+			});
+		}
+		
 	},
 	editBalanceSheet: function (req, res) {
 		var locals = {};

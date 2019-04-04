@@ -2,7 +2,7 @@
 	<div class='ui grid'>
 		<div class='sixteen wide column'>
 			<%pnls.forEach(function(pnl){%>
-				<a href="/pnl/<%=pnl.id%>"><%=pnl.name%></a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>"><%=pnl.name%></a><br>
 			<%})%>
 		</div>
 	</div>

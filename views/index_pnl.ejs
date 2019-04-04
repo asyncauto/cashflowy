@@ -5,19 +5,19 @@
 			<b>Type: </b><%=pnl.type%><br>
 			<h3>View PnL:</h3>
 			<%if(pnl.type=='single_pnl_head'){%>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2018-04-01&date_to=2019-03-31">This financial year</a><br>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2017-04-01&date_to=2018-03-31">Previous financial year</a><br>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2019-01-01&date_to=2019-12-31">This calendar year</a><br>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2018-01-01&date_to=2018-12-31">Previous calendar year</a><br>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2018-03-01&date_to=2018-03-31">This month</a><br>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2018-02-01&date_to=2018-02-28">Previous month</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2018-04-01&date_to=2019-03-31">This financial year</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2017-04-01&date_to=2018-03-31">Previous financial year</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2019-01-01&date_to=2019-12-31">This calendar year</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2018-01-01&date_to=2018-12-31">Previous calendar year</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2018-03-01&date_to=2018-03-31">This month</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2018-02-01&date_to=2018-02-28">Previous month</a><br>
 			<%}else{%>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2018-04-01&date_to=2019-03-31">This financial year</a><br>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2017-04-01&date_to=2018-03-31">Previous financial year</a><br>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2019-01-01&date_to=2019-12-31">This calendar year</a><br>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2018-01-01&date_to=2018-12-31">Previous calendar year</a><br>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2018-03-01&date_to=2018-03-31">This month</a><br>
-				<a href="/pnl/<%=pnl.id%>/view?date_from=2018-02-01&date_to=2018-02-28">Previous month</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2018-04-01&date_to=2019-03-31">This financial year</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2017-04-01&date_to=2018-03-31">Previous financial year</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2019-01-01&date_to=2019-12-31">This calendar year</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2018-01-01&date_to=2018-12-31">Previous calendar year</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2018-03-01&date_to=2018-03-31">This month</a><br>
+				<a href="/org/<%=req.org.id%>/pnl/<%=pnl.id%>/view?date_from=2018-02-01&date_to=2018-02-28">Previous month</a><br>
 			<%}%>
 		</div>
 	</div>

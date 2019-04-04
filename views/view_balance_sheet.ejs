@@ -1,1 +1,93 @@
-view balance sheet
+<div class='ui container'>
+	<div class='ui grid'>
+		<!-- <div class='one wide column'></div> -->
+		<div class='sixteen wide column'>
+			<h2>Balance Sheet - <%=b_s.name%></h2>
+			<%=b_s.type%>
+			<table class="ui celled unstackable collapsing table" id='daily_report' style="display: block;overflow-x:scroll;">
+			<!-- <table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;"> -->
+				<thead>
+
+					<tr>
+						<th></th>
+						<%b_s.header.level_1.forEach(function(l1){%>
+							<th class='single line' colspan="<%=b_s.header.level_2.length%>">
+								<%=l1%>
+							</th>
+						<%})%>
+					</tr>
+					<%if(b_s.type=='multiple_pnl_heads'){%>
+						<tr>
+							<th></th>
+							<%b_s.header.level_1.forEach(function(l1){%>
+								<%b_s.header.level_2.forEach(function(l2){%>
+									<th class='single line'>
+										<%=l2%>
+									</th>
+								<%})%>
+							<%})%>
+						</tr>
+					<%}%>
+					
+					<!-- <th data-override="time">Time (in mins)</th> -->
+					<!-- <th data-override="status">Status (Open / Done)</th> -->
+				</thead>
+				<tbody>
+					<%b_s.body.forEach(function(row_l1){%>
+						<tr class="active">
+							<td class='single line'>
+								<%=row_l1.name%>
+							</td>
+							<%b_s.header.level_1.forEach(function(l1){%>
+								<%b_s.header.level_2.forEach(function(l2){%>
+									<td class='single line'>
+										<%=row_l1.data[l1+'__'+l2]?row_l1.data[l1+'__'+l2]:''%>
+									</td>
+								<%})%>
+							<%})%>
+						</tr>
+						<!-- populating first level children -->
+						<%row_l1.children.forEach(function(row_l2){%>
+							<tr>
+								<td class='single line'>
+									&nbsp;&nbsp;&nbsp;<%=row_l2.name%>
+								</td>
+								<%b_s.header.level_1.forEach(function(l1){%>
+									<%b_s.header.level_2.forEach(function(l2){%>
+										<td class='single line'>
+											<%=row_l2.data[l1+'__'+l2]?row_l2.data[l1+'__'+l2]:''%>
+										</td>
+									<%})%>
+								<%})%>
+							</tr>
+							<%row_l2.children.forEach(function(row_l3){%>
+								<tr>
+									<td class='single line'>
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <%=row_l3.name%>
+									</td>
+									<%b_s.header.level_1.forEach(function(l1){%>
+										<%b_s.header.level_2.forEach(function(l2){%>
+											<td class='single line'>
+												<%=row_l3.data[l1+'__'+l2]?row_l3.data[l1+'__'+l2]:''%>
+											</td>
+										<%})%>
+									<%})%>
+								</tr>
+							<%})%>
+						<%})%>
+						
+					<%})%>
+				</tbody>				
+			</table>
+
+			<h4>PNL structure</h4>
+			<pre><%=JSON.stringify(b_s,null,'    ')%></pre>
+			
+			
+			
+		</div>
+		<div class='three wide column'></div>
+		
+	</div>
+	
+</div>
