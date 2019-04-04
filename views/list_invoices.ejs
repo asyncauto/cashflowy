@@ -24,7 +24,7 @@
 				<tbody>
 					<%invoices.forEach(function(i){%>
 						<tr data-tid='<%=i.id%>'>
-							<td class='single line'><%=i.date?i.date.toISOString().substring(0,10):''%></td>
+							<td class='single line'><a href='/org/<%=req.org.id%>/invoice/<%=i.id%>/edit'><%=i.date?i.date.toISOString().substring(0,10):''%></a></td>
 							<td><%=i.remote_id%> </td>
 							<td><%=i.third_party%> </td>
 							<td><%=i.type%></td>

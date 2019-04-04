@@ -69,10 +69,10 @@ module.exports.routes = {
   'GET /org/:o_id/invoices': 'MainController.listInvoices',
   'GET /org/:o_id/invoice/create': 'MainController.createInvoice',
   'POST /org/:o_id/invoice/create': 'MainController.createInvoice',
-  'GET /org/:o_id/invoice/:id/edit': 'MainController.editInvoice',
-  'POST /org/:o_id/invoice/:id/edit': 'MainController.editInvoice',
-  'GET /org/:o_id/invoice/:id/delete': 'MainController.deleteInvoice',
-  'POST /org/:o_id/invoice/:id/delete': 'MainController.deleteInvoice',
+  'GET /org/:o_id/invoice/:i_id/edit': 'MainController.editInvoice',
+  'POST /org/:o_id/invoice/:i_id/edit': 'MainController.editInvoice',
+  'GET /org/:o_id/invoice/:i_id/delete': 'MainController.deleteInvoice',
+  'POST /org/:o_id/invoice/:i_id/delete': 'MainController.deleteInvoice',
 
 
 

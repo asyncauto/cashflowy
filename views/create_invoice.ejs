@@ -47,7 +47,7 @@
 
 				<div class="two fields">
 					<div class="field">
-						<label>Date</label>
+						<label>Date </label>
 						<input type="date" name="date" value="">
 					</div>
 					<div class="field">
@@ -84,15 +84,15 @@
 				<div class="two fields">
 					<div class="field">
 						<label>Sub Total (in <span class='currency'>INR</span>)</label>
-						<input type="number" step="any" name="sub_total" placeholder="100" value="<%=invoice.original_amount%>">
+						<input type="number" step="any" name="sub_total" placeholder="100" value="<%=invoice.sub_total?invoice.sub_total.toFixed(2):''%>">
 					</div>
 					<div class="field">
 						<label>GST (in <span class='currency'>INR</span>)</label>
-						<input type="number" step="any" name="gst_total" placeholder="100" value="<%=invoice.original_amount%>">
+						<input type="number" step="any" name="gst_total" placeholder="100" value="<%=invoice.gst_total?invoice.gst_total.toFixed(2):''%>">
 					</div>
 					<div class="field">
 						<label>Balance Due (in <span class='currency'>INR</span>)</label>
-						<input type="number" step="any" name="balance_due" placeholder="100" value="<%=invoice.original_amount%>">
+						<input type="number" step="any" name="balance_due" placeholder="100" value="<%=invoice.balance_due?invoice.balance_due.toFixed(2):''%>">
 					</div>
 				</div>
 				
@@ -103,7 +103,7 @@
 				<div class="field" id='account'>
 					<label>Associated account</label>
 					<div class="ui fluid search selection dropdown">
-						<input type="hidden" name="account_id" value="<%=invoice.account_id%>">
+						<input type="hidden" name="account_id" value="<%=invoice.account%>">
 						<i class="dropdown icon"></i>
 						<div class="default text">Select Account</div>
 						<div class="menu">
@@ -148,7 +148,7 @@
 		<%if(!invoice.date){%>
 			var a = moment(); // create a time instance in the local time zone 
 		<%}else{%>
-			var a = moment('<%=invoice.occuredAt%>');
+			var a = moment('<%=invoice.date%>');
 		<%}%>
 		$('input[name=date]').val(a.format('YYYY-MM-DD'));
 		$('input[name=time]').val(a.format('HH:mm'));

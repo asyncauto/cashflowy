@@ -39,6 +39,10 @@ module.exports = {
             isIn: ['receivable', 'payable'],
             allowNull:true
         },
+        description: {
+            type: 'string',
+            allowNull: true
+        },
         createdBy: {
             type: 'string',
             isIn: ['user', 'zoho']
