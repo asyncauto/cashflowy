@@ -151,7 +151,8 @@
       <!-- Top menu -->
     </div>
     <%if(req.user && req.org){%>
-    <div class="ui left demo vertical inverted sidebar labeled icon menu">
+    <!-- <div class="ui left demo vertical inverted sidebar labeled icon menu"> -->
+    <div class="ui inverted left vertical thin sidebar menu">
       <!-- <a class="item">
         <i class="home icon"></i>
         Home
@@ -187,6 +188,16 @@
       <a class="item" href='/org/<%=req.org.id%>/rules'>
         <i class="cogs outline icon"></i>
         Rules
+      </a>
+      <a class="item" href='/org/<%=req.org.id%>/invoices'>
+        
+        Invoices
+      </a>
+      <a class="item" href='/org/<%=req.org.id%>/pnls'>
+        PnL
+      </a>
+      <a class="item" href='/org/<%=req.org.id%>/balance_sheets'>
+        Balance<br>Sheets
       </a>
       <a class="item" href='/org/<%=req.org.id%>/settings'>
         <i class="setting icon"></i>
