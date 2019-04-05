@@ -2481,7 +2481,7 @@ module.exports = {
 				res.redirect('/org/'+req.params.o_id+'/members');
 			})
 		}else{
-			User.find().exec(function(err,users){
+			User.find().sort('name asc').exec(function(err,users){
 				locals.users=users;
 				locals.member={};
 				res.view('create_member', locals);
