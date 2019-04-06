@@ -365,9 +365,9 @@
 		});
 		$('.add_tags').click(function(e){
 			e.preventDefault();
-			$(this).parents('.tli').find('.tags').hide();
+			$(this).parents('tr').find('.tags').hide();
 			console.log('hi');
-			$(this).parents('.tli').find('.edit_tags').show();
+			$(this).parents('tr').find('.edit_tags').show();
 		})
 		$('.filter_txn.dropdown').dropdown({ allowCategorySelection: true });
 		$('.extra_options.dropdown').dropdown();
@@ -395,8 +395,9 @@
 		});
 		$('.submit_edit_tags').click(function(e){
 			$(this).addClass('disabled');
-			var tli_id=$(this).parents('.tli').attr('data-tli-id');
-			var tags_string=$(this).parents('.tli').find('.add_tags_popup').find('input[name=tags]').val();;
+			console.log('here here');
+			var tli_id=$(this).parents('tr').attr('data-tli-id');
+			var tags_string=$(this).parents('tr').find('.add_tags_popup').find('input[name=tags]').val();
 			console.log(tli_id);
 			console.log(tags_string);
 			var dd = this;
@@ -408,8 +409,9 @@
 					console.log('success');
 					// alert('updated tags');
 					console.log(response);
+					console.log('response above');
 					// $(dd).removeClass('disabled').removeClass('loading');
-					$(dd).parents('.tli').find('.tags').html(response);
+					$(dd).parents('tr').find('.tags').html(response);
 					// $(dd).parents('.transaction').find('span.tags').html('hello');
 				},
 				error:function(xhr, textStatus, errorThrown){
