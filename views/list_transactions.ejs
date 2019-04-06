@@ -347,7 +347,7 @@
 			onChange:function(value, text, $choice){
 				var dd = this;
 				$(this).addClass('disabled loading');
-				var tli_id=$(this).parents('.tli').attr('data-tli-id');
+				var tli_id=$(this).parents('tr').attr('data-tli-id');
 				console.log(tli_id);
 				$.ajax({
 					url:"/org/"+"<%=req.params.o_id%>"+"/tli/"+tli_id,
