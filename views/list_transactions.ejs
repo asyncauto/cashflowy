@@ -258,11 +258,11 @@
 									<div class="ui basic icon top right pointing extra_options dropdown">
 										<i class="angle down icon"></i>
 										<div class="menu">
-											<a class="disabled item" href='/transaction/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
-											<a class='item add_tags' href=''>Add tags</a>
-											<a class="item" href='/transaction/<%=t.id%>/edit'>Edit</a>
+											<a class="disabled item" href='/org/<%=req.params.o_id%>/transaction/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
+											<!-- <a class='item add_tags' href=''>Add tags</a> -->
+											<a class="item" href='/org/<%=req.params.o_id%>/transaction/<%=t.id%>/edit'>Edit</a>
 											<!-- <a class="item" href='/transaction/<%=t.id%>/convert_to_transfer'>Convert to transfer</a> -->
-											<a class="item" href='/transaction/<%=t.id%>/delete'>Delete</a>
+											<a class="item" href='/org/<%=req.params.o_id%>/transaction/<%=t.id%>/delete'>Delete</a>
 										</div>
 									</div>
 								</td>
