@@ -798,6 +798,10 @@ module.exports = {
 			getTags:function(callback){
 				Tag.find({org:req.org.id}).exec(callback);
 			},
+			getTransactions:['getTlis',function(results,callback){
+				var t_ids=_.map(results.getTlis,function(tli){return tli.transaction.id});
+				Transaction.find({id:t_ids}).sort('occuredAt DESC').exec(callback);
+			}],
 			getParsedEmails:['getTlis',function(results,callback){
 				var t_ids=_.map(results.getTlis,function(tli){return tli.transaction.id});
 				Parsed_email.find({transaction:t_ids}).exec(callback);
@@ -811,37 +815,47 @@ module.exports = {
 				throw err;
 			locals.tlis = results.getTlis
 			var accounts=results.getAccounts;
-			locals.tlis.forEach(function(t){
-				// set to two decimal number
+			locals.new_transactions=results.getTransactions;
+			locals.new_transactions.forEach(function(t){
+				t.tlis=[];
 				_.set(t, 'original_amount', _.get(t, 'original_amount', 0).toFixed(2))
 				_.set(t, 'amount_inr', _.get(t, 'amount_inr', 0).toFixed(2))
-				_.set(t, 'transaction.original_amount', _.get(t, 'transaction.original_amount', 0).toFixed(2))
-				_.set(t, 'transaction.amount_inr', _.get(t, 'transaction.amount_inr', 0).toFixed(2))
 				accounts.forEach(function(account){ // expanding account in the transaction object
 					if(t.account==account.id)
 						t.account=account;
 					if(t.to_account==account.id)
 						t.to_account=account;
-					
-					if(t.transaction.account==account.id)
-						t.transaction.account=account;
-					if(t.transaction.to_account==account.id)
-						t.transaction.to_account=account;
 				});
-				t.transaction.parsed_emails=[];
-				// console.log(results.getParsedEmails);
+				t.parsed_emails=[];
 				results.getParsedEmails.forEach(function(pe){
-					if(t.transaction.id == pe.transaction)
-						t.transaction.parsed_emails.push(pe);
-				})
-				t.transaction.slis=[];
+					if(t.id == pe.transaction)
+						t.parsed_emails.push(pe);
+				});
+				t.slis=[];
 				results.getSLIs.forEach(function(sli){
-					if(t.transaction.id==sli.transaction)
-						t.transaction.slis.push(sli);
-				})
-				var moment = require('moment-timezone');
-				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
+					if(t.id==sli.transaction)
+						t.slis.push(sli);
+				});
 			})
+			locals.tlis.forEach(function(tli){
+				_.set(tli, 'original_amount', _.get(tli, 'original_amount', 0).toFixed(2))
+				_.set(tli, 'amount_inr', _.get(tli, 'amount_inr', 0).toFixed(2))
+				accounts.forEach(function(account){ // expanding account in the transaction object
+					if(tli.account==account.id)
+						tli.account=account;
+					if(tli.to_account==account.id)
+						tli.to_account=account;
+				});
+
+				var moment = require('moment-timezone');
+				tli.occuredAt=moment(tli.occuredAt).tz('Asia/Kolkata').format();
+				tli.transaction.parsed_emails=[]; // DELETE THIS
+				tli.transaction.slis=[]; // DELETE THIS
+				var t = _.find(locals.new_transactions,{id:tli.transaction.id});
+				t.tlis.push(tli);
+
+			})
+
 			locals.transactions = _(results.getTlis)
 				.groupBy(item => item.transaction.id)
 				.sortBy(group => results.getTlis.indexOf(group[0]))
