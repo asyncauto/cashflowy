@@ -149,7 +149,7 @@
 				<tbody>
 					<%new_transactions.forEach(function(t){%>
 						<%t.tlis.forEach(function(tli,i){%>
-							<tr class='transaction top aligned' data-tid='<%=tli.id%>'>
+							<tr class='transaction top aligned' data-tli-id='<%=tli.id%>'>
 								<%if(i==0){%>
 									<td rowspan="<%=t.tlis.length+1%>">
 										<span class='popup' data-html="<%-moment(tli.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
@@ -307,7 +307,7 @@
 			console.log('description clicked');
 			console.log(tli_id);
 			// if(!edit_active)
-			$('div[data-tli-id='+tli_id+']').find('span.description').hide();
+			$('tr[data-tli-id='+tli_id+']').find('span.description').hide();
 			$(this).parent().find('.edit_description').show();
 			// edit_active=true;
 		});
@@ -316,17 +316,18 @@
 			var tli_id=$(this).attr('data-id');
 			// edit_active=false;
 			$(this).parent().hide();
-			$(this).parents('div[data-tli-id='+tli_id+']').find('span.description').show();
-			$(this).parents('div[data-tli-id='+tli_id+']').find('.edit').show();
+			$(this).parents('tr[data-tli-id='+tli_id+']').find('span.description').show();
+			$(this).parents('tr[data-tli-id='+tli_id+']').find('.edit').show();
 			// $(this).parents().find('.edit[data-id='+t_id+']').show();
 		});
 		$('.submit_edit_desc').click(function(e){
 			console.log('submit button clicked');
-			var tli_id=$(this).parents('.tli').attr('data-tli-id');
+			// var tli_id=$(this).parents('.tli').attr('data-tli-id');
+			var tli_id=$(this).attr('data-id');
 			console.log(tli_id);
-			var description=$('.tli[data-tli-id='+tli_id+']').find('input[name=description]').val();
-			$('.tli[data-tli-id='+tli_id+'] span.description').text(description);
-			$('.tli[data-tli-id='+tli_id+'] span.description').show();
+			var description=$('tr[data-tli-id='+tli_id+']').find('input[name=description]').val();
+			$('tr[data-tli-id='+tli_id+'] span.description').text(description);
+			$('tr[data-tli-id='+tli_id+'] span.description').show();
 			// /api/edit_desc
 			var button = this;
 			$(button).addClass('loading');
