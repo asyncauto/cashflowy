@@ -887,7 +887,7 @@ module.exports = {
 			
 		});
 	},
-	createTransaction:function(req,res){
+	createTransaction: async function(req,res){
 		Account.find({org:req.org.id}).exec(function(err,accounts){
 			if(req.body){ // post request
 				console.log(req.body);
@@ -927,10 +927,20 @@ module.exports = {
 				}
 				// console.log('before transaction find or create');
 				console.log(t);
-				Transaction.create(t).exec(function(err,transaction){
+				Transaction.create(t).exec(async function(err,transaction){
 					if(err)
 						throw err;
 					else{
+						if(req.body.balance && req.body.balance_currency){
+							var ss={
+								account:transaction.account,
+								createdBy:'user',
+								takenAt: transaction.occuredAt,
+								balance_currency:'INR',
+								balance: fx.convert(req.body.balance, {from: req.body.balance_currency, to: "INR"}),
+							}
+							await Snapshot.create(ss);
+						}
 						if(req.body.referer && req.body.referer.includes('/transactions'))
 							res.redirect(req.body.referer);
 						else 
@@ -950,6 +960,8 @@ module.exports = {
 					to_account:'',
 					accounts:accounts,
 					type:'expense',
+					balance: '',
+					balance_currency: 'INR'
 				}
 				console.log(locals);
 				res.view('create_transaction',locals);
