@@ -124,7 +124,6 @@ module.exports.routes = {
   'POST /org/:o_id/pnl/create':'MainController.createPnL',
   'GET /org/:o_id/pnl/:id':'MainController.indexPnL',
   'GET /org/:o_id/pnl/:id/view':'MainController.viewPnL',
-  'GET /org/:o_id/pnl/:id/view2':'MainController.viewPnL2',
   'GET /org/:o_id/pnl/:id/edit':'MainController.editPnL',
   'POST /org/:o_id/pnl/:id/edit':'MainController.editPnL',
   'GET /org/:o_id/pnl/:id/delete':'MainController.deletePnL',
