@@ -54,32 +54,37 @@
 					<tbody>
                         <thead>
                             <tr>
-								<th>Id</th>
 								<th>Forwared At</th>
 								<th>Subject</th>
-                                <th>Message Id</th>
+                                <th>Extacted Data</th>
 								<th>Parser Type</th>
-								<th>Details</th>
+								<th>Transaction</th>
                             </tr>
                         </thead>
 						<%parsed_emails.forEach(function(pe){%>
 							<tr data-id='<%=pe.id%>' class="pe">
-								<td class='single line'><%=pe.id%></td>
 								<td>
-									<span><%-moment(pe.createdAt).tz('Asia/Kolkata').format('h:mm a')%></span>,	
-									<%-moment(pe.createdAt).tz('Asia/Kolkata').format('MMM')%>
-									<span><%-moment(pe.createdAt).tz('Asia/Kolkata').format('DD')%></span></br>
+									<span class='popup' data-html="<%-moment(pe.createdAt).tz('Asia/Kolkata').format('h:mm a')%>">
+									<%-moment(pe.createdAt).tz('Asia/Kolkata').format('MMM')%></br>
+									<span style="font-size: 1.5rem;"><%-moment(pe.createdAt).tz('Asia/Kolkata').format('DD')%></span></br>
 									<span style="font-size: 0.75rem;"><%-moment(pe.createdAt).tz('Asia/Kolkata').format('YYYY')%></span>
-									</span>
+									</span><br>
+									<a href="#" class='show_details pe'>details</a>
 								</td>
 								<td><%=_.get(pe, 'details.inbound.Subject')%></td>
-                                <td><%=pe.message_id%></td>
+								<td><% 
+									var ed = _.get(pe, "extracted_data", {});
+									console.log(ed);
+									_.forEach(ed, function(val, key){ %>
+										<%= key +' : '+ val %><br>
+									<%})%>
+								</td>
 								<td><%=pe.type%></td>
-								<td class='single line'><a href="#" class='show_details pe'>details</a></td>
+								<td><a href="/org/<%=req.org.id%>/transactions?ids=<%=pe.transaction%>"><%=pe.transaction%></a></td>
 							</tr>
 							<tr id='details_pe_<%=pe.id%>' style='display: none;'>
-								<td colspan='4'><b>Message Body:</b><br><%-_.get(pe, 'details.inbound["body-plain"]')%></td>
-								<td colspan='2'><b>Extacted Data:</b><br><%=JSON.stringify(_.get(pe, "extracted_data", {}),null,4)%></td>
+								<td colspan='3' class="fluid"><b>Message Body:</b><br><%-_.get(pe, 'details.inbound["body-plain"]')%></td>
+								<td colspan='3'><b>Message Id:</b><br><%=pe.message_id%></td>
 							</tr>
 						<%})%>
 					</tbody>

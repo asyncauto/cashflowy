@@ -6,7 +6,13 @@
 <div class='ui container'>
 	<div class='ui grid'>
 		<div class='five wide computer only column'>
-			<h2>Filters</h2>
+			<h2>Filters
+				<% if(req.query.ids){%>
+					<div class="ui horizontal blue label">
+						<b>ID:  </b> <%= req.query.ids %>
+					</div>
+				<%}%>
+			</h2>
 			<form class="ui form segment" action="" method='get'>
 				<div class="field">
 						<label>Sort by: </label>

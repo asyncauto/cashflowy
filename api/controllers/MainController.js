@@ -789,6 +789,14 @@ module.exports = {
 				var sort = 'occuredAt DESC';
 				if(req.query.sort)
 					sort = req.query.sort
+				
+				// id corresponds to transaction id not tli
+				if(req.query.ids){
+					filter.transaction = {in: _.map(req.query.ids.split(','), function (each) {
+						if(parseInt(each))
+							return parseInt(each);
+					})}
+				}
 
 				Transaction_line_item.find(filter).sort(sort).limit(limit).populate('tags').populate('transaction').exec(callback);
 			}],
