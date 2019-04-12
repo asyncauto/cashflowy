@@ -20,5 +20,6 @@ module.exports.filters = {
 		'SBIRtgsFilter',
 		'SBINeftFilter',
 		'PaytmFilter',
-	]
+	],
+	
 }

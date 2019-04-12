@@ -39,7 +39,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'XXXX'
+							q:'XX'
 						},
 						{
 							type:'trim',

@@ -1,4 +1,4 @@
-<div class="ui segment rule_condition" data-rule-trigger='transaction_after_create'>
+<div class="ui segment rule_condition" data-rule-trigger='tli_after_create'>
     <div class="field">
         <label>Transaction Type: </label>
         <div class="ui fluid scrolling dropdown basic button" id='details.trigger.condition.type'>
@@ -48,9 +48,9 @@
                 <i class="dropdown icon"></i>
                 <div class="text"></div>
                 <div class="menu transition hidden" tabindex="-1">
-                    <%sails.config.filters.active.forEach(function(f){%>
+                    <%sails.config.emailparser.filters.forEach(function(f){%>
                         <div class="item" data-value='<%= f %>'>
-                            <%= f %>
+                            <%= f.name %>
                         </div>
                         <%})%>
                 </div>

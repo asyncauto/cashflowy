@@ -7,10 +7,10 @@
 		</div>
 		<div class='sixteen wide column'>		
 			<div class="ui tabular menu">
-				<a class="item active" data-tab="first">Parsed Failures</a>
-				<a class="item" data-tab="second">Parsed Emails</a>
+				<a class="item <%=req.query.tab == 1 || !req.query.tab ?'active':'' %>" data-tab="first">Parsed Failures</a>
+				<a class="item <%=req.query.tab == 2?'active':'' %>" data-tab="second">Parsed Emails</a>
 			</div>
-			<div class="ui tab active" data-tab="first">
+			<div class="ui tab <%=req.query.tab == 1 || !req.query.tab ?'active':'' %>" data-tab="first">
                 Emails that we are unable to parse. You can retry if you want us to process agian.
 					<table class="ui basic fluid unstackable table" style="display: block;overflow-x:scroll;">
 						<thead>
@@ -48,7 +48,7 @@
 						</tbody>
 					</table>
 			</div>
-			<div class="ui tab" data-tab="second">
+			<div class="ui tab <%=req.query.tab == 2?'active':'' %>" data-tab="second">
 				Last 100 Parsed Emails
 				<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
 					<tbody>
@@ -57,8 +57,10 @@
 								<th>Forwared At</th>
 								<th>Subject</th>
                                 <th>Extacted Data</th>
-								<th>Parser Type</th>
+								<th>Filter</th>
+								<th>Body Parser</th>
 								<th>Transaction</th>
+								<th>Retry</th>
                             </tr>
                         </thead>
 						<%parsed_emails.forEach(function(pe){%>
@@ -80,7 +82,9 @@
 									<%})%>
 								</td>
 								<td><%=pe.type%></td>
+								<td><%=pe.body_parser_used%></td>
 								<td><a href="/org/<%=req.org.id%>/transactions?ids=<%=pe.transaction%>"><%=pe.transaction%></a></td>
+								<td class='single line'><button class="ui basic blue button submit_pe_retry" data-pe-retry-id="<%=pe.id%>">Retry</button></td>
 							</tr>
 							<tr id='details_pe_<%=pe.id%>' style='display: none;'>
 								<td colspan='3' class="fluid"><b>Message Body:</b><br><%-_.get(pe, 'details.inbound["body-plain"]')%></td>
@@ -126,7 +130,20 @@
 			$.post("/org/"+ <%=req.params.o_id%>+"/parse_failure/"+pf_id + "/retry",function(result,status){
 				console.log(result, status)
 			}).always(function() {
-				location.reload();
+				window.location = "/org/"+ <%=req.params.o_id%>+"/email/"+<%=req.params.id%> + "?tab=1";
+			});
+		});
+		$('.submit_pe_retry').click(function(e){
+			console.log('submit retry button clicked');
+			var pe_id=$(this).attr('data-pe-retry-id');
+			console.log(pe_id);
+			var button = this;
+			$(button).addClass('loading');
+			$(button).addClass('disabled');
+			$.post("/org/"+ <%=req.params.o_id%>+"/parsed_email/"+pe_id + "/retry",function(result,status){
+				console.log(result, status)
+			}).always(function() {
+				window.location = "/org/"+ <%=req.params.o_id%>+"/email/"+<%=req.params.id%> + "?tab=2";
 			});
 		});
 	});

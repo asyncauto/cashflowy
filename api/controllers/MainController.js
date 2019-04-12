@@ -310,6 +310,157 @@ module.exports = {
 			return res.json({status: 'success'})
 		});
 	},
+	retryParsedEmail: function(req, res){
+		async.auto({
+			getParsedEmail: function(cb){
+				Parsed_email.findOne({id: req.params.id, org:req.org.id}).exec(function(err, pe){
+					if(err) return cb(err);
+					if(!pe || !_.get(pe, 'details.inbound')) return cb(new Error("NOT_FOUND"));
+					return cb(null, pe);
+				});
+			},
+			reParse: ['getParsedEmail', function(results, cb){
+				var opts = {
+					email_type: results.getParsedEmail.type,
+					body: results.getParsedEmail.details.inbound['body-plain']
+				}
+				GmailService.extractDataFromMessageBody(opts, cb);
+			}],
+			updateParsedEmail: ['reParse', function(results, cb){
+				var to_update = _.pick(results.getParsedEmail, ['email', 'body_parser_used', 'data','extracted_data'])
+				to_update.extracted_data =  results.reParse.ed
+				to_update.body_parser_used =  results.reParse.body_parser_used
+				to_update.extracted_data.email_received_time = new Date(results.getParsedEmail.details.inbound['Date']);
+
+				// apply global filter
+				sails.config.emailparser.globalModifyData(to_update);
+				// apply particular filter
+				var filter = _.find(sails.config.emailparser.filters, {name: results.getParsedEmail.type});
+				if(filter.modifyData)
+					filter.modifyData(to_update);
+				Parsed_email.update({ message_id: results.getParsedEmail.message_id }, to_update)
+				.exec(function(err, pe){
+					cb(err, pe);
+				})
+			}],
+			getAccount:['updateParsedEmail', function(results, callback){
+				var pe = results.updateParsedEmail[0]
+				var find = {
+					acc_number:{
+						endsWith: pe.data.acc_number, // ends with the following number
+					},
+					org:pe.org
+				}
+
+				var create={ // incase the account does not exist, create account.
+					acc_number:''+pe.data.acc_number,
+					org:pe.org,
+					type:'bank', // user might need to change this
+					name:'Auto generated account'+pe.data.acc_number,
+				} 
+				Account.findOrCreate(find, create).exec(function(err, result, created){
+					callback(err,result);
+				});
+			}],
+			findOrCreateTransaction:['updateParsedEmail', 'getAccount',function(results,callback){
+				//skip if it only contains information about account balance.
+				var pe = results.updateParsedEmail[0]
+
+				if(pe.data.type=='balance')
+					return callback(null);
+				const fx = require('money');
+				fx.base='INR';
+				fx.rates=sails.config.fx_rates;
+
+				var t={
+					original_currency:pe.data.currency,
+					createdBy:'parsed_email',
+					type: pe.data.type,
+					account:results.getAccount.id,
+					third_party: _.get(pe, 'data.third_party', null),
+					original_amount: _.get(pe, 'data.original_amount', 0),
+					amount_inr: _.get(pe, 'data.amount_inr', 0),
+					occuredAt: _.get(pe, 'data.occuredAt', new Date())
+				}
+
+				if(pe.transaction)
+					Transaction.update({id:pe.transaction}, t).exec(function(err, txn){
+						if(err) return callback(err);
+						return callback(null, txn[0]);
+					});
+				else
+					Transaction.findOrCreate(t, t).exec(callback);
+			}],
+			updateTli: ['findOrCreateTransaction', function(results, callback){
+				var pe = results.updateParsedEmail[0]
+				var tli = {
+					original_currency:pe.data.currency,
+					type: pe.data.type,
+					account:results.getAccount.id,
+					third_party: _.get(pe, 'data.third_party', null),
+					original_amount: _.get(pe, 'data.original_amount', 0),
+					amount_inr: _.get(pe, 'data.amount_inr', 0),
+					occuredAt: _.get(pe, 'data.occuredAt', new Date())
+				}
+				//update tli if this transaction contains only one tli
+				Transaction_line_item.find({transaction: results.findOrCreateTransaction.id}).exec(function(err, tlis){
+					if(err) return callback(err);
+					if(tlis.length == 1)
+						Transaction_line_item.update({id: tlis[0].id}, tli).exec(callback)
+					else
+						return callback(null);
+				})
+			}],
+			updateParsedEmailWithTxnId:['findOrCreateTransaction',function(results,callback){
+				var pe = results.updateParsedEmail[0]
+				//skip if it only contains information about account balance.
+				if(pe.data.type=='balance')
+					return callback(null);
+				Parsed_email.update({id:pe.id},{transaction:results.findOrCreateTransaction.id}).exec(callback);
+			}],
+			createSnapshotIfPossible:['getAccount',function(results,callback){
+				var pe = results.updateParsedEmail[0]
+				// console.log('create snapshot');
+				if(pe.data.balance_currency && pe.data.balance_amount){
+					var ss={
+						account:results.getAccount.id,
+						createdBy:'parsed_email',
+						balance:pe.data.balance_amount,
+						takenAt: pe.data.occuredAt
+					}
+					Snapshot.find(ss).exec(function(err, snaps){
+						if(err) return callback(err);
+						if(snaps & snaps.length) return callback(null);
+						Snapshot.create(ss).exec(callback)
+					});
+				}else if(pe.data.credit_limit_currency && pe.data.credit_limit_amount && pe.data.available_credit_balance){
+					var ss={
+						account:results.getAccount.id,
+						createdBy:'parsed_email',
+						balance:pe.data.available_credit_balance-pe.data.credit_limit_amount,
+						takenAt: pe.data.occuredAt
+					}
+					Snapshot.find(ss).exec(function(err, snaps){
+						if(err) return callback(err);
+						if(snaps & snaps.length) return callback(null);
+						Snapshot.create(ss).exec(callback)
+					});
+				}else{
+					callback(null);
+				}
+			}],
+			
+		}, function(err, results){
+			if(err){
+				switch (err.message) {
+					default:
+						return res.status(500).json({error: err.message});
+						break;
+				}
+			}
+			return res.json({status: 'success'})
+		});
+	},
 	createEmail:function(req,res){
 		if(req.body){ // post request
  			var e={
@@ -900,11 +1051,12 @@ module.exports = {
 					original_amount:-(req.body.original_amount),
 					// needs a bit more filtering
 				};
+				var tz = req.body.tz ? req.body.tz:"+05:30"
 				var t={
 					original_currency:req.body.original_currency,
 					// original_amount:-(req.body.original_amount),
 					// amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
-					occuredAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
+					occuredAt: new Date(req.body.date+' '+req.body.time+tz),
 					createdBy:'user',
 					// type:'income_expense',
 					description:req.body.description,

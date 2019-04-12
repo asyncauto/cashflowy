@@ -96,10 +96,10 @@ module.exports = {
 			},
 			parseWithEachFilter: ['getEmail', function (results, cb) {
 				var parsed_email; // store the Parse_email object in the variable, send to slack if this variable is empty
-				async.someLimit(sails.config.filters.active, 1, function (filter, next) {
+				async.someLimit(sails.config.emailparser.filters, 1, function (filter, next) {
 					var data = {
 						email_id: results.getEmail.id,
-						email_type: filter,
+						email_type: filter.name,
 						inbound_data: inbound_data,
 						org: results.getEmail.org,
 						email_address: results.getEmail.email
