@@ -108,7 +108,9 @@ module.exports = {
 
 				MLService.predictCategory(created, cb);
 			}
-		}, function (err) { cb(err); });
+		}, function (err) { 
+			cb(err); 
+		});
 
 	},
 

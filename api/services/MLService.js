@@ -51,8 +51,9 @@ module.exports = {
                 if (!results.findOrCreateCategory) return cb(null);
 
                 Tag.findOrCreate({ name: 'predicted_category', type: 'global' },
-                    { name: 'predicted_category', type: 'global' }).exec(function (err, tag) {
-                        Tag.addToCollection(tag.id, 'tlis').members([tli.id]).exec(cb);
+                    { name: 'predicted_category', type: 'global' }).exec(async function (err, tag) {
+                       await Tag.addToCollection(tag.id, 'tlis').members([tli.id]).tolerate('E_UNIQUE');
+                       return cb(null);
                     })
             }]
         }, cb);
