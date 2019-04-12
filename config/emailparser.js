@@ -16,10 +16,16 @@ module.exports.emailparser = {
         else
             pe.data.occuredAt = pe.data.email_received_time;
 
+        //default acc_number
+        if (pe.data.credit_card_last_4_digits)
+            pe.data.acc_number = pe.data.credit_card_last_4_digits;
+        else if (pe.data.account_last_4_digits)
+            pe.data.acc_number = pe.data.account_last_4_digits;
+
         const fx = require('money');
         fx.base = 'INR';
         fx.rates = sails.config.fx_rates;
-        pe.data.amount_inr=fx.convert(pe.data.original_amount, {from: pe.data.currency, to: "INR"});
+        pe.data.amount_inr = fx.convert(pe.data.original_amount, { from: pe.data.currency, to: "INR" });
         return pe
     },
     filters: [

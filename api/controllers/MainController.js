@@ -389,7 +389,7 @@ module.exports = {
 						return callback(null, txn[0]);
 					});
 				else
-					Transaction.findOrCreate(t, t).exec(callback);
+					Transaction.findOrCreate(t, t).exec(function(err, txn){callback(err, txn);});
 			}],
 			updateTli: ['findOrCreateTransaction', function(results, callback){
 				var pe = results.updateParsedEmail[0]

@@ -77,7 +77,9 @@ module.exports = {
 							{
 								parsed_email: pe.id,
 								status: 'PARSED', extracted_data: parsed_email.extracted_data
-							}).exec(sails.log.info);
+							}).exec(function(err, pf_u){
+								sails.log.info(err, pf_u);
+							});
 						cb(err, pe)
 					});
 				}
