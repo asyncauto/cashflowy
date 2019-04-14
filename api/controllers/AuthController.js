@@ -272,7 +272,8 @@ module.exports = {
 			locals.error = 'User not found';
 		locals.email = user.email;
 		locals.name = user.name;
-		locals.api_token = await KmsService.decrypt(user.api_token);
+		if(user.api_token)
+			locals.api_token = await KmsService.decrypt(user.api_token);
 
 		if (req.body) {
 			try {
