@@ -63,7 +63,8 @@ module.exports = {
 		region: process.env.AWS_REGION,
 		bucket: process.env.AWS_BUCKET,
 		category_model_id: process.env.AWS_CATEGORY_MODEL_ID,
-		prediction_endpoint: process.env.AWS_PREDICTION_ENDPOINT
+		prediction_endpoint: process.env.AWS_PREDICTION_ENDPOINT,
+		kms_key_id: process.env.AWS_KMS_KEY_ID
 	},
 
 	metabase: {

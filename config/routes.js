@@ -193,6 +193,9 @@ module.exports.routes = {
   'POST /forgot': 'AuthController.forgot',
   'GET /reset': 'AuthController.view_reset',
   'POST /reset': 'AuthController.reset',
+  'GET /user/:id/edit': 'AuthController.userEdit',
+  'POST /user/:id/edit': 'AuthController.userEdit',
+  'POST /user/:id/generate_api_token': 'AuthController.generateAPIToken',
 
 
   'GET /background/deepCrawl':'Background.deepCrawl',

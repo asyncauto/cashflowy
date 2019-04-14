@@ -19,33 +19,33 @@ module.exports = {
 	//     rest: false
 	// },
 
-	login: function(req, res) {
-		if(req.user)
+	login: function (req, res) {
+		if (req.user)
 			return res.redirect('/dashboard');
-		var locals={
-			error:false,
-			email:''
+		var locals = {
+			error: false,
+			email: ''
 		}
-		var redirect='/';
-		if(req.query.redirect && req.query.redirect!='undefined')
+		var redirect = '/';
+		if (req.query.redirect && req.query.redirect != 'undefined')
 			redirect = decodeURIComponent(req.query.redirect);
-		if(req.body){
-			locals.email=req.body.email;
-			if(!GeneralService.validateEmail(req.body.email)){
-				locals.error='email entered is not a valid email'
-				return res.view('login',locals);
+		if (req.body) {
+			locals.email = req.body.email;
+			if (!GeneralService.validateEmail(req.body.email)) {
+				locals.error = 'email entered is not a valid email'
+				return res.view('login', locals);
 			}
-			passport.authenticate('local', function(err, user, info) {
+			passport.authenticate('local', function (err, user, info) {
 				console.log('in passport.authenticate callback');
 				if ((err) || (!user)) {
-					locals.error='Your credentials does not match'
-					return res.view('login',locals);
+					locals.error = 'Your credentials does not match'
+					return res.view('login', locals);
 				}
-				req.logIn(user, function(err) {
+				req.logIn(user, function (err) {
 					if (err) res.send(err);
-					if(req.session.returnTo)
+					if (req.session.returnTo)
 						return res.redirect(req.session.returnTo);
-					
+
 					return res.redirect(redirect);
 					// return res.send({
 					// 	message: info.message,
@@ -55,68 +55,68 @@ module.exports = {
 
 			})(req, res);
 		}
-		else{
+		else {
 			req.session.returnTo = '/';
-			if( req.query.origin ){
-			  req.session.returnTo = req.query.origin
-			}else{
-			  req.session.returnTo = req.header('Referer')
-			}	
-			res.view('login',locals);
+			if (req.query.origin) {
+				req.session.returnTo = req.query.origin
+			} else {
+				req.session.returnTo = req.header('Referer')
+			}
+			res.view('login', locals);
 		}
 	},
 
-	logout: function(req, res) {
+	logout: function (req, res) {
 		req.logout();
 		res.redirect('/');
 	},
-	signup:function(req,res){
+	signup: async function (req, res) {
 
-		if(req.user)
+		if (req.user)
 			return res.redirect('/dashboard');
-		var locals={
-			error:false,
-			user:{
-				email:'',
-				name:'',
-				password:'',
+		var locals = {
+			error: false,
+			user: {
+				email: '',
+				name: '',
+				password: '',
 			}
 		}
-		if(req.body){
-			
-			var user = {
-				email:req.body.email,
-				name:req.body.name,
-				password:req.body.password
-				
-			}
-			locals.user=user;
-			if(!GeneralService.validateEmail(locals.user.email)){
-				locals.error='email entered is not a valid email'
-				return res.view('signup',locals);
-			}
-				
-			User.create(user).exec(function(err,u){
-				if(err){
+		if (req.body) {
 
-					if(err.code=='E_VALIDATION' && err.invalidAttributes && err.invalidAttributes.email){
-						locals.error='You have already registed with that email address. <a href="/login">Login in instead</a>'
-						return res.view('signup',locals);
+			var user = {
+				email: req.body.email,
+				name: req.body.name,
+				password: req.body.password,
+				api_token: GeneralService.makeApiToken()
+			}
+			locals.user = user;
+			if (!GeneralService.validateEmail(locals.user.email)) {
+				locals.error = 'email entered is not a valid email'
+				return res.view('signup', locals);
+			}
+
+			User.create(user).exec(function (err, u) {
+				if (err) {
+
+					if (err.code == 'E_VALIDATION' && err.invalidAttributes && err.invalidAttributes.email) {
+						locals.error = 'You have already registed with that email address. <a href="/login">Login in instead</a>'
+						return res.view('signup', locals);
 					}
 					else
 						res.send('unknown error');
 				}
-				else{
-					passport.authenticate('local', function(err, user, info) {
+				else {
+					passport.authenticate('local', function (err, user, info) {
 						if ((err) || (!user)) {
 							return res.send({
 								message: info.message,
 								user: user
 							});
 						}
-						req.logIn(user, function(err) {
+						req.logIn(user, function (err) {
 							if (err) res.send(err);
-							if(req.session.returnTo)
+							if (req.session.returnTo)
 								return res.redirect(req.session.returnTo);
 							else
 								return res.redirect('/');
@@ -126,21 +126,21 @@ module.exports = {
 			});
 
 		}
-		else{
+		else {
 			req.session.returnTo = '/';
-			if( req.query.origin ){
-			  req.session.returnTo = req.query.origin
-			}else{
-			  req.session.returnTo = req.header('Referer')
-			}	
-			res.view('signup',locals);
+			if (req.query.origin) {
+				req.session.returnTo = req.query.origin
+			} else {
+				req.session.returnTo = req.header('Referer')
+			}
+			res.view('signup', locals);
 		}
 	},
 
-	view_forgot: function(req, res){
+	view_forgot: function (req, res) {
 		var locals = {
 			error: '',
-			message:''
+			message: ''
 		}
 		res.view('forgot', locals);
 	},
@@ -150,46 +150,46 @@ module.exports = {
 	 */
 	forgot: function (req, res) {
 		var email = req.body.email;
-		
+
 		if (!email) return res.view('reset', {
 			error: 'email is mandatory',
-			message:''
+			message: ''
 		});
 
 		async.auto({
-			findUser: function(cb){
-				User.findOne({email:email}).exec(function(err, user){
-					if(err) return cb(err);
-					if(!user) return cb(new Error('user not found'));
+			findUser: function (cb) {
+				User.findOne({ email: email }).exec(function (err, user) {
+					if (err) return cb(err);
+					if (!user) return cb(new Error('user not found'));
 					return cb(null, user);
 				})
 			},
-			generateToken: ['findUser', function(results, cb){
+			generateToken: ['findUser', function (results, cb) {
 				jwt.sign({
 					email: results.findUser.email,
-					for:'forgot_password'
-				}, 
-					sails.config.password_reset_secret, 
-					{expiresIn: 60*10},  //10 mins or 600 seconds
+					for: 'forgot_password'
+				},
+					sails.config.password_reset_secret,
+					{ expiresIn: 60 * 10 },  //10 mins or 600 seconds
 					cb);
 			}],
-			sendMail:['generateToken', function(results, cb){
-				var reset_url = sails.config.app_url + '/reset?token='+ results.generateToken;
-				var opts={
-					template:'reset',
-					to:results.findUser.email,
-					from:'Cashflowy<no-reply@cashflowy.in>',
+			sendMail: ['generateToken', function (results, cb) {
+				var reset_url = sails.config.app_url + '/reset?token=' + results.generateToken;
+				var opts = {
+					template: 'reset',
+					to: results.findUser.email,
+					from: 'Cashflowy<no-reply@cashflowy.in>',
 					subject: 'Reset Password',
-					locals:{
+					locals: {
 						name: results.findUser.name,
 						url: reset_url
 					}
 				}
-				MailgunService.sendEmail(opts,function(err){
+				MailgunService.sendEmail(opts, function (err) {
 					cb(err)
 				})
 			}]
-		}, function(err, results){
+		}, function (err, results) {
 			var locals = {
 				error: err ? err.message : '',
 				message: !err ? 'link sent successfully' : ''
@@ -198,17 +198,17 @@ module.exports = {
 		})
 	},
 
-	view_reset: function(req, res){
-		var token =  req.query.token;
+	view_reset: function (req, res) {
+		var token = req.query.token;
 
 		if (!token) return res.view('reset', {
 			error: 'reset token is missing',
-			message:''
+			message: ''
 		});
 
 		res.view('reset', {
 			error: '',
-			message:''
+			message: ''
 		});
 	},
 
@@ -216,41 +216,41 @@ module.exports = {
 		var password = req.body.password;
 		if (!password) return res.view('reset', {
 			error: 'password is missing',
-			message:''
+			message: ''
 		});
 
-		var token =  req.query.token;
+		var token = req.query.token;
 
 		if (!token) return res.view('reset', {
 			error: 'reset token is missing',
-			message:''
+			message: ''
 		});
 
 		async.auto({
-			verifyToken: function(cb){
-				jwt.verify(token, 
-					sails.config.password_reset_secret, 
+			verifyToken: function (cb) {
+				jwt.verify(token,
+					sails.config.password_reset_secret,
 					cb);
 			},
-			findUser: ['verifyToken', function(results, cb){
-				User.findOne({email:results.verifyToken.email}).exec(function(err, user){
-					if(err) return cb(err);
-					if(!user) return cb(new Error('user not found'));
+			findUser: ['verifyToken', function (results, cb) {
+				User.findOne({ email: results.verifyToken.email }).exec(function (err, user) {
+					if (err) return cb(err);
+					if (!user) return cb(new Error('user not found'));
 					return cb(null, user);
 				})
 			}],
-			resetPassword:['findUser', function(results, cb){
-				bcrypt.genSalt(10, function(err, salt) {
-					bcrypt.hash(password, salt, function(err, hash) {
+			resetPassword: ['findUser', function (results, cb) {
+				bcrypt.genSalt(10, function (err, salt) {
+					bcrypt.hash(password, salt, function (err, hash) {
 						if (err) {
 							cb(err);
-						}else{
-							User.update({id: results.findUser.id},{password: hash}).exec(cb);
+						} else {
+							User.update({ id: results.findUser.id }, { password: hash }).exec(cb);
 						}
 					});
 				});
 			}]
-		}, function(err, results){
+		}, function (err, results) {
 			var locals = {
 				error: err ? err.message : '',
 				message: !err ? 'Password reseted successfully' : ''
@@ -258,4 +258,43 @@ module.exports = {
 			res.view('reset', locals);
 		})
 	},
+
+	userEdit: async function (req, res) {
+		var user = await User.findOne(req.user.id);
+		var locals = {
+			email: '',
+			api_token: '',
+			name: '',
+			message: '',
+			error: ''
+		}
+		if (!user)
+			locals.error = 'User not found';
+		locals.email = user.email;
+		locals.name = user.name;
+		locals.api_token = await KmsService.decrypt(user.api_token);
+
+		if (req.body) {
+			try {
+				updated = await User.update(user.id, { name: req.body.name, email: req.body.email });
+				locals.email = updated[0].email;
+				locals.name = updated[0].name;
+				locals.api_token = updated[0].api_token;
+				locals.message = 'user info updated'
+			} catch (err) {
+				locals.error = err.message.replace(new RegExp('\r?\n', 'g'), '<br />');
+			}
+		}
+
+		res.view('view_user_edit', locals);
+	},
+
+	generateAPIToken: async function (req, res) {
+		try {
+			var updated = await User.update(req.user.id, { api_token: GeneralService.makeApiToken() });
+			res.json({status: 'success'});
+		} catch (err) {
+			res.status(500).json({error: err.message});
+		}
+	}
 };

@@ -70,6 +70,8 @@ module.exports.policies = {
     '*':true
   },
   AuthController:{
-    '*': ['rateLimit']
+    '*': ['rateLimit'],
+    'userEdit': ['isAuthenticated'],
+    'generateAPIToken': ['isAuthenticated']
   }
 };

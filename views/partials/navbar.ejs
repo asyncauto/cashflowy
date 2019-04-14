@@ -23,51 +23,17 @@
 					</div>
 				</div>
 			<%}%>
-			<!-- <a class="item" href="/explore">
-				Explore
-			</a>
-			<a class="item" href="/find">
-				Finder
-			</a>
-			<a class="item" href="/verify">
-				Verifier
-			</a>
-			<a class="item" target="_blank" href="https://chrome.google.com/webstore/detail/massive-time-saver/odopbjobgpcfknmhdhglfdikhohbbegk">
-				Extension
-			</a> -->
-			<!-- <a class="item" href="/extension">
-				Extension
-			</a> -->
-			<!-- <a class="item" href="/pricing">
-				Pricing
-			</a> -->
-			
-			<!-- <%if(req.user){%>
-				<a class="item" href="/api_keys">
-					API
-				</a>
-			<%}%> -->
 			<div class="right menu">
 				
 				<%if(req.user){%>
-					<!-- <a class="item" href="/subscriptions">
-						
-							<i class="ui arrow circle up icon"></i>
-							Upgrade my account
-						
-					</a>
-					<a class="item" href="/help">
-						<i class="ui help icon"></i>
-						Help
-					</a> -->
+
 					<div class="ui simple dropdown item" href="">
 						
 						<%=req.user.name.split(' ')[0]%>
 						<!-- Free plan -->
 						<i class="dropdown icon"></i>
 						<div class="menu" style="margin-top: 0em">
-							<a class="disabled item" href='/settings'><i class="ui wrench icon"></i>Settings</a>
-							<a class="item" href=''><i class="ui lightbulb outlinetop icon"></i>What is new?</a>
+							<a class="item" href='/user/<%=req.user.id%>/edit'><i class="ui wrench icon"></i>User Settings</a>
 							<a class="item" href="/privacy"><i class="ui lightbulb outlinetop icon"></i>Privacy</a>
 							<a class="item" href="/terms"><i class="ui lightbulb outlinetop icon"></i>Terms</a>
 							<a class="item" href='/logout'><i class="ui stop icon"></i>Logout</a>

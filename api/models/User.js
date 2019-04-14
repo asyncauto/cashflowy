@@ -9,46 +9,46 @@ var bcrypt = require('bcryptjs');
 module.exports = {
 
 	attributes: {
-		name:{
-			type:'string',
-			required:true,
+		name: {
+			type: 'string',
+			required: true,
 		},
-		email:{
-			type:'string',
-			required:true,
-			unique:true,
+		email: {
+			type: 'string',
+			required: true,
+			unique: true,
 			isEmail: true
 		},
-		details:{ 
-			type:'json',
-			defaultsTo:{
-				"timezone_offset":-330,
-				"default_currency":"INR"
+		details: {
+			type: 'json',
+			defaultsTo: {
+				"timezone_offset": -330,
+				"default_currency": "INR"
 			}
 		},
-		password:{
-			type:'string',
-			required:true,
+		password: {
+			type: 'string',
+			required: true,
 		},
-		// rawlogs: {
-		// 	collection: 'rawlog',
-		// 	via: 'user',
-		// },
-		// processed_emails: {
-		// 	collection: 'email',
-		// 	via: 'user',
-		// }
+		api_token: {
+			type: 'string',
+			unique: true,
+			required: true
+		}
 	},
-	
-	customToJSON: function() {
+
+	customToJSON: function () {
 		var obj = this;
 		delete obj.password;
+		delete obj.api_token;
 		return obj;
 	},
 
-	beforeUpdate: function(data, cb){
+	beforeUpdate: async function (data, cb) {
+		if(data.api_token)
+			data.api_token = await KmsService.encrypt(data.api_token);
 		if (!data.details) return cb(null, data);
-    	// merge exisiting and  upcoming details value.
+		// merge exisiting and  upcoming details value.
 		async.auto({
 			getUser: function (cb) {
 				User.findOne(data.id).exec(cb);
@@ -57,23 +57,39 @@ module.exports = {
 				data.details = _.merge({}, results.getUser.details, data.details);
 				cb(null);
 			}]
-			}, function (err, results) {
+		}, function (err, results) {
 			return cb(err, data);
 		})
 	},
 
-	beforeCreate: function(user, cb) {
-		bcrypt.genSalt(10, function(err, salt) {
-			bcrypt.hash(user.password, salt, function(err, hash) {
+	beforeCreate: async function (user, cb) {
+		user.api_token = await KmsService.encrypt(user.api_token);
+		bcrypt.genSalt(10, function (err, salt) {
+			bcrypt.hash(user.password, salt, function (err, hash) {
 				if (err) {
 					console.log(err);
 					cb(err);
-				}else{
+				} else {
 					user.password = hash;
 					cb(null, user);
 				}
 			});
 		});
+	},
+
+	afterCreate: async function (user, cb) {
+		// create a personal organization
+		await Org.create({
+			name: user.name,
+			type: 'personal',
+			owner: user.id,
+			details: {
+				"default_account": user.id,
+				"timezone_offset": -330,
+				"default_currency": "INR"
+			}
+		});
+		return cb()
 	}
 };
 

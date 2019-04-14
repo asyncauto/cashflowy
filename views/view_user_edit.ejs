@@ -1,0 +1,66 @@
+<div class="ui container">
+	<div class="ui grid">
+		<div class='four wide tablet computer only column'></div>
+		<div class='eight wide table eight wide computer sixteen wide mobile column'>
+			<h4 class="ui horizontal divider header">
+				<!-- <i class="list icon"></i> -->
+				User Info
+			</h4>
+			<form class="ui <%-error?"error":""%> form " action="" method='post'>
+				<div class="field">
+					<label>Name</label>
+					<input type="text" name="name" placeholder="your name" value="<%=name%>">
+				</div>
+				<div class="field">
+					<label>Email</label>
+					<input type="text" name="email" placeholder="your email id" value="<%=email%>">
+				</div>
+				<div class="field">
+					<label>API Token</label>
+					<input type="text" name="api_token" readonly="" placeholder="your api token" value="<%=api_token%>">
+				</div>
+				<div class="ui error message">
+					<div class="header">Error</div>
+					<p><%-error%></p>
+				</div>
+				<div class="compact fields">
+					<div class="field">
+						<input type="submit" class="ui button" value="Save Changes">
+					</div>
+					<div class="ui teal right floated button generate_api_token button">Generate a new API Token</div>
+				</div>
+				<div class="ui success message">
+					<div class="header">User info updated</div>
+					You just updated your info
+				</div>
+			</form>
+		</div>
+		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
+		</div>
+	</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.generate_api_token').click(function(e){
+		console.log('submit generate_api_token');
+		if (!confirm("We will replace your existing api token with a new token, it will break you existing api call")) {
+			return;
+		}
+		var button = this;
+		$(button).addClass('loading');
+		$(button).addClass('disabled');
+		$.post("/user/<%=req.user.id%>/generate_api_token",function(result,status){
+			console.log(result, status)
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+			alert("Error: "+jqXHR.responseJSON.error);
+			$(button).removeClass('loading');
+			$(button).removeClass('disabled');
+		}).success(function() {
+			window.location = "/user/"+ <%=req.user.id%>+"/edit";
+		});
+	});
+	});
+</script>
+
