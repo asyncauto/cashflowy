@@ -63,7 +63,18 @@ module.exports.http = {
     * Example custom middleware; logs each request to the console.              *
     *                                                                           *
     ****************************************************************************/
-    myRequestLogger: require('sails-helper').requestLogger,
+    myRequestLogger: require('sails-helper').requestLogger({
+			kinesis: {
+				enabled: true,
+				PartitionKey: process.env.KINESIS_PARTITION_KEY,
+				StreamName: process.env.KINESIS_STREAM_NAME,
+				aws: {
+					accessKeyId: process.env.AWS_ACCESS_KEY,
+					secretAccessKey: process.env.AWS_ACCESS_SECRET,
+					region: process.env.AWS_REGION
+				}
+			}
+		}),
 
 
     /***************************************************************************

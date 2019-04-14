@@ -45,7 +45,7 @@
     "read-last-lines": "^1.6.0",
     "sails": "^1.1.0",
     "sails-disk": "~0.10.9",
-    "sails-helper": "^1.2.1",
+    "sails-helper": "^2.0.0",
     "sails-hook-grunt": "^1.0.8",
     "sails-hook-orm": "^2.1.1",
     "sails-hook-sockets": "^1.5.5",
