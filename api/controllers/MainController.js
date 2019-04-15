@@ -868,7 +868,7 @@ module.exports = {
 					account:accounts,
 				}
 				if(req.query.document){
-					filter.id=_.map(results.getTransactionsInDocument,'transaction');
+					filter.id=_.filter(_.map(results.getTransactionsInDocument,'transaction'));
 					console.log(filter.id);
 				}
 				// category filter
