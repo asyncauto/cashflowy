@@ -55,7 +55,7 @@
 										<td class='single line'><%=sli.extracted_data.balance%></td>
 										<td class='single line'><%=sli.extracted_data.acc_no%></td>
 									<%if(sli.dt){%>
-										<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
+										<td class='single line'><a target='_blank' href='/org/<%=req.org.id%>/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
 										<% if(dt_status){ %>
 										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
 										<% }else{ %>
@@ -107,7 +107,7 @@
 										<td class='single line' style='font-color:red;'><%=sli.extracted_data.amount%></td>
 										<td class='single line'><%=sli.extracted_data.dr_cr%></td>
 									<%if(sli.dt){%>
-										<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
+										<td class='single line'><a target='_blank' href='/org/<%=req.org.id%>/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
 										<% if(dt_status){ %>
 										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
 										<% }else{ %>
@@ -163,7 +163,7 @@
 										<td class='single line' style='font-color:red;'><%=sli.extracted_data.amount_inr%></td>
 										<td class='single line'><%=sli.extracted_data.dr_cr%></td>
 									<%if(sli.dt){%>
-										<td class='single line'><a target='_blank' href='/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
+										<td class='single line'><a target='_blank' href='/org/<%=req.org.id%>/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
 										<% if(dt_status){ %>
 										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
 										<% }else{ %>
