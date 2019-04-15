@@ -1461,7 +1461,7 @@ module.exports = {
 			getUnresolvedDoubtfullTransaction: function(cb){
 				var query = `SELECT count(*) AS unresolved_dts, sli.document FROM doubtful_transaction AS dt INNER JOIN statement_line_item AS sli ON dt.sli = sli.id 
 				WHERE sli.org =${req.org.id} AND json_extract_path(dt.details::json, 'status') IS NULL GROUP BY sli.document`
-				Doubtful_transaction.query(query,cb);
+				sails.sendNativeQuery(query,cb);
 			}
 		}, function(err, results){
 			if(err) return res.view('500', err);

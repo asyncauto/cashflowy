@@ -198,6 +198,7 @@
 								if(sli.transaction){
 									t_created_flag=true;
 									t=sli.transaction;
+									t.original_amount = t.original_amount.toFixed(2)
 								}
 								var dt_status = '';
 								if(sli.dt && sli.dt.details && sli.dt.details.status){
@@ -213,62 +214,6 @@
 									<span style="font-size: 1.5rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
 									<span style="font-size: 0.75rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
 									</span>
-								</td>
-								<td>
-									<!-- category  -->
-									<span style="opacity: 0.5;">Category:</span>
-									<div class="ui category dropdown" style="<%=(t.type=='income_expense'&&!t.category)?'background:yellow':''%>">
-										<input type="hidden" name="category" value="<%=t.category%>">
-										<div class="text">None</div>
-										<i class="dropdown icon"></i>
-										<div class="menu">
-											
-										</div>
-									</div>
-									<!-- &nbsp;&nbsp;&nbsp; <span style="opacity: 0.5">| Tags:</span> -->
-									<div class='ui divider' style='margin-top: 0px; margin-bottom: 0px;'></div>
-									<!-- description -->
-									<span class='description'><%-t.description?t.description:''%></span>
-									<a class='edit' data-id='<%=t.id%>' href='' style="<%=(!t.description)?'background:yellow':''%>">edit</a><br>
-
-									<div class='edit_description' data-id='<%=t.id%>' style='display:none;'>
-										
-										<div class="ui fluid input">
-											<input type="text" name='description' value='<%-t.description?t.description:''%>'>
-										</div>
-										<br>
-										<button class="ui teal button submit_edit_desc" data-id='<%=t.id%>' >save</button>
-										<button class="ui red button cancel_edit_desc" data-id='<%=t.id%>' >cancel</button>
-									</div>
-									<span style="opacity: 0.5;">Tags:</span>
-									<span class='tags'>
-										<%- partial('partials/display_tags', {tags: t.tags}) %>
-									</span>
-									<i class="add_tags2 link plus icon" style="opacity: 0.5;"></i>
-									<div class="ui add_tags_popup popup">
-										Add tags to this transaction:
-										<button class='ui teal disabled button submit_edit_tags'>update</button>
-										<div class='ui tags_dd fluid multiple search selection dropdown'>
-											<%
-												var tag_names=_.map(t.tags,'id');
-												var tags_string=tag_names.join(',');
-											%>
-											<input name='tags' type='hidden' value='<%=tags_string%>'>
-											<i class='dropdown icon'></i>
-											<input class='search' autocomplete='off' tabindex='0'><span class='sizer' style=''></span>
-											<div class='default text'>Tags</div>
-											<div class='menu transition hidden' tabindex='-1'>
-												
-											</div>
-										</div>
-										<br>
-										<!-- <button class='ui red button cancel_edit_tags' data-id='<%=t.id%>' >cancel</button> -->
-									</div>
-									
-									
-
-									
-									<br>
 								</td>
 								<td>
 									<%if(t.type=='income_expense'){
@@ -301,9 +246,6 @@
 											<span style='opacity: 0.5'>from</span><br>
 										<%}%>
 										<%=t.third_party%>
-									<%}else{%>
-										<span style='opacity: 0.5'>to</span><br>
-										<%=t.to_account.name%>
 									<%}%>
 								</td>
 								<td>
