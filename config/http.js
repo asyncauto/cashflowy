@@ -38,7 +38,7 @@ module.exports.http = {
 
     passportInit: require('passport').initialize(),
     passportSession: require('passport').session(),
-    
+
     sentryRequestHandler: Sentry.Handlers.requestHandler(),
     sentryerrorHandler: Sentry.Handlers.errorHandler(),
     order: [
@@ -47,6 +47,7 @@ module.exports.http = {
       'session',
       'passportInit',
       'passportSession',
+      'authenticateBlueprint',
       'bodyParser',
       'myRequestLogger',
       'compress',
@@ -55,6 +56,7 @@ module.exports.http = {
       'router',
       'www',
       'favicon',
+      'blueprintUnauthorized',
       'sentryerrorHandler'
     ],
 
@@ -64,17 +66,36 @@ module.exports.http = {
     *                                                                           *
     ****************************************************************************/
     myRequestLogger: require('sails-helper').requestLogger({
-			kinesis: {
-				enabled: true,
-				PartitionKey: process.env.KINESIS_PARTITION_KEY,
-				StreamName: process.env.KINESIS_STREAM_NAME,
-				aws: {
-					accessKeyId: process.env.AWS_ACCESS_KEY,
-					secretAccessKey: process.env.AWS_ACCESS_SECRET,
-					region: process.env.AWS_REGION
-				}
-			}
-		}),
+      kinesis: {
+        enabled: true,
+        PartitionKey: process.env.KINESIS_PARTITION_KEY,
+        StreamName: process.env.KINESIS_STREAM_NAME,
+        aws: {
+          accessKeyId: process.env.AWS_ACCESS_KEY,
+          secretAccessKey: process.env.AWS_ACCESS_SECRET,
+          region: process.env.AWS_REGION
+        }
+      }
+    }),
+
+    authenticateBlueprint: function (req, res, next) {
+      // authenticate apis with bearer token
+      if (req.url.match('/api/'))
+        require('passport').authenticate('bearer', { session: false })(req, res, next)
+      else
+        next()
+    },
+
+    blueprintUnauthorized: function (err, req, res, next) {
+      switch (err.name) {
+        case 'UnauthorizedError':
+        case 'JsonWebTokenError':
+          res.status(401).json({ error: 'invalid token' });
+          break;
+        default:
+          next(err);
+      }
+    }
 
 
     /***************************************************************************

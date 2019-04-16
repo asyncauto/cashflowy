@@ -10,6 +10,13 @@ var request = require('request');
 var async = require('async');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
+var aws = require('aws-sdk');
+
+const kms = new aws.KMS({
+	accessKeyId: sails.config.aws.key,
+	secretAccessKey: sails.config.aws.secret,
+	region: sails.config.aws.region
+});
 
 module.exports = {
 
@@ -87,8 +94,7 @@ module.exports = {
 			var user = {
 				email: req.body.email,
 				name: req.body.name,
-				password: req.body.password,
-				api_token: GeneralService.makeApiToken()
+				password: req.body.password
 			}
 			locals.user = user;
 			if (!GeneralService.validateEmail(locals.user.email)) {
@@ -273,7 +279,9 @@ module.exports = {
 		locals.email = user.email;
 		locals.name = user.name;
 		if(user.api_token)
-			locals.api_token = await KmsService.decrypt(user.api_token);
+			locals.api_token = (await kms.decrypt({
+				CiphertextBlob: new Buffer.from(user.api_token, 'base64')
+			}).promise()).Plaintext.toString('utf-8');
 
 		if (req.body) {
 			try {
@@ -292,7 +300,7 @@ module.exports = {
 
 	generateAPIToken: async function (req, res) {
 		try {
-			var updated = await User.update(req.user.id, { api_token: GeneralService.makeApiToken() });
+			var updated = await User.update(req.user.id, { api_token: jwt.sign({id:req.user.id},sails.config.api_token_secret)});
 			res.json({status: 'success'});
 		} catch (err) {
 			res.status(500).json({error: err.message});

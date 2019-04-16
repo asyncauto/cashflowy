@@ -20,11 +20,15 @@ module.exports = function (req, res, next) {
                 req.user.memberships = results.getAllMemberships;
                 next(err);
             }else{
+                if(req.url.match('/api/'))
+                    return res.status(403).json({error: 'you are not part of this org'});
                 res.send('you are not part of this org');
             }
         })
         
     }else{
+        if(req.url.match('/api/'))
+            return res.status(403).json({error: 'you are not part of this org'});
         res.send('you are not part of this org');
     }
 };

@@ -26,52 +26,47 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  '*': true,
-
-  /***************************************************************************
-  *                                                                          *
-  * Here's an example of mapping some policies to run before a controller    *
-  * and its actions                                                          *
-  *                                                                          *
-  ***************************************************************************/
-	// RabbitController: {
-
-		// Apply the `false` policy as the default for all of RabbitController's actions
-		// (`false` prevents all access, which ensures that nothing bad happens to our rabbits)
-		// '*': false,
-
-		// For the action `nurture`, apply the 'isRabbitMother' policy
-		// (this overrides `false` above)
-		// nurture	: 'isRabbitMother',
-
-		// Apply the `isNiceToAnimals` AND `hasRabbitFood` policies
-		// before letting any users feed our rabbits
-		// feed : ['isNiceToAnimals', 'hasRabbitFood']
-	// }
-  //
-  MainController:{
-    '*':['isAuthenticated','isMemberOfOrg'],
-    landingPage:true,
-    // verify:['sessionAuth'],
-    // dashboard:['isAuthenticated'],
-    // editDescription:['isAuthenticated'],
-    // listCategories:['isAuthenticated'],
+  '*': false,
+  
+  MainController: {
+    '*': ['isAuthenticated', 'isMemberOfOrg'],
+    landingPage: true,
   },
-  BullController:{
-    '*':['isAuthenticated','isAdmin']
+  BullController: {
+    '*': ['isAuthenticated', 'isAdmin']
   },
-  BackgroundController:{
-    '*':['isBackground']
+  BackgroundController: {
+    '*': ['isBackground']
   },
-  CuratorController:{
-    '*':['isAuthenticated','isAdmin']
+  CuratorController: {
+    '*': ['isAuthenticated', 'isAdmin']
   },
-  WebhookController:{
-    '*':true
+  WebhookController: {
+    '*': true
   },
-  AuthController:{
+  AuthController: {
     '*': ['rateLimit'],
     'userEdit': ['isAuthenticated'],
     'generateAPIToken': ['isAuthenticated']
+  },
+  TransactionController: {
+    '*': ['isAuthenticated', 'isMemberOfOrg', 'isBlueprint'],
+    'destroy': false
+  },
+  CategoryController: {
+    '*': ['isAuthenticated', 'isMemberOfOrg', 'isBlueprint'],
+    'destroy': false
+  },
+  TagController: {
+    '*': ['isAuthenticated', 'isMemberOfOrg', 'isBlueprint'],
+    'destroy': false
+  },
+  SnapshotController: {
+    '*': ['isAuthenticated', 'isMemberOfOrg', 'isBlueprint'],
+    'destroy': false
+  },
+  AccountController: {
+    '*': ['isAuthenticated', 'isMemberOfOrg', 'isBlueprint'],
+    'destroy': false
   }
 };

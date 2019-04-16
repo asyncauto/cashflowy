@@ -45,17 +45,17 @@ module.exports = {
                     _.forEach(req.body.accounts, function(account){
                         accouts.push(account.acc_no)
                     })
-                var account_ids = [];
+                var accounts = [];
                 async.forEach(accouts, function(ac, cb){
                     // check for last 4 digits.
                     Account.findOrCreate({acc_number: {endsWith: ac.substr(-4)}, org: results.findDocument.org},
                         {acc_number: ac, org: results.findDocument.org, name: 'Auto Generated: '+ ac, type: "bank"}).exec(function(e, a){
                             if(e) return cb(e);
-                            account_ids.push(a.id);
+                            accounts.push(a);
                             return cb(null);
                         })
                 }, function(err){
-                    cb(err, account_ids);
+                    cb(err, accounts);
                 })
             }],
             updateDocument: ['findAccounts' ,function (results,cb) {
@@ -63,10 +63,7 @@ module.exports = {
                 // type:doc_filter_type[results.findDocument.parser_used]
                 var filter = _.find(sails.config.docparser.filters,{docparser_id:results.findDocument.parser_used});
                 parsed_data=transformExtractedDataFromDocument(req.body,filter);
-                // console.log('\n\n------------------');
-                // console.log(parsed_data);
-                // console.log('------------------');
-                Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: parsed_data, type:filter.type, accounts: results.findAccounts}).exec(cb);
+                Document.update({ id: parseInt(req.body.remote_id) }, { parsed_data: parsed_data, type:filter.type, accounts: _.map(results.findAccounts, 'id')}).exec(cb);
             }],
             // check if the document entered is duplicate of something else
             createStatementLineItems:['updateDocument',function(results,cb){

@@ -6,6 +6,15 @@
  */
 
 var bcrypt = require('bcryptjs');
+var aws = require('aws-sdk');
+var jwt = require('jsonwebtoken');
+
+const kms = new aws.KMS({
+	accessKeyId: sails.config.aws.key,
+	secretAccessKey: sails.config.aws.secret,
+	region: sails.config.aws.region
+});
+
 module.exports = {
 
 	attributes: {
@@ -33,7 +42,7 @@ module.exports = {
 		api_token: {
 			type: 'string',
 			unique: true,
-			required: true
+			allowNull: true
 		}
 	},
 
@@ -45,8 +54,13 @@ module.exports = {
 	},
 
 	beforeUpdate: async function (data, cb) {
-		if(data.api_token)
-			data.api_token = await KmsService.encrypt(data.api_token);
+		if (data.api_token)
+			var encrypt_data = await kms.encrypt({
+				KeyId: sails.config.aws.kms_key_id,
+				Plaintext: new Buffer.from(data.api_token, 'utf-8')
+			}).promise()
+		data.api_token = encrypt_data.CiphertextBlob.toString('base64');
+
 		if (!data.details) return cb(null, data);
 		// merge exisiting and  upcoming details value.
 		async.auto({
@@ -63,7 +77,6 @@ module.exports = {
 	},
 
 	beforeCreate: async function (user, cb) {
-		user.api_token = await KmsService.encrypt(user.api_token);
 		bcrypt.genSalt(10, function (err, salt) {
 			bcrypt.hash(user.password, salt, function (err, hash) {
 				if (err) {
@@ -78,8 +91,17 @@ module.exports = {
 	},
 
 	afterCreate: async function (user, cb) {
+		//generate a plain jwt token
+		user.api_token = jwt.sign({id:user.id},sails.config.api_token_sercret);
+		//encrypt it before storeing
+		var encrypt_data = (await kms.encrypt({
+			KeyId: sails.config.aws.kms_key_id,
+			Plaintext: new Buffer.from(user.api_token, 'utf-8')
+		})).promise()
+		user.api_token = encrypt_data.CiphertextBlob.toString('base64');
+
 		// create a personal organization
-		await Org.create({
+		var org = await Org.create({
 			name: user.name,
 			type: 'personal',
 			owner: user.id,
@@ -89,6 +111,12 @@ module.exports = {
 				"default_currency": "INR"
 			}
 		});
+		// map the org to member
+		await Member.create({
+			type: 'admin',
+			user: user.id,
+			org: org.id
+		})
 		return cb()
 	}
 };

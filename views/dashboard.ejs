@@ -221,7 +221,7 @@
 		
 	</div>
 </div>
-<a class="circular ui icon right floated primary big button" href="/transaction/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new transaction" data-position="left center" data-inverted=""><i class="icon add"></i></a>
+<a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/transaction/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new transaction" data-position="left center" data-inverted=""><i class="icon add"></i></a>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('.ui.accordion').accordion();
@@ -399,42 +399,42 @@
 			if($('#cat_eating_out').is(":checked"))
 				categories_to_add.push({
 					name: 'Eating Out',
-					budget: 100,
+					budget: 10000,
 					description: '-'
 				})
 			if($('#cat_rent').is(":checked"))
 				categories_to_add.push({
 					name: 'Rent',
-					budget: 100,
+					budget: 20000,
 					description: '-'
 				});
 			if($('#cat_grocery').is(":checked"))
 				categories_to_add.push({
 					name: 'Grocery',
-					budget: 100,
+					budget: 5000,
 					description: '-'
 				})
 			if($('#cat_gift').is(":checked"))
 				categories_to_add.push({
 					name: 'Gift',
-					budget: 100,
+					budget: 5000,
 					description: '-'
 				})
 			if($('#cat_commute').is(":checked"))
 				categories_to_add.push({
 					name: 'Commute',
-					budget: 100,
+					budget: 7000,
 					description: '-'
 				})
 			
 			$.ajax({
 				type: 'POST',
-				url: '/category/create',
+				url: '/org/<%=req.org.id%>/category/create',
 				data: JSON.stringify(categories_to_add),
 				contentType: "application/json",
 				dataType: 'json',
 				success: function(resultData) { 
-				window.location.replace('/categories'); }
+				window.location.replace('/org/<%=req.org.id%>/categories'); }
 			})
 			
 		})

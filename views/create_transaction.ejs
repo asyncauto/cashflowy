@@ -1,13 +1,15 @@
 <%
-	
 	if(!original_currency)
 		original_currency=req.user.details.default_currency;
 	var single_active_flag=false;
 	if(!account_id){	
 		if(req.user.details.default_account)
 			account_id=req.user.details.default_account;
-		else
+		else if(accounts && accounts.length)
 			account_id=accounts[0].id;
+		else{
+			account_id=''
+		}
 	}
 	var create_or_edit = GeneralService.createOrEdit(req.url);
 %>

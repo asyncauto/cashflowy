@@ -69,7 +69,7 @@ module.exports.blueprints = {
   *                                                                          *
   ***************************************************************************/
 
-  rest: false,
+  rest: true,
 
   /***************************************************************************
   *                                                                          *
@@ -83,7 +83,7 @@ module.exports.blueprints = {
   *                                                                          *
   ***************************************************************************/
 
-  // shortcuts: true,
+  shortcuts: false,
 
   /***************************************************************************
   *                                                                          *
@@ -97,7 +97,7 @@ module.exports.blueprints = {
   *                                                                          *
   ***************************************************************************/
 
-  // prefix: '/api',
+  prefix: '/api/org/:o_id',
 
   /***************************************************************************
    *                                                                          *
@@ -126,7 +126,7 @@ module.exports.blueprints = {
   *                                                                          *
   ***************************************************************************/
 
-  // pluralize: false,
+  pluralize: true,
 
   /***************************************************************************
   *                                                                          *
@@ -137,8 +137,6 @@ module.exports.blueprints = {
   * may result in very heavy api calls                                       *
   *                                                                          *
   ***************************************************************************/
-
-  // populate: true,
 
   /****************************************************************************
   *                                                                           *
@@ -156,7 +154,48 @@ module.exports.blueprints = {
   * true.                                                                     *
   *                                                                           *
   ****************************************************************************/
+  parseBlueprintOptions: function (req) {
 
-  // defaultLimit: 30
+    // Get the default query options.
+    var queryOptions = req._sails.hooks.blueprints.parseBlueprintOptions(req);
 
+    // If this is the "find" or "populate" blueprint action, and the normal query options
+    // indicate that the request is attempting to set an exceedingly high `limit` clause,
+    // then prevent it (we'll say `limit` must not exceed 100).
+    if (req.options.blueprintAction === 'find' || req.options.blueprintAction === 'populate') {
+      if (queryOptions.criteria.limit > 100) {
+        queryOptions.criteria.limit = 100;
+      }
+
+      if (_.get(queryOptions, 'criteria.where.o_id', null)) {
+        queryOptions.criteria.where.org = req.org.id;
+        delete queryOptions.criteria.where.o_id;
+      }
+
+    }
+
+    if (req.options.blueprintAction === 'create'){
+
+      if (_.get(queryOptions, 'newRecord.o_id', null)) {
+        queryOptions.newRecord.org = req.org.id;
+        delete queryOptions.newRecord.o_id;
+      }
+
+    }
+
+    switch (req.options.action) {
+      case 'transaction/find':
+        _.set(queryOptions, 'criteria.where.account', req.options.org_accounts);
+        delete queryOptions.criteria.where.org;
+        break;
+      case 'transaction/create':
+        delete queryOptions.newRecord.o_id;
+        break;
+      default:
+        break;
+    }
+
+    return queryOptions;
+
+  }
 };

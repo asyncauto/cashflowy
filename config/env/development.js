@@ -70,5 +70,6 @@ module.exports = {
 	metabase: {
 		site_url: process.env.METABASE_SITE_URL,
 		secret_key: process.env.METABASE_SECRET_KEY
-	}
+	},
+	api_token_secret: process.env.API_TOKEN_SECRET
 };
