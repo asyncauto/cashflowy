@@ -80,7 +80,7 @@ module.exports.http = {
 
     authenticateBlueprint: function (req, res, next) {
       // authenticate apis with bearer token
-      if (req.url.match('/api/'))
+      if (req.url.startsWith('/api/'))
         require('passport').authenticate('bearer', { session: false })(req, res, next)
       else
         next()

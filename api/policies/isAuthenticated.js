@@ -3,7 +3,7 @@ module.exports = function (req, res, next) {
 		return next();
 	}
 	else {
-		if (req.url.match('/api/'))
+		if (req.url.startsWith('/api/'))
 			return res.status(401).json({ error: 'authentiction failed' })
 		var locals = {
 			title: 'Login',

@@ -71,6 +71,7 @@ module.exports = {
 	},
 	sockets: {
 		onlyAllowOrigins: ["https://app.cashflowy.in"]
-	}
+	},
+	api_token_secret: process.env.API_TOKEN_SECRET
 
 };
