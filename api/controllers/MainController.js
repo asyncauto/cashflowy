@@ -1573,16 +1573,19 @@ module.exports = {
 						region: sails.config.aws.region
 					});
 					var params = {Bucket: sails.config.aws.bucket, 
-						Key: results.uploadFile[0].fd, 
-						Body: fs.createReadStream(`.tmp/uploads/${results.uploadFile[0].fd}`)
+						Key: _.get(results, 'uploadFile[0].stream.fd'), 
+						Body: fs.createReadStream(results.uploadFile[0].fd)
 					};
 					s3.upload(params, function(err, data) {
 						cb(err, data);
 					});
 				}],
 				createDocument: ['uploadFileToS3', function (results, cb) {
-					Document.create({ org: req.org.id, parser_used: req.body.type, 
-						details:{s3_key:results.uploadFileToS3.key, 
+					Document.create({ 
+						org: req.org.id, 
+						parser_used: req.body.type, 
+						details:{
+							s3_key:results.uploadFileToS3.key, 
 							original_filename:results.uploadFile[0].filename, 
 							s3_location: results.uploadFileToS3.Location, 
 							s3_bucket: results.uploadFileToS3.Bucket} }).exec(cb);
@@ -1598,7 +1601,7 @@ module.exports = {
 								remote_id: results.createDocument.id,
 								file:
 									{
-										value: fs.createReadStream(`.tmp/uploads/${results.uploadFile[0].fd}`),
+										value: fs.createReadStream(results.uploadFile[0].fd),
 										options:
 											{
 												filename: results.uploadFile[0].filename,
