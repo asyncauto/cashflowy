@@ -1083,16 +1083,6 @@ module.exports = {
 					if(err)
 						throw err;
 					else{
-						if(req.body.balance && req.body.balance_currency){
-							var ss={
-								account:transaction.account,
-								createdBy:'user',
-								takenAt: transaction.occuredAt,
-								balance_currency:'INR',
-								balance: fx.convert(req.body.balance, {from: req.body.balance_currency, to: "INR"}),
-							}
-							await Snapshot.create(ss);
-						}
 						if(req.body.referer && req.body.referer.includes('/transactions'))
 							res.redirect(req.body.referer);
 						else 

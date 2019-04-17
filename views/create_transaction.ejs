@@ -109,28 +109,6 @@
 					<div class="header">Error</div>
 					<p><%=message%></p>
 				</div>
-				<h4 class="ui horizontal divider header">
-						Create Snapshot
-				</h4>
-				<div class="two fields">
-					<div class="field">
-						<label>Currency</label>
-						<div class="ui fluid search selection dropdown">
-							<input type="hidden" name="balance_currency" placeholder="INR" value="<%=balance_currency%>">
-							<i class="dropdown icon"></i>
-							<div class="default text">Select Currency</div>
-							<div class="menu">
-								<%Object.keys(sails.config.fx_rates).forEach(function(currency){%>
-									<div class='item' data-value="<%=currency%>"></i><%=currency%></div>
-								<%})%>
-							</div>
-						</div>
-					</div>
-					<div class="field">
-						<label>Balance</label>
-						<input type="number" step="any" name="balance" placeholder="100" value="<%=balance%>">
-					</div>
-				</div>
 				<input type="submit" class="ui button" value="Submit">
 				<div class="ui success message">
 					<div class="header">Transaction created</div>
