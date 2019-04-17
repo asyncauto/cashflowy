@@ -223,7 +223,9 @@ module.exports={
 					type:'bank', // user might need to change this
 					name:'Auto generated account'+t.account,
 				} 
-				Account.findOrCreate(find, create).exec(callback);	
+				Account.findOrCreate(find, create).exec(function(err, account, created){
+					callback(err, account);
+				});	
 			},
 			getOrgAccounts:function(callback){ 
 				// needed for finding similar transactions
