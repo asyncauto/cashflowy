@@ -103,7 +103,7 @@
 							<%}else{%>
 								<span style='opacity: 0.5'>deposited to</span><br>
 							<%}%>
-							<%=t.account.name%> (user - <%=t.account.user%>)
+							<%=t.account.name%> (org - <%=t.account.org%>)
 						</td>
 						<td>
 							<%if(t.type=='income_expense'){%> 
@@ -235,7 +235,7 @@
 							<%}else{%>
 								<span style='opacity: 0.5'>deposited to</span><br>
 							<%}%>
-							<%=t.account.name%> (user - <%=t.account.user%>)
+							<%=t.account.name%> (org - <%=t.account.org%>)
 						</td>
 						<td>
 							<%if(t.type=='income_expense'){%> 
@@ -284,7 +284,7 @@
 			<table class="ui basic unstackable table" style="display: auto;overflow-x:scroll;">
 				<tbody>
 					<%dt.similar_transactions.forEach(function(t){%>
-						<%if(dt.transaction.account.user==t.account.user){%>
+						<%if(dt.transaction.account.org==t.account.org){%>
 							<tr class='transaction top aligned' data-tid='<%=t.id%>'>
 								<td>
 									<span class='popup' data-html="<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
@@ -370,7 +370,7 @@
 									<%}else{%>
 										<span style='opacity: 0.5'>deposited to</span><br>
 									<%}%>
-									<%=t.account.name%> (user - <%=t.account.user%>)
+									<%=t.account.name%> (org - <%=t.account.org%>)
 								</td>
 								<td>
 									<%if(t.type=='income_expense'){%> 
