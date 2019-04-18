@@ -54,12 +54,13 @@ module.exports = {
 	},
 
 	beforeUpdate: async function (data, cb) {
-		if (data.api_token)
+		if (data.api_token){
 			var encrypt_data = await kms.encrypt({
 				KeyId: sails.config.aws.kms_key_id,
 				Plaintext: new Buffer.from(data.api_token, 'utf-8')
 			}).promise()
-		data.api_token = encrypt_data.CiphertextBlob.toString('base64');
+			data.api_token = encrypt_data.CiphertextBlob.toString('base64');
+		}
 
 		if (!data.details) return cb(null, data);
 		// merge exisiting and  upcoming details value.

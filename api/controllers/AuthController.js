@@ -265,7 +265,7 @@ module.exports = {
 		})
 	},
 
-	userEdit: async function (req, res) {
+	editUser: async function (req, res) {
 		var user = await User.findOne(req.user.id);
 		var locals = {
 			email: '',
@@ -285,17 +285,16 @@ module.exports = {
 
 		if (req.body) {
 			try {
-				updated = await User.update(user.id, { name: req.body.name, email: req.body.email });
+				var updated = await User.update(user.id, { name: req.body.name, email: req.body.email });
 				locals.email = updated[0].email;
 				locals.name = updated[0].name;
-				locals.api_token = updated[0].api_token;
 				locals.message = 'user info updated'
 			} catch (err) {
 				locals.error = err.message.replace(new RegExp('\r?\n', 'g'), '<br />');
 			}
 		}
 
-		res.view('view_user_edit', locals);
+		return res.view('view_user_edit', locals);
 	},
 
 	generateAPIToken: async function (req, res) {
