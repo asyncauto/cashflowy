@@ -6,19 +6,29 @@
 <div class='ui container'>
 	<div class='ui grid'>
 		<div class='sixteen wide column'>
-			<h1>Members of <%=members[0].org.name%></h1>
+			<h1>Members of <%=req.org.name%></h1>
 			<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
 				<thead>
 					<tr>
 						<th>Name</th>
+						<th>Email</th>
 						<th>Access</th>
+						<th>Revoke</th>
 					</tr>
 				</thead>
 				<tbody>
+					<tr>
+						<td class='single line'><%=owner.user.name%></td>
+						<td class='single line'><%=owner.user.email%></td>
+						<td>Owner</td>
+						<td class='single line'><button class="ui basic disabled red button revoke_access">Revoke</button>
+					</tr>
 					<%members.forEach(function(m){%>
 						<tr data-tid='<%=m.id%>'>
 							<td class='single line'><%=m.user.name%></td>
+							<td class='single line'><%=m.user.email%></td>
 							<td><%=m.type%></td>
+							<td class='single line'><button class="ui basic red button revoke_access" data-member-id="<%=m.id%>">Revoke</button>
 						</tr>
 					<%})%>
 				</tbody>
@@ -31,5 +41,21 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('.popup').popup();
+		$('.revoke_access').click(function(e){
+			var m_id=$(this).attr('data-member-id');
+			console.log(m_id);
+			var button = this;
+			$(button).addClass('loading');
+			$(button).addClass('disabled');
+			$.ajax({url: "/org/"+ <%=req.params.o_id%>+"/member/"+m_id, type: 'DELETE'},function(result,status){
+				console.log(result, status)
+			}).fail(function(jqXHR, textStatus, errorThrown) {
+				alert("Error: "+jqXHR.responseJSON.error);
+				$(button).removeClass('loading');
+				$(button).removeClass('disabled');
+			}).success(function() {
+				window.location = "/org/"+ <%=req.params.o_id%>+"/members";
+			});
+		});
 	});
 </script>

@@ -2443,6 +2443,7 @@ module.exports = {
 		Member.find({ org:req.params.o_id }).populate('user').populate('org').exec(function (err, members) {
 			if (err)
 				throw err;
+			locals.owner = _.remove(members, function(m){return req.org.owner == m.user.id})[0];	
 			locals.members = members;
 			res.view('list_members', locals);
 		});
@@ -2451,31 +2452,64 @@ module.exports = {
 		var locals = {};
 		res.view('view_member', locals);
 	},
-	createMember: function (req, res) {
-		var locals = {};
+	createMember: async function (req, res) {
+		var locals = {
+			status: '',
+			message: '',
+			email: '',
+			type: ''
+		};
 		if(req.body){
-			var member= req.body;
-			member.org = req.params.o_id;
-			Member.create(member).exec(function(err){
+			var user = await User.findOne({email: req.body.email});
+			if(!user){
+				locals.status = 'error';
+				locals.message = "user doesn't exist with the email id"
+				return res.view('create_member', locals);
+			}
+			var create= {
+				type: req.body.type,
+				user: user.id,
+				org: req.params.o_id
+			}
+			var member = await Member.findOne({
+				user: user.id,
+				org: req.params.o_id});
+
+			if(member){
+				locals.status = 'error';
+				locals.message = "member alread exists"
+				return res.view('create_member', locals);
+			}
+				
+			Member.create(create).exec(function(err){
 				if(err)
-					throw err;
-				res.redirect('/org/'+req.params.o_id+'/members');
+					{
+						locals.status = 'error';
+						locals.message = err.message;
+						return res.view('create_member', locals);
+					}
+				return res.redirect('/org/'+req.params.o_id+'/members');
 			})
 		}else{
-			User.find().sort('name asc').exec(function(err,users){
-				locals.users=users;
-				locals.member={};
-				res.view('create_member', locals);
-			})
-			
+			return res.view('create_member', locals);
 		}
 	},
 	editMember: function (req, res) {
 		var locals = {};
 		res.view('create_member', locals);
 	},
-	deleteMember: function (req, res) {
+	deleteMember: async function (req, res) {
 		var locals = {};
-		res.view('delete_member', locals);
+		var member = await Member.findOne(req.params.id);
+		if(!member)
+			return res.status(404).json({error: 'member not found'});
+		if(req.org.owner == member.user)
+			return res.status(400).json({error: "can't revoke the membership of owner"})
+		await Member.destroy(req.params.id);
+		return res.json({status:'success'});
 	},
+	listSettings: function(req, res){
+		var locals = {};
+		res.view('list_settings', locals);
+	}
 }

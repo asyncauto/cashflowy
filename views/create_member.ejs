@@ -9,22 +9,12 @@
 				<!-- <i class="list icon"></i> -->
 				<%=create_or_edit%> Member
 			</h4>
-			<form class="ui <%=member.status%> form " action="" method='post'>
+			<form class="ui <%=status%> form " action="" method='post'>
                 <!-- <h4 class="ui dividing header">Shipping Information</h4> -->
                 <div class="two fields">
                     <div class="field">
-                        <label>User</label>
-                        <div class="ui fluid search selection dropdown">
-                            <input type="hidden" name="user" value="">
-                            <i class="dropdown icon"></i>
-                            <div class="default text">Choose User</div>
-                            <div class="menu">
-                                <%users.forEach(function(user){%>
-                                    <div class="item" data-value="<%=user.id%>"><%=user.name%></div>
-                                <%})%>    
-
-                            </div>
-                        </div>
+						<label>Email</label>
+						<input value="" name="email" type="email"> 
                     </div>
                     <div class="field">
                         <label>Type</label>
@@ -42,7 +32,7 @@
 				</div>
 				<div class="ui error message">
 					<div class="header">Error</div>
-					<p><%=member.message%></p>
+					<p><%=message%></p>
 				</div>
 				<input type="submit" class="ui button" value="Submit">
 				<div class="ui success message">

@@ -92,12 +92,12 @@ module.exports = {
 
 	afterCreate: async function (user, cb) {
 		//generate a plain jwt token
-		user.api_token = jwt.sign({id:user.id},sails.config.api_token_sercret);
+		user.api_token = jwt.sign({id:user.id},sails.config.api_token_secret);
 		//encrypt it before storeing
-		var encrypt_data = (await kms.encrypt({
+		var encrypt_data = await kms.encrypt({
 			KeyId: sails.config.aws.kms_key_id,
 			Plaintext: new Buffer.from(user.api_token, 'utf-8')
-		})).promise()
+		}).promise()
 		user.api_token = encrypt_data.CiphertextBlob.toString('base64');
 
 		// create a personal organization
@@ -111,12 +111,7 @@ module.exports = {
 				"default_currency": "INR"
 			}
 		});
-		// map the org to member
-		await Member.create({
-			type: 'admin',
-			user: user.id,
-			org: org.id
-		})
+		
 		return cb()
 	}
 };

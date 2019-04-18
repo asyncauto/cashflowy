@@ -158,7 +158,7 @@ module.exports.routes = {
   'GET /org/:o_id/member/:id/edit': 'MainController.editMember',
   'POST /org/:o_id/member/:id/edit': 'MainController.editMember',
   'GET /org/:o_id/member/:id/delete': 'MainController.deleteMember',
-  'POST /org/:o_id/member/:id/delete': 'MainController.deleteMember',
+  'DELETE /org/:o_id/member/:id': 'MainController.deleteMember',
 
 
   'GET /org/:o_id/dt/:id':'MainController.viewDoubtfulTransaction',
@@ -167,15 +167,14 @@ module.exports.routes = {
 
 
   'GET /org/:o_id/rules':'MainController.listRules',
-  // 'GET /rule/:id':'MainController.viewRule',
   'POST /org/:o_id/rule/create':'MainController.createRule',
   'GET /org/:o_id/rule/:id/edit':'MainController.editRule',
   'POST /org/:o_id/rule/:id/edit':'MainController.editRule',
   'GET /org/:o_id/rule/:id/delete':'MainController.deleteRule',
   'POST /org/:o_id/rule/:id/delete':'MainController.deleteRule',
   
-  
-  '/test':'MainController.test',
+  //org settings
+  'GET /org/:o_id/settings': 'MainController.listSettings',
 
   // api patterns needs rewrite later
   'POST /org/:o_id/api/edit_desc':'MainController.editDescription',
