@@ -62,19 +62,7 @@ module.exports = {
 			data.api_token = encrypt_data.CiphertextBlob.toString('base64');
 		}
 
-		if (!data.details) return cb(null, data);
-		// merge exisiting and  upcoming details value.
-		async.auto({
-			getUser: function (cb) {
-				User.findOne(data.id).exec(cb);
-			},
-			mergeDetails: ['getUser', function (results, cb) {
-				data.details = _.merge({}, results.getUser.details, data.details);
-				cb(null);
-			}]
-		}, function (err, results) {
-			return cb(err, data);
-		})
+		return cb(null, data);
 	},
 
 	beforeCreate: async function (user, cb) {

@@ -196,6 +196,7 @@ module.exports.routes = {
   'POST /user/:id/edit': 'AuthController.editUser',
   'POST /user/:id/generate_api_token': 'AuthController.generateAPIToken',
 
+  'GET /user/:id/notifications': 'MainController.listNotifications',
 
   'GET /background/deepCrawl':'Background.deepCrawl',
   'POST /background/surface_crawl':'Background.surfaceCrawl',

@@ -2511,5 +2511,44 @@ module.exports = {
 	listSettings: function(req, res){
 		var locals = {};
 		res.view('list_settings', locals);
+	},
+
+	listNotifications: async function(req, res){
+		var locals={
+			title:'Highlyreco | Notification',
+			description:'Notification',
+			layout:'layout',
+			notifications:{}		
+		}
+
+		var last_seen_noti_time;
+		if(req.user.details.notifications)
+			last_seen_noti_time=req.user.details.notifications.last_seen_noti_time;
+		else{
+			req.user.details.notifications={};
+			last_seen_noti_time='2017-01-01T00:00:00.000Z';	
+		}
+
+		locals.notifications.unseen = await Notification.find({user:req.user.id,createdAt:{'>':last_seen_noti_time}}).sort('createdAt DESC').limit(100);
+		locals.notifications.seen = await Notification.find({user:req.user.id,createdAt:{'<':last_seen_noti_time}}).sort('createdAt DESC').limit(100);
+
+		// new seen count will be sum of what is shown on the screen
+		req.user.details.notifications.seen_count=locals.notifications.unseen.length+locals.notifications.seen.length;
+		// new unseen count =0
+		req.user.details.notifications.unseen_count=0;
+		req.user.details.notifications.last_seen_noti_time=new Date().toISOString();
+		// updating user details here
+		await User.update({id:req.user.id},{details:req.user.details});
+
+		// updating time ago for seen notifications
+		locals.notifications.seen.forEach(function(n){
+			n.createdAtAgo=GeneralService.timeAgo(n.createdAt);
+		});
+		// updating time ago for unseen notifications
+		locals.notifications.unseen.forEach(function(n){
+			n.createdAtAgo=GeneralService.timeAgo(n.createdAt);
+		});
+
+		return res.view('list_notifications', locals);
 	}
 }

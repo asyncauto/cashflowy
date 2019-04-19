@@ -31,6 +31,7 @@ module.exports.policies = {
   MainController: {
     '*': ['isAuthenticated', 'isMemberOfOrg'],
     landingPage: true,
+    'listNotifications':['isAuthenticated']
   },
   BullController: {
     '*': ['isAuthenticated', 'isAdmin']
@@ -46,7 +47,7 @@ module.exports.policies = {
   },
   AuthController: {
     '*': ['rateLimit'],
-    'userEdit': ['isAuthenticated'],
+    'editUser': ['isAuthenticated'],
     'generateAPIToken': ['isAuthenticated']
   },
   TransactionController: {

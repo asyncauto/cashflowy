@@ -1,0 +1,42 @@
+<div class='ui container'>
+    <div class='ui grid'>
+        <div class='four wide column'></div>
+        <div class='eight wide column'>
+            <div class='ui horizontal divider'>New notifications</div>
+            <%if(!notifications.unseen.length){%>
+                You have no new notifications<br>
+            <%}else{%>
+                You have <%=notifications.unseen.length%> new notifications
+                <br>
+                <br>
+                <div class="ui relaxed divided list">
+                    <% notifications.unseen.forEach(function(n){%>
+                        <div class="item">
+                        <div class="content">
+                            <a href="<%=n.navigate_uri%>"><%-n.body%></a>
+                            <div class="description" style='opacity:0.7;'><%=n.createdAtAgo%></div>
+                        </div>
+                        </div>
+                    <%})%>
+                </div>
+            <%}%>
+            <%if(!notifications.seen.length){%>
+                You have no notifications
+            <%}else{%>
+                <br><div class='ui horizontal divider'>Seen notifications</div>
+                <div class="ui relaxed divided list">
+                    <% notifications.seen.forEach(function(n){%>
+                        <div class="item">
+                        <div class="content">
+                            <a style='color:#000040; opacity:0.9;' href="<%=n.navigate_uri%>"><%-n.body%></a>
+                            <div class="description" style='opacity:0.7;'><%=n.createdAtAgo%></div>
+                        </div>
+                        </div>
+                    <%})%>
+                </div>
+
+            <%}%>
+        </div>
+        <div class='four wide column'></div>
+    </div>
+</div>
