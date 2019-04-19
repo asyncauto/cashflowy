@@ -3,7 +3,76 @@
 		<!-- <div class='one wide column'></div> -->
 		<div class='sixteen wide column'>
 			<h2>P&L - <%=pnl.name%></h2>
-			<%=pnl.type%>
+			<!-- <%=pnl.type%> -->
+			<form class="ui form " action="" method='get'>
+				<div class='fields' style="display:none">
+					<input type="text" name="date_from" value="<%=req.query.date_from?req.query.date_from:''%>">
+				</div>
+				<div class='fields' style="display:none">
+					<input type="text" name="date_to" value="<%=req.query.date_to?req.query.date_to:''%>">
+				</div>
+				<div class="fields">
+					<div class="field">
+						<%# <label>Number format</label> %>
+						<div class="ui basic button dropdown">
+							<input type="hidden" name="number_format" value="<%=req.query.number_format%>">
+							<i class="dropdown icon"></i>
+							<div class="default text">Number Format</div>
+							<div class="menu">
+								<div class="item" data-value="indian"></i>
+									Indian style
+									<i class="dropdown icon"></i>
+									<div class="menu">
+										<div class="item" data-value="indian_thousand">
+											In Thousands
+										</div>
+										<div class="item" data-value="indian_lakh">
+											In Lakhs
+										</div>
+										<div class="item" data-value="indian_crore">
+											In Crores
+										</div>
+									</div>	
+								</div>
+								<div class="item" data-value="indian"></i>
+									US style
+									<i class="dropdown icon"></i>
+									<div class="menu">
+										<div class="item" data-value="us_thousand">
+											In Thousands
+										</div>
+										<div class="item" data-value="us_million">
+											In Millions
+										</div>
+										<div class="item" data-value="us_billion">
+											In Billions
+										</div>
+									</div>	
+								</div>
+								<%# <div class="item" data-value="indian"></i>Indian</div> %>
+								<%# <div class="item" data-value="us"></i>US</div> %>
+								<%# <div class="item" data-value="wallet"></i>Wallet</div>
+								<div class="item" data-value="cash"></i>Cash</div>
+								<div class="item" data-value="investment"></i>Investment</div> %>
+							</div>
+						</div>
+					</div>
+					<div class="field">
+						<%# <label>Precision</label> %>
+						<div class="ui basic button dropdown">
+							<input type="hidden" name="precision" value="<%=req.query.precision%>">
+							<i class="dropdown icon"></i>
+							<div class="default text">Precision</div>
+							<div class="menu">
+								<div class="item" data-value="decimal2"></i>2 point decimal</div>
+								<div class="item" data-value="decimal1"></i>1 point decimal</div>
+								<div class="item" data-value="decimal0"></i>no decimal</div>
+							</div>
+						</div>
+					</div>
+					<input type="submit" class="ui basic button" value="Go">
+				</div>
+			</form>
 			<table class="ui celled unstackable collapsing table" id='daily_report' style="display: block;overflow-x:scroll;">
 			<!-- <table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;"> -->
 				<thead>
@@ -40,8 +109,8 @@
 							</td>
 							<%pnl.header.level_1.forEach(function(l1){%>
 								<%pnl.header.level_2.forEach(function(l2){%>
-									<td class='single line'>
-										<%=row_l1.data[l1+'__'+l2]?row_l1.data[l1+'__'+l2]:''%>
+									<td class='single line right aligned'>
+										<%=row_l1.data[l1+'__'+l2]?row_l1.data[l1+'__'+l2].toFixed(1):''%>
 									</td>
 								<%})%>
 							<%})%>
@@ -54,8 +123,8 @@
 								</td>
 								<%pnl.header.level_1.forEach(function(l1){%>
 									<%pnl.header.level_2.forEach(function(l2){%>
-										<td class='single line'>
-											<%=row_l2.data[l1+'__'+l2]?row_l2.data[l1+'__'+l2]:''%>
+										<td class='single line right aligned'>
+											<%=row_l2.data[l1+'__'+l2]?row_l2.data[l1+'__'+l2].toFixed(1):''%>
 										</td>
 									<%})%>
 								<%})%>
@@ -67,8 +136,8 @@
 									</td>
 									<%pnl.header.level_1.forEach(function(l1){%>
 										<%pnl.header.level_2.forEach(function(l2){%>
-											<td class='single line'>
-												<%=row_l3.data[l1+'__'+l2]?row_l3.data[l1+'__'+l2]:''%>
+											<td class='single line right aligned'>
+												<%=row_l3.data[l1+'__'+l2]?row_l3.data[l1+'__'+l2].toFixed(1):''%>
 											</td>
 										<%})%>
 									<%})%>
@@ -85,3 +154,20 @@
 	</div>
 	
 </div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.dropdown').dropdown();
+		$('.ui.form').form({
+			fields: {
+				// name: 'empty',
+				// acc_number: 'empty',
+				// type: 'empty',
+			},
+			onSuccess:function(e,fields){
+				$(this).addClass('loading');
+			},
+		});
+	})
+
+</script>
