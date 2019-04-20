@@ -16,8 +16,17 @@
 					<!-- Free plan -->
 					<i class="dropdown icon"></i>
 					<div class="menu" style="margin-top: 0em">
+						
 						<%req.user.memberships.forEach(function(membership){%>
-							<a class="item" href='/org/<%=membership.org.id%>/dashboard'><i class="ui lightbulb outlinetop icon"></i><%=membership.org.name%></a>
+							<% var href;
+							  if (req.route){
+								href = req.route.path;
+								href = href.replace(':o_id', membership.org.id)
+							  }else{
+							  href = `/org/${membership.org.id}/dashboard`;
+							  }
+							%>
+							<a class="item" href='<%=href%>'><i class="ui lightbulb outlinetop icon"></i><%=membership.org.name%></a>
 						<%})%>
 					</div>
 				</div>

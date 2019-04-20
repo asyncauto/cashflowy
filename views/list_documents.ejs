@@ -2,20 +2,21 @@
 	<div class='ui grid'>
 		<!-- <div class='three wide tablet computer only column'></div> -->
 		<div class="sixteen wide computer sixteen wide mobile  column">
-				  <style type="text/css">
-					.vis-item .vis-item-content {
-						padding: 1px !important;
-					}
-				  </style>
-				  <script src="js/vis.js"></script>
-				  <link href="styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+			<style type="text/css">
+			.vis-item .vis-item-content {
+				padding: 1px !important;
+			}
+			/* alternating column backgrounds */
+			.vis-time-axis .vis-grid.vis-odd {
+			background: #f5f5f5;
+			}
+			</style>
 
-				<div id="visualization" class="ui segment"></div>
+				<div id="visualization" class="ui basic segment"></div>
 				
 				<script type="text/javascript">
 
 					// create a data set with groups
-					var names = ['HDFC 7711', 'HDFC 0971', 'HDFC 0392'];
 					var groups = new vis.DataSet(<%-JSON.stringify(timeline.groups)%>);
 					console.log(groups)
 					var items = new vis.DataSet(<%-JSON.stringify(timeline.items)%>);
@@ -45,13 +46,14 @@
 				<thead>
 					<tr>
 						<th>Id</th>
+						<th>Created At</th>
 						<th>Doc type</th>
-						<th>Uploaded File</th>
+						<th>Accounts Found</th>
+						<th>Line items found</th>
+						<th>Line items processed</th>
+						<th>Action required</th>
 						<th>Description</th>
-                        <th>Accounts</th>
-						<th>Line Items<br>(processed/parsed)</th>
-						<th>Unresolved LineItems</th>
-						<th>Uploaded On</th>
+						<th>File name</th>				
                         <th>Status</th>
 					</tr>
 				</thead>
@@ -59,9 +61,28 @@
 					<%documents.forEach(function(doc){%>
 						<tr data-d_id='<%=doc.id%>' class='document'>
 							<td><a href="/org/<%=req.org.id%>/document/<%=doc.id%>"><%=doc.id%></a></td>
-							<td><%=doc.type%></td>
 							<td>
-								<a href="<%=doc.parsed_data ? doc.parsed_data.media_link_original : '#' %>" target="_blank"><%=doc.parsed_data ? doc.parsed_data.file_name : doc.details && doc.details.original_filename? doc.details.original_filename:'-'  %></a>
+								<span class='popup' data-html="<%-moment(doc.createdAt).tz('Asia/Kolkata').format('h:mm a')%>">
+								<%-moment(doc.createdAt).tz('Asia/Kolkata').format('MMM')%></br>
+								<span style="font-size: 1.5rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD')%></span></br>
+								<span style="font-size: 0.75rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('YYYY')%></span>
+								</span>
+							</td>
+							<td><%=doc.type%></td>
+							<td><% doc.accounts.forEach(function(a){%>
+								<span>
+									<a href="/org/<%=req.org.id%>/account/<%=a.id%>"><%=a.name%></a>
+								</span><br>
+								<%})%>
+							</td>
+							<td>
+								<%= (doc.parsed_data && doc.parsed_data.transactions? doc.parsed_data.transactions.length: 0) %>
+							</td>
+							<td>
+								<%= doc.statement_line_items? doc.statement_line_items.length:0 %>
+							</td>
+							<td>
+								<%- doc.unresolved_dts?'<span style="color:red">'+doc.unresolved_dts+'</span>': '<span style="color:green">None</span>'%>
 							</td>
 							<td>
 								<!-- describe the document -->
@@ -79,36 +100,21 @@
 								</div>
 
 							</td>
-							<td><% doc.accounts.forEach(function(a){%>
-								<span>
-									<a href="/org/<%=req.org.id%>/account/<%=a.id%>"><%=a.name%></a>
-								</span><br>
-								<%})%>
-							</td>
 							<td>
-								<%= doc.statement_line_items? doc.statement_line_items.length:0 + '/' + (doc.parsed_data && doc.parsed_data.transactions? doc.parsed_data.transactions.length: 0) %>
-							</td>
-							<td>
-								<a href="/org/<%=req.org.id%>/document/<%=doc.id%>"><%= doc.unresolved_dts?doc.unresolved_dts: '0'%></a>
+								<%=doc.parsed_data ? doc.parsed_data.file_name : doc.details && doc.details.original_filename? doc.details.original_filename:'-'  %>
 							</td>
 							
-							<td>
-								<span class='popup' data-html="<%-moment(doc.createdAt).tz('Asia/Kolkata').format('h:mm a')%>">
-									
-								<span style="font-size: 1.05rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD MMM, YYYY')%></span></br>
-								</span>
-							</td>
 							<% if(doc.parsed_data && doc.parsed_data.transactions){ %>
 								<% if(doc.statement_line_items.length == doc.parsed_data.transactions.length) {%>
-									<td class='single line'><i class="icon green checkmark"></i>Document processed successfully</td>
+									<td><i class="icon green checkmark"></i>Document processed successfully</td>
 								<% }else if(doc.statement_line_items.length < doc.parsed_data.transactions.length){ %>
-									<td class='single line'><i class="icon grey spinner"></i>Processing line items<br>
+									<td><i class="icon grey spinner"></i>Processing line items<br>
 								<span style="font-size:0.70rem;">&nbsp;&nbsp;<%= doc.statement_line_items.length %> line items processed out of <%= doc.parsed_data.transactions.length %></span></td>
 								<% } %>
 							<% }else if(new Date() - new Date(doc.createdAt) < 150000){ %>
-								<td class='single line'><i class="icon spinner"></i>Parsing in progress</td>
+								<td><i class="icon spinner"></i>Parsing in progress</td>
 							<% }else { %>
-								<td class='single line'><i class="icon yellow attention"></i>Unable to Parse the Document</td>
+								<td><i class="icon yellow attention"></i>Unable to Parse the Document</td>
 							<% } %>
 						</tr>
 					<%})%>
