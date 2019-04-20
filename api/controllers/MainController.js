@@ -1480,7 +1480,7 @@ module.exports = {
 						if(!_.find(timeline.groups, {id:a.id}))
 							timeline.groups.push({
 								id: a.id,
-								content: `<a href=/account/${a.id}>${a.name}<a>`
+								content: `<a href=/org/${req.org.id}/account/${a.id}>${a.name}<a>`
 							})
 					})
 				}

@@ -41,14 +41,14 @@ module.exports = {
             findOrCreateCategory: ['getPrediction', function (results, cb) {
                 // for initial trail, only categorize if category belongs to org
                 var category_name = results.getPrediction.Prediction.predictedLabel
-                Category.findOne({ name: category_name, org: results.getAccount.org }).exec(cb);
+                Category.find({ name: category_name, org: results.getAccount.org }).exec(cb);
             }],
             addCategoryToTli: ['findOrCreateCategory', function (results, cb) {
-                if (!results.findOrCreateCategory) return cb(null);
-                Transaction_line_item.update(tli.id, { category: results.findOrCreateCategory.id }).exec(cb);
+                if (!_.get(results, 'findOrCreateCategory[0]', null)) return cb(null);
+                Transaction_line_item.update(tli.id, { category: results.findOrCreateCategory[0].id }).exec(cb);
             }],
             addPredictionTag: ['findOrCreateCategory', function (results, cb) {
-                if (!results.findOrCreateCategory) return cb(null);
+                if (!_.get(results, 'findOrCreateCategory[0]', null)) return cb(null);
 
                 Tag.findOrCreate({ name: 'predicted_category', type: 'global' },
                     { name: 'predicted_category', type: 'global' }).exec(async function (err, tag) {
