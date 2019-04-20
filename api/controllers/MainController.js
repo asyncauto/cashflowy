@@ -332,12 +332,14 @@ module.exports = {
 				to_update.body_parser_used =  results.reParse.body_parser_used
 				to_update.extracted_data.email_received_time = new Date(results.getParsedEmail.details.inbound['Date']);
 
-				// apply global filter
-				sails.config.emailparser.globalModifyData(to_update);
+				// apply before filter
+				sails.config.emailparser.beforeModifyData(to_update);
 				// apply particular filter
 				var filter = _.find(sails.config.emailparser.filters, {name: results.getParsedEmail.type});
 				if(filter.modifyData)
 					filter.modifyData(to_update);
+				// apply after modify 
+				sails.config.emailparser.afterModifyData(to_update);
 				Parsed_email.update({ message_id: results.getParsedEmail.message_id }, to_update)
 				.exec(function(err, pe){
 					cb(err, pe);
@@ -1182,7 +1184,7 @@ module.exports = {
 						message:'',
 						occuredAt:new Date(t.occuredAt).toISOString(),
 						description:t.description,
-						original_amount:-t.original_amount,
+						original_amount:t.original_amount,
 						original_currency:t.original_currency,
 						third_party:t.third_party,
 						account_id:t.account,

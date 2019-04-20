@@ -1,6 +1,6 @@
 module.exports.emailparser = {
     // apply global first, then override with individual filter modifiers
-    globalModifyData: function (pe) {
+    beforeModifyData: function (pe) {
         pe.data = _.cloneDeep(pe.extracted_data);
         if (!pe.extracted_data.currency)
             pe.data.currency = 'INR';
@@ -21,7 +21,9 @@ module.exports.emailparser = {
             pe.data.acc_number = pe.data.credit_card_last_4_digits;
         else if (pe.data.account_last_4_digits)
             pe.data.acc_number = pe.data.account_last_4_digits;
-
+        return pe
+    },
+    afterModifyData: function(pe){
         const fx = require('money');
         fx.base = 'INR';
         fx.rates = sails.config.fx_rates;
@@ -95,7 +97,6 @@ module.exports.emailparser = {
             name: 'HdfcBankAccountCreditFilter',
             modifyData: function (pe) {
                 pe.data.original_amount = pe.extracted_data.amount;
-                pe.data.type = 'transfer'
             }
         },
         {

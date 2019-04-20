@@ -50,12 +50,14 @@ module.exports = {
 		}
 	},
 	beforeCreate:function(pe,cb){
-		// apply global modifier
-		sails.config.emailparser.globalModifyData(pe);
+		// apply before modifier
+		sails.config.emailparser.beforeModifyData(pe);
 		// apply particular filter
 		var filter = _.find(sails.config.emailparser.filters, {name:pe.type});
 		if(filter.modifyData)
 			filter.modifyData(pe);
+		// apply after modifier
+		sails.config.emailparser.afterModifyData(pe);
 
 		// apply rules
 		Rule.find({org:pe.org, status: 'active', trigger: 'parsed_email_before_create'}).exec(function(err,rules){
