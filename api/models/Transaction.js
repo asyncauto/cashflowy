@@ -37,7 +37,11 @@ module.exports = {
         account: { // from where the transaction is made
             model: 'account',
             required: true
-        }
+        },
+        transaction_line_items:{
+			collection: 'transaction_line_item',
+			via: 'transaction'
+		}
     },
 
     beforeCreate: function (data, cb) {

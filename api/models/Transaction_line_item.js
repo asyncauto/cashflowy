@@ -112,15 +112,7 @@ module.exports = {
 			cb(err); 
 		});
 
-	},
-
-	afterUpdate: function (updated, cb) {
-		//if category present return
-		if (updated.category) return cb(null);
-
-		MLService.predictCategory(updated, cb);
-	},
-
+	}
 
 };
 

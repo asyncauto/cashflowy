@@ -1212,10 +1212,14 @@ module.exports = {
 			Transaction.destroy({id:req.params.id}).exec(function(err,t){
 				if(err)
 					throw(err);
-				res.redirect('/org/' + req.org.id +'/transactions');
+				Transaction_line_item.destroy({transaction: req.params.id}).exec(function(err,tli){
+					if(err)
+						throw(err);
+					res.redirect('/org/' + req.org.id +'/transactions');
+				})
 			});
 		}else{ // showing the warning page
-			Transaction.findOne({id:req.params.id}).populate('account').exec(function(err,t){
+			Transaction.findOne({id:req.params.id}).populate('account').populate('transaction_line_items').exec(function(err,t){
 				t.occuredAt=new Date(t.occuredAt).toISOString();
 				var locals={t:t};
 				res.view('delete_transaction',locals);
