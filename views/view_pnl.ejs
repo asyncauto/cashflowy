@@ -1,3 +1,8 @@
+<%
+	var fn=function(number){
+		return FormatService.formatNumber(number,req.query.number_format,req.query.precision);
+	}
+%>
 <div class='ui container'>
 	<div class='ui grid'>
 		<!-- <div class='one wide column'></div> -->
@@ -23,6 +28,9 @@
 									Indian style
 									<i class="dropdown icon"></i>
 									<div class="menu">
+										<div class="item" data-value="indian">
+											In Indian style
+										</div>
 										<div class="item" data-value="indian_thousand">
 											In Thousands
 										</div>
@@ -34,10 +42,13 @@
 										</div>
 									</div>	
 								</div>
-								<div class="item" data-value="indian"></i>
+								<div class="item" data-value="us"></i>
 									US style
 									<i class="dropdown icon"></i>
 									<div class="menu">
+										<div class="item" data-value="us">
+											In US style
+										</div>
 										<div class="item" data-value="us_thousand">
 											In Thousands
 										</div>
@@ -110,7 +121,7 @@
 							<%pnl.header.level_1.forEach(function(l1){%>
 								<%pnl.header.level_2.forEach(function(l2){%>
 									<td class='single line right aligned'>
-										<%=row_l1.data[l1+'__'+l2]?row_l1.data[l1+'__'+l2].toFixed(1):''%>
+										<%=fn(row_l1.data[l1+'__'+l2])%>
 									</td>
 								<%})%>
 							<%})%>
@@ -124,7 +135,7 @@
 								<%pnl.header.level_1.forEach(function(l1){%>
 									<%pnl.header.level_2.forEach(function(l2){%>
 										<td class='single line right aligned'>
-											<%=row_l2.data[l1+'__'+l2]?row_l2.data[l1+'__'+l2].toFixed(1):''%>
+											<%=fn(row_l2.data[l1+'__'+l2])%>
 										</td>
 									<%})%>
 								<%})%>
@@ -137,7 +148,7 @@
 									<%pnl.header.level_1.forEach(function(l1){%>
 										<%pnl.header.level_2.forEach(function(l2){%>
 											<td class='single line right aligned'>
-												<%=row_l3.data[l1+'__'+l2]?row_l3.data[l1+'__'+l2].toFixed(1):''%>
+												<%=fn(row_l3.data[l1+'__'+l2])%>
 											</td>
 										<%})%>
 									<%})%>
