@@ -979,8 +979,6 @@ module.exports = {
 			locals.new_transactions=results.getTransactions;
 			locals.new_transactions.forEach(function(t){
 				t.tlis=[];
-				_.set(t, 'original_amount', _.get(t, 'original_amount', 0).toFixed(2))
-				_.set(t, 'amount_inr', _.get(t, 'amount_inr', 0).toFixed(2))
 				accounts.forEach(function(account){ // expanding account in the transaction object
 					if(t.account==account.id)
 						t.account=account;
@@ -999,8 +997,6 @@ module.exports = {
 				});
 			})
 			locals.tlis.forEach(function(tli){
-				_.set(tli, 'original_amount', _.get(tli, 'original_amount', 0).toFixed(2))
-				_.set(tli, 'amount_inr', _.get(tli, 'amount_inr', 0).toFixed(2))
 				accounts.forEach(function(account){ // expanding account in the transaction object
 					if(tli.account==account.id)
 						tli.account=account;

@@ -3,17 +3,88 @@
 	padding: 0.5rem 0;
 	}
 </style>
+<%
+var format_number=function(number){
+	return FormatService.formatNumber(number,req.query.number_format,req.query.precision);
+}
+%>
 <div class='ui container'>
 	<div class='ui grid'>
 		<div class='five wide computer only column'>
 			<h2>Filters
-				<% if(req.query.ids){%>
-					<div class="ui horizontal blue label">
-						<b>ID:  </b> <%= req.query.ids %>
-					</div>
-				<%}%>
-			</h2>
+					<% if(req.query.ids){%>
+						<div class="ui horizontal blue label">
+							<b>ID:  </b> <%= req.query.ids %>
+						</div>
+					<%}%>
+				</h2>
 			<form class="ui form segment" action="" method='get'>
+				<div class="fields">
+						<div class="field">
+							<%# <label>Number format</label> %>
+							<div class="ui basic button number_format dropdown">
+								<input style="font-size: 0.85rem;" type="hidden" name="number_format" value="<%=req.query.number_format?req.query.number_format:'indian'%>">
+								<i class="dropdown icon"></i>
+								<div class="default text">Number Format</div>
+								<div class="menu">
+									<div class="item" data-value="indian"></i>
+										Indian style
+										<i class="dropdown icon"></i>
+										<div class="menu">
+											<div class="item" data-value="indian">
+												In Indian style
+											</div>
+											<div class="item" data-value="indian_thousand">
+												In Thousands
+											</div>
+											<div class="item" data-value="indian_lakh">
+												In Lakhs
+											</div>
+											<div class="item" data-value="indian_crore">
+												In Crores
+											</div>
+										</div>	
+									</div>
+									<div class="item" data-value="us"></i>
+										US style
+										<i class="dropdown icon"></i>
+										<div class="menu">
+											<div class="item" data-value="us">
+												In US style
+											</div>
+											<div class="item" data-value="us_thousand">
+												In Thousands
+											</div>
+											<div class="item" data-value="us_million">
+												In Millions
+											</div>
+											<div class="item" data-value="us_billion">
+												In Billions
+											</div>
+										</div>	
+									</div>
+									<%# <div class="item" data-value="indian"></i>Indian</div> %>
+									<%# <div class="item" data-value="us"></i>US</div> %>
+									<%# <div class="item" data-value="wallet"></i>Wallet</div>
+									<div class="item" data-value="cash"></i>Cash</div>
+									<div class="item" data-value="investment"></i>Investment</div> %>
+								</div>
+								</div>
+							</div>
+							<div class="field">
+								<%# <label>Precision</label> %>
+								<div class="ui basic button precision dropdown">
+									<input type="hidden" style="font-size: 0.85rem;" name="precision" value="<%=req.query.precision?req.query.precision:'decimal1'%>">
+									<i class="dropdown icon"></i>
+									<div class="default text">Precision</div>
+									<div class="menu">
+										<div class="item" data-value="decimal2"></i>2 point decimal</div>
+										<div class="item" data-value="decimal1"></i>1 point decimal</div>
+										<div class="item" data-value="decimal0"></i>no decimal</div>
+									</div>
+								</div>
+							</div>
+						</div>
 				<div class="field">
 						<label>Sort by: </label>
 						<div class="ui filter_txn fluid dropdown basic button">
@@ -219,24 +290,20 @@
 										<br>
 										<!-- <button class='ui red button cancel_edit_tags' data-id='<%=t.id%>' >cancel</button> -->
 									</div>
-									
-									
-
-									
 									<br>
 								</td>
 								<td>
 									<%if(tli.type=='income_expense'){
 										if(tli.original_amount<0){%> 
 											<span style='opacity: 0.5'>You paid</span><br>
-											<b style='color:red' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
+											<b style='color:red' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(format_number(-tli.original_amount))%></b>
 										<%}else{%>
 											<span style='opacity: 0.5'>You got</span><br>
-											<b style='color:#5bc5a2' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%-tli.amount_inr%>"><%=tli.original_currency%> <%=(tli.original_amount)%></b>
+											<b style='color:#5bc5a2' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%-tli.amount_inr%>"><%=tli.original_currency%> <%=(format_number(tli.original_amount))%></b>
 										<%}
 									}else{%>
 										<span style='opacity: 0.5'>You transferred</span><br>
-										<b style='' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(-tli.original_amount)%></b>
+										<b style='' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=format_number((-tli.original_amount))%></b>
 									<%}%>
 								</td>
 								<td>
@@ -391,6 +458,7 @@
 		  .dropdown({
 		    allowAdditions: true,
 		    onChange:function(value, text, $choice){
+				console.log('\n\n\n\n\n on change called')
 				$(this).parents('.add_tags_popup').find('.submit_edit_tags').removeClass('disabled');
 			}
 		  });
@@ -449,7 +517,10 @@
 			console.log('show details clicked');
 			var t_id=$(this).attr('data-t-id');
 			$('#details_'+t_id).toggle();
-		})
+		});
+
+		$('.dropdown.precision').dropdown();
+		$('.dropdown.number_format').dropdown();
 		
 	});
 </script>
