@@ -35,6 +35,7 @@ module.exports.docparser={
 
 				data.transactions.forEach(function(t){
 					t.date = moment(t.date, 'MM/DD/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10)
+					t.amount = t.amount.replace(/,/g,'')
 				});
 
 				if(data.transactions && data.transactions.length){
@@ -54,6 +55,10 @@ module.exports.docparser={
 				data.acc_number = _.find(extracted_data.accounts,{acc_type:'Savings'}).acc_no;
 				data.transactions.forEach(function(t){
 					t.date = moment(t.date, 'DD-MM-YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
+					t.credit = t.credit.replace(/,/g,'');
+					t.debit = t.debit.replace(/,/g,'');
+					if(t.balance)
+						t.balance = t.balance.replace(/,/g,'');
 				});
 				 
 				return data;
@@ -69,6 +74,8 @@ module.exports.docparser={
 					t.date = moment(t.date, 'DD/MM/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
 					if(t.balance)
 						t.balance = t.balance.replace(/,/g,'');
+					t.credit = t.credit.replace(/,/g,'');
+					t.debit = t.debit.replace(/,/g,'');
 				});
 				return data;
 			}
@@ -81,6 +88,10 @@ module.exports.docparser={
 				var data = _.cloneDeep(extracted_data);
 				data.transactions.forEach(function(t){
 					t.date = new Date(t.txn_date+' 12:00 +5:30').toISOString().substring(0,10);
+					t.credit = t.credit.replace(/,/g,'');
+					t.debit = t.debit.replace(/,/g,'');
+					if(t.balance)
+						t.balance = t.balance.replace(/,/g,'');
 				});
 				return data;
 			}
@@ -93,6 +104,7 @@ module.exports.docparser={
 				var data = _.cloneDeep(extracted_data);
 				data.transactions.forEach(function(t){
 					t.date = moment(t.date, 'MM/DD/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
+					t.amount = t.amount.replace(/,/g,'');
 				});
 				return data;
 			}
@@ -113,6 +125,7 @@ module.exports.docparser={
 						year=data.transactions_to_date.substring(0,4);
 					t.date+=year;
 					t.date=new Date(t.date).toISOString().substring(0,10);
+					t.amount = t.amount.replace(/,/g,'');
 				})
 				return data;
 			}

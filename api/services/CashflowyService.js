@@ -18,22 +18,13 @@ var convertSliToTransaction = function(sli){
 	}
 
 	if(sli.details.type=='icici_bank' && sli.details.parser_used=='sebtifdmvape'){
-		sli.data.credit=sli.data.credit.replace(',','');
-		sli.data.credit=sli.data.credit.replace(',','');
-		sli.data.credit=sli.data.credit.replace(',','');
-		sli.data.debit=sli.data.debit.replace(',','');
-		sli.data.debit=sli.data.debit.replace(',','');
-		sli.data.debit=sli.data.debit.replace(',','');
 		if(!isNaN(parseFloat(sli.data.credit))) // is credit a number
 			t.original_amount=parseFloat(sli.data.credit);
 		else if(!isNaN(parseFloat(sli.data.debit)))
 			t.original_amount=-parseFloat(sli.data.debit);
 
 	}else if(sli.details.type=='hdfc_credit_card' && sli.details.parser_used=='bzqxicqhpsrk'){
-	// }else{
-		sli.data.amount=sli.data.amount.replace(',','');
-		sli.data.amount=sli.data.amount.replace(',','');
-		sli.data.amount=sli.data.amount.replace(',','');
+
 		if(sli.data.dr_cr=='Cr') // amount is creditted
 			t.original_amount=parseFloat(sli.data.amount);
 		else if(sli.data.dr_cr=='Dr')
@@ -41,24 +32,12 @@ var convertSliToTransaction = function(sli){
 		t.third_party=sli.data.details;
 
 	}else if(sli.details.type=='hdfc_bank' && sli.details.parser_used=='jrvqwmfuhapd'){
-		sli.data.credit=sli.data.credit.replace(',','');
-		sli.data.credit=sli.data.credit.replace(',','');
-		sli.data.credit=sli.data.credit.replace(',','');
-		sli.data.debit=sli.data.debit.replace(',','');
-		sli.data.debit=sli.data.debit.replace(',','');
-		sli.data.debit=sli.data.debit.replace(',','');
 		if(parseFloat(sli.data.credit) && !isNaN(parseFloat(sli.data.credit))) // is credit a number
 			t.original_amount=parseFloat(sli.data.credit);
 		else if(parseFloat(sli.data.debit) && !isNaN(parseFloat(sli.data.debit)))
 			t.original_amount=-parseFloat(sli.data.debit);
 
 	}else if(sli.details.type=='sbi_bank' && sli.details.parser_used=='mzbvtiryowtr'){
-		sli.data.credit=sli.data.credit.replace(',','');
-		sli.data.credit=sli.data.credit.replace(',','');
-		sli.data.credit=sli.data.credit.replace(',','');
-		sli.data.debit=sli.data.debit.replace(',','');
-		sli.data.debit=sli.data.debit.replace(',','');
-		sli.data.debit=sli.data.debit.replace(',','');
 		if(!isNaN(parseFloat(sli.data.credit))) // is credit a number
 			t.original_amount=parseFloat(sli.data.credit);
 		else if(!isNaN(parseFloat(sli.data.debit)))
@@ -68,9 +47,6 @@ var convertSliToTransaction = function(sli){
 			t.third_party+='('+sli.data.ref_cheque_no+')';
 
 	}else if(sli.details.type=='yes_bank_credit_card' && sli.details.parser_used=='kelnksvuxwcv'){
-		sli.data.amount=sli.data.amount.replace(',','');
-		sli.data.amount=sli.data.amount.replace(',','');
-		sli.data.amount=sli.data.amount.replace(',','');
 		if(sli.data.dr_cr=='Cr') // amount is creditted
 			t.original_amount=parseFloat(sli.data.amount);
 		else if(sli.data.dr_cr=='Dr')
@@ -78,9 +54,6 @@ var convertSliToTransaction = function(sli){
 		t.third_party=sli.data.details;
 
 	}else if(sli.details.type=='hsbc_credit_card' && sli.details.parser_used=='qyflunkxpizn'){
-		sli.data.amount=sli.data.amount.replace(',','');
-		sli.data.amount=sli.data.amount.replace(',','');
-		sli.data.amount=sli.data.amount.replace(',','');
 		if(sli.data.dr_cr=='Cr') // amount is creditted
 			t.original_amount=parseFloat(sli.data.amount);
 		else if(sli.data.dr_cr=='Dr')
