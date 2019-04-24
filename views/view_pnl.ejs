@@ -160,7 +160,29 @@
 				</tbody>				
 			</table>		
 		</div>
-		<div class='three wide column'></div>
+		<div class='eight wide column'>
+			<h3 style='color:green'>Receivable Invoices (INR <%=fn(_.sum(invoices, function(i) { return (i.type=='receivable')?i.balance_due_inr:0;}))%>)</h3>
+			<!-- Total pending receivable = INR <%=fn(_.sum(invoices, function(i) { return (i.type=='receivable')?i.balance_due_inr:0;}))%> -->
+			<ul>
+				<%invoices.forEach(function(invoice){
+					if(invoice.type=='receivable'){%>
+					<li><%=invoice.id%> - <%=invoice.remote_id%> - INR <%=fn(invoice.balance_due_inr)%></li>
+					<%}
+				})%>
+			</ul>
+		</div>
+		<div class='eight wide column'>
+			<h3 style="color:red">Payable Invoices (INR <%=fn(-_.sum(invoices, function(i) { return (i.type=='payable')?i.balance_due_inr:0;}))%>)</h3>
+			<!-- Total pending payables = INR <%=fn(-_.sum(invoices, function(i) { return (i.type=='payable')?i.balance_due_inr:0;}))%> -->
+			<ul>
+				<%invoices.forEach(function(invoice){
+					if(invoice.type=='payable'){%>
+					<li><%=invoice.id%> - <%=invoice.remote_id%> - INR <%=fn(invoice.balance_due_inr)%></li>
+					<%}
+				})%>
+			</ul>
+
+		</div>
 		
 	</div>
 	
