@@ -18,7 +18,8 @@ module.exports.docparser={
 		return data;
 	},
 	afterModifyParsedData: function(extracted_data){
-
+		var data = _.cloneDeep(extracted_data);
+		return data;
 	},
 	filters:[
 		{
@@ -66,7 +67,10 @@ module.exports.docparser={
 				var data = _.cloneDeep(extracted_data);
 				data.transactions.forEach(function(t){
 					t.date = moment(t.date, 'DD/MM/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
-				})
+					if(t.balance)
+						t.balance = t.balance.replace(/,/g,'');
+				});
+				return data;
 			}
 		},
 		{
@@ -78,6 +82,7 @@ module.exports.docparser={
 				data.transactions.forEach(function(t){
 					t.date = new Date(t.txn_date+' 12:00 +5:30').toISOString().substring(0,10);
 				});
+				return data;
 			}
 		},
 		{
@@ -89,6 +94,7 @@ module.exports.docparser={
 				data.transactions.forEach(function(t){
 					t.date = moment(t.date, 'MM/DD/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
 				});
+				return data;
 			}
 		},
 		{

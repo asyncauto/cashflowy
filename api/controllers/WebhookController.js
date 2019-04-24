@@ -8,6 +8,7 @@ var async = require('async')
 var Bull = require( 'bull' );
 // create our job queue
 var queue = new Bull('queue',{redis:sails.config.bull.redis});
+var moment = require('moment-timezone');
 
 module.exports = {
 
@@ -28,7 +29,7 @@ module.exports = {
                 data =  filter.modifyParsedData(data);
 
             // after modify common formator
-            data = sails.config.docparser.beforeModifyParsedData(data);
+            data = sails.config.docparser.afterModifyParsedData(data);
 
             return data;
         }
@@ -55,6 +56,9 @@ module.exports = {
                         {acc_number: ac, org: results.findDocument.org, name: 'Auto Generated: '+ ac, type: "bank"}).exec(function(e, a){
                             if(e) return cb(e);
                             accounts.push(a);
+                            // set the primary account id 
+                            if(data.acc_number.substr(-4) == ac.substr(-4))
+                                data.acc_id = a.id;
                             return cb(null);
                         })
                 }, function(err){
@@ -100,6 +104,24 @@ module.exports = {
                     cb(err);
                 });
                 // cb(null);
+            }],
+            createSnapshots: ['updateDocument', function(results, cb){
+                async.eachOfLimit(data.transactions, 1, function(t, index, cb){
+                    var next_data = _.get(data.transactions, `${[index+1]}.date`, null);
+                    if(t.balance && t.date != next_data){
+                        var ss={
+                            account:data.acc_id,
+                            createdBy:'parsed_document',
+                            balance: t.balance,
+                            takenAt: moment(t.date, 'YYYY-MM-DD').tz('Asia/Kolkata').endOf('day').toISOString()
+                        }
+                        Snapshot.findOrCreate(ss, ss).exec(function(err, s, created){
+                            cb(err, s);
+                        });
+                    }else{
+                        cb();
+                    }
+                });
             }]
         }, function (err, results) {
             if (err){
