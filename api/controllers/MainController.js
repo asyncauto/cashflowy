@@ -1078,8 +1078,25 @@ module.exports = {
 				// console.log('before transaction find or create');
 				console.log(t);
 				Transaction.create(t).exec(async function(err,transaction){
-					if(err)
-						throw err;
+					if(err){
+						var locals={
+							occuredAt:'',
+							status:'error',
+							message:err.message,
+							description:'',
+							original_amount:'',
+							original_currency:'',
+							third_party:'',
+							account_id:'',
+							to_account:'',
+							accounts:accounts,
+							type:'expense',
+							balance: '',
+							balance_currency: 'INR'
+						}
+						console.log(locals);
+						res.view('create_transaction',locals);
+					}	
 					else{
 						if(req.body.referer && req.body.referer.includes('/transactions'))
 							res.redirect(req.body.referer);

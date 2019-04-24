@@ -47,18 +47,10 @@ module.exports = {
                 if (!_.get(results, 'findOrCreateCategory[0]', null)) return cb(null);
                 Transaction_line_item.update(tli.id, { category: results.findOrCreateCategory[0].id }).exec(cb);
             }],
-            addPredictionTag: ['findOrCreateCategory', async function (results, cb) {
-                if (!_.get(results, 'findOrCreateCategory[0]', null)) return cb(null);
-
-                Tag.findOrCreate({ name: 'predicted_category', type: 'global' },
-                    { name: 'predicted_category', type: 'global' }).exec(async function (err, tag) {
-                        try {
-                            await Tag.addToCollection(tag.id, 'tlis').members([tli.id]).tolerate('E_UNIQUE');
-                            return cb(null);
-                        } catch (err) {
-                            return cb(err);
-                        }
-                    })
+            addPredictionTag: ['findOrCreateCategory', async function (results) {
+                if (!_.get(results, 'findOrCreateCategory[0]', null)) return;
+                var pc_tag = await Tag.findOrCreate({ name: 'predicted_category', type: 'global' }, { name: 'predicted_category', type: 'global' });
+                return await Tag.addToCollection(pc_tag.id, 'tlis').members([tli.id]).tolerate('E_UNIQUE');
             }]
         }, cb);
     }
