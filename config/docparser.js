@@ -3,6 +3,23 @@ var moment = require('moment-timezone');
 module.exports.docparser={
 	webhook_secret: process.env.DOCPARSER_WEBHOOK_SECRET,
 	api_key: process.env.DOCPARSER_API_KEY,
+	beforeModifyParsedData: function(extracted_data){
+		var data = _.cloneDeep(extracted_data);
+		Object.keys(data).forEach(function(key){
+			if(data[key] && data[key].formatted)
+				data[key]=data[key].formatted;
+		})
+
+		data.acc_numbers = [];
+		if(extracted_data.account_id){
+			data.acc_numbers.push(extracted_data.account_id);
+			data.acc_number = extracted_data.account_id.substr(-4);
+		}
+		return data;
+	},
+	afterModifyParsedData: function(extracted_data){
+
+	},
 	filters:[
 		{
 			docparser_id:'bzqxicqhpsrk',
@@ -12,33 +29,67 @@ module.exports.docparser={
 				return true;
 			},
 			// before it is saved in the database
-			modifyParsedData:function(parsed_data){
-				if(parsed_data.transactions && parsed_data.transactions.length){
-					parsed_data.transactions_from_date = moment(parsed_data.transactions[0].date, 'MM/DD/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
-					parsed_data.transactions_to_date = moment(parsed_data.transactions[parsed_data.transactions.length -1].date, 'MM/DD/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
+			modifyParsedData:function(extracted_data){
+				var data = _.cloneDeep(extracted_data);
+
+				data.transactions.forEach(function(t){
+					t.date = moment(t.date, 'MM/DD/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10)
+				});
+
+				if(data.transactions && data.transactions.length){
+					data.transactions_from_date = data.transactions[0].date;
+					data.transactions_to_date = data.transactions[data.transactions.length -1].date;
 				}
-				return parsed_data;
+				return data;
 			}
 		},
 		{
 			docparser_id:'sebtifdmvape',
 			type:'icici_bank',
 			name:'ICICI Bank',
+			modifyParsedData:  function(extracted_data){
+				var data = _.cloneDeep(extracted_data);
+				data.acc_numbers = _.map(data.accounts, 'acc_no');
+				data.acc_number = _.find(extracted_data.accounts,{acc_type:'Savings'}).acc_no;
+				data.transactions.forEach(function(t){
+					t.date = moment(t.date, 'DD-MM-YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
+				});
+				 
+				return data;
+			}
 		},
 		{
 			docparser_id:'jrvqwmfuhapd',
 			type:'hdfc_bank',
 			name:'HDFC Bank',
+			modifyParsedData: function(extracted_data){
+				var data = _.cloneDeep(extracted_data);
+				data.transactions.forEach(function(t){
+					t.date = moment(t.date, 'DD/MM/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
+				})
+			}
 		},
 		{
 			docparser_id:'mzbvtiryowtr',
 			type:'sbi_bank',
 			name:'SBI Bank',
+			modifyParsedData: function(extracted_data){
+				var data = _.cloneDeep(extracted_data);
+				data.transactions.forEach(function(t){
+					t.date = new Date(t.txn_date+' 12:00 +5:30').toISOString().substring(0,10);
+				});
+			}
 		},
 		{
 			docparser_id:'kelnksvuxwcv',
 			type:'yes_bank_credit_card',
-			name:'YES Credit card'
+			name:'YES Credit card',
+			modifyParsedData: function(extracted_data){
+				var data = _.cloneDeep(extracted_data);
+				data.transactions.forEach(function(t){
+					t.date = moment(t.date, 'MM/DD/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10);
+				});
+			}
 		},
 		{
 			docparser_id:'qyflunkxpizn',
@@ -48,29 +99,31 @@ module.exports.docparser={
 				return true;
 			},
 			// before it is saved in the database
-			modifyParsedData:function(parsed_data){
-				parsed_data.transactions.forEach(function(t){
-					var year=parsed_data.transactions_from_date.substring(0,4);
+			modifyParsedData:function(extracted_data){
+				var data = _.clone(extracted_data)
+				data.transactions.forEach(function(t){
+					var year=data.transactions_from_date.substring(0,4);
 					if(t.date.substring(2,5)=='JAN')
-						year=parsed_data.transactions_to_date.substring(0,4);
+						year=data.transactions_to_date.substring(0,4);
 					t.date+=year;
 					t.date=new Date(t.date).toISOString().substring(0,10);
 				})
-				return parsed_data;
+				return data;
 			}
 		},
 		{
 			docparser_id:'cyfaymeukchi',
 			type:'icici_bank_credit_card',
 			name:'ICICI Credit card',
-			modifyParsedData:function(parsed_data){
-				if(parsed_data.transactions && parsed_data.transactions.length){
-					if(!parsed_data.transactions_from_date) // if transaction_from_date does not exist
-						parsed_data.transactions_from_date = moment(parsed_data.transactions[0].date, 'YYYY-MM-DD').tz('Asia/Kolkata').toISOString().substring(0,10);
-					if(!parsed_data.transactions_to_date) // if transaction_end_date does not exist
-						parsed_data.transactions_to_date = moment(parsed_data.transactions[parsed_data.transactions.length -1].date, 'YYYY-MM-DD').tz('Asia/Kolkata').toISOString().substring(0,10);
+			modifyParsedData:function(extracted_data){
+				var data = _.clone(extracted_data)
+				if(data.transactions && data.transactions.length){
+					if(!data.transactions_from_date) // if transaction_from_date does not exist
+						data.transactions_from_date = data.transactions[0].date;
+					if(!data.transactions_to_date) // if transaction_end_date does not exist
+						data.transactions_to_date = data.transactions[data.transactions.length -1].date;
 				}
-				return parsed_data;
+				return data;
 			}
 		},
 

@@ -76,7 +76,7 @@
 								<%})%>
 							</td>
 							<td>
-								<%= (doc.parsed_data && doc.parsed_data.transactions? doc.parsed_data.transactions.length: 0) %>
+								<%= (doc.extracted_data && doc.extracted_data.transactions? doc.extracted_data.transactions.length: 0) %>
 							</td>
 							<td>
 								<%= doc.statement_line_items? doc.statement_line_items.length:0 %>
@@ -101,15 +101,15 @@
 
 							</td>
 							<td>
-								<%=doc.parsed_data ? doc.parsed_data.file_name : doc.details && doc.details.original_filename? doc.details.original_filename:'-'  %>
+								<%=doc.extracted_data ? doc.extracted_data.file_name : doc.details && doc.details.original_filename? doc.details.original_filename:'-'  %>
 							</td>
 							
-							<% if(doc.parsed_data && doc.parsed_data.transactions){ %>
-								<% if(doc.statement_line_items.length == doc.parsed_data.transactions.length) {%>
+							<% if(doc.extracted_data && doc.extracted_data.transactions){ %>
+								<% if(doc.statement_line_items.length == doc.extracted_data.transactions.length) {%>
 									<td><i class="icon green checkmark"></i>Document processed successfully</td>
-								<% }else if(doc.statement_line_items.length < doc.parsed_data.transactions.length){ %>
+								<% }else if(doc.statement_line_items.length < doc.extracted_data.transactions.length){ %>
 									<td><i class="icon grey spinner"></i>Processing line items<br>
-								<span style="font-size:0.70rem;">&nbsp;&nbsp;<%= doc.statement_line_items.length %> line items processed out of <%= doc.parsed_data.transactions.length %></span></td>
+								<span style="font-size:0.70rem;">&nbsp;&nbsp;<%= doc.statement_line_items.length %> line items processed out of <%= doc.extracted_data.transactions.length %></span></td>
 								<% } %>
 							<% }else if(new Date() - new Date(doc.createdAt) < 150000){ %>
 								<td><i class="icon spinner"></i>Parsing in progress</td>

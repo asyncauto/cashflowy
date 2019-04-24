@@ -37,7 +37,8 @@ module.exports = {
 		},
 	},
 	beforeCreate:function(sli,cb){
-		sli.data=_.cloneDeep(sli.extracted_data);
+		if(!sli.data)
+			sli.data=_.cloneDeep(sli.extracted_data);
 		if(!sli.data.currency)
 			sli.data.currency='INR';
 		cb(null);

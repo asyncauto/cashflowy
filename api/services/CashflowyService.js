@@ -13,6 +13,10 @@ var convertSliToTransaction = function(sli){
 		third_party:sli.data.paid_whom,
 	}
 
+	if(sli.data.date){
+		t.occuredAt = moment(sli.data.date, 'YYYY-MM-DD').tz('Asia/Kolkata').toDate()
+	}
+
 	if(sli.details.type=='icici_bank' && sli.details.parser_used=='sebtifdmvape'){
 		sli.data.credit=sli.data.credit.replace(',','');
 		sli.data.credit=sli.data.credit.replace(',','');
@@ -25,10 +29,6 @@ var convertSliToTransaction = function(sli){
 		else if(!isNaN(parseFloat(sli.data.debit)))
 			t.original_amount=-parseFloat(sli.data.debit);
 
-		if(sli.data.date){
-			var temp_date=sli.data.date.split('-').reverse().join('-');
-			t.occuredAt = new Date(temp_date+' 12:00:00.000 +5:30'); 
-		}
 	}else if(sli.details.type=='hdfc_credit_card' && sli.details.parser_used=='bzqxicqhpsrk'){
 	// }else{
 		sli.data.amount=sli.data.amount.replace(',','');
@@ -39,9 +39,7 @@ var convertSliToTransaction = function(sli){
 		else if(sli.data.dr_cr=='Dr')
 			t.original_amount=-parseFloat(sli.data.amount);
 		t.third_party=sli.data.details;
-		if(sli.data.date){
-			t.occuredAt = moment(sli.data.date, 'MM/DD/YYYY').tz('Asia/Kolkata').toDate()
-		}
+
 	}else if(sli.details.type=='hdfc_bank' && sli.details.parser_used=='jrvqwmfuhapd'){
 		sli.data.credit=sli.data.credit.replace(',','');
 		sli.data.credit=sli.data.credit.replace(',','');
@@ -53,10 +51,7 @@ var convertSliToTransaction = function(sli){
 			t.original_amount=parseFloat(sli.data.credit);
 		else if(parseFloat(sli.data.debit) && !isNaN(parseFloat(sli.data.debit)))
 			t.original_amount=-parseFloat(sli.data.debit);
-		
-		if(sli.data.date){
-			t.occuredAt = moment(sli.data.date, 'DD/MM/YYYY').tz('Asia/Kolkata').toDate()
-		}
+
 	}else if(sli.details.type=='sbi_bank' && sli.details.parser_used=='mzbvtiryowtr'){
 		sli.data.credit=sli.data.credit.replace(',','');
 		sli.data.credit=sli.data.credit.replace(',','');
@@ -68,10 +63,10 @@ var convertSliToTransaction = function(sli){
 			t.original_amount=parseFloat(sli.data.credit);
 		else if(!isNaN(parseFloat(sli.data.debit)))
 			t.original_amount=-parseFloat(sli.data.debit);
-		t.occuredAt = new Date(sli.data.txn_date+' 12:00 +5:30');
 		t.third_party=sli.data.description;
 		if(sli.data.ref_cheque_no)
 			t.third_party+='('+sli.data.ref_cheque_no+')';
+
 	}else if(sli.details.type=='yes_bank_credit_card' && sli.details.parser_used=='kelnksvuxwcv'){
 		sli.data.amount=sli.data.amount.replace(',','');
 		sli.data.amount=sli.data.amount.replace(',','');
@@ -81,9 +76,7 @@ var convertSliToTransaction = function(sli){
 		else if(sli.data.dr_cr=='Dr')
 			t.original_amount=-parseFloat(sli.data.amount);
 		t.third_party=sli.data.details;
-		if(sli.data.date){
-			t.occuredAt = moment(sli.data.date, 'MM/DD/YYYY').tz('Asia/Kolkata').toDate()
-		}
+
 	}else if(sli.details.type=='hsbc_credit_card' && sli.details.parser_used=='qyflunkxpizn'){
 		sli.data.amount=sli.data.amount.replace(',','');
 		sli.data.amount=sli.data.amount.replace(',','');
@@ -93,9 +86,7 @@ var convertSliToTransaction = function(sli){
 		else if(sli.data.dr_cr=='Dr')
 			t.original_amount=-parseFloat(sli.data.amount);
 		t.third_party=sli.data.details;
-		if(sli.data.date){
-			t.occuredAt = moment(sli.data.date, 'YYYY-MM-DD').tz('Asia/Kolkata').toDate()
-		}
+
 	}else if(sli.details.type=='icici_bank_credit_card' && sli.details.parser_used=='cyfaymeukchi'){
 		if(!sli.data.original_amount)
 			sli.data.original_amount=sli.data.amount_inr;
@@ -109,9 +100,6 @@ var convertSliToTransaction = function(sli){
 			t.amount_inr=-parseFloat(sli.data.amount_inr);
 		}
 		t.third_party=sli.data.details;
-		if(sli.data.date){
-			t.occuredAt = moment(sli.data.date, 'YYYY-MM-DD').tz('Asia/Kolkata').toDate()
-		}
 	}
 
 

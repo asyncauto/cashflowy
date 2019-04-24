@@ -9,8 +9,11 @@ var async = require('async');
 module.exports = {
 
 	attributes: {
-		parsed_data: {
+		extracted_data: { // data originally extracted from statement
 			type: 'json',
+		},
+		data:{ // the processed version of extracted data. This can be modified by automation
+			type: 'json'
 		},
 		org: {
 			model: 'org',
