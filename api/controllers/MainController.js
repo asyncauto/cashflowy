@@ -1485,13 +1485,13 @@ module.exports = {
 				if(udt)
 					d.unresolved_dts = udt.unresolved_dts
 			
-				if(d.parsed_data && d.parsed_data.transactions_from_date && d.parsed_data.transactions_to_date){
+				if(d.data && d.data.transactions_from_date && d.data.transactions_to_date){
 					_.forEach(d.accounts, function(a){
 						timeline.items.push({
 							id: d.id,
 							content: `${d.id}: ${d.details.original_filename}`,
-							start: d.parsed_data.transactions_from_date,
-							end: d.parsed_data.transactions_to_date,
+							start: d.data.transactions_from_date,
+							end: d.data.transactions_to_date,
 							group: a.id
 						})
 						if(!_.find(timeline.groups, {id:a.id}))
