@@ -841,8 +841,16 @@ module.exports = {
 	},
 	listTransactions:function(req,res){
 		var locals={};
-		// getUserEmailIds:function
-		var limit = req.query.limit?req.query.limit:100;
+		//pagination
+
+		var limit = req.query.limit?parseInt(req.query.limit): 25;
+		var page = req.query.page?parseInt(req.query.page):1;
+		var skip = limit * (page-1);
+		var tli_filter;
+
+		locals.page = page;
+		locals.limit = limit;
+
 		async.auto({
 			getAccounts:function(callback){
 				Account.find({org:req.org.id}).exec(callback);
@@ -950,12 +958,15 @@ module.exports = {
 							return parseInt(each);
 					})}
 				}
-
-				Transaction_line_item.find(filter).sort(sort).limit(limit).populate('tags').populate('transaction').exec(callback);
+				tli_filter = filter;
+				Transaction_line_item.find(filter).sort(sort).limit(limit).skip(skip).populate('tags').populate('transaction').exec(callback);
 			}],
 			getCategories:function(callback){
 				Category.find({org:req.org.id}).sort('name ASC').exec(callback);
 			},
+			getTliCount: ['getTlis', function(results, callback){
+				Transaction_line_item.count(tli_filter).exec(callback);
+			}],
 			getTags:function(callback){
 				Tag.find({org:req.org.id}).exec(callback);
 			},
@@ -975,6 +986,7 @@ module.exports = {
 			if (err)
 				throw err;
 			locals.tlis = results.getTlis
+			locals.pages = parseInt(results.getTliCount/limit)? parseInt(results.getTliCount/limit) : 1;
 			var accounts=results.getAccounts;
 			locals.new_transactions=results.getTransactions;
 			locals.new_transactions.forEach(function(t){
@@ -1006,17 +1018,9 @@ module.exports = {
 
 				var moment = require('moment-timezone');
 				tli.occuredAt=moment(tli.occuredAt).tz('Asia/Kolkata').format();
-				tli.transaction.parsed_emails=[]; // DELETE THIS
-				tli.transaction.slis=[]; // DELETE THIS
 				var t = _.find(locals.new_transactions,{id:tli.transaction.id});
 				t.tlis.push(tli);
-
 			})
-
-			locals.transactions = _(results.getTlis)
-				.groupBy(item => item.transaction.id)
-				.sortBy(group => results.getTlis.indexOf(group[0]))
-				.value()
 			
 			locals.accounts=results.getAccounts;
 			locals.tags=results.getTags;
