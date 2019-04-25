@@ -2050,9 +2050,25 @@ module.exports = {
 			getAllCategories:function(callback){
 				Category.find({org:req.org.id}).exec(callback);
 			},
+			
 			getPnl:function(callback){
 				Pnl.findOne({id:req.params.id}).exec(callback);
 			},
+			getInvoices:['getPnl',function(results,callback){
+				var filter = { 
+					org: req.org.id,
+					date: {
+						'<': req.query.date_to,
+						'>': req.query.date_from,
+					},
+					is_paid_fully:false,
+				};
+				if(results.getPnl.type=='single_pnl_head')
+					filter.category=results.getPnl.details.pnl_head_category;
+
+
+				Invoice.find(filter).sort('date').exec(callback);
+			}],
 			getCategorySpendingPerMonth:['getAccounts',function(results,callback){
 
 				var escape=[req.query.date_from,req.query.date_to];
@@ -2112,7 +2128,7 @@ module.exports = {
 				// filling data
 				locals.pnl.body = PnLService.populateDataForMultiplePNLHeads(locals.pnl.body, categories_by_time);
 			}
-
+			locals.invoices=results.getInvoices;
 			res.view('view_pnl',locals);
 		});
 	},
