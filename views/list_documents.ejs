@@ -46,13 +46,14 @@
 				<thead>
 					<tr>
 						<th>Id</th>
-						<th>Created At</th>
+						<th>Statement from</th>
+						<th>Statement to</th>
 						<th>Doc type</th>
 						<th>Accounts Found</th>
+						<th>Description</th>
 						<th>Line items found</th>
 						<th>Line items processed</th>
 						<th>Action required</th>
-						<th>Description</th>
 						<th>File name</th>				
                         <th>Status</th>
 					</tr>
@@ -62,11 +63,20 @@
 						<tr data-d_id='<%=doc.id%>' class='document'>
 							<td><a href="/org/<%=req.org.id%>/document/<%=doc.id%>"><%=doc.id%></a></td>
 							<td>
-								<span class='popup' data-html="<%-moment(doc.createdAt).tz('Asia/Kolkata').format('h:mm a')%>">
-								<%-moment(doc.createdAt).tz('Asia/Kolkata').format('MMM')%></br>
-								<span style="font-size: 1.5rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('DD')%></span></br>
-								<span style="font-size: 0.75rem;"><%-moment(doc.createdAt).tz('Asia/Kolkata').format('YYYY')%></span>
+								<% if(doc.data && doc.data.transactions_from_date){ %>
+								<%-moment(doc.data.transactions_from_date).tz('Asia/Kolkata').format('MMM')%></br>
+								<span style="font-size: 1.2rem;"><%-moment(doc.data.transactions_from_date).tz('Asia/Kolkata').format('DD')%></span></br>
+								<span style="font-size: 0.75rem;"><%-moment(doc.data.transactions_from_date).tz('Asia/Kolkata').format('YYYY')%></span>
 								</span>
+								<%}%>
+							</td>
+							<td>
+								<% if(doc.data && doc.data.transactions_to_date){ %>
+								<%-moment(doc.data.transactions_to_date).tz('Asia/Kolkata').format('MMM')%></br>
+								<span style="font-size: 1.2rem;"><%-moment(doc.data.transactions_to_date).tz('Asia/Kolkata').format('DD')%></span></br>
+								<span style="font-size: 0.75rem;"><%-moment(doc.data.transactions_to_date).tz('Asia/Kolkata').format('YYYY')%></span>
+								</span>
+								<%}%>
 							</td>
 							<td><%=doc.type%></td>
 							<td><% doc.accounts.forEach(function(a){%>
@@ -74,15 +84,6 @@
 									<a href="/org/<%=req.org.id%>/account/<%=a.id%>"><%=a.name%></a>
 								</span><br>
 								<%})%>
-							</td>
-							<td>
-								<%= (doc.extracted_data && doc.extracted_data.transactions? doc.extracted_data.transactions.length: 0) %>
-							</td>
-							<td>
-								<%= doc.statement_line_items? doc.statement_line_items.length:0 %>
-							</td>
-							<td>
-								<%- doc.unresolved_dts?'<span style="color:red">'+doc.unresolved_dts+'</span>': '<span style="color:green">None</span>'%>
 							</td>
 							<td>
 								<!-- describe the document -->
@@ -98,7 +99,15 @@
 									<button class="ui teal button submit_edit_desc" data-id='<%=doc.id%>' >save</button>
 									<button class="ui red button cancel_edit_desc" data-id='<%=doc.id%>' >cancel</button>
 								</div>
-
+							</td>
+							<td>
+								<%= (doc.extracted_data && doc.extracted_data.transactions? doc.extracted_data.transactions.length: 0) %>
+							</td>
+							<td>
+								<%= doc.statement_line_items? doc.statement_line_items.length:0 %>
+							</td>
+							<td>
+								<%- doc.unresolved_dts?'<span style="color:red">'+doc.unresolved_dts+'</span>': '<span style="color:green">None</span>'%>
 							</td>
 							<td>
 								<%=doc.extracted_data ? doc.extracted_data.file_name : doc.details && doc.details.original_filename? doc.details.original_filename:'-'  %>

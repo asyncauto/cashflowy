@@ -2554,7 +2554,7 @@ module.exports = {
 
 	listNotifications: async function(req, res){
 		var locals={
-			title:'Highlyreco | Notification',
+			title:'Notifications',
 			description:'Notification',
 			layout:'layout',
 			notifications:{}		
