@@ -1,3 +1,8 @@
+<%
+	var fn=function(number){
+		return FormatService.formatNumber(number,req.query.number_format,req.query.precision);
+	}
+%>
 <style>
 	.ui.grid>.row{
 	padding: 0.5rem 0;
@@ -7,36 +12,77 @@
 	<div class='ui grid'>
 		<div class='sixteen wide column'>
 			<h1>Invoice</h1>
-			<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
-				<thead>
-					<tr>
-						<th>Date</th>
-						<th>Invoice no</th>
-						<th>3rd party</th>
-						<th>Type</th>
-						<th>Original Amount</th>
-						<th>Sub total</th>
-						<th>GST</th>
-						<th>Balance due</th>
-						<th>Category</th>
-					</tr>
-				</thead>
-				<tbody>
-					<%invoices.forEach(function(i){%>
-						<tr data-tid='<%=i.id%>'>
-							<td class='single line'><a href='/org/<%=req.org.id%>/invoice/<%=i.id%>/edit'><%=i.date?i.date.toISOString().substring(0,10):''%></a></td>
-							<td><%=i.remote_id%> </td>
-							<td><%=i.third_party%> </td>
-							<td><%=i.type%></td>
-							<td><%=i.original_currency%> <%=i.original_amount.toFixed(2)%></td>
-							<td>INR <%=i.sub_total_inr.toFixed(2)%></td>
-							<td>INR <%=i.gst_total_inr.toFixed(2)%></td>
-							<td>INR <%=i.balance_due_inr.toFixed(2)%></td>
-							<td><%=i.category?i.category.name:''%></td>
+			<div class="ui top attached tabular menu">
+				<a class="item active" data-tab="receivables">Receivables</a>
+				<a class="item" data-tab="payables">Payables</a>
+			</div>
+			<div class="ui bottom attached tab segment active" data-tab="receivables">
+				<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Invoice no</th>
+							<th>3rd party</th>
+							<th>Type</th>
+							<th>Original Amount</th>
+							<th>Sub total</th>
+							<th>GST</th>
+							<th>Balance due</th>
+							<th>Category</th>
 						</tr>
-					<%})%>
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						<%invoices.forEach(function(i){
+							if(i.type=='receivable'){%>
+							<tr data-tid='<%=i.id%>'>
+								<td class='single line'><a href='/org/<%=req.org.id%>/invoice/<%=i.id%>/edit'><%=i.date?i.date.toISOString().substring(0,10):''%></a></td>
+								<td><%=i.remote_id%> </td>
+								<td><%=i.third_party%> </td>
+								<td><%=i.type%></td>
+								<td><%=i.original_currency%> <%=fn(i.original_amount)%></td>
+								<td>INR <%=fn(i.sub_total_inr)%></td>
+								<td>INR <%=fn(i.gst_total_inr)%></td>
+								<td>INR <%=fn(i.balance_due_inr)%></td>
+								<td><%=i.category?i.category.name:''%></td>
+							</tr>
+						<%}})%>
+					</tbody>
+				</table>
+			</div>
+			<div class="ui bottom attached tab segment" data-tab="payables">
+				<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Invoice no</th>
+							<th>3rd party</th>
+							<th>Type</th>
+							<th>Original Amount</th>
+							<th>Sub total</th>
+							<th>GST</th>
+							<th>Balance due</th>
+							<th>Category</th>
+						</tr>
+					</thead>
+					<tbody>
+						<%invoices.forEach(function(i){
+							if(i.type=='payable'){%>
+							<tr data-tid='<%=i.id%>'>
+								<td class='single line'><a href='/org/<%=req.org.id%>/invoice/<%=i.id%>/edit'><%=i.date?i.date.toISOString().substring(0,10):''%></a></td>
+								<td><%=i.remote_id%> </td>
+								<td><%=i.third_party%> </td>
+								<td><%=i.type%></td>
+								<td><%=i.original_currency%> <%=fn(i.original_amount)%></td>
+								<td>INR <%=fn(i.sub_total_inr)%></td>
+								<td>INR <%=fn(i.gst_total_inr)%></td>
+								<td>INR <%=fn(i.balance_due_inr)%></td>
+								<td><%=i.category?i.category.name:''%></td>
+							</tr>
+						<%}})%>
+					</tbody>
+				</table>
+			</div>
+			
 		</div>
 	</div>
 </div>
@@ -115,7 +161,8 @@
 			var tli_id=$(this).parents('.tli').attr('data-tli-id');
 			console.log(tli_id);
 			$('#details_'+tli_id).toggle();
-		})
+		});
+		$('.menu .item').tab();
 		
 	});
 </script>

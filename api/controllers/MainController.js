@@ -2142,7 +2142,7 @@ module.exports = {
 	},
 	listInvoices:function(req,res){
 		var locals={};
-		Invoice.find({org:req.org.id}).populate('category').exec(function(err,invoices){
+		Invoice.find({org:req.org.id}).populate('category').sort('date DESC').exec(function(err,invoices){
 			if(err)
 				throw err;
 			locals.invoices=invoices;
