@@ -59,7 +59,7 @@ module.exports = {
         if (!number) return '';
         precision = precision ? precision : 'decimal1';
         number_format = number_format ? number_format : 'indian';
-        var p = parseInt(precision.substring(7, 8)) ? parseInt(precision.substring(7, 8)) : 0;
+        var p = parseInt(precision.substring(7, 8)) ? parseInt(precision.substring(7, 8)) : 20;
         var locale;
         var format_symbol;
         if (number_format.startsWith('indian')) {
@@ -107,8 +107,6 @@ module.exports = {
         else {
             locale = 'en-IN';
         }
-        // set pricision; if p=0 then pass
-        number = p ? number.toFixed(p) : number;
-        return number.toLocaleString(locale) + format_symbol
+        return number.toLocaleString(locale, {maximumFractionDigits: p}) + format_symbol
     }
 }
