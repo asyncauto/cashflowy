@@ -14,7 +14,7 @@
 				<div class="field">
 					<label>Type</label>
 					<div class="ui fluid selection dropdown" id='select_type'>
-						<input type="hidden" name="type" value="business">
+						<input type="hidden" name="type" value="<%=org.type?org.type:'business'%>">
 						<i class="dropdown icon"></i>
 						<div class="default text">Choose type of org</div>
 						<div class="menu">

@@ -2469,8 +2469,18 @@ module.exports = {
 			res.view('create_org', locals);
 		}
 	},
-	editOrg: function (req, res) {
-		var locals = {};
+	editOrg: async function (req, res) {
+		var locals = {
+			status:''
+		};
+		var org = await Org.findOne(req.org.id);
+		locals.org = org;
+		if(!org)
+			res.view('404');
+		if(req.body){
+			var updated = await Org.update(org.id,{name: req.body.name, description: req.body.description, type: req.body.type});
+			locals.org = updated[0];
+		}
 		res.view('create_org', locals);
 	},
 	deleteOrg: function (req, res) {
