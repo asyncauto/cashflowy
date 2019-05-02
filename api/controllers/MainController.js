@@ -2459,10 +2459,10 @@ module.exports = {
 		if(req.body){
 			var org= req.body;
 			org.owner=req.user.id;
-			Org.create(org).exec(function(err){
+			Org.create(org).exec(function(err, o){
 				if(err)
 					throw(err);
-				res.redirect('/orgs');
+				res.redirect('/org/'+o.id+'/dashboard');
 			})
 		}else{
 			locals.org={};

@@ -165,7 +165,7 @@ module.exports={
 				p2c.super_count=_.sum(p2c.children,'t_count')+p2c.t_count;
 				p2c.super_sum=_.sum(p2c.children,'t_sum')+p2c.t_sum;
 				p2c.children.forEach(function(p3c){ // level 3
-					p3c.fullname=p2c.fullname+'->'+p3c.fullname;
+					p3c.fullname=p2c.fullname+'->'+p3c.name;
 					p3c.children=[];
 					categories.forEach(function(c){
 						if(c.parent==p3c.id)

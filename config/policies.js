@@ -31,7 +31,8 @@ module.exports.policies = {
   MainController: {
     '*': ['isAuthenticated', 'isMemberOfOrg'],
     landingPage: true,
-    'listNotifications':['isAuthenticated']
+    listNotifications:['isAuthenticated'],
+    createOrg: ['isAuthenticated']
   },
   BullController: {
     '*': ['isAuthenticated', 'isAdmin']
