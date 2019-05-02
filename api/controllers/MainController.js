@@ -968,7 +968,7 @@ module.exports = {
 				Transaction_line_item.count(tli_filter).exec(callback);
 			}],
 			getTags:function(callback){
-				Tag.find({org:req.org.id}).exec(callback);
+				Tag.find({or:[{org:req.org.id}, {type:'global'}]}).exec(callback);
 			},
 			getTransactions:['getTlis',function(results,callback){
 				var t_ids=_.map(results.getTlis,function(tli){return tli.transaction.id});
@@ -1682,7 +1682,7 @@ module.exports = {
 				type:'user',
 			}
 			console.log(t);
-			Tag.create(t).exec(function(err,transaction){
+			Tag.create(t).exec(function(err,tag){
 				if(err){
 					console.log(err);
 					throw err;
@@ -1790,18 +1790,19 @@ module.exports = {
 	editTags:function(req,res){
 		async.auto({
 			getAllTags:function(callback){
-				Tag.find({org:req.org.id}).exec(callback);
+				Tag.find({or:[{org:req.org.id},{type:'global'}]}).exec(callback);
 			},
 			getTli:function(callback){
 				// console.log(req.body);
 				Transaction_line_item.findOne({id:req.body.tli_id}).populate('tags').exec(callback);
-			},
+			}
 		},function(err,results){
-			var all_tags=results.getAllTags;
-			Transaction_line_item.replaceCollection(results.getTli.id, 'tags').members(req.body.new_tags).exec(function(err, txn){
+			var org_tag_ids=_.map(results.getAllTags, 'id');
+			var requested_tag_ids = _(req.body.new_tags).filter(function(t){return parseInt(t)}).map(function(t){return parseInt(t);}).value()
+			var tag_ids_to_replace = _.intersection(org_tag_ids, requested_tag_ids)
+			Transaction_line_item.replaceCollection(results.getTli.id, 'tags').members(tag_ids_to_replace).exec(function(err, txn){
 				Transaction_line_item.findOne({id:req.body.tli_id}).populate('tags').exec(function(err,new_t){
 					res.view('partials/display_tags', {tags: new_t.tags,layout:false});
-					
 				});
 			});
 		});
