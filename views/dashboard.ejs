@@ -96,13 +96,13 @@
                     
                     <div class='ui center aligned basic segment'>
                         <div class="ui horizontal divider header">
-                            <a href="/org/<%=req.org.id%>/dashboard2/?month=<%=prev%>">
+                            <a href="/org/<%=req.org.id%>/dashboard/?month=<%=prev%>">
                                 <i class="angle left icon big"></i>
                             </a>
                             
                                 <%=req.query.month?req.query.month:(req.query.year?req.query.year:new Date().toISOString().substring(0,7))%>
                             
-                            <a href="/org/<%=req.org.id%>/dashboard2/?month=<%=next%>">
+                            <a href="/org/<%=req.org.id%>/dashboard/?month=<%=next%>">
                                 <i class="angle right icon big"> </i>
                             </a>
                         </div>
