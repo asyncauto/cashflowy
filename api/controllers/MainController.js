@@ -8,6 +8,7 @@ const fs = require('fs');
 const async = require('async');
 const fx = require('money');
 const AWS = require('aws-sdk');
+const moment = require('moment-timezone');
 
 fx.base='INR';
 fx.rates=sails.config.fx_rates;
@@ -598,7 +599,7 @@ module.exports = {
 			});
 		}
 	},
-	dashboard:function(req,res){
+	dashboard2:function(req,res){
 		var month=null,year=null;
 		if(req.query.month){
 			year=req.query.month.substring(0,4);
@@ -835,9 +836,187 @@ module.exports = {
 				locals.chart3.datasets.push(dataset3);
 			})
 			// res.send(locals);
+			res.view('dashboard2',locals);
+		})
+
+	},
+	dashboard:function(req,res){
+		var month=null,year=null;
+		if(req.query.month){
+			year=req.query.month.substring(0,4);
+			month=req.query.month.substring(5,7);
+		}
+		else if(req.query.year)
+			year= req.query.year.substring(0,4);
+		else{
+			year=new Date().toISOString().substring(0,4);
+			month=new Date().toISOString().substring(5,7);
+		}
+		var start_of_month = new Date(year+'-'+month+'-'+1);
+		var end_of_month = moment(start_of_month).endOf('month').toDate();
+
+		async.auto({
+			getAccounts:function(callback){
+				Account.find({org:req.org.id}).sort('name ASC').exec(callback);
+			},
+			getCategories:function(callback){
+				Category.find({org:req.org.id}).exec(callback);
+			},
+			getTlisWithOutDescription: ['getAccounts', function(results, callback){
+				var accounts =  _.map(results.getAccounts,'id')
+				Transaction_line_item.count({description: null, account:accounts, occuredAt:{'<':end_of_month, '>':start_of_month}}).exec(callback);
+			}],
+			getTlisWithOutCategory: ['getAccounts', function(results, callback){
+				var accounts =  _.map(results.getAccounts,'id')
+				Transaction_line_item.count({category: null, account:accounts, occuredAt:{'<':end_of_month, '>':start_of_month}}).exec(callback);
+			}],
+			getInvoicesWithOutCategory:['getAccounts', function(results, callback){
+				var accounts =  _.map(results.getAccounts,'id');
+				Invoice.count({category: null, account:accounts, date:{'<':end_of_month, '>':start_of_month}}).exec(callback);
+			}],
+			getDocumentsCount: function(callback){
+				Document.count({org:req.org.id}).exec(callback);
+			},
+			getAccountsWhereStatementsArePresentForThatMonth: ['getAccounts', function(results, callback){
+				var query = `WITH sli AS (
+					SELECT
+						(data ->> 'date') AS sli_date,
+						document,
+						statement_line_item.id,
+						account_docs__document_accounts.account_docs as account,
+						org,
+						statement_line_item."createdAt"
+					FROM
+						statement_line_item left JOIN account_docs__document_accounts on account_docs__document_accounts.document_accounts = statement_line_item."document"
+				)
+				SELECT
+					account
+				FROM
+					sli where "createdAt" >'2019-05-01'::date and sli_date::date < '${end_of_month.toISOString().substring(0,10)}'::date AND sli_date::date > '${start_of_month.toISOString().substring(0,10)}'::date GROUP by sli.account;`
+				
+				sails.sendNativeQuery(query, function(err, rawResult){
+					if(err)
+						callback(err);
+					else
+						callback(err,rawResult.rows);
+				})
+			}],
+			getCategorySpending:['getAccounts',function(results,callback){
+
+				var escape=[year];
+				var query = 'select count(*),sum(amount_inr),category from transaction_line_item';
+				query+=' where';
+				query+=" type='income_expense'";
+				query+=' AND EXTRACT(YEAR FROM "occuredAt") = $1';
+				if(month){
+					escape.push(month);
+					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
+				}
+				if(_.map(results.getAccounts,'id').length)
+					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
+				// in the accounts that belong to you
+				query+=' group by category';
+				sails.sendNativeQuery(query,escape,function(err, rawResult) {
+					if(err)
+						callback(err);
+					else
+						callback(err,rawResult.rows);
+				});
+			}],
+			getExpenseChartData:['getAccounts',function(results,callback){
+				var escape=[year];
+				var query = 'select count(*),sum(CASE WHEN amount_inr < 0 THEN amount_inr ELSE 0 END) expense_sum,sum(CASE WHEN amount_inr > 0 THEN amount_inr ELSE 0 END) income_sum,EXTRACT(Day from "occuredAt") as day from transaction';
+				query+=' where';
+				query+=" type='income_expense'";
+				query+=' AND EXTRACT(YEAR FROM "occuredAt") = $1';
+				if(month){
+					escape.push(month);
+					query+=' AND EXTRACT(MONTH FROM "occuredAt") = $2';
+				}
+				if(_.map(results.getAccounts,'id').length)
+					query+=' AND account in '+GeneralService.whereIn(_.map(results.getAccounts,'id'));
+				query+=' group by day';
+				query+=' order by day';
+				sails.sendNativeQuery(query,escape,function(err, rawResult) {
+					console.log('\n\n\n\n');
+					if(err)
+						callback(err,[]);
+					else
+						callback(err,rawResult.rows);
+				});
+			}]
+		},function(err,results){
+			if(err){
+				console.log('\n\n\n====err');
+				console.log(err);
+				throw err;
+			}
+			results.getCategories.forEach(function(cat){
+				cat.t_count=0;
+				cat.t_sum=0;
+				console.log(results.getCategorySpending);
+				results.getCategorySpending.forEach(function(spend){
+					if(cat.id==spend.category){
+						cat.t_count=spend.count;
+						cat.t_sum=-(spend.sum);
+					}
+				})
+				// console.log(cat);
+			});
+
+			var locals={
+				current:year+'-'+month,
+				accounts:results.getAccounts,
+				categories:GeneralService.orderCategories(results.getCategories),
+				tlis_without_category: results.getTlisWithOutCategory,
+				tlis_without_description: results.getTlisWithOutDescription,
+				invoice_without_category: results.getInvoicesWithOutCategory,
+				start_of_month: start_of_month,
+				end_of_month: end_of_month
+			}
+
+			locals.accounts_for_which_statements_missing = _.filter(locals.accounts, function(a){
+				if(a.type == 'wallet' || a.type == 'investment' || a.type == 'cash' || a.acc_number.includes('amazon_pay'))
+					return false;
+				if(results.getAccountsWhereStatementsArePresentForThatMonth.indexOf(a.id) == -1)
+					return true;
+			});
+
+			if(month==1)
+				locals.prev=(parseInt(year)-1)+'-12';
+			else
+				locals.prev=year+'-'+(parseInt(month)-1)
+
+			if(month==12)
+				locals.next=(parseInt(year)+1)+'-1'
+			else
+				locals.next=year+'-'+(parseInt(month)+1);
+
+			locals.chart={
+				x:[],
+				y_income:[],
+				y_expense:[]
+			}
+			var i=1;
+			results.getExpenseChartData.forEach(function(row){
+				for(;i<row.day;i++){
+					locals.chart.x.push(i);
+					locals.chart.y_income.push(0);
+					locals.chart.y_expense.push(0);
+				}
+				locals.chart.x.push(row.day);
+
+				locals.chart.y_income.push(row.income_sum);
+				locals.chart.y_expense.push(-row.expense_sum);
+				i++;
+			});
+			
 			res.view('dashboard',locals);
 		})
 
+	},
+	setupChecklist: function(req, res){
+		
 	},
 	listTransactions:function(req,res){
 		var locals={};
@@ -935,7 +1114,6 @@ module.exports = {
 						]
 					
 				// occured_at filter
-				var moment = require('moment-timezone');
 				try{
 					var date_to  = req.query.date_to ? moment(req.query.date_to, 'YYYY-MM-DD').endOf('day').tz('Asia/Kolkata').toDate() : new Date();
 					var date_from = req.query.date_from ? moment(req.query.date_from, 'YYYY-MM-DD').tz('Asia/Kolkata').toDate() : null;

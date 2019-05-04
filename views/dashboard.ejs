@@ -1,443 +1,457 @@
-<div class='ui container'>
-	<div class='ui stackable grid'>
-		<div class='ui two wide column'></div>
-		<div class='ui twelve wide column'>
-				<div class="ui row">
-					<div class="ui tiny progress" data-value="<%= setup_checklist.percentage_completed%>" data-total="100" id="setup">
-						<div class="label">
-							Your setup checklist <%= setup_checklist.percentage_completed/20%>/5.
-						</div>
-						<div class="bar">
-							<div class="progress"></div>
-						</div>
-					</div>
-				</div>
-				<i class="ui right floated large chevron circle up show_hide_setup icon"></i>
-				<br>
-				<br>
-				<!-- </div> -->
-				<div class="ui two column stackable grid setup_detail" style="display:none;">
-					<div class="six wide column">
-						<div class="ui fluid mini vertical steps">
-							<div class="<%=setup_checklist.verify_email%> step">
-								<i class="mail icon"></i>
-								<div class="content">
-								<div class="title">Verify your email address</div>
-								</div>
-							</div>
-						<div class="<%=setup_checklist.email%> step">
-							<i class="mail icon"></i>
-							<div class="content">
-							<div class="title">Setup email syncing </div>
-							</div>
-						</div>
-						<div class="<%=setup_checklist.categories%> step">
-							<i class="block layout icon"></i>
-							<div class="content">
-							<div class="title">Setup few categories</div>
-							</div>
-						</div>
-						<div class="<%=setup_checklist.description%> step">
-							<i class="pencil alternate icon"></i>
-							<div class="content">
-							<div class="title">Write description</div>
-							</div>
-						</div>
-						<div class="<%=setup_checklist.document%> step">
-							<i class="file alternate outline icon"></i>
-							<div class="content">
-							<div class="title">Upload a document</div>
-							<div class="description"></div>
-							</div>
-						</div>
-						</div>
-					</div>
-					<div class="ten wide column">
-						<div class="ui segment setup_email" style=<%=setup_checklist.email == 'active'? "display:'';" : "display:none;" %>>
-							<h5 class="ui header">
-								Authorize cashflowy to fetch your bank and other financial account transaction emails.
-								<div class="sub header">Enabling this will help get all your transactions in realtime.</div>
-							</h5>
-							<br>
-							<br>
-							<a href='/email/create'>
-							<img src="/images/btn_google_signin_dark_normal_web.png">
-							</a>
-						</div>
-						<div class="ui segment setup_category" style=<%=setup_checklist.categories == 'active'? "display:'';" : "display:none;" %>>
-							<h5 class="ui header">
-								Setup few categories to start with.
-							</h5>
-							<div class="list">
-								<div class="item">
-									<div class="ui child checkbox">
-									<input type="checkbox" id='cat_eating_out' name="eating_out">
-									<label>Eating Out</label>
-									</div>
-								</div>
-								<div class="item">
-									<div class="ui child checkbox">
-									<input type="checkbox" id='cat_grocery' name="grocery">
-									<label>Grocery</label>
-									</div>
-								</div>
-								<div class="item">
-									<div class="ui child checkbox">
-									<input type="checkbox" id='cat_rent' name="rent">
-									<label>Rent</label>
-									</div>
-								</div>
-								<div class="item">
-									<div class="ui child checkbox">
-									<input type="checkbox" id='cat_gift' name="gift">
-									<label>Gift</label>
-									</div>
-								</div>
-								<div class="item">
-									<div class="ui child checkbox">
-									<input type="checkbox" id='cat_commute' name="commute">
-									<label>Commute</label>
-									</div>
-								</div>
-							</div>
-							<br>
-							<button class="ui button create_categories">Create</button>
-						</div>
-						<div class="ui segment setup_description" style=<%=setup_checklist.description == 'active'? "display:'';" : "display:none;" %>>
-							<h5 class="ui header">
-								Write your first description about an Expense. 
-							</h5>
-							<a href="/transactions"><i class="rupee icon"></i>Go to transactions to complete the step.</a>
-						</div>
-						<div class="ui segment setup_doc_upload" style=<%=setup_checklist.document == 'active'? "display:'';" : "display:none;" %>>
-								<h5 class="ui header">
-									Upload you first bank/credit-card statement.
-								</h5>
-								<a href="/document/create"><i class="file outline icon"></i>Upload statement</a>
-						</div>
-						<div class="ui placeholder segment" style=<%=setup_checklist.percentage_completed == 100 ? "display:'';" : "display:none;" %>>
-								<div class="ui one column stackable center aligned grid">
-								<div class="middle aligned row">
-										<div class="column">
-								<div class="ui icon header">
-										<i class="check circle outline grey icon"></i>
-										All done.
-									  </div>
-								</div>
-								</div>
-								</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class='ui two wide column'></div>
-	<br>
-
-	
-	<div class='ui stackable grid'>
-		
-		
-		<div class='ui two wide column'></div>
-		<div class='ui twelve wide column'>
-			
-			<div class='ui center aligned segment'>
-				<a href="/org/<%=req.org.id%>/dashboard/?month=<%=prev%>">
-					<i class="angle left icon big"></i>
-				</a>
-				<%=req.query.month?req.query.month:(req.query.year?req.query.year:new Date().toISOString().substring(0,7))%>
-				<a href="/org/<%=req.org.id%>/dashboard/?month=<%=next%>">
-					<i class="angle right icon big"> </i>
-				</a>
-			</div>
-			<div class='ui stackable grid'>
-				<div class='ui row'>
-						
-					<!-- <div class='ui four wide column'>
-						<div class='ui segment'>
-							
-						</div>
-					</div> -->
-					<div class='ui sixteen wide column'>
-						<div class='ui segment'>
-							<div class='ui header'>Income & Expense</div>
-							<div style="width:100%;">
-								<canvas id="canvas"></canvas>
-							</div>
-							<!-- Balance in various accounts as a line graph -->
-						</div>
-						<div class='ui segment'>
-							<div class='ui header'>Account snapshots</div>
-							<div style="width:100%;">
-								<canvas id="canvas2"></canvas>
-							</div>
-							<!-- Balance in various accounts as a line graph -->
-						</div>
-						<div class='ui segment'>
-							<div class='ui header'>Un-Accounted Money (UAM)</div>
-							<div style="width:100%;">
-								<canvas id="canvas3"></canvas>
-							</div>
-							<!-- Balance in various accounts as a line graph -->
-						</div>
-					</div>
-				</div>
-				<div class='ui row'>
-					<div class='ui six wide column'>
-						<div class='ui segment'>
-							<h3>List of accounts</h3>
-							<div class="ui relaxed divided list">
-								<%accounts.forEach(function(account){%>
-									<div class="item">
-										<i class=" book middle aligned icon"></i>
-										<div class="content">
-											<a class="header" href='/transactions?account=<%=account.id%>'><%=account.name%></a>
-											<%if(account.details && account.details.last_snapshot){%>
-												<div class="description popup" data-content='Balance in the account as per last snapshot - <%=GeneralService.timeAgo(account.updatedAt)%>'>Rs. <%=account.details.last_snapshot.balance%> (<%=GeneralService.timeAgo(account.updatedAt)%>)</div>
-											<%}else{%>
-												<div class="description popup" data-content='Balance in account is the balance in the last known snapshot taken of the account. This account does not seem to have a snapshot. Create a snapshot to show balance here '>Balance unknown</div>
-											<%}%>
-										</div>
-									</div>
-								<%})%>
-							</div>
-						</div>
-					</div>
-					<div class='ui ten wide column'>
-						<div class='ui segment'>
-							<h3>Expense per category</h3>
-							<div class="ui list">
-								<%categories.forEach(function(category){%>
-									<%- partial('partials/category', {category: category}) %>
-								<%})%>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class='ui two wide column'></div>
-		
-	</div>
-</div>
-<a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/transaction/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new transaction" data-position="left center" data-inverted=""><i class="icon add"></i></a>
-<script type="text/javascript">
-	$(document).ready(function(){
-		$('.ui.accordion').accordion();
-	})
-</script>
-
-
-
-<style>
-	canvas{
-		-moz-user-select: none;
-		-webkit-user-select: none;
-		-ms-user-select: none;
-	}
+<script src="/js/d3.js"></script>
+<script src="/js/d3.layout.js"></script>
+<style type="text/css">
+    text {
+        font-size: 13.7px;
+    }
+    .toolTip {
+        position: absolute;
+        display: none;
+        width: auto;
+        height: auto;
+        background: none repeat scroll 0 0 white;
+        border: 0 none;
+        border-radius: 8px 8px 8px 8px;
+        color: black;
+        font: 12px sans-serif;
+        padding: 5px;
+        text-align: center;
+    }
+    /* .container {
+    max-width: 1270px;
+    margin: 0 auto;
+} */
 </style>
-<%if(typeof chart !='undefined'){%>
-<script>
-	window.chartColors = {
-		red: 'rgb(255, 99, 132)',
-		orange: 'rgb(255, 159, 64)',
-		yellow: 'rgb(255, 205, 86)',
-		green: 'rgb(75, 192, 192)',
-		blue: 'rgb(54, 162, 235)',
-		purple: 'rgb(153, 102, 255)',
-		grey: 'rgb(201, 203, 207)'
-	};
-	var color = Chart.helpers.color;
-	var config = {
-		type: 'bar',
-		data: {
-			labels: <%-JSON.stringify(chart.x)%>,
-			datasets: [{
-				label: 'Expense',
-				backgroundColor: color(window.chartColors.red).alpha(0.7).rgbString(),
-				borderColor: window.chartColors.red,
-				data: [
-					<%-chart.y_expense%>
-				],
-				fill: false,
-			},
-			{
-				label: 'Income',
-				backgroundColor: color(window.chartColors.green).alpha(0.7).rgbString(),
-				borderColor: window.chartColors.green,
-				data: [
-					<%-chart.y_income%>
-				],
-				fill: false,
-			}]
-		},
-		options: {
-			responsive: true,
-			title: {
-				display: false,
-				text: 'Expense'
-			},
-			tooltips: {
-				mode: 'index',
-				intersect: false,
-			},
-			hover: {
-				mode: 'nearest',
-				intersect: true
-			},
-			scales: {
-				xAxes: [{
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Day'
-					}
-				}],
-				yAxes: [{
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Value'
-					}
-				}]
-			}
-		}
-	};
+<div class='ui container'>
+        
+        <div class='ui stackable grid'>
+            <div class="ui divided row">
+                <div class="ui eight wide column">
+                    <div class="ui two cards">
+                        <div class="ui card">
+                            <div class="content">
+                            <div class="header" data-tooltip='asset is any resource owned by you'>
+                                Assets<i class="ui warning circle small icon"></i>
+                            </div>
+                            <div class="description">
+                                <div class="ui tiny green statistic">
+                                    <div class="value">
+                                        ₹ 00.00L
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="ui card">
+                            <div class="content">
+                            <div class="header" data-tooltip='liability is any resource you owe'>
+                                Liabilities<i class="ui warning circle small icon"></i>
+                            </div>
+                            <div class="description">
+                                <div class="ui tiny red statistic">
+                                    <div class="value">
+                                        ₹ 00.00L
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>   
+                </div> 
+                <div class="ui eight wide column">
+                    <div class="ui two cards">
+                        <div class="ui card">
+                                <div class="content">
+                                <div class="header" data-tooltip="current or overdue amount that you're yet to receive">
+                                    Net Receivables<i class="ui warning circle small icon"></i>
+                                </div>
+                                <div class="description">
+                                    <div class="ui tiny green statistic">
+                                        <div class="value">
+                                            ₹ 00.00L
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        <div class="ui card">
+                            <div class="content">
+                            <div class="header" data-tooltip="current or overdue amount that you're yet to pay">
+                                Net Payables<i class="ui warning circle small icon"></i>
+                            </div>
+                            <div class="description">
+                                <div class="ui tiny red statistic">
+                                    <div class="value">
+                                        ₹ 00.00L
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>  
+                </div>                        
+            </div>
+            <div class="ui row">
+                <div class='ui sixteen wide column'>
+                    
+                    <div class='ui center aligned basic segment'>
+                        <div class="ui horizontal divider header">
+                            <a href="/org/<%=req.org.id%>/dashboard2/?month=<%=prev%>">
+                                <i class="angle left icon big"></i>
+                            </a>
+                            
+                                <%=req.query.month?req.query.month:(req.query.year?req.query.year:new Date().toISOString().substring(0,7))%>
+                            
+                            <a href="/org/<%=req.org.id%>/dashboard2/?month=<%=next%>">
+                                <i class="angle right icon big"> </i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui row">
+                <div class='ui sixteen wide column'>
+                    <div class="ui fluid three cards">
+                        <div class="card">
+                            <div class="content">
+                                <div class="header">
+                                Transactions
+                                </div>
+                                <div class="meta">
+                                Action items
+                                </div>
+                                <div class="description">
+                                <div class="ui unordered list">
+                                    <a class="item" target="_blank" href="/org/<%=req.org.id%>/transactions?category=empty&date_from=<%-start_of_month.toISOString().substring(0,10)%>&date_to=<%-end_of_month.toISOString().substring(0,10)%>"><span><i class="warning circle icon"></i><%=tlis_without_category%> transactions without category<i class="external alternate icon"></i></span></a>
+                                    <a class="item" target="_blank" href="/org/<%=req.org.id%>/transactions?description=empty&date_from=<%-start_of_month.toISOString().substring(0,10)%>&date_to=<%-end_of_month.toISOString().substring(0,10)%>"><span><i class="warning circle icon"></i><%=tlis_without_description%> transactions without description<i class="external alternate icon"></i></span></a>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="content">
+                                <div class="header">
+                                Invoices
+                                </div>
+                                <div class="meta">
+                                Action items
+                                </div>
+                                <div class="description">
+                                    <div class="ui unordered list">
+                                        <a class="item" target="_blank" href="/org/<%=req.org.id%>/invoices?date_from=<%-start_of_month.toISOString().substring(0,10)%>&date_to=<%-end_of_month.toISOString().substring(0,10)%>"><span><i class="warning circle icon"></i><%=invoice_without_category%> Invoices without category<i class="external alternate icon"></i></span></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="content">
+                                <div class="header">
+                                Statements
+                                </div>
+                                <div class="meta">
+                                Action items
+                                </div>
+                                <div class="description">
+                                    <div class="ui unordered list">
+                                        <% accounts_for_which_statements_missing.forEach(function(account){%>
+                                            <a class="item" target="_blank" href="/org/<%=req.org.id%>/document/create"><span><i class="warning circle icon"></i>Statement missing for <%=account.name%><i class="external alternate icon"></i></span></a>
+                                        <%})%>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='ui row'>
+                <div class='ui five wide column'>
+                    <div class='ui segment'>
+                        <h3>List of accounts</h3>
+                        <div class="ui relaxed divided list">
+                            <%accounts.forEach(function(account){%>
+                                <div class="item">
+                                    <i class=" book middle aligned icon"></i>
+                                    <div class="content">
+                                        <a class="header" href='/transactions?account=<%=account.id%>'><%=account.name%></a>
+                                        <%if(account.details && account.details.last_snapshot){%>
+                                            <div class="description popup" data-content='Balance in the account as per last snapshot - <%=GeneralService.timeAgo(account.updatedAt)%>'>Rs. <%=account.details.last_snapshot.balance%> (<%=GeneralService.timeAgo(account.updatedAt)%>)</div>
+                                        <%}else{%>
+                                            <div class="description popup" data-content='Balance in account is the balance in the last known snapshot taken of the account. This account does not seem to have a snapshot. Create a snapshot to show balance here '>Balance unknown</div>
+                                        <%}%>
+                                    </div>
+                                </div>
+                            <%})%>
+                        </div>
+                    </div>
+                </div>
+                <div class='ui eleven wide column'>
+                    <div class='ui fluid segment'>
+                        <div class='ui header'>Expense per category</div>
+                            <div id="category_treemap"></div>
+                    </div>
+                </div>
+            </div>
+            <div class='ui row'>
+                <div class='ui sixteen wide column'>
+                    <div class='ui segment'>
+                        <div class='ui header'>Income & Expense</div>
+                        <div style="width:100%;">
+                            <canvas id="canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/transaction/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new transaction" data-position="left center" data-inverted=""><i class="icon question"></i></a>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.ui.accordion').accordion();
+        })
+    </script>
+    
+    
+    
+    <style>
+        canvas{
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+    <%if(typeof chart !='undefined'){%>
+    <script>
+        window.chartColors = {
+            red: 'rgb(255, 99, 132)',
+            orange: 'rgb(255, 159, 64)',
+            yellow: 'rgb(255, 205, 86)',
+            green: 'rgb(75, 192, 192)',
+            blue: 'rgb(54, 162, 235)',
+            purple: 'rgb(153, 102, 255)',
+            grey: 'rgb(201, 203, 207)'
+        };
+        var color = Chart.helpers.color;
+        var config = {
+            type: 'line',
+            data: {
+                labels: <%-JSON.stringify(chart.x)%>,
+                datasets: [{
+                    label: 'Expense',
+                    backgroundColor: color(window.chartColors.red).alpha(0.7).rgbString(),
+                    borderColor: window.chartColors.red,
+                    data: [
+                        <%-chart.y_expense%>
+                    ],
+                    fill: true,
+                },
+                {
+                    label: 'Income',
+                    backgroundColor: color(window.chartColors.green).alpha(0.7).rgbString(),
+                    borderColor: window.chartColors.green,
+                    data: [
+                        <%-chart.y_income%>
+                    ],
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: false,
+                    text: 'Expense'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Day'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        },
+                        ticks: {
+                                beginAtZero: true,
+                                stepSize: 20000
+                        }
+                    }]
+                }
+            }
+        };
+        window.onload = function() {
+            var ctx = document.getElementById('canvas').getContext('2d');
+            window.myLine = new Chart(ctx, config);
+        };
+        $(document).ready(function(){
+            $('.popup').popup();
+            $('#setup').progress();
+            category_draw()
+            d3.select(window).on("resize", function () { 
+                console.log('resize');
+                $("#category_treemap").empty();
+                category_draw() });
+            $('.show_hide_setup.icon').click(function(){
+                $(this).removeClass('chevron circle').addClass('chevron circle').toggleClass('up down').addClass('icon');
+                $('.setup_detail').toggle();
+            });
+            $('.create_categories').click(function(){
+                var categories_to_add = [];
+                if($('#cat_eating_out').is(":checked"))
+                    categories_to_add.push({
+                        name: 'Eating Out',
+                        budget: 10000,
+                        description: '-'
+                    })
+                if($('#cat_rent').is(":checked"))
+                    categories_to_add.push({
+                        name: 'Rent',
+                        budget: 20000,
+                        description: '-'
+                    });
+                if($('#cat_grocery').is(":checked"))
+                    categories_to_add.push({
+                        name: 'Grocery',
+                        budget: 5000,
+                        description: '-'
+                    })
+                if($('#cat_gift').is(":checked"))
+                    categories_to_add.push({
+                        name: 'Gift',
+                        budget: 5000,
+                        description: '-'
+                    })
+                if($('#cat_commute').is(":checked"))
+                    categories_to_add.push({
+                        name: 'Commute',
+                        budget: 7000,
+                        description: '-'
+                    })
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/org/<%=req.org.id%>/category/create',
+                    data: JSON.stringify(categories_to_add),
+                    contentType: "application/json",
+                    dataType: 'json',
+                    success: function(resultData) { 
+                    window.location.replace('/org/<%=req.org.id%>/categories'); }
+                })
+                
+            })
+        })
+        function category_draw(){
+            var w = $("#category_treemap").width(),
+                h;
+            if (w < 580) {
+                h = w * 1;
+                // otherwise it's more of a rectangle
+            } else {
+                h = w * 0.45;
+            }
+            var x = d3.scale.linear().range([0, w]),
+                y = d3.scale.linear().range([0, h]),
+                d3color = d3.scale.category20c(),
+                root,
+                node;
+        
 
-	var config2 = {
-		type: 'line',
-		data: {
-			datasets:<%-JSON.stringify(chart2.datasets)%>
-		},
-		options: {
-			responsive: true,
-			maintainAspectRatio:true,
-			scales: {
-				xAxes: [{
-					type: 'linear',
-					position: 'bottom',
-					ticks:{
-						min:1,
-						stepSize:1,
-					},
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Day'
-					}
-				}],
-				yAxes: [{
-					// display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Value'
-					}
-				}]
-			}
-		}
-	};
-	var config3 = {
-		type: 'line',
-		data: {
-			// labels: <%-JSON.stringify(chart2.x)%>,
-			datasets:<%-JSON.stringify(chart3.datasets)%>
-		},
-		options: {
-			responsive: true,
-			maintainAspectRatio:true,
-			scales: {
-				xAxes: [{
-					type: 'linear',
-					position: 'bottom',
-					ticks:{
-						min:1,
-						stepSize:1,
-					},
-					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Day'
-					}
-				}],
-				yAxes: [{
-					// display: true,
-					scaleLabel: {
-						display: true,
-						labelString: 'Value'
-					}
-				}]
-			}
-		}
-	};
-	window.onload = function() {
-		var ctx = document.getElementById('canvas').getContext('2d');
-		window.myLine = new Chart(ctx, config);
-		var ctx2 = document.getElementById('canvas2').getContext('2d');
-		window.myLine2 = new Chart(ctx2, config2);
-		var ctx3 = document.getElementById('canvas3').getContext('2d');
-		window.myLine3 = new Chart(ctx3, config3);
-		var canvas2 = document.getElementById('canvas2');
-		var canvas3 = document.getElementById('canvas3');
-		if(canvas2.height < 400){
-			window.myLine2.options.legend.display=false;
-			window.myLine3.options.legend.display=false;
-			window.myLine2.update();
-			window.myLine3.update();
+            var treemap = d3.layout.treemap()
+                .round(false)
+                .size([w, h])
+                .sticky(true)
+                .value(function (d) { return d.t_sum; });
 
-		}
-	};
-	$(document).ready(function(){
-		$('.popup').popup();
-		$('#setup').progress();
-		$('.show_hide_setup.icon').click(function(){
-			$(this).removeClass('chevron circle').addClass('chevron circle').toggleClass('up down').addClass('icon');
-            $('.setup_detail').toggle();
-		});
-		$('.create_categories').click(function(){
-			var categories_to_add = [];
-			if($('#cat_eating_out').is(":checked"))
-				categories_to_add.push({
-					name: 'Eating Out',
-					budget: 10000,
-					description: '-'
-				})
-			if($('#cat_rent').is(":checked"))
-				categories_to_add.push({
-					name: 'Rent',
-					budget: 20000,
-					description: '-'
-				});
-			if($('#cat_grocery').is(":checked"))
-				categories_to_add.push({
-					name: 'Grocery',
-					budget: 5000,
-					description: '-'
-				})
-			if($('#cat_gift').is(":checked"))
-				categories_to_add.push({
-					name: 'Gift',
-					budget: 5000,
-					description: '-'
-				})
-			if($('#cat_commute').is(":checked"))
-				categories_to_add.push({
-					name: 'Commute',
-					budget: 7000,
-					description: '-'
-				})
-			
-			$.ajax({
-				type: 'POST',
-				url: '/org/<%=req.org.id%>/category/create',
-				data: JSON.stringify(categories_to_add),
-				contentType: "application/json",
-				dataType: 'json',
-				success: function(resultData) { 
-				window.location.replace('/org/<%=req.org.id%>/categories'); }
-			})
-			
-		})
-	})
-</script>
-<%}%>
+            var svg = d3.select("#category_treemap").append("div")
+                .attr("class", "chart")
+                .style("width", w + "px")
+                .style("height", h + "px")
+                .append("svg:svg")
+                .attr("width", w)
+                .attr("height", h)
+                .append("svg:g")
+                .attr("transform", "translate(.5,.5)");
+
+            node = root = <%-JSON.stringify({name:'categories', children: categories})%>;
+
+            var nodes = treemap.nodes(root)
+                .filter(function (d) { return d.parent && d.super_sum > 0 ; });
+            
+            var tool = d3.select("body").append("div").attr("class", "toolTip");
+
+            var cell = svg.selectAll("g")
+                .data(nodes)
+                .enter().append("svg:g")
+                .attr("class", "cell")
+                .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; })
+                .on("click", function (d) { return zoom(node == d.parent ? root : d.parent); })
+                .on("mousemove", function (d) {
+                    console.log('mouse moved');
+                    tool.style("left", d3.event.pageX + 10 + "px")
+                    tool.style("top", d3.event.pageY - 20 + "px")
+                    tool.style("display", "inline-block");
+                    tool.html(d.name);
+                }).on("mouseout", function (d) {
+                    tool.style("display", "none");
+                });;
+
+            cell.append("svg:rect")
+                .attr("width", function (d) { return d.dx - 1; })
+                .attr("height", function (d) { return d.dy - 1; })
+                .style("fill", function (d) { return d3color(d.parent.name); });
+
+            cell.append("svg:text")
+                .attr("x", function (d) { return d.dx / 2; })
+                .attr("y", function (d) { return d.dy / 2; })
+                .attr("dy", ".35em")
+                .attr("text-anchor", "middle")
+                .text(function (d) { return d.name; })
+                .style("opacity", function (d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
+
+            d3.select(window).on("click", function () { zoom(root); });
+            d3.select("select").on("change", function () {
+                treemap.value(this.value == "size" ? size : count).nodes(root);
+                zoom(node);
+            });
+            function size(d) {
+                return d.t_sum;
+            }
+            function count(d) {
+                return 1;
+            }
+            function zoom(d) {
+                var kx = w / d.dx, ky = h / d.dy;
+                x.domain([d.x, d.x + d.dx]);
+                y.domain([d.y, d.y + d.dy]);
+
+                var t = svg.selectAll("g.cell").transition()
+                    .duration(d3.event.altKey ? 7500 : 750)
+                    .attr("transform", function (d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+
+                t.select("rect")
+                    .attr("width", function (d) { return kx * d.dx - 1; })
+                    .attr("height", function (d) { return ky * d.dy - 1; })
+
+                t.select("text")
+                    .attr("x", function (d) { return kx * d.dx / 2; })
+                    .attr("y", function (d) { return ky * d.dy / 2; })
+                    .style("opacity", function (d) { return kx * d.dx > d.w ? 1 : 0; });
+
+                node = d;
+                d3.event.stopPropagation();
+            }
+    }
+    
+    </script>
+    <%}%>
