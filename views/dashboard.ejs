@@ -401,7 +401,7 @@
                     tool.style("left", d3.event.pageX + 10 + "px")
                     tool.style("top", d3.event.pageY - 20 + "px")
                     tool.style("display", "inline-block");
-                    tool.html(d.name);
+                    tool.html(`${d.name}<br><b>spent: </b><span style="color:${d.super_sum > d.budget?'red':'green'};">${d.super_sum}</span><br><b>budget:</b> ${d.budget}`);
                 }).on("mouseout", function (d) {
                     tool.style("display", "none");
                 });;
