@@ -892,7 +892,7 @@ module.exports = {
 				SELECT
 					account
 				FROM
-					sli where "createdAt" >'2019-05-01'::date and sli_date::date < '${end_of_month.toISOString().substring(0,10)}'::date AND sli_date::date > '${start_of_month.toISOString().substring(0,10)}'::date GROUP by sli.account;`
+					sli where "createdAt"::date > '2019-05-01'::date and sli_date::date < '${end_of_month.toISOString().substring(0,10)}'::date AND sli_date::date > '${start_of_month.toISOString().substring(0,10)}'::date GROUP by sli.account;`
 				
 				sails.sendNativeQuery(query, function(err, rawResult){
 					if(err)
@@ -2321,7 +2321,24 @@ module.exports = {
 	},
 	listInvoices:function(req,res){
 		var locals={};
-		Invoice.find({org:req.org.id}).populate('category').sort('date DESC').exec(function(err,invoices){
+		var filters = {
+			org:req.org.id
+		}
+		//filter for category
+		if(req.query.category)
+			filters.category = req.query.category;
+		if(req.query.type)
+			filters.type = req.query.type;
+		
+		// filter based in id
+		if(req.query.ids){
+			filters.id = {in: _.map(req.query.ids.split(','), function (each) {
+				if(parseInt(each))
+					return parseInt(each);
+			})}
+		}
+
+		Invoice.find(filters).populate('category').sort('date DESC').exec(function(err,invoices){
 			if(err)
 				throw err;
 			locals.invoices=invoices;
