@@ -168,7 +168,7 @@ module.exports = {
 					budget:parseInt(req.body.budget),
 					org:req.org.id,
 					type:req.body.type,
-					parent:0,
+					parent:null,
 				}
 				if(req.body.parent_id)
 					c.parent=req.body.parent_id;
