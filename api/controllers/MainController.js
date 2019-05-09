@@ -54,7 +54,7 @@ module.exports = {
 		}
 		else{
 
-			Category.find({org:req.org.id}).exec(function(err,categories){
+			Category.find({ org: req.org.id }).sort('name ASC').exec(function(err,categories){
 			if(req.body){ // post request
 				if(!req.body.budget)
 					req.body.budget='10000';
@@ -86,8 +86,9 @@ module.exports = {
 					budget:'10000',
 					parent_id:'',
 					type:'expense',
-					categories:categories
+					categories:GeneralService.orderCategories(categories)
 				}
+
 				console.log(locals);
 				res.view('create_category',locals);
 			}
@@ -158,7 +159,7 @@ module.exports = {
 		});
 	},
 	editCategory:function(req,res){
-		Category.find({org:req.org.id}).exec(function(err,categories){
+		Category.find({ org: req.org.id }).sort('name ASC').exec(function(err,categories){
 			if(!_.find(categories,{id:parseInt(req.params.id)}))
 				return res.send('you dont have permission to modify this category');
 			if(req.body){
@@ -196,7 +197,7 @@ module.exports = {
 					budget:c.budget,
 					parent_id:c.parent,
 					type:c.type,
-					categories:categories
+					categories:GeneralService.orderCategories(categories)
 				}
 				res.view('create_category',locals);
 			}

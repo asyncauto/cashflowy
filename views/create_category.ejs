@@ -51,14 +51,14 @@
 				<div class='two fields'>
 					<div class="field">
 						<label>Parent category</label>
-						<div class="ui fluid search selection dropdown">
+						<div class="ui fluid dropdown basic button">
 							<input type="hidden" name="parent_id" value="<%=parent_id%>">
 							<i class="dropdown icon"></i>
 							<div class="default text">Select Parent Category</div>
 							<div class="menu">
 								<div class="item" data-value="">No parent</div>
-								<%categories.forEach(function(account){%>
-									<div class="<%-parent_id?'active':''%> item" data-value="<%=account.id%>"><%=account.name%></div>
+								<%categories.forEach(function(category){%>
+									<%- partial('partials/category_dropdown', {category: category}) %>
 								<%})%>
 							</div>
 						</div>
@@ -78,7 +78,6 @@
 						</div>
 					</div>
 				</div>
-				
 				<div class="ui error message">
 					<div class="header">Error</div>
 					<p><%=message%></p>
