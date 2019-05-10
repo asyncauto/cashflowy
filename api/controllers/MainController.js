@@ -2796,5 +2796,79 @@ module.exports = {
 		});
 
 		return res.view('list_notifications', locals);
-	}
+	},
+	listLoans:function(req,res){
+		var locals={};
+		var filters = {
+			org:req.org.id
+		}
+		//filter for type
+		if(req.query.type)
+			filters.type = req.query.type;
+		
+		// filter based in id
+		if(req.query.ids){
+			filters.id = {in: _.map(req.query.ids.split(','), function (each) {
+				if(parseInt(each))
+					return parseInt(each);
+			})}
+		}
+
+		Loan.find(filters).sort('date DESC').exec(function(err,loans){
+			if(err)
+				throw err;
+			locals.loans=loans;
+			res.view('list_loans',locals);
+		})
+	},
+	viewLoan:function(req,res){
+		var locals={};
+		res.view('view_loan',locals);
+	},
+	createLoan:function(req,res){
+		if (req.body) { // post request
+			console.log(req.body);
+			const fx = require('money');
+			fx.base = 'INR';
+			fx.rates = sails.config.fx_rates;
+			var loan = {
+				original_currency: req.body.original_currency,
+				date: new Date(req.body.date + ' ' + req.body.time + req.body.tz),
+				createdBy: 'user',
+				description: req.body.description,
+				third_party: req.body.third_party,
+				type:req.body.type,
+				org:req.org.id,
+			}
+			if (req.body.type == 'lending') {
+				loan.original_amount = -(req.body.original_amount);
+				loan.amount_inr = -(fx.convert(req.body.original_amount, { from: loan.original_currency, to: "INR" }));
+				loan.balance_due_inr = -(fx.convert(req.body.balance_due, { from: loan.original_currency, to: "INR" }));
+			} else if (req.body.type == 'borrowing') {
+				loan.original_amount = (req.body.original_amount);
+				loan.amount_inr = (fx.convert(req.body.original_amount, { from: loan.original_currency, to: "INR" }));
+				loan.balance_due_inr = (fx.convert(req.body.balance_due, { from: loan.original_currency, to: "INR" }));
+			}
+			// console.log('before transaction find or create');
+			console.log(loan);
+			Loan.create(loan).exec(function (err) {
+				if (err)
+					throw err;
+				else {
+					res.redirect('/org/' + req.org.id +'/loans');
+				}	
+			});
+		} else { // view the form
+			var locals = {
+				loan: {
+					date: '',
+				},
+			};
+			res.view('create_loan', locals);
+		}
+		
+		
+		
+	},
+	
 }

@@ -75,6 +75,15 @@ module.exports.routes = {
   'GET /org/:o_id/invoice/:i_id/delete': 'MainController.deleteInvoice',
   'POST /org/:o_id/invoice/:i_id/delete': 'MainController.deleteInvoice',
 
+  'GET /org/:o_id/loans': 'MainController.listLoans',
+  'GET /org/:o_id/loan/create': 'MainController.createLoan',
+  'POST /org/:o_id/loan/create': 'MainController.createLoan',
+  'GET /org/:o_id/loan/:i_id/edit': 'MainController.editLoan',
+  'POST /org/:o_id/loan/:i_id/edit': 'MainController.editLoan',
+  'GET /org/:o_id/loan/:i_id/delete': 'MainController.deleteLoan',
+  'POST /org/:o_id/loan/:i_id/delete': 'MainController.deleteLoan',
+
+
 
 
   'GET /org/:o_id/snapshots':'MainController.listSnapshots',

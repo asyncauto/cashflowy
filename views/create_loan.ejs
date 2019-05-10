@@ -1,0 +1,173 @@
+<%
+	
+	if(!loan.original_currency)
+		original_currency=req.user.details.default_currency;
+	var single_active_flag=false;
+	if(!loan.account_id){	
+		if(req.user.details.default_account)
+			account_id=req.user.details.default_account;
+		else
+			account_id=accounts[0].id;
+	}
+	var create_or_edit = GeneralService.createOrEdit(req.url);
+%>
+<div class="ui container">
+	<div class="ui grid">
+		<div class='four wide tablet computer only column'></div>
+		<div class='eight wide table eight wide computer sixteen wide mobile column'>
+			<h4 class="ui horizontal divider header">
+				<!-- <i class="list icon"></i> -->
+				<%=create_or_edit%> Loan
+			</h4>
+			<form class="ui <%=loan.status%> form " action="" method='post'>
+				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
+				<div class="field">
+					<label style='color:#5bc5a2'>Type of Loan</label>
+					<div class="ui fluid selection dropdown" id='select_type' style='color:#5bc5a2'>
+						<input type="hidden" name="type" value="borrowing">
+						<i class="dropdown icon"></i>
+						<div class="default text">Choose type of transaction</div>
+						<div class="menu">
+						<div class="item" data-value="borrowing">Borrowing</div>
+						<div class="item" data-value="lending">Lending</div>
+						</div>
+					</div>
+				</div>
+				<div class='ui divider'></div>
+
+				<div class="two fields">
+					<div class="field">
+						<label>Date </label>
+						<input type="date" name="date" value="">
+					</div>
+					<div class="field">
+						<label>Time</label>
+						<input type="time" name="time" value="">
+					</div>
+					<input type="hidden" name="tz" value="">
+				</div>
+				<div class="field" id='paid_whom'>
+					<label>Borrowing from</label>
+					<input type="text" name="third_party" placeholder="Reliance telecom" value="<%=loan.third_party%>">
+				</div>
+				
+				<div class="two fields">
+					
+					<div class="field">
+						<label>Currency</label>
+						<div class="ui fluid search selection dropdown">
+							<input type="hidden" name="original_currency" placeholder="INR" value="<%=loan.original_currency?loan.original_currency:'INR'%>">
+							<i class="dropdown icon"></i>
+							<div class="default text">Select Currency</div>
+							<div class="menu">
+								<%Object.keys(sails.config.fx_rates).forEach(function(currency){%>
+									<div class='item' data-value="<%=currency%>"></i><%=currency%></div>
+								<%})%>
+							</div>
+						</div>
+					</div>
+					<div class="field">
+						<label>Total Amount (in <span class='currency'>INR</span>)</label>
+						<input type="number" step="any" name="original_amount" placeholder="100" value="<%=loan.original_amount%>">
+					</div>
+					<div class="field">
+						<label>Balance Due (in <span class='currency'>INR</span>)</label>
+						<input type="number" step="any" name="balance_due" placeholder="100" value="<%=loan.balance_due?loan.balance_due.toFixed(2):''%>">
+					</div>
+				</div>
+				
+				<div class="field">
+					<label>Description</label>
+					<input type="text" name="description" placeholder="Your comments of the transaction" value="<%=loan.description%>">
+				</div>
+				
+				
+				<div class="field" style='display:none;' >
+					<input type="text" name="referer"  value="<%=req.headers.referer%>">
+				</div>
+				<div class="ui error message">
+					<div class="header">Error</div>
+					<p><%=loan.message%></p>
+				</div>
+				<input type="submit" class="ui button" value="Submit">
+				<div class="ui success message">
+					<div class="header">Transaction created</div>
+					You just created a transaction
+				</div>
+			</form>
+		</div>
+		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
+			<div class='ui segment'>
+				You are creating a manual Loan. 
+				<br/><br/>
+				<!-- <b>Email:</b> 
+				For now we support only gmail address. The gmail address can be a business gmail address also. 
+				<br/><br/>
+				<b>Token:</b>
+				You will need to enter token detail here for now. It will be automated later.  -->
+			</div>
+		</div>
+	</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		<%if(!loan.date){%>
+			var a = moment(); // create a time instance in the local time zone 
+		<%}else{%>
+			var a = moment('<%=loan.date%>');
+		<%}%>
+		$('input[name=date]').val(a.format('YYYY-MM-DD'));
+		$('input[name=time]').val(a.format('HH:mm'));
+		$('input[name=tz]').val(a.format('Z'));
+		$('.dropdown').dropdown();
+		$('#select_type').dropdown({
+			onChange: function(value, text, $selectedItem) {
+				console.log(value);
+				console.log(text);
+				switch(value){
+					case 'lending':
+						$('#account label').text('Expensed from');
+						$('#paid_whom label').text('Lending to');
+						$('#paid_whom').show();
+						$('#to_account').hide();
+						$('#select_type').attr('style','color:red');
+						$('#select_type').prev().attr('style','color:red');
+						break;
+					case 'borrowing':
+						$('#account label').text('Deposited to');
+						$('#paid_whom label').text('Borrowing from');
+						$('#paid_whom').show();
+						$('#to_account').hide();
+						$('#select_type').attr('style','color:#5bc5a2');
+						$('#select_type').prev().attr('style','color:#5bc5a2');
+						break;
+				}
+				// $('.people_in_submenu').hide();
+				// if(value=='staff_curated_list')
+				// 	$('#staff_list').show();
+				// // else if(value=='people_i_follow')
+				// else if(value=='my_list')
+				// 	$('#your_list').show();
+			}
+		});
+		$('#select_type').dropdown('set selected','<%=loan.type%>');
+		
+		$('.ui.form').form({
+			fields: {
+				original_amount     : 'empty',
+				original_currency   : 'empty',
+				date : 'empty',
+				time : 'empty',
+				// third_party : 'empty',
+				description : 'empty',
+				account_id:'empty',
+			},
+			onSuccess:function(e,fields){
+				$(this).addClass('loading');
+			},
+		});
+	})
+
+</script>
