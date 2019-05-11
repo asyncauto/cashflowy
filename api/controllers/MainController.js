@@ -2866,9 +2866,46 @@ module.exports = {
 			};
 			res.view('create_loan', locals);
 		}
-		
-		
-		
 	},
-	
+	editLoan:function(req,res){
+		if (req.body) { // post request
+			console.log(req.body);
+			const fx = require('money');
+			fx.base = 'INR';
+			fx.rates = sails.config.fx_rates;
+			var loan = {
+				original_currency: req.body.original_currency,
+				date: new Date(req.body.date + ' ' + req.body.time + req.body.tz),
+				createdBy: 'user',
+				description: req.body.description,
+				third_party: req.body.third_party,
+				type: req.body.type,
+				org: req.org.id,
+			}
+				loan.original_amount = (req.body.original_amount);
+				loan.amount_inr = (fx.convert(req.body.original_amount, { from: loan.original_currency, to: "INR" }));
+				loan.balance_due_inr = (fx.convert(req.body.balance_due, { from: loan.original_currency, to: "INR" }));
+			console.log(loan);
+			Loan.update({id:req.params.i_id},loan).exec(function (err, loan) {
+				if (err)
+					throw err;
+				else {
+					res.redirect('/org/' + req.org.id + '/loans');
+				}
+			});
+		} else { // view the form
+			Loan.findOne({id:req.params.i_id}).exec(function(err,loan){
+				loan.sub_total = (fx.convert(loan.sub_total_inr, { to: loan.original_currency, from: "INR" }));
+				loan.gst_total = (fx.convert(loan.gst_total_inr, { to: loan.original_currency, from: "INR" }));
+				loan.balance_due = (fx.convert(loan.balance_due_inr, { to: loan.original_currency, from: "INR" }));
+				if(err)
+					throw err;
+				var locals = {
+					loan: loan,
+				};
+				res.view('create_loan', locals);
+			})
+			
+		}
+	},
 }
