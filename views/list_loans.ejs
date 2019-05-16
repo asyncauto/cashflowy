@@ -25,6 +25,7 @@
 							<th>Type</th>
 							<th>Original Amount</th>
 							<th>Balance due</th>
+							<th>Description</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -36,6 +37,7 @@
 								<td><%=i.type%></td>
 								<td><%=i.original_currency%> <%=fn(i.original_amount)%></td>
 								<td>INR <%=fn(i.balance_due_inr)%></td>
+								<td>INR <%=fn(i.description)%></td>
 							</tr>
 						<%}})%>
 					</tbody>
@@ -50,6 +52,7 @@
 							<th>Type</th>
 							<th>Original Amount</th>
 							<th>Balance due</th>
+							<th>Description</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -61,6 +64,7 @@
 								<td><%=i.type%></td>
 								<td><%=i.original_currency%> <%=fn(i.original_amount)%></td>
 								<td>INR <%=fn(i.balance_due_inr)%></td>
+								<td>INR <%=fn(i.description)%></td>
 							</tr>
 						<%}})%>
 					</tbody>
