@@ -84,6 +84,13 @@ module.exports.routes = {
   'POST /org/:o_id/loan/:i_id/delete': 'MainController.deleteLoan',
 
 
+  'GET /org/:o_id/assets': 'MainController.listAssets',
+  'GET /org/:o_id/asset/create': 'MainController.createAsset',
+  'POST /org/:o_id/asset/create': 'MainController.createAsset',
+  'GET /org/:o_id/asset/:i_id/edit': 'MainController.editAsset',
+  'POST /org/:o_id/asset/:i_id/edit': 'MainController.editAsset',
+  'GET /org/:o_id/asset/:i_id/delete': 'MainController.deleteAsset',
+  'POST /org/:o_id/asset/:i_id/delete': 'MainController.deleteAsset',
 
 
   'GET /org/:o_id/snapshots':'MainController.listSnapshots',

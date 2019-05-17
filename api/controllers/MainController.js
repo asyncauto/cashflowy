@@ -2908,4 +2908,109 @@ module.exports = {
 			
 		}
 	},
+	listAssets:function(req,res){
+		var locals={};
+		var filters = {
+			org:req.org.id
+		}
+		//filter for type
+		if(req.query.type)
+			filters.type = req.query.type;
+		
+		// filter based in id
+		if(req.query.ids){
+			filters.id = {in: _.map(req.query.ids.split(','), function (each) {
+				if(parseInt(each))
+					return parseInt(each);
+			})}
+		}
+
+		Asset.find(filters).sort('date DESC').exec(function(err,assets){
+			if(err)
+				throw err;
+			locals.assets=assets;
+			res.view('list_assets',locals);
+		})
+	},
+	viewAsset:function(req,res){
+		var locals={};
+		res.view('view_loan',locals);
+	},
+	createAsset:function(req,res){
+		if (req.body) { // post request
+			console.log(req.body);
+			const fx = require('money');
+			fx.base = 'INR';
+			fx.rates = sails.config.fx_rates;
+			var asset = {
+				original_currency: req.body.original_currency,
+				date: new Date(req.body.date + ' ' + req.body.time + req.body.tz),
+				createdBy: 'user',
+				description: req.body.description,
+				name: req.body.name,
+				type:req.body.type,
+				org:req.org.id,
+				unit_original_amount :(req.body.unit_original_amount),
+				unit_amount_inr : (fx.convert(req.body.unit_original_amount, { from: req.body.original_currency, to: "INR" })),
+				units:req.body.units,
+			}
+			// console.log('before transaction find or create');
+			console.log(asset);
+			Asset.create(asset).exec(function (err) {
+				if (err)
+					throw err;
+				else {
+					res.redirect('/org/' + req.org.id +'/assets');
+				}	
+			});
+		} else { // view the form
+			var locals = {
+				asset: {
+					date: '',
+				},
+			};
+			res.view('create_asset', locals);
+		}
+	},
+	editAsset:function(req,res){
+		if (req.body) { // post request
+			console.log(req.body);
+			const fx = require('money');
+			fx.base = 'INR';
+			fx.rates = sails.config.fx_rates;
+			var loan = {
+				original_currency: req.body.original_currency,
+				date: new Date(req.body.date + ' ' + req.body.time + req.body.tz),
+				createdBy: 'user',
+				description: req.body.description,
+				third_party: req.body.third_party,
+				type: req.body.type,
+				org: req.org.id,
+			}
+				loan.original_amount = (req.body.original_amount);
+				loan.amount_inr = (fx.convert(req.body.original_amount, { from: loan.original_currency, to: "INR" }));
+				loan.balance_due_inr = (fx.convert(req.body.balance_due, { from: loan.original_currency, to: "INR" }));
+			console.log(loan);
+			Loan.update({id:req.params.i_id},loan).exec(function (err, loan) {
+				if (err)
+					throw err;
+				else {
+					res.redirect('/org/' + req.org.id + '/loans');
+				}
+			});
+		} else { // view the form
+			Loan.findOne({id:req.params.i_id}).exec(function(err,loan){
+				loan.sub_total = (fx.convert(loan.sub_total_inr, { to: loan.original_currency, from: "INR" }));
+				loan.gst_total = (fx.convert(loan.gst_total_inr, { to: loan.original_currency, from: "INR" }));
+				loan.balance_due = (fx.convert(loan.balance_due_inr, { to: loan.original_currency, from: "INR" }));
+				if(err)
+					throw err;
+				var locals = {
+					loan: loan,
+				};
+				res.view('create_loan', locals);
+			})
+			
+		}
+	},
 }

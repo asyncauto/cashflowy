@@ -1,0 +1,111 @@
+<%
+	var fn=function(number){
+		return FormatService.formatNumber(number,req.query.number_format,req.query.precision);
+	}
+%>
+<style>
+	.ui.grid>.row{
+	padding: 0.5rem 0;
+	}
+</style>
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='sixteen wide column'>
+			<h1>Assets</h1>
+			<div class="ui top attached tabular menu">
+				<a class="item active" data-tab="mutual_fund">Mutual Funds</a>
+				<a class="item" data-tab="stock">Stocks</a>
+				<a class="item" data-tab="real_estate">Real Estate</a>
+				<a class="item" data-tab="other">Other</a>
+			</div>
+			<%var types = ['mutual_fund','stock','real_estate','other'];%>
+			<%types.forEach(function(type){%>
+				<div class="ui bottom attached tab segment <%=type=='mutual_fund'?'active':''%>" data-tab="<%=type%>">
+					<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+						<thead>
+							<tr>
+								<th>Date</th>
+								<!-- <th>Type</th> -->
+								<th>Name</th>
+								<th>Unit price</th>
+								<th>No of units</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%assets.forEach(function(i){
+								if(i.type==type){%>
+								<tr data-tid='<%=i.id%>'>
+									<td class='single line'><a href='/org/<%=req.org.id%>/asset/<%=i.id%>/edit'><%=i.date?i.date.toISOString().substring(0,10):''%></a></td>
+									<!-- <td><%=i.type%></td> -->
+									<td><%=i.name%> </td>
+									<td><%=i.original_currency%> <%=fn(i.unit_original_amount)%></td>
+									<td><%=fn(i.units)%></td>
+									<td><%=fn(i.description)%></td>
+								</tr>
+							<%}})%>
+						</tbody>
+					</table>
+				</div>
+			<%})%>
+			
+			
+		</div>
+	</div>
+</div>
+
+<a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/asset/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new transaction" data-position="left center" data-inverted=""><i class="icon add"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+		var edit_active=false;
+		 
+		$('.filter_txn.dropdown').dropdown({ allowCategorySelection: true });
+		$('.extra_options.dropdown').dropdown();
+		$('.filter.dropdown').dropdown({
+			onChange:function(value, text, $choice){
+				var params = {};
+				if($('input[name="filter_account"]').val())
+					params.account= $('input[name="filter_account"]').val();
+				if($('input[name="filter_category"]').val())
+				    params.category= $('input[name="filter_category"]').val();
+				window.location = '/transactions?'+$.param(params);
+			}
+		});
+		$('.tags_dd.ui.dropdown')
+		  .dropdown({
+		    allowAdditions: true,
+		    onChange:function(value, text, $choice){
+				$(this).parents('.add_tags_popup').find('.submit_edit_tags').removeClass('disabled');
+			}
+		  });
+		$('.popup').popup();
+		$('.add_tags2').popup({
+			on:'click',
+			popup: '.add_tags_popup'
+		});
+		$('#submit_form').click(function(){
+			console.log('clicked on form submit');
+			$('input').each(function(i) {
+		        var $input = $(this);
+		        if ($input.val() == '')
+		            $input.attr('disabled', 'disabled');
+		    });
+			$( "form" ).submit();
+		});
+		$('#reset_form').click(function(){
+			window.location = '/transactions';
+		});
+		$('.show_details').click(function(e){
+			e.preventDefault();
+			// alert('show details clicked');
+			console.log('show details clicked');
+			var tli_id=$(this).parents('.tli').attr('data-tli-id');
+			console.log(tli_id);
+			$('#details_'+tli_id).toggle();
+		});
+		$('.menu .item').tab();
+		
+	});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>
