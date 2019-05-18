@@ -2978,37 +2978,38 @@ module.exports = {
 			const fx = require('money');
 			fx.base = 'INR';
 			fx.rates = sails.config.fx_rates;
-			var loan = {
+			var asset = {
 				original_currency: req.body.original_currency,
 				date: new Date(req.body.date + ' ' + req.body.time + req.body.tz),
 				createdBy: 'user',
 				description: req.body.description,
-				third_party: req.body.third_party,
-				type: req.body.type,
-				org: req.org.id,
+				name: req.body.name,
+				type:req.body.type,
+				org:req.org.id,
+				unit_original_amount :(req.body.unit_original_amount),
+				unit_amount_inr : (fx.convert(req.body.unit_original_amount, { from: req.body.original_currency, to: "INR" })),
+				units:req.body.units,
 			}
-				loan.original_amount = (req.body.original_amount);
-				loan.amount_inr = (fx.convert(req.body.original_amount, { from: loan.original_currency, to: "INR" }));
-				loan.balance_due_inr = (fx.convert(req.body.balance_due, { from: loan.original_currency, to: "INR" }));
-			console.log(loan);
-			Loan.update({id:req.params.i_id},loan).exec(function (err, loan) {
+			// console.log('before transaction find or create');
+			console.log(asset);
+			Asset.update({id:req.params.i_id},asset).exec(function (err, asset) {
 				if (err)
 					throw err;
 				else {
-					res.redirect('/org/' + req.org.id + '/loans');
+					res.redirect('/org/' + req.org.id + '/assets');
 				}
 			});
 		} else { // view the form
-			Loan.findOne({id:req.params.i_id}).exec(function(err,loan){
-				loan.sub_total = (fx.convert(loan.sub_total_inr, { to: loan.original_currency, from: "INR" }));
-				loan.gst_total = (fx.convert(loan.gst_total_inr, { to: loan.original_currency, from: "INR" }));
-				loan.balance_due = (fx.convert(loan.balance_due_inr, { to: loan.original_currency, from: "INR" }));
+			Asset.findOne({id:req.params.i_id}).exec(function(err,asset){
+				asset.sub_total = (fx.convert(asset.sub_total_inr, { to: asset.original_currency, from: "INR" }));
+				asset.gst_total = (fx.convert(asset.gst_total_inr, { to: asset.original_currency, from: "INR" }));
+				asset.balance_due = (fx.convert(asset.balance_due_inr, { to: asset.original_currency, from: "INR" }));
 				if(err)
 					throw err;
 				var locals = {
-					loan: loan,
+					asset: asset,
 				};
-				res.view('create_loan', locals);
+				res.view('create_asset', locals);
 			})
 			
 		}
