@@ -2,6 +2,12 @@
 	var fn=function(number){
 		return FormatService.formatNumber(number,req.query.number_format,req.query.precision);
 	}
+	var types = ['mutual_fund','stock','real_estate','other'];
+	var countByType= _.countBy(assets,'type');
+	types.forEach(function(type){
+		if(!countByType[type])
+			countByType[type]=0;
+	})
 %>
 <style>
 	.ui.grid>.row{
@@ -13,12 +19,11 @@
 		<div class='sixteen wide column'>
 			<h1>Assets</h1>
 			<div class="ui top attached tabular menu">
-				<a class="item active" data-tab="mutual_fund">Mutual Funds</a>
-				<a class="item" data-tab="stock">Stocks</a>
-				<a class="item" data-tab="real_estate">Real Estate</a>
-				<a class="item" data-tab="other">Other</a>
+				<a class="item active" data-tab="mutual_fund">Mutual Funds<span class="ui circular teal label"><%=countByType.mutual_fund%></span></a>
+				<a class="item" data-tab="stock">Stocks<span class="ui circular label"><%=countByType.stock%></span></a>
+				<a class="item" data-tab="real_estate">Real Estate<span class="ui circular label"><%=countByType.real_estate%></span></a>
+				<a class="item" data-tab="other">Other<span class="ui circular label"><%=countByType.other%></span></a>
 			</div>
-			<%var types = ['mutual_fund','stock','real_estate','other'];%>
 			<%types.forEach(function(type){%>
 				<div class="ui bottom attached tab segment <%=type=='mutual_fund'?'active':''%>" data-tab="<%=type%>">
 					<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
@@ -103,7 +108,13 @@
 			console.log(tli_id);
 			$('#details_'+tli_id).toggle();
 		});
-		$('.menu .item').tab();
+		$('.menu .item').tab({
+			onLoad:function(t){
+				$('.label').removeClass('teal');
+				$('a[data-tab="'+t+'"] .label').addClass('teal')
+				// console.log(t);
+			}
+		});
 		
 	});
 </script>
