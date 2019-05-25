@@ -243,6 +243,7 @@ module.exports.routes = {
   'GET /user/:id/settings/devices':'UserSettingsController.listDevices',
   'GET /user/:id/settings/device/create':'UserSettingsController.createDevice',
   'POST /user/:id/settings/device/create':'UserSettingsController.createDevice',
+  'POST /background/ping_device':'BackgroundController.pingDevice',
 
 
 

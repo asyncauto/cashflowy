@@ -4,8 +4,12 @@ module.exports={
 		res.view('user_settings/index',locals);
 	},
 	listDevices:function(req,res){
-		var locals={};
-		res.view('user_settings/list_devices',locals);
+		Device.find({user:req.user.id}).exec(function(err,devices){
+			var locals={
+				devices:devices
+			};
+			res.view('user_settings/list_devices',locals);
+		})
 	},
 	createDevice:function(req,res){
 		var locals={};
@@ -16,7 +20,7 @@ module.exports={
 				name:user_agent.browser.name+' on '+user_agent.os.name,
 				is_enabled:true,
 				user:req.user.id,
-				push_subscription:req.body.push_subscription,
+				push_subscription:JSON.parse(req.body.push_subscription),
 				details:{
 					user_agent:user_agent,
 				}

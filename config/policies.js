@@ -43,6 +43,7 @@ module.exports.policies = {
   BackgroundController: {
     '*': ['isBackground'],
     'sendPushNotification':true,
+    'pingDevice':['isAuthenticated'],
   },
   CuratorController: {
     '*': ['isAuthenticated', 'isAdmin']

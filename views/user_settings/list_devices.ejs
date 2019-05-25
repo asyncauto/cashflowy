@@ -1,1 +1,63 @@
-this is list devices
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='sixteen wide column'>
+			<table id='subscriptions' class="ui celled padded unstackable table" style="display: block;overflow-x:auto;">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Created At</th>
+						<th>Is enabled?</th>
+						<th>Browser</th>
+						<th>OS</th>
+						<th>Ping</th>
+						<th>Edit</th>
+						<th>Delete</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%devices.forEach(function(device){%>
+						<tr data-id='<%=device.id%>'>
+							<td><%=device.id%></td>
+							<td><%=device.name%></td>
+							<td class='single line'><%=device.createdAt?device.createdAt.toISOString().substring(0,10):''%></td>
+							<td><%=device.is_enabled%></td>
+							<td><%=device.details.user_agent.browser.name%></td>
+							<td><%=device.details.user_agent.os.name%></td>
+							<td><a href="" class='ping'>ping</a></td>
+							<td><a href="/user/<%=req.user.id%>/settings/device/<%=device.id%>/edit">edit</a></td>
+							<td><a href="/user/<%=req.user.id%>/settings/device/<%=device.id%>/delete" style='color:red'>delete</a></td>
+						</tr>
+					<%})%>
+					
+				</tbody>
+			</table>
+		</div>
+	</div>	
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		console.log('ready');
+		if($('#subscriptions thead').width() < $('#subscriptions').width())
+			$('#subscriptions').width($('#subscriptions thead').width())
+		$('.dropdown').dropdown();
+
+		$('.ping').click(function(e){
+			e.preventDefault();
+			var device_id = $(this).parents('tr').attr('data-id');
+			console.log('going to ping device - '+device_id);
+			$.post("/background/ping_device", {d_id:device_id}, function(result,status){
+			// $.post("/user/<%=req.user.id%>/settings/device/"+device_id+"/ping", {}, function(result,status){
+				console.log('result = '+result);
+				console.log('status = '+status);// this runs only on sucess
+				if(status=='success'){
+					console.log('pinged');
+					// $(button).removeClass('loading');
+					// $(button).addClass('disabled');
+				}
+			});
+		});
+		
+	})
+</script>

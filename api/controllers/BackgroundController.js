@@ -94,5 +94,30 @@ module.exports = {
 		var n = req.query.n?req.query.n:1000;
 		queue.clean(n,state);
 		res.send(n+' tasks of state = '+state + ' should be deleted');
-	}
+	},
+	pingDevice:function(req,res){
+		console.log('pingDevice');
+		Device.findOne({user:req.user.id,id:req.body.d_id}).exec(function(err,device){
+			var webpush = require('web-push');
+			var push_subscription = device.push_subscription;
+			var payload = 'this is a test ping';
+			var options = {
+				subject:'mailto:alexjv89@gmail.com',
+				publicKey:'BJC2XFQ_vMRliHUgoai8Qyc1lGOFnubIEMEbWCQG4HVHCYyCpk01PkR9hRPA2OVde_zVn7adka9__r3MqaiQs6Q',
+				privateKey:'dOUjWR3p3z7klkDeQkVocfrN7iwCXx9JBx5qH9rv5HI'
+			}
+			webpush.setVapidDetails('mailto:alexjv89@gmail.com',options.publicKey,options.privateKey);
+			webpush.sendNotification(push_subscription,payload).then(function(status){
+				console.log('\n\n\n\n\n\n\n\n\n');
+				console.log('=====================')
+				console.log(status);
+				console.log('=====================')
+			}).catch(function(err){
+				console.log('\n\n\n\n\n\n\n\n\n');
+				console.log('=====================')
+				console.log(err);
+				console.log('=====================')
+			})
+		})
+	},
 };
