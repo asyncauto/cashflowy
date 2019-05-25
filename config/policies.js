@@ -37,8 +37,12 @@ module.exports.policies = {
   BullController: {
     '*': ['isAuthenticated', 'isAdmin']
   },
+  UserSettingsController: {
+    '*': ['isAuthenticated']
+  },
   BackgroundController: {
-    '*': ['isBackground']
+    '*': ['isBackground'],
+    'sendPushNotification':true,
   },
   CuratorController: {
     '*': ['isAuthenticated', 'isAdmin']

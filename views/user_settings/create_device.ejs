@@ -1,0 +1,119 @@
+<div class="ui container">
+	<div class="ui compact basic segment">
+		<h2>Register this device to send notifications</h2>
+		You will be setting up this device for push notifications. <br>
+		You can control the types of notification that you would like to recieve. <br>
+		You can also control what devices that you would like to notifications on <br>
+		<br>
+		<br>
+
+    	<button class='ui button' id="permission-btn" onclick="main()">Setup push notification on this device</button>
+    	<form class="ui form " action="" method='post'>
+			<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
+			
+			<div class="field">
+				<label>User Agent</label>
+				<input type="text" name="user_agent" value="">
+			</div>
+			<div class="field">
+				<label>Push Subscription</label>
+				<input type="text" name="push_subscription" value="">
+			</div>
+			
+			<div class="ui error message">
+				<div class="header">Error</div>
+				<p></p>
+			</div>
+			<input type="submit" class="ui button" value="Submit">
+			<div class="ui success message">
+				<div class="header">Account created</div>
+				You just created a account
+			</div>
+		</form>
+	</div>
+
+</div>
+</div>
+
+<script type="text/javascript">
+	const urlBase64ToUint8Array = base64String => {
+	  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+	  const base64 = (base64String + padding)
+	    .replace(/\-/g, "+")
+	    .replace(/_/g, "/");
+	  const rawData = atob(base64);
+	  const outputArray = new Uint8Array(rawData.length);
+	  for (let i = 0; i < rawData.length; ++i) {
+	    outputArray[i] = rawData.charCodeAt(i);
+	  }
+	  return outputArray;
+	};
+	
+	function registerServiceWorker() {
+	  return navigator.serviceWorker.register('/service_worker.js',{scope: "/"})
+	  .then(function(registration) {
+	    console.log('Service worker successfully registered.');
+	    return registration;
+	  })
+	  .catch(function(err) {
+	    console.error('Unable to register service worker.', err);
+	  });
+	}
+
+	function askPermission() {
+	  return new Promise(function(resolve, reject) {
+	    const permissionResult = Notification.requestPermission(function(result) {
+	      resolve(result);
+	    });
+
+	    if (permissionResult) {
+	      permissionResult.then(resolve, reject);
+	    }
+	  })
+	  .then(function(permissionResult) {
+	    if (permissionResult !== 'granted') {
+	      throw new Error('We weren\'t granted permission.');
+	    }
+	  });
+	}
+	const main = async () => { //notice I changed main to async function so that I can use await for registerServiceWorker
+	    if (!('serviceWorker' in navigator)) {
+		    // Service Worker isn't supported on this browser, disable or hide UI.
+		    return;
+		  }
+
+		  if (!('PushManager' in window)) {
+		    // Push isn't supported on this browser, disable or hide UI.
+		    return;
+		  }
+
+	    const swRegistration = registerServiceWorker();
+	    const permission =  askPermission();
+	    
+	    // this subscribes the user for push notification
+	    navigator.serviceWorker.ready.then(function(reg){ // checks if the service worker is ready
+	    	reg.pushManager.getSubscription().then(function(sub){
+	    		if(sub==undefined){
+	    			console.log('ask the user to register for push service');
+	    			reg.pushManager.subscribe({
+				      userVisibleOnly: true,
+				      applicationServerKey: urlBase64ToUint8Array('BJC2XFQ_vMRliHUgoai8Qyc1lGOFnubIEMEbWCQG4HVHCYyCpk01PkR9hRPA2OVde_zVn7adka9__r3MqaiQs6Q')
+				    }).then(function(new_sub){
+				    	console.log(JSON.stringify(new_sub));
+				    	$('[name="user_agent"]').val(navigator.userAgent);
+				    	$('[name="push_subscription"]').val(JSON.stringify(new_sub));
+				    })
+	    		}else{
+	    			console.log('you have a subscription');
+	    			console.log(JSON.stringify(sub));
+
+				    $('[name="user_agent"]').val(navigator.userAgent);
+				    $('[name="push_subscription"]').val(JSON.stringify(sub));
+	    			reg.showNotification('Hello world');
+	    		}
+	    	})
+	    })
+
+	}
+
+</script>

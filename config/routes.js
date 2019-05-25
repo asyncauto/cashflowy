@@ -230,11 +230,21 @@ module.exports.routes = {
 	'POST /bull/repeat/delete':'BullController.deleteRepeatJob',
 
   'GET /testBull':'MainController.testBull',
+  'GET /background/send_push_notification':'BackgroundController.sendPushNotification',
 
 
 
   'GET /curator/filter_test':'CuratorController.filterTest',
   'POST /curator/filter_test':'CuratorController.filterTest',
+
+
+
+  'GET /user/:id/settings':'UserSettingsController.index',
+  'GET /user/:id/settings/devices':'UserSettingsController.listDevices',
+  'GET /user/:id/settings/device/create':'UserSettingsController.createDevice',
+  'POST /user/:id/settings/device/create':'UserSettingsController.createDevice',
+
+
 
   //webhooks
 

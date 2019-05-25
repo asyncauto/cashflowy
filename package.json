@@ -41,7 +41,9 @@
     "sails-hook-sockets": "^1.5.5",
     "sails-postgresql": "^1.0.2",
     "skipper-s3": "^0.5.11",
-    "textract": "^2.4.0"
+    "textract": "^2.4.0",
+    "ua-parser-js": "^0.7.19",
+    "web-push": "^3.3.5"
   },
   "scripts": {
     "debug": "node debug app.js",
