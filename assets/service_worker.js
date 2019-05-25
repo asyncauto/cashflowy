@@ -81,11 +81,11 @@
 // });
 
 
-self.addEventListener('notificationclose',function(event){
-	var notification = event.notification;
-	console.log(notification);
-	self.registration.showNotification('You just closed a notification',{body:'this would be the body of the notification'});
-})
+// self.addEventListener('notificationclose',function(event){
+// 	var notification = event.notification;
+// 	console.log(notification);
+// 	self.registration.showNotification('You just closed a notification',{body:'this would be the body of the notification'});
+// })
 
 self.addEventListener('push',function(event){
 	var title = event.data.text();
