@@ -24,17 +24,16 @@
 					<div class="">
 						Total income
 					</div>
-					<div class="value">
-						22,000
+					<div class="value" style="color:green;">
+						<%= total_income %>
 					</div>
-					
 				</a>
 				<a class="statistic" href='/transactions?tag=<%=account.id%>&txn_type=expense'>
 					<div class="">
 						Total expense
 					</div>
-					<div class="value">
-						22,000
+					<div class="value" style="color:red;">
+						<%= -(total_expense) %>
 					</div>
 					
 				</a>
@@ -50,14 +49,14 @@
 						<div class="ui inline adjust_time_span dropdown">
 							<div class="text">This Month</div>
 							<i class="dropdown icon"></i>
+							<input type="hidden" name="time_span" value="<%=req.query.time_span?req.query.time_span:'' %>">
 							<div class="menu">
 								<div class="header">Adjust time span</div>
 								<!-- <div class="active item" data-text="today">Today</div> -->
-								<div class="item" data-text="This Week">This Week</div>
-								<div class="active item" data-text="This Month">This Month</div>
-								<div class="item" data-text="This Year">This Year</div>
-								<div class="item" data-text="This Financial Year">This Financial Year</div>
-								<div class="item" data-text="During time period">This Financial Year</div>
+								<div class="item" data-value="this-week">This Week</div>
+								<div class="item" data-value="this-month">This Month</div>
+								<div class="item" data-value="this-year">This Year</div>
+								<div class="item" data-value="this-financial-year">This Financial Year</div>
 							</div>
 						</div>
 					</div>
@@ -69,7 +68,7 @@
 							Income
 						</div>
 						<div class="value">
-							22,000
+							<%= filtered_income %>
 						</div>
 						
 					</a>
@@ -78,7 +77,7 @@
 							Expense
 						</div>
 						<div class="value">
-							22,000
+							<%= filtered_expense %>
 						</div>
 						
 					</a>
@@ -91,7 +90,7 @@
 				<!-- <b>Income and Expense</b> -->
 				<h4>Income Expense</h4>
 				<iframe
-				    src="<%=metabase.income_expense%>"
+				    src="https://www.google.com"
 				    frameborder="0"
 				    width="100%"
 				    height="200"
@@ -105,7 +104,7 @@
 				<!-- <b>Income and Expense</b> -->
 				<h4>Income category vise</h4>
 				<iframe
-				    src="<%=metabase.category_vice_income%>"
+				    src="https://www.google.com"
 				    frameborder="0"
 				    width="100%"
 				    height="300"
@@ -116,7 +115,7 @@
 				<!-- <b>Income and Expense</b> -->
 				<h4>Expense category vise</h4>
 				<iframe
-				    src="<%=metabase.category_vice_expense%>"
+				    src="https://www.google.com"
 				    frameborder="0"
 				    width="100%"
 				    height="300"
@@ -132,6 +131,10 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('.popup').popup();
-		$('.adjust_time_span.dropdown').dropdown();
+		$('.adjust_time_span.dropdown').dropdown({
+			onChange: function(v) {console.log(v)
+			window.location = '<%=req.url%>?time_span=' +v 
+		}
+		});
 	});
 </script>

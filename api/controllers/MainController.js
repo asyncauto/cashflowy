@@ -1846,7 +1846,7 @@ module.exports = {
 	listTags:function(req,res){
 		Tag.find({org:req.org.id}).exec(function(err,tags){
 			var locals={
-				tags:tags
+			tags:tags
 			}
 			res.view('list_tags',locals);
 		});
@@ -1880,59 +1880,28 @@ module.exports = {
 			res.view('create_tag',locals);
 		}
 	},
-	viewTag:function(req,res){
-		// get account of the user
-		// find sub categories
-		var locals = {};
-		async.auto({
-			getTag:function(callback){
-				Tag.findOne({id:req.params.id}).exec(callback)
-			},
-		},function(err,results){
+	viewTag:async function(req,res){
+		var tag = await Tag.findOne({id:req.params.id});
+		var query = `SELECT sum (case when transaction_line_item.amount_inr >= 0 then transaction_line_item.amount_inr else 0 end) as income, sum (case when transaction_line_item.amount_inr < 0 then transaction_line_item.amount_inr else 0 end) as expense from transaction_line_item left JOIN tag_tlis__transaction_line_item_tags on transaction_line_item.id = tag_tlis__transaction_line_item_tags.transaction_line_item_tags WHERE tag_tlis__transaction_line_item_tags.tag_tlis = $1 and transaction_line_item."type" = 'income_expense'`
+		var income_expense = (await sails.sendNativeQuery(query, [tag.id])).rows[0];
 
-			var locals = {
-				tag:results.getTag,
-				// user_accounts:results.getAccounts,
-				metabase:{}
-			}
-			var questions=[
-				{
-					url_name:'category_vice_expense',
-					question_id:30,
-					params:{
-						tag_id:""+results.getTag.id,
-					}
-				},
-				{
-					url_name:'category_vice_income',
-					question_id:31,
-					params:{
-						tag_id:""+results.getTag.id,
-					}
-				},
-				{
-					url_name:'income_expense',
-					question_id:29,
-					params:{
-						tag_id:""+results.getTag.id,
-					}
-				},
-			]
-			questions.forEach(function(q){
-				var payload = {
-					resource: { question: q.question_id },
-					params:q.params,
-				};
-				var token = jwt.sign(payload, sails.config.metabase.secret_key);
-				locals.metabase[q.url_name]=sails.config.metabase.site_url + "/embed/question/" + token + "#bordered=true&titled=false";
-				// console.log('\n\n\n---------');
-				// console.log(payload);
-			});
-			// console.log('\n\n\n---------');
-			// console.log(locals);
-			res.view('view_tag',locals);
+		var date_filter = `date_trunc('week', NOW()) = date_trunc('week', "transaction_line_item"."createdAt"::date)`;
+		if(req.query.time_span == 'this-month'){
+			date_filter = `date_trunc('month', NOW()) = date_trunc('month', "transaction_line_item"."createdAt"::date)`;
+		} else if(req.query.time_span == 'this-year'){
+			date_filter = `date_trunc('year', NOW()) = date_trunc('year', "transaction_line_item"."createdAt"::date)`;
+		}
+		var filter_query = `SELECT sum (case when transaction_line_item.amount_inr >= 0 then transaction_line_item.amount_inr else 0 end) as income, sum (case when transaction_line_item.amount_inr < 0 then transaction_line_item.amount_inr else 0 end) as expense from transaction_line_item left JOIN tag_tlis__transaction_line_item_tags on transaction_line_item.id = tag_tlis__transaction_line_item_tags.transaction_line_item_tags WHERE tag_tlis__transaction_line_item_tags.tag_tlis = $1 and transaction_line_item."type" = 'income_expense' and ` + date_filter
+		var filtered_income_expense = (await sails.sendNativeQuery(filter_query, [tag.id])).rows[0];
 
-		});
+		var locals = {
+			tag: tag,
+			total_income: income_expense.income,
+			total_expense: income_expense.expense,
+			filtered_income: filtered_income_expense.income,
+			filtered_expense: filtered_income_expense.expense
+		}
+		res.view('view_tag',locals);
 	},
 	editTag:function(req,res){
 		Tag.findOne({org:req.org.id,id:req.params.id}).exec(function(err,tag){
@@ -2107,6 +2076,9 @@ module.exports = {
 			},
 			getAccounts: function(cb){
 				Account.find({org:req.org.id}).exec(cb);
+			},
+			getTags: function(cb){
+				Tag.find({or:[{org:req.org.id},{type:'global'}]}).exec(cb);
 			}
 		},function(err, results){
 			if(err) return res.serverError(err);
@@ -2123,14 +2095,16 @@ module.exports = {
 					if(!u_r.length) return res.view('404');
 					var locals = {
 						rule: u_r[0],
-						accounts: results.getAccounts
+						accounts: results.getAccounts,
+						tags: results.getTags
 					}
 					res.view('create_rule', locals);
 				})
 			}else{
 				var locals = {
 					rule: results.findRule,
-					accounts: results.getAccounts
+					accounts: results.getAccounts,
+					tags: results.getTags
 				}
 				res.view('create_rule', locals);
 			}

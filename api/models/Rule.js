@@ -24,7 +24,7 @@ module.exports = {
 			type:'string',
 			isIn: [
 				"parsed_email_before_create",
-				"transaction_after_create"
+				"tli_after_create"
 			]
 		},
 		action:{
@@ -32,7 +32,8 @@ module.exports = {
 			isIn: [
 				"modify_pe_data",
 				"set_category",
-				"mark_as_transfer"
+				"mark_as_transfer",
+				"apply_tags"
 			]
 		},
 		status:{

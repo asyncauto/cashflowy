@@ -91,13 +91,18 @@ module.exports = {
 							if (rule.action == 'mark_as_transfer') {
 								tli_update = _.get(rule, 'details.action.set', {});
 							}
+							if (rule.action == 'apply_tags') {
+								tli_update = {
+									tags: _.get(rule, 'details.action.set.tags', '').split(',')
+								}
+							}
 						}
 					});
 					cb(null, tli_update);
 				})
 			}],
 			updatedTli: ['applyRule', function (results, cb) {
-				if(!results.applyRule) return cb(null);
+				if (!results.applyRule) return cb(null);
 				Transaction_line_item.update(created.id, results.applyRule).exec(function (err, r) {
 					cb(err, r);
 				});
@@ -108,8 +113,8 @@ module.exports = {
 
 				MLService.predictCategory(created, cb);
 			}
-		}, function (err) { 
-			cb(err); 
+		}, function (err) {
+			cb(err);
 		});
 
 	}

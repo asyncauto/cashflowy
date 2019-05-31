@@ -19,6 +19,12 @@ module.exports.rule={
 			description:'change the tli type to transfer',
 			allowed_triggers:['tli_after_create'],
 		},
+		{
+			slug:'apply_tags',
+			title:'Apply Tags',
+			description:'apply tags to the tli',
+			allowed_triggers:['tli_after_create'],
+		},
 		// {
 		// 	slug:'set_category',
 		// 	title:'Set category',

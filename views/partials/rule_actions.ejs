@@ -38,3 +38,20 @@
         <input type="number" placeholder="account" name="details.action.set.data.account_last_4_digits" value="<%=_.get(rule, 'details.action.set.data.account_last_4_digits', '')%>">
     </div>
 </div>
+
+<div class="ui segment rule_set" data-rule-action='apply_tags'>
+    <div class="field">
+        <label>Apply Tags</label>
+        <div class='ui tags_dd fluid multiple search selection dropdown'>
+            <input name='details.action.set.tags' type='hidden' value='<%=_.get(rule, 'details.action.set.tags', '')%>'>
+            <i class='dropdown icon'></i>
+            <input class='search' autocomplete='off' tabindex='0'><span class='sizer' style=''></span>
+            <div class='default text'>Tags</div>
+            <div class='menu transition hidden' tabindex='-1'>
+                <%tags.forEach(function(tag){%>
+                    <div class='item' data-value='<%=tag.id%>'><%=tag.name%></div>
+                <%})%>
+            </div>
+        </div>
+    </div>
+</div>
