@@ -1,5 +1,5 @@
 <%tags.forEach(function(tag){%>
-	<a class="ui <%=tag.color%> mini basic label" href='/tags/<%=tag.id%>'>
+	<a class="ui <%=tag.color%> mini basic label" href='/org/<%=req.org.id%>/tag/<%=tag.id%>'>
 		<i class="tag icon"></i>
 		<%=tag.name%>
 	</a>	

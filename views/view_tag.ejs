@@ -15,12 +15,12 @@
 			<b>Description:</b> <%=tag.description%><br/>
 			<b>Budget:</b> INR <%=tag.budget%><br/>
 			<%if(tag.parent){%>
-				<b>Parent:</b> <a href="/tag/<%=tag.parent.id%>"><%=tag.parent.name%></a><br/>
+				<b>Parent:</b> <a href="/org/<%=req.org.id%>/tag/<%=tag.parent.id%>"><%=tag.parent.name%></a><br/>
 			<%}%>
 			<!-- <b>Has data from:</b> 25th June  -->
 			<h3>Current state:</h3>
 			<div class="ui tiny statistics">
-				<a class="statistic" href='/transactions?tag=<%=tag.id%>&txn_type=income'>
+				<a class="statistic" href='/org/<%=req.org.id%>/transactions?tag=<%=tag.id%>&txn_type=income'>
 					<div class="">
 						Total income
 					</div>
@@ -28,7 +28,7 @@
 						<%= total_income %>
 					</div>
 				</a>
-				<a class="statistic" href='/transactions?tag=<%=account.id%>&txn_type=expense'>
+				<a class="statistic" href='/org/<%=req.org.id%>/transactions?tag=<%=account.id%>&txn_type=expense'>
 					<div class="">
 						Total expense
 					</div>
@@ -63,7 +63,7 @@
 				</h3>
 				<div class="ui tiny statistics">
 					
-					<a class="statistic" href='/transactions?tag=<%=tag.id%>&txn_type=income&date_from=<%=date_from%>&date_to=<%=date_to%>'>
+					<a class="statistic" href='/org/<%=req.org.id%>/transactions?tag=<%=tag.id%>&txn_type=income&date_from=<%=date_from%>&date_to=<%=date_to%>'>
 						<div class="">
 							Income
 						</div>
@@ -72,7 +72,7 @@
 						</div>
 						
 					</a>
-					<a class="statistic" href='/transactions?tag=<%=tag.id%>&txn_type=expense&date_from=<%=date_from%>&date_to=<%=date_to%>'>
+					<a class="statistic" href='/org/<%=req.org.id%>/transactions?tag=<%=tag.id%>&txn_type=expense&date_from=<%=date_from%>&date_to=<%=date_to%>'>
 						<div class="">
 							Expense
 						</div>
@@ -122,7 +122,7 @@
 
 	
 </div>
-<a class="circular ui icon right floated primary big button" href="/account/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new account" data-position="left center" data-inverted=""><i class="icon book"></i></a>
+<a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/tag/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new tag" data-position="left center" data-inverted=""><i class="icon tag"></i></a>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('.popup').popup();
