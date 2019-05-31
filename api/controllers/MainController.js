@@ -1881,15 +1881,20 @@ module.exports = {
 		}
 	},
 	viewTag:async function(req,res){
-		var tag = await Tag.findOne({id:req.params.id});
+		var tag = await Tag.findOne({id:req.params.id, org: req.org.id});
+		if(!tag)
+			return res.view('404');
+		
+		var accounts = await Account.find({org: req.org.id});
+
 		var query = `SELECT sum (case when transaction_line_item.amount_inr >= 0 then transaction_line_item.amount_inr else 0 end) as income, sum (case when transaction_line_item.amount_inr < 0 then transaction_line_item.amount_inr else 0 end) as expense from transaction_line_item left JOIN tag_tlis__transaction_line_item_tags on transaction_line_item.id = tag_tlis__transaction_line_item_tags.transaction_line_item_tags WHERE tag_tlis__transaction_line_item_tags.tag_tlis = $1 and transaction_line_item."type" = 'income_expense'`
 		var income_expense = (await sails.sendNativeQuery(query, [tag.id])).rows[0];
 
-		var date_filter = `date_trunc('week', NOW()) = date_trunc('week', "transaction_line_item"."createdAt"::date)`;
+		var date_filter = `date_trunc('week', NOW()) = date_trunc('week', "transaction_line_item"."occuredAt"::date)`;
 		if(req.query.time_span == 'this-month'){
-			date_filter = `date_trunc('month', NOW()) = date_trunc('month', "transaction_line_item"."createdAt"::date)`;
+			date_filter = `date_trunc('month', NOW()) = date_trunc('month', "transaction_line_item"."occuredAt"::date)`;
 		} else if(req.query.time_span == 'this-year'){
-			date_filter = `date_trunc('year', NOW()) = date_trunc('year', "transaction_line_item"."createdAt"::date)`;
+			date_filter = `date_trunc('year', NOW()) = date_trunc('year', "transaction_line_item"."occuredAt"::date)`;
 		}
 		var filter_query = `SELECT sum (case when transaction_line_item.amount_inr >= 0 then transaction_line_item.amount_inr else 0 end) as income, sum (case when transaction_line_item.amount_inr < 0 then transaction_line_item.amount_inr else 0 end) as expense from transaction_line_item left JOIN tag_tlis__transaction_line_item_tags on transaction_line_item.id = tag_tlis__transaction_line_item_tags.transaction_line_item_tags WHERE tag_tlis__transaction_line_item_tags.tag_tlis = $1 and transaction_line_item."type" = 'income_expense' and ` + date_filter
 		var filtered_income_expense = (await sails.sendNativeQuery(filter_query, [tag.id])).rows[0];
@@ -1898,9 +1903,34 @@ module.exports = {
 			tag: tag,
 			total_income: income_expense.income,
 			total_expense: income_expense.expense,
-			filtered_income: filtered_income_expense.income,
-			filtered_expense: filtered_income_expense.expense
+			filtered_income: filtered_income_expense.income ? filtered_income_expense.income: 0,
+			filtered_expense: filtered_income_expense.expense ? filtered_income_expense.expense: 0,
+			metabase: {}
 		}
+		var questions=[
+			{
+				url_name:'category_wise_expense',
+				question_id:30,
+				params:{
+					tag_id:""+tag.id,
+				}
+			},
+			{
+				url_name:'category_wise_income',
+				question_id:31,
+				params:{
+					tag_id:""+tag.id,
+				}
+			}
+		]
+		questions.forEach(function(q){
+			var payload = {
+				resource: { question: q.question_id },
+				params:q.params,
+			};
+			var token = jwt.sign(payload, sails.config.metabase.secret_key);
+			locals.metabase[q.url_name]=sails.config.metabase.site_url + "/embed/question/" + token + "#bordered=true&titled=false";
+		});
 		res.view('view_tag',locals);
 	},
 	editTag:function(req,res){

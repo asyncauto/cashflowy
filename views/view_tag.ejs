@@ -67,7 +67,7 @@
 						<div class="">
 							Income
 						</div>
-						<div class="value">
+						<div class="value" style="color:green;">
 							<%= filtered_income %>
 						</div>
 						
@@ -76,8 +76,8 @@
 						<div class="">
 							Expense
 						</div>
-						<div class="value">
-							<%= filtered_expense %>
+						<div class="value" style="color:red;">
+							<%= -filtered_expense %>
 						</div>
 						
 					</a>
@@ -86,41 +86,36 @@
 			</div>
 		</div>
 		<div class='ui row'>
-			<div class='eight wide column'>
-				<!-- <b>Income and Expense</b> -->
-				<h4>Income Expense</h4>
-				<iframe
-				    src="https://www.google.com"
-				    frameborder="0"
-				    width="100%"
-				    height="200"
-				    allowtransparency
-				></iframe>
-			</div>
-			
-		</div>
-		<div class='ui row'>
 			<div class='five wide column'>
 				<!-- <b>Income and Expense</b> -->
-				<h4>Income category vise</h4>
+				<h4>Income category wise</h4>
+				<% if(total_income){ %>
 				<iframe
-				    src="https://www.google.com"
+				    src="<%=metabase.category_wise_income%>"
 				    frameborder="0"
 				    width="100%"
 				    height="300"
 				    allowtransparency
 				></iframe>
+				<%} else{%>
+					<h3 class="ui grey center aligned">No Income Found</h3>
+				<%}%>
+
 			</div>
 			<div class='five wide column'>
 				<!-- <b>Income and Expense</b> -->
-				<h4>Expense category vise</h4>
+				<h4>Expense category wise</h4>
+				<% if(total_expense){ %>
 				<iframe
-				    src="https://www.google.com"
+				    src="<%=metabase.category_wise_expense%>"
 				    frameborder="0"
 				    width="100%"
 				    height="300"
 				    allowtransparency
 				></iframe>
+				<%} else{%>
+					<h3 class="ui grey center aligned">No Expense Found</h3>
+				<%}%>
 			</div>
 		</div>
 	</div>
