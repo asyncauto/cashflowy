@@ -1333,6 +1333,41 @@ module.exports = {
 			return res.status(200).json(updated)
 		})
 	},
+	viewTransaction:function(req,res){
+		
+		async.auto({
+			getTransaction:function(callback){
+				Transaction.findOne({id:req.params.id}).populate('account').exec(callback);
+			},
+			getParsedEmails:function(callback){
+				Parsed_email.find({transaction:req.params.id}).exec(callback);
+			},
+			getSLIs:function(callback){
+				Statement_line_item.find({transaction:req.params.id}).exec(callback);
+			},
+			getTlis:function(callback){
+				Transaction_line_item.find({transaction:req.params.id}).populate('tags').exec(callback);
+			},
+			getCategories:function(callback){
+				Category.find({org:req.params.o_id}).sort('name ASC').exec(callback);
+			},
+			getTags:function(callback){
+				Tag.find({org:req.params.o_id}).sort('name ASC').exec(callback);	
+			}
+		},function(err,results){
+			var locals={
+				moment:require('moment-timezone'),
+				t:results.getTransaction,
+				categories:GeneralService.orderCategories(results.getCategories),
+				tags:results.getTags,
+
+			}
+			locals.t.parsed_emails=results.getParsedEmails;
+			locals.t.slis=results.getSLIs;
+			locals.t.tlis=results.getTlis;
+			res.view('view_transaction',locals);
+		})
+	},
 	editTransaction:function(req,res){
 		Account.find({org:req.org.id}).exec(function(err,accounts){
 			if(req.body){ // post request

@@ -1,0 +1,360 @@
+<%
+var format_number=function(number){
+	return FormatService.formatNumber(number,req.query.number_format,req.query.precision);
+}
+%>
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='sixteen wide column'>
+			<h1> Details of a specific transaction:</h1>
+			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
+				<tbody>
+					<%t.tlis.forEach(function(tli,i){%>
+						<tr class='transaction top aligned' data-tli-id='<%=tli.id%>'>
+							<%if(i==0){%>
+								<td rowspan="<%=t.tlis.length+1%>">
+									<span class='popup' data-html="<%-moment(tli.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
+									<%-moment(tli.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+									<span style="font-size: 1.5rem;"><%-moment(tli.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+									<span style="font-size: 0.75rem;"><%-moment(tli.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
+									</span>
+									<!-- <a href="#" class='show_details'>details</a> -->
+								</td>
+							<%}%>
+							<td>
+								<!-- category  -->
+								<span style="opacity: 0.5;">Category:</span>
+								<div class="ui category dropdown" style="<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>">
+									<input type="hidden" name="category" value="<%=tli.category%>">
+									<div class="text">None</div>
+									<i class="dropdown icon"></i>
+									<div class="menu">
+										<%categories.forEach(function(category){%>
+											<%- partial('partials/category_dropdown', {category: category}) %>
+										<%})%>
+									</div>
+								</div>
+								<!-- &nbsp;&nbsp;&nbsp; <span style="opacity: 0.5">| Tags:</span> -->
+								<div class='ui divider' style='margin-top: 0px; margin-bottom: 0px;'></div>
+								<!-- description -->
+								<span class='description'><%-tli.description?tli.description:''%></span>
+								<a class='edit' data-id='<%=tli.id%>' href='' style="<%=(!tli.description)?'background:yellow':''%>">edit</a><br>
+
+								<div class='edit_description' data-id='<%=tli.id%>' style='display:none;'>
+									<div class="ui fluid input">
+										<input type="text" name='description' value='<%-tli.description?tli.description:''%>'>
+									</div>
+									<br>
+									<button class="ui teal button submit_edit_desc" data-id='<%=tli.id%>' >save</button>
+									<button class="ui red button cancel_edit_desc" data-id='<%=tli.id%>' >cancel</button>
+								</div>
+								<span style="opacity: 0.5;">Tags:</span>
+								<span class='tags'>
+									<%- partial('partials/display_tags', {tags: tli.tags}) %>
+								</span>
+								<i class="add_tags2 link plus icon" style="opacity: 0.5;"></i>
+								<div class="ui add_tags_popup popup">
+									Add tags to this transaction:
+									<button class='ui teal disabled button submit_edit_tags'>update</button>
+									<div class='ui tags_dd fluid multiple search selection dropdown'>
+										<%
+											var tag_names=_.map(tli.tags,'id');
+											var tags_string=tag_names.join(',');
+										%>
+										<input name='tags' type='hidden' value='<%=tags_string%>'>
+										<i class='dropdown icon'></i>
+										<input class='search' autocomplete='off' tabindex='0'><span class='sizer' style=''></span>
+										<div class='default text'>Tags</div>
+										<div class='menu transition hidden' tabindex='-1'>
+											<%tags.forEach(function(tag){%>
+												<div class='item' data-value='<%=tag.id%>'><%=tag.name%></div>
+											<%})%>
+										</div>
+									</div>
+									<br>
+									<!-- <button class='ui red button cancel_edit_tags' data-id='<%=t.id%>' >cancel</button> -->
+								</div>
+								<br>
+							</td>
+							<td>
+								<%if(tli.type=='income_expense'){
+									if(tli.original_amount<0){%> 
+										<span style='opacity: 0.5'>You paid</span><br>
+										<b style='color:red' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(format_number(-tli.original_amount))%></b>
+									<%}else{%>
+										<span style='opacity: 0.5'>You got</span><br>
+										<b style='color:#5bc5a2' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%-tli.amount_inr%>"><%=tli.original_currency%> <%=(format_number(tli.original_amount))%></b>
+									<%}
+								}else{%>
+									<span style='opacity: 0.5'>You transferred</span><br>
+									<b style='' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=format_number((-tli.original_amount))%></b>
+								<%}%>
+							</td>
+							<td>
+								<%if(tli.original_amount<0){%> 
+									<span style='opacity: 0.5'>from</span><br>
+								<%}else{%>
+									<span style='opacity: 0.5'>deposited to</span><br>
+								<%}%>
+								<%=tli.account.name%>
+							</td>
+							<td>
+								<%if(tli.type=='income_expense'){%> 
+									<%if(tli.original_amount<0){%> 
+										<span style='opacity: 0.5'>to</span><br>
+									<%}else{%>
+										<span style='opacity: 0.5'>from</span><br>
+									<%}%>
+									<%=tli.third_party%>
+								<%}else{%>
+									<span style='opacity: 0.5'>to</span><br>
+									<%=tli.to_account.name%>
+								<%}%>
+							</td>
+							<td>
+								<div class="ui basic icon top right pointing extra_options dropdown">
+									<i class="angle down icon"></i>
+									<div class="menu">
+										<a class="disabled item" href='/org/<%=req.params.o_id%>/transaction/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
+										<!-- <a class='item add_tags' href=''>Add tags</a> -->
+										<a class="item" href='/org/<%=req.params.o_id%>/transaction/<%=t.id%>/edit'>Edit</a>
+										<!-- <a class="item" href='/transaction/<%=t.id%>/convert_to_transfer'>Convert to transfer</a> -->
+										<a class="item" href='/org/<%=req.params.o_id%>/transaction/<%=t.id%>/delete'>Delete</a>
+									</div>
+								</div>
+							</td>
+						<!-- <td></td>
+						<td></td> -->
+						</tr>
+					<%})%>
+					<tr>
+						<td colspan='5' style='padding:7px;opacity: 0.7;'>
+							<a href="#" style='color: black; opacity: 0.7;' class='show_details' data-t-id="<%=t.id%>">details <i class="caret down icon"></i></a>
+							<br>
+							<span id='details_<%=t.id%>' style='display:none;'>
+								<%if(t.parsed_emails.length==0 && t.slis.length==0){%>
+									this transactions was created manually<br>
+								<%}else{%>
+									<%t.parsed_emails.forEach(function(pe){ %>
+										<i class='mail icon'></i>extracted from email - <%=pe.email%><br>
+									<%}) %>
+									<%t.slis.forEach(function(sli){ %>
+										<i class='file alternate outline icon'></i>extracted from document - <a href="/org/<%=req.org.id%>/document/<%=sli.document.id%>"><%=sli.document.id%></a> - line no - <%=sli.pos+1%><br>
+									<%}) %>
+								<%}%>
+								<br>
+								<a href="/org/1/transaction/<%=t.id%>">View more details</a>
+							</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class='sixteen wide column'>
+			<h3>Related parsed emails:</h3>
+		</div>
+		<%t.parsed_emails.forEach(function(pe){%>
+			<div class='sixteen wide column'>
+				<div class="ui tabular menu">
+					<a class="item active" data-tab="first">Original email body</a>
+					<a class="item" data-tab="second">Extracted Data</a>
+					<!-- <a class="item" data-tab="third">Original File</a> -->
+				</div>
+				<div class="ui tab active" data-tab="first">
+					<%-pe.details.inbound['body-html']%>
+				</div>
+				<div class="ui tab" data-tab="second">
+					<pre><%=JSON.stringify(pe.extracted_data,null,'    ')%></pre>
+				</div>
+				<!-- <div class="ui tab" data-tab="third">
+					third
+				</div> -->
+			</div>
+			<div class='four wide column'>
+				
+			</div>
+		<%})%>
+		<div class='sixteen wide column'>
+			<h3>Related statement line items:</h3>
+		</div>
+		<%t.slis.forEach(function(sli){%>
+			<div class='sixteen wide column'>
+				<div class="ui tabular menu">
+					<a class="item active" data-tab="first">Original email body</a>
+					<a class="item" data-tab="second">Extracted Data</a>
+					<!-- <a class="item" data-tab="third">Original File</a> -->
+				</div>
+				<div class="ui tab active" data-tab="first">
+				</div>
+				<div class="ui tab" data-tab="second">
+				</div>
+				<!-- <div class="ui tab" data-tab="third">
+					third
+				</div> -->
+			</div>
+			<div class='four wide column'>
+				
+			</div>
+		<%})%>
+		<div class='sixteen wide column'>
+			<!-- <pre><%=JSON.stringify(t,null,'    ')%></pre> -->
+		</div>
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.tabular.menu .item').tab();
+		var edit_active=false;
+		$('.edit').click(function(e){
+			e.preventDefault();
+			$(this).hide();
+			var tli_id=$(this).attr('data-id');
+			console.log('description clicked');
+			console.log(tli_id);
+			// if(!edit_active)
+			$('tr[data-tli-id='+tli_id+']').find('span.description').hide();
+			$(this).parent().find('.edit_description').show();
+			// edit_active=true;
+		});
+		$('.cancel_edit_desc').click(function(e){
+			console.log('cancel button clicked');
+			var tli_id=$(this).attr('data-id');
+			// edit_active=false;
+			$(this).parent().hide();
+			$(this).parents('tr[data-tli-id='+tli_id+']').find('span.description').show();
+			$(this).parents('tr[data-tli-id='+tli_id+']').find('.edit').show();
+			// $(this).parents().find('.edit[data-id='+t_id+']').show();
+		});
+		$('.submit_edit_desc').click(function(e){
+			console.log('submit button clicked');
+			// var tli_id=$(this).parents('.tli').attr('data-tli-id');
+			var tli_id=$(this).attr('data-id');
+			console.log(tli_id);
+			var description=$('tr[data-tli-id='+tli_id+']').find('input[name=description]').val();
+			$('tr[data-tli-id='+tli_id+'] span.description').text(description);
+			$('tr[data-tli-id='+tli_id+'] span.description').show();
+			// /api/edit_desc
+			var button = this;
+			$(button).addClass('loading');
+			$(button).addClass('disabled');
+			$.post("/org/"+"<%=req.params.o_id%>"+"/api/edit_desc", {tli: tli_id,description:description}, function(result,status){
+			    console.log('result = '+result);
+			    console.log('status = '+status);// this runs only on sucess
+			    if(status=='success'){
+			        $(button).removeClass('loading');
+			        $(button).removeClass('disabled');
+					$(button).parent().hide();
+					$(button).parents().find('.edit[data-id='+tli_id+']').show();
+			    }
+			});
+		});
+		$('.category.dropdown').dropdown({
+			onChange:function(value, text, $choice){
+				var dd = this;
+				$(this).addClass('disabled loading');
+				var tli_id=$(this).parents('tr').attr('data-tli-id');
+				console.log(tli_id);
+				$.ajax({
+					url:"/org/"+"<%=req.params.o_id%>"+"/tli/"+tli_id,
+					data:{category: value},
+					type:'PUT',
+					success:function(response){
+						console.log('success');
+						$(dd).removeClass('disabled').removeClass('loading');
+					},
+					error:function(xhr, textStatus, errorThrown){
+						console.log("An error occured: " + xhr.status + " " + xhr.statusText);
+					}
+				})
+			}
+		});
+		$('.add_tags').click(function(e){
+			e.preventDefault();
+			$(this).parents('tr').find('.tags').hide();
+			console.log('hi');
+			$(this).parents('tr').find('.edit_tags').show();
+		})
+		$('.filter_txn.dropdown').dropdown({ allowCategorySelection: true });
+		$('.extra_options.dropdown').dropdown();
+		$('.filter.dropdown').dropdown({
+			onChange:function(value, text, $choice){
+				var params = {};
+				if($('input[name="filter_account"]').val())
+					params.account= $('input[name="filter_account"]').val();
+				if($('input[name="filter_category"]').val())
+				    params.category= $('input[name="filter_category"]').val();
+				window.location = "/org/"+"<%=req.params.o_id%>"+'/transactions?'+$.param(params);
+			}
+		});
+		$('.tags_dd.ui.dropdown')
+		  .dropdown({
+		    allowAdditions: true,
+		    onChange:function(value, text, $choice){
+				console.log('\n\n\n\n\n on change called')
+				$(this).parents('.add_tags_popup').find('.submit_edit_tags').removeClass('disabled');
+			}
+		  });
+		$('.popup').popup();
+		$('.add_tags2').popup({
+			on:'click',
+			popup: '.add_tags_popup'
+		});
+		$('.submit_edit_tags').click(function(e){
+			$(this).addClass('disabled');
+			console.log('here here');
+			var tli_id=$(this).parents('tr').attr('data-tli-id');
+			var tags_string=$(this).parents('tr').find('.add_tags_popup').find('input[name=tags]').val();
+			console.log(tli_id);
+			console.log(tags_string);
+			var dd = this;
+			$.ajax({
+				url:"/org/"+"<%=req.params.o_id%>"+"/api/edit_tags/",
+				data:{new_tags: tags_string.split(','),tli_id:tli_id},
+				type:'POST',
+				success:function(response){
+					console.log('success');
+					// alert('updated tags');
+					console.log(response);
+					console.log('response above');
+					// $(dd).removeClass('disabled').removeClass('loading');
+					$(dd).parents('tr').find('.tags').html(response);
+					// $(dd).parents('.transaction').find('span.tags').html('hello');
+				},
+				error:function(xhr, textStatus, errorThrown){
+					console.log("An error occured: " + xhr.status + " " + xhr.statusText);
+				}
+			})
+			// update the ui to include the tags.
+			// update details on the backend. 
+		})
+		$('#submit_form').click(function(){
+			console.log('clicked on form submit');
+			$('input').each(function(i) {
+		        var $input = $(this);
+		        if ($input.val() == '')
+		            $input.attr('disabled', 'disabled');
+		    });
+			$( "form" ).submit();
+		});
+		$('#reset_form').click(function(){
+			window.location = "/org/"+"<%=req.params.o_id%>"+'/transactions';
+		});
+		$('.show_details').click(function(e){
+			e.preventDefault();
+			// alert('show details clicked');
+			if($(this).find('i.down').length)
+				$(this).find('i.down').removeClass('down').addClass('up');
+			else
+				$(this).find('i.up').removeClass('up').addClass('down');
+			console.log('show details clicked');
+			var t_id=$(this).attr('data-t-id');
+			$('#details_'+t_id).toggle();
+		});
+
+		$('.dropdown.precision').dropdown();
+		$('.dropdown.number_format').dropdown();
+		
+	});
+</script>
