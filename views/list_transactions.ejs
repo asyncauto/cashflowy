@@ -354,11 +354,11 @@ function updateQueryStringParameter(uri, key, value) {
 							</tr>
 						<%})%>
 						<tr>
-	                        <td colspan='5' style='padding:7px;opacity: 0.7;'>
-	                        	<a href="#" style='color: black; opacity: 0.7;' class='show_details' data-t-id="<%=t.id%>">details <i class="caret down icon"></i></a>
-	                        	<br>
-	                        	<span id='details_<%=t.id%>' style='display:none;'>
-	                        		<%if(t.parsed_emails.length==0 && t.slis.length==0){%>
+							<td colspan='5' style='padding:7px;opacity: 0.7;'>
+								<a href="#" style='color: black; opacity: 0.7;' class='show_details' data-t-id="<%=t.id%>">details <i class="caret down icon"></i></a>
+								<br>
+								<span id='details_<%=t.id%>' style='display:none;'>
+									<%if(t.parsed_emails.length==0 && t.slis.length==0){%>
 										this transactions was created manually<br>
 									<%}else{%>
 										<%t.parsed_emails.forEach(function(pe){ %>
@@ -368,9 +368,11 @@ function updateQueryStringParameter(uri, key, value) {
 											<i class='file alternate outline icon'></i>extracted from document - <a href="/org/<%=req.org.id%>/document/<%=sli.document.id%>"><%=sli.document.id%></a> - line no - <%=sli.pos+1%><br>
 										<%}) %>
 									<%}%>
-	                        	</span>
-	                        </td>
-	                    </tr>
+									<br>
+									<a href="/org/1/transaction/<%=t.id%>">View more details</a>
+								</span>
+							</td>
+						</tr>
 					<%})%>
 				</tbody>
 			</table>
@@ -427,14 +429,14 @@ function updateQueryStringParameter(uri, key, value) {
 			$(button).addClass('loading');
 			$(button).addClass('disabled');
 			$.post("/org/"+"<%=req.params.o_id%>"+"/api/edit_desc", {tli: tli_id,description:description}, function(result,status){
-			    console.log('result = '+result);
-			    console.log('status = '+status);// this runs only on sucess
-			    if(status=='success'){
-			        $(button).removeClass('loading');
-			        $(button).removeClass('disabled');
+				console.log('result = '+result);
+				console.log('status = '+status);// this runs only on sucess
+				if(status=='success'){
+					$(button).removeClass('loading');
+					$(button).removeClass('disabled');
 					$(button).parent().hide();
 					$(button).parents().find('.edit[data-id='+tli_id+']').show();
-			    }
+				}
 			});
 		});
 		$('.category.dropdown').dropdown({
@@ -471,14 +473,14 @@ function updateQueryStringParameter(uri, key, value) {
 				if($('input[name="filter_account"]').val())
 					params.account= $('input[name="filter_account"]').val();
 				if($('input[name="filter_category"]').val())
-				    params.category= $('input[name="filter_category"]').val();
+					params.category= $('input[name="filter_category"]').val();
 				window.location = "/org/"+"<%=req.params.o_id%>"+'/transactions?'+$.param(params);
 			}
 		});
 		$('.tags_dd.ui.dropdown')
 		  .dropdown({
-		    allowAdditions: true,
-		    onChange:function(value, text, $choice){
+			allowAdditions: true,
+			onChange:function(value, text, $choice){
 				console.log('\n\n\n\n\n on change called')
 				$(this).parents('.add_tags_popup').find('.submit_edit_tags').removeClass('disabled');
 			}
@@ -519,10 +521,10 @@ function updateQueryStringParameter(uri, key, value) {
 		$('#submit_form').click(function(){
 			console.log('clicked on form submit');
 			$('input').each(function(i) {
-		        var $input = $(this);
-		        if ($input.val() == '')
-		            $input.attr('disabled', 'disabled');
-		    });
+				var $input = $(this);
+				if ($input.val() == '')
+					$input.attr('disabled', 'disabled');
+			});
 			$( "form" ).submit();
 		});
 		$('#reset_form').click(function(){

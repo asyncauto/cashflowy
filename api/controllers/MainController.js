@@ -312,6 +312,32 @@ module.exports = {
 			return res.json({status: 'success'})
 		});
 	},
+	listParsedEmails:function(req,res){
+		var limit = req.query.limit?parseInt(req.query.limit): 25;
+		var page = req.query.page?parseInt(req.query.page):1;
+		var skip = limit * (page-1);
+		async.auto({
+			getParsedEmails:function(callback){
+				Parsed_email.find({org:req.params.o_id})
+					.populate('transaction')
+					.sort('createdAt DESC')
+					.limit(limit)
+					.skip(skip)
+					.exec(callback);
+			},
+		},function(err,results){
+			var locals={
+				parsed_emails:results.getParsedEmails,
+				page: page,
+				limit:limit,
+			}
+			res.view('list_parsed_emails',locals);
+		})
+	},
+	viewParsedEmail:function(req,res){
+		var locals={}
+		res.view('view_parsed_email',locals);
+	},
 	retryParsedEmail: function(req, res){
 		async.auto({
 			getParsedEmail: function(cb){
@@ -1331,6 +1357,41 @@ module.exports = {
 			}
 			var updated = _.get(results, 'updateTli[0]', {})
 			return res.status(200).json(updated)
+		})
+	},
+	viewTransaction:function(req,res){
+		
+		async.auto({
+			getTransaction:function(callback){
+				Transaction.findOne({id:req.params.id}).populate('account').exec(callback);
+			},
+			getParsedEmails:function(callback){
+				Parsed_email.find({transaction:req.params.id}).exec(callback);
+			},
+			getSLIs:function(callback){
+				Statement_line_item.find({transaction:req.params.id}).exec(callback);
+			},
+			getTlis:function(callback){
+				Transaction_line_item.find({transaction:req.params.id}).populate('tags').exec(callback);
+			},
+			getCategories:function(callback){
+				Category.find({org:req.params.o_id}).sort('name ASC').exec(callback);
+			},
+			getTags:function(callback){
+				Tag.find({org:req.params.o_id}).sort('name ASC').exec(callback);	
+			}
+		},function(err,results){
+			var locals={
+				moment:require('moment-timezone'),
+				t:results.getTransaction,
+				categories:GeneralService.orderCategories(results.getCategories),
+				tags:results.getTags,
+
+			}
+			locals.t.parsed_emails=results.getParsedEmails;
+			locals.t.slis=results.getSLIs;
+			locals.t.tlis=results.getTlis;
+			res.view('view_transaction',locals);
 		})
 	},
 	editTransaction:function(req,res){

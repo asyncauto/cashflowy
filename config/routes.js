@@ -44,8 +44,10 @@ module.exports.routes = {
   'POST /org/:o_id/email/:id/edit':'MainController.editEmail',
   'GET /org/:o_id/email/:id':'MainController.viewEmail',
 
-  'POST /org/:o_id/parse_failure/:id/retry': 'MainController.retryParseFailure',
+  'GET /org/:o_id/parsed_emails/': 'MainController.listParsedEmails',
+  'GET /org/:o_id/parsed_email/:pe_id': 'MainController.viewParsedEmail',
   'POST /org/:o_id/parsed_email/:id/retry': 'MainController.retryParsedEmail',
+  'POST /org/:o_id/parse_failure/:id/retry': 'MainController.retryParseFailure',
   
   'GET /org/:o_id/accounts':'MainController.listAccounts',
   'GET /org/:o_id/account/create':'MainController.createAccount',
@@ -60,6 +62,7 @@ module.exports.routes = {
   'GET /org/:o_id/transactions':'MainController.listTransactions',
   'GET /org/:o_id/transaction/create':'MainController.createTransaction',
   'POST /org/:o_id/transaction/create':'MainController.createTransaction',
+  'GET /org/:o_id/transaction/:id':'MainController.viewTransaction',
   'GET /org/:o_id/transaction/:id/edit':'MainController.editTransaction',
   'POST /org/:o_id/transaction/:id/edit':'MainController.editTransaction',
   'PUT /org/:o_id/tli/:id':'MainController.updateTli',
