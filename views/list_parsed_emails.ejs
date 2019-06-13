@@ -1,0 +1,65 @@
+<div class='ui container'>
+	<div class='ui grid'>
+		<!-- <div class='three wide column'></div> -->
+		<div class='sixteen wide column'>
+			
+			<div class="ui pointing secondary menu" id='tabs'>
+				<a class="item active" data-tab="first">Parsed emails</a>
+				<a class="item " data-tab="second">Parsed Failed</a>
+				<!-- <a class="item" data-tab="third">Ignored</a> -->
+			</div>
+			<div class="ui tab active " data-tab="first">
+				<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+					<thead>
+						<tr>
+							<th>From</th>
+							<th>To</th>
+							<th>Subject</th>
+							<th>Date</th>
+							<th>Parser</th>
+							<th>Data</th>
+							<th>View</th>
+							<th>T</th>
+						</tr>
+					</thead>
+					<tbody>
+						<%parsed_emails.forEach(function(pe){%>
+							<tr>
+								<td><%=pe.details.inbound.from%></td>
+								<td><%=pe.details.inbound.To%></td>
+								<td><%=pe.details.inbound.subject%></td>
+								<td><%=pe.details.inbound.Date%></td>
+								<td><%=pe.type%> <%=pe.body_parser_used%></td>
+								<td><i class='eye icon popup' data-html="<div class='header'>Extracted data</div><div class='content'><pre><%=JSON.stringify(pe.extracted_data,null,'    ')%></pre></div>"></i></td>
+								<td>
+									<a href="/org/<%=req.params.o_id%>/parsed_email/<%=pe.id%>">
+										<i class='file icon'></i>
+									</a>
+								</td>
+								<td>
+									<%if(pe.transaction){%>
+									<a href="/org/<%=req.params.o_id%>/transaction/<%=pe.transaction.id%>">
+										<i class='dollar icon'></i>
+									</a>
+									<%}%>
+								</td>
+							</tr>
+						<%})%>
+					</tbody>
+				</table>
+				
+			</div>
+			<div class="ui tab " data-tab="second">
+				coming soon
+			</div>
+			<!-- <pre><%=JSON.stringify(parsed_emails,null,'    ')%></pre> -->
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#tabs .item').tab();
+		$('.menu .item').tab();
+		$('.popup').popup();
+	});
+</script>
