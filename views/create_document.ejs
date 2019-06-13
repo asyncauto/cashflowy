@@ -27,11 +27,13 @@
 					</div>
 				</div>
 				<div class="field">
+					<label>Enter Password (optional)<i class="icon info"></i></label>
+					<input type="text" name="password">
+				</div>
+				<div class="field">
 					<label>Upload</label>
 					<input type="file" name="file" required>
 				</div>
-	
-				
 				<input type="submit" class="ui button" value="Submit">
 				<div class="ui success message">
 					<div class="header">Document created</div>
@@ -44,28 +46,13 @@
 				<p><%=message%></p>
 			</div>
 			<% } %>
+			<div class="ui info message">
+				<p>
+					<i class="icon info"></i>Password is not required if you have earlier entered for same type of document.
+				</p>
+			</div>
 		</div>
 		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
-			<div class='ui segment'>
-				<p>For now we support hdfc credit card statements.</p> 
-				<p><b>We expect a pdf file without password protection.</b></p> 
-				<p>To generate a pdf file without password:
-					<ol class="ui list">
-						<li>open the file in google chorme</li>
-						<li>enter password</li>
-						<li>ctrl + p / cmd + p</li>
-						<li>save as pdf</li>
-					</ol>
-				</p>
-				
-				<br/>
-
-				<!-- <b>Email:</b> 
-				For now we support only gmail address. The gmail address can be a business gmail address also. 
-				<br/><br/>
-				<b>Token:</b>
-				You will need to enter token detail here for now. It will be automated later.  -->
-			</div>
 		</div>
 	</div>
 </div>

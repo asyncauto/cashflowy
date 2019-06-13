@@ -1749,7 +1749,7 @@ module.exports = {
 			// ones that has been marked as 
 	},
 	
-	createDocument: function(req, res) {
+	createDocument: async function(req, res) {
 		if (req.method == 'GET') {
 			var locals = {
 				type: '',
@@ -1768,7 +1768,7 @@ module.exports = {
 						cb(null, uploadedFiles)
 					});
 				},
-				uploadFileToS3: ['uploadFile', function(results, cb){
+				uploadOriginalFileToS3: ['uploadFile', function(results, cb){
 					var s3 = new AWS.S3({
 						accessKeyId: sails.config.aws.key,
 						secretAccessKey: sails.config.aws.secret,
@@ -1782,17 +1782,81 @@ module.exports = {
 						cb(err, data);
 					});
 				}],
-				createDocument: ['uploadFileToS3', function (results, cb) {
+				createDocument: ['uploadOriginalFileToS3', function (results, cb) {
 					Document.create({ 
 						org: req.org.id, 
 						parser_used: req.body.type, 
 						details:{
-							s3_key:results.uploadFileToS3.key, 
+							s3_key:results.uploadOriginalFileToS3.key, 
 							original_filename:results.uploadFile[0].filename, 
-							s3_location: results.uploadFileToS3.Location, 
-							s3_bucket: results.uploadFileToS3.Bucket} }).exec(cb);
+							s3_location: results.uploadOriginalFileToS3.Location, 
+							s3_bucket: results.uploadOriginalFileToS3.Bucket} }).exec(cb);
 				}],
-				sendToDocParser: ['createDocument', 'uploadFile', function (results, cb) {
+				removePassword: ['createDocument', async function(results){
+					const pdf = require('pdf-parse');
+					const util = require('util');
+					const exec = util.promisify(require('child_process').exec);
+					var fsExists = util.promisify(require('fs').exists);
+
+					var org = await Org.findOne(req.org.id);
+
+					var uf = results.uploadFile[0].fd.split('/')
+					uf[uf.length -1] = 'decrypted_'+uf[uf.length -1];
+					uf = uf.join('/');
+
+					// if user enters the password try first
+					if(req.body.password)
+						try{
+							const { stdout, stderr } = await exec(`qpdf -password=${req.body.password} -decrypt ${results.uploadFile[0].fd} ${uf}`);
+							console.log('output', stdout, stderr);
+						}
+						catch(error){
+							// pass
+							console.log('error', error);
+							throw new Error('INVALID_PASSWORD_ENTERED');
+						}
+
+					//else try passwords
+					else{
+						for (const sp of org.details.statement_passwords) {
+							try{
+								const { stdout, stderr } = await exec(`qpdf -password=${sp} -decrypt ${results.uploadFile[0].fd} ${uf}`);
+								console.log('output', stdout, stderr);
+							}
+							catch(error){
+								// pass
+								console.log('error', error);
+							}
+						}
+					}
+					console.log('came here, should come after the for loop')
+					var decrypted_file_exists = await fsExists(uf);
+					if(decrypted_file_exists){
+						// if worked
+						if(req.body.password){
+							org.details.statement_passwords = _.union(org.details.statement_passwords, [req.body.password])
+							await Org.update(org.id, {details: org.details});
+						}
+						return uf;
+					}
+					else
+						throw new Error('PASSWORD_DECRYPTION_FAILED');
+				}],
+				uploadDecryptedFileToS3: ['removePassword', function(results, cb){
+					var s3 = new AWS.S3({
+						accessKeyId: sails.config.aws.key,
+						secretAccessKey: sails.config.aws.secret,
+						region: sails.config.aws.region
+					});
+					var params = {Bucket: sails.config.aws.bucket, 
+						Key: 'decrypted_' + _.get(results, 'uploadFile[0].stream.fd'), 
+						Body: fs.createReadStream(results.removePassword)
+					};
+					s3.upload(params, function(err, data) {
+						cb(err, data);
+					});
+				}],
+				sendToDocParser: ['removePassword', 'uploadFile', function (results, cb) {
 	
 					var options = {
 						method: 'POST',
@@ -1803,7 +1867,7 @@ module.exports = {
 								remote_id: results.createDocument.id,
 								file:
 									{
-										value: fs.createReadStream(results.uploadFile[0].fd),
+										value: fs.createReadStream(results.removePassword),
 										options:
 											{
 												filename: results.uploadFile[0].filename,
@@ -1812,7 +1876,7 @@ module.exports = {
 									}
 							}
 					};
-	
+
 					request(options, function (error, response, body) {
 						if (error) return cb(error);
 						if(body && body.error)

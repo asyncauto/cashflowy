@@ -29,6 +29,7 @@
     "passport": "^0.4.0",
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
+    "pdf-parse": "^1.1.1",
     "python-shell": "^1.0.6",
     "query-string": "^6.5.0",
     "rc": "^1.2.8",
