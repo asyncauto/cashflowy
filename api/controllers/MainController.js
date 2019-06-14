@@ -363,8 +363,12 @@ module.exports = {
 		})
 	},
 	viewParsedEmail:function(req,res){
-		var locals={}
-		res.view('view_parsed_email',locals);
+		Parsed_email.findOne({org:req.params.o_id,id:req.params.pe_id}).exec(function(err,pe){
+			var locals={
+				pe:pe
+			}
+			res.view('view_parsed_email',locals);
+		})
 	},
 	retryParsedEmail: function(req, res){
 		async.auto({

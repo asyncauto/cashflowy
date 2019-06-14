@@ -1,1 +1,12 @@
-View details of parsed email coming soon.. 
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='three wide computer only column'>
+		</div>
+		<div class='ten wide column'>
+			<div class='ui basic segment'>
+				<h3>Subject: <%=pe.details.inbound.subject%></h3>
+				<%-pe.details.inbound['body-html']%>				
+			</div>
+		</div>
+	</div>
+</div>
