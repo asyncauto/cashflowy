@@ -325,9 +325,37 @@ module.exports = {
 					.skip(skip)
 					.exec(callback);
 			},
+			getTlis:['getParsedEmails',function(results,callback){
+				var t_ids=_.map(results.getParsedEmails,'transaction.id');
+				Transaction_line_item.find({transaction:t_ids}).populate('tags').populate('account').exec(callback);
+			}],
+			getCategories:function(callback){
+				Category.find({org:req.params.o_id}).sort('name ASC').exec(callback);
+			},
+			getTags:function(callback){
+				Tag.find({org:req.params.o_id}).sort('name ASC').exec(callback);	
+			}
 		},function(err,results){
+			var categories= GeneralService.orderCategories(results.getCategories);
+			results.getTlis.forEach(function(tli){
+				categories.forEach(function(cat){
+					if(tli.category==cat.id)
+						tli.category_name=cat.name;
+				})
+			})
+			results.getParsedEmails.forEach(function(pe){
+				pe.transaction.tlis=[];
+				results.getTlis.forEach(function(tli){
+					if(tli.transaction==pe.transaction.id){
+						pe.transaction.tlis.push(tli);
+					}
+				})
+			})
 			var locals={
 				parsed_emails:results.getParsedEmails,
+				tlis:results.getTlis,
+				categories:GeneralService.orderCategories(results.getCategories),
+				tags:results.getTags,
 				page: page,
 				limit:limit,
 			}

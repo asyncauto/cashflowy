@@ -1,9 +1,9 @@
-<div class="item" data-value="<%=category.id%>">
+<div class='item' data-value='<%=category.id%>'>
 	<%=category.fullname%>
 	<%if(category.children && category.children.length){%>
-		<i class="dropdown icon"></i>
-		<div class="menu">
-			<div class="item" data-value="<%=category.id%>">
+		<i class='dropdown icon'></i>
+		<div class='menu'>
+			<div class='item' data-value='<%=category.id%>'>
 				<%=category.name%>
 			</div>
 			<%category.children.forEach(function(c2){%>
