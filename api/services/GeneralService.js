@@ -217,5 +217,8 @@ module.exports={
 			text += possible.charAt(Math.floor(Math.random() * possible.length));
 
 		return text;
+	},
+	includePackage:function(pkg_name){
+		return require(pkg_name);
 	}
 }
