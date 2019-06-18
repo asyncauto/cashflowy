@@ -99,8 +99,13 @@ module.exports = {
 				"timezone_offset": -330,
 				"default_currency": "INR"
 			}
-		});
+		}).fetch();
 		
+		var email = await Email.create({
+			org:org.id,
+			email:user.email,
+			details:{}
+		});
 		return cb()
 	}
 };
