@@ -34,6 +34,9 @@ module.exports.policies = {
     listNotifications:['isAuthenticated'],
     createOrg: ['isAuthenticated']
   },
+  IntroController: {
+    '*': ['isAuthenticated', 'isMemberOfOrg'],
+  },
   BullController: {
     '*': ['isAuthenticated', 'isAdmin']
   },

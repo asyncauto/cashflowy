@@ -248,7 +248,13 @@ module.exports.routes = {
   'POST /user/:id/settings/device/create':'UserSettingsController.createDevice',
   'POST /background/ping_device':'BackgroundController.pingDevice',
 
-
+  'GET /org/:o_id/intro':'IntroController.intro',
+  'GET /org/:o_id/intro/create_account':'IntroController.createAccount',
+  'GET /org/:o_id/intro/create_transaction':'IntroController.createTransaction',
+  'GET /org/:o_id/intro/create_categories':'IntroController.createCategory',
+  'GET /org/:o_id/intro/forward_email':'IntroController.forwardEmail',
+  'GET /org/:o_id/intro/auto_forwarders':'IntroController.autoForwarders',
+  'GET /org/:o_id/intro/auto_forwarders':'IntroController.autoForwarders',
 
   //webhooks
 
