@@ -35,5 +35,11 @@ module.exports={
 		// check if the step exists
 		res.view('mastery/'+req.params.level+'__'+req.params.step,locals)
 	},
+	completeStep:function(req,res){
+		// is there any more incomplete steps?
+		// should you move to the next level
+		// update user
+		// redirect user to the next step
+	}
 	// upgrade level
 }
