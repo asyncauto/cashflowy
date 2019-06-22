@@ -256,6 +256,8 @@ module.exports.routes = {
   'GET /org/:o_id/intro/auto_forwarders':'IntroController.autoForwarders',
   'GET /org/:o_id/intro/auto_forwarders':'IntroController.autoForwarders',
 
+  'GET /org/:o_id/mastery':'MasteryController.intro',
+  'GET /org/:o_id/mastery/:level/:step':'MasteryController.viewStep',
   //webhooks
 
   'POST /webhook/docparser':'WebhookController.docparser',

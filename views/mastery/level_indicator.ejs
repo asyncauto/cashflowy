@@ -1,0 +1,32 @@
+<%
+	var current_level= _.get(req.user,'details.mastery.current_level');
+	// current_level='automation';
+	if(!current_level)
+		current_level=sails.config.levels[0].slug;
+	
+	var status="completed";
+	var states={};
+	sails.config.levels.forEach(function(level){
+		if(current_level==level.slug){
+			states[level.slug]="";
+			status="disabled";
+		}
+		else
+			states[level.slug]=status;
+		if(req.params.level==level.slug)
+			states[level.slug]+=' active';
+	});
+%>
+<!-- <div class='ui center aligned basic segment'>
+</div> -->
+<h1>Master your money</h1>
+<div class="ui five ordered steps">
+	<%sails.config.levels.forEach(function(level){%>
+		<a class="<%=states[level.slug]%> step" style='padding: 16px;' href='/org/<%=req.org.id%>/mastery/<%=level.slug%>/intro'>
+			<div class="content">
+				<div class="title"><%=level.name%></div>
+				<div class="description"><%=level.description%></div>
+			</div>
+		</a>
+	<%});%>
+</div>

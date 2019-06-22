@@ -37,6 +37,9 @@ module.exports.policies = {
   IntroController: {
     '*': ['isAuthenticated', 'isMemberOfOrg'],
   },
+  MasteryController: {
+    '*': ['isAuthenticated', 'isMemberOfOrg'],
+  },
   BullController: {
     '*': ['isAuthenticated', 'isAdmin']
   },
