@@ -1,0 +1,10 @@
+<%
+	var level=_.find(sails.config.levels,{slug:req.params.level})
+%>
+<div class="ui vertical menu">
+	<%level.steps.forEach(function(step){%>
+		<a class=" teal item" href='/org/<%=req.org.id%>/mastery/<%=level.slug%>/<%=step.slug%>'>
+			<%=step.name%>
+		</a>	
+	<%});%>
+</div>
