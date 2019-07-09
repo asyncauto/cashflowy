@@ -105,7 +105,7 @@ module.exports = {
 			User.create(user).exec(function (err, u) {
 				if (err) {
 
-					if (err.code == 'E_VALIDATION' && err.invalidAttributes && err.invalidAttributes.email) {
+					if (err.code == 'E_UNIQUE' && err.attrNames && err.attrNames.indexOf("email")>-1) {
 						locals.error = 'You have already registed with that email address. <a href="/login">Login in instead</a>'
 						return res.view('signup', locals);
 					}
