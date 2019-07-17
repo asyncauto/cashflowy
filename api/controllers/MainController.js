@@ -344,12 +344,14 @@ module.exports = {
 				})
 			})
 			results.getParsedEmails.forEach(function(pe){
-				pe.transaction.tlis=[];
-				results.getTlis.forEach(function(tli){
-					if(tli.transaction==pe.transaction.id){
-						pe.transaction.tlis.push(tli);
-					}
-				})
+				if(pe.transaction){
+					pe.transaction.tlis=[];
+					results.getTlis.forEach(function(tli){
+						if(tli.transaction==_.get(pe, 'transaction.id')){
+							pe.transaction.tlis.push(tli);
+						}
+					});
+				}
 			})
 			var locals={
 				parsed_emails:results.getParsedEmails,
