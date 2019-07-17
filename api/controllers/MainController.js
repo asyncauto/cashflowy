@@ -312,6 +312,35 @@ module.exports = {
 			return res.json({status: 'success'})
 		});
 	},
+	listParseFailures:function(req,res){
+		var limit = req.query.limit?parseInt(req.query.limit): 25;
+		var page = req.query.page?parseInt(req.query.page):1;
+		var skip = limit * (page-1);
+		async.auto({
+			getParseFailures:function(callback){
+				Parse_failure.find({org:req.params.o_id})
+					.sort('createdAt DESC')
+					.limit(limit)
+					.skip(skip)
+					.exec(callback);
+			},
+		},function(err,results){
+			var locals={
+				parse_failures:results.getParseFailures,
+				page: page,
+				limit:limit,
+			}
+			res.view('list_parse_failures',locals);
+		})
+	},
+	viewParseFailure:function(req,res){
+		Parse_failure.findOne({org:req.params.o_id,id:req.params.pf_id}).exec(function(err,pf){
+			var locals={
+				pf:pf
+			}
+			res.view('view_parse_failure',locals);
+		})
+	},
 	listParsedEmails:function(req,res){
 		var limit = req.query.limit?parseInt(req.query.limit): 25;
 		var page = req.query.page?parseInt(req.query.page):1;

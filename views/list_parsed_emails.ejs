@@ -3,12 +3,11 @@
 		<!-- <div class='three wide column'></div> -->
 		<div class='sixteen wide column'>
 			
-			<div class="ui pointing secondary menu" id='tabs'>
-				<a class="item active" data-tab="first">Parsed emails</a>
-				<a class="item " data-tab="second">Parsed Failed</a>
-				<!-- <a class="item" data-tab="third">Ignored</a> -->
+			<div class="ui pointing secondary menu">
+				<a class="item active" href='/org/<%=req.org.id%>/parsed_emails' data-tab="first">Parsed emails</a>
+				<a class="item" href='/org/<%=req.org.id%>/parse_failures' data-tab="second">Parsed Failed</a>
+
 			</div>
-			<div class="ui tab active " data-tab="first">
 				<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
 					<thead>
 						<tr>
@@ -48,19 +47,12 @@
 						<%})%>
 					</tbody>
 				</table>
-				
-			</div>
-			<div class="ui tab " data-tab="second">
-				coming soon
-			</div>
 			<!-- <pre><%=JSON.stringify(parsed_emails,null,'    ')%></pre> -->
 		</div>
 	</div>
 </div>
 <script type="text/javascript">
 	$(document).ready(function(){
-		$('#tabs .item').tab();
-		$('.menu .item').tab();
 		$('.popup').popup();
 	});
 </script>
