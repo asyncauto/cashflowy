@@ -162,7 +162,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'(https://amazonpay.amazon.in)'
+							q:'(http'
 						}, 
 						{
 							type:'trim',

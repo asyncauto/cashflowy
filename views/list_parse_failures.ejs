@@ -67,7 +67,7 @@
                 $(button).removeClass('loading');
                 $(button).removeClass('disabled');
             }).success(function() {
-                window.location = "/org/"+ <%=req.params.o_id%>+"/email/"+<%=req.params.id%> + "?tab=1";
+                location.reload();
             });
         });
     })
