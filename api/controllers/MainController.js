@@ -208,8 +208,8 @@ module.exports = {
 			getCategory:function(callback){
 				Category.findOne({id:req.params.id,org:req.org.id}).populate('parent').exec(callback);
 			},
-			getTransactionsCount:function(callback){
-				Transaction.count({category:req.params.id}).exec(callback);
+			getTlisCount:function(callback){
+				Transaction_line_item.count({category:req.params.id}).exec(callback);
 			},
 			getChildrenCategories:function(callback){
 				Category.find({parent:req.params.id,org:req.org.id}).exec(callback);
@@ -221,14 +221,14 @@ module.exports = {
 				if(results.getChildrenCategories.length>0)
 					res.send('this category has sub-categories. Delete all the sub-categories first');
 				async.auto({
-					getTransactions:function(callback){
-						Transaction.find({category:req.params.id}).exec(callback);
+					getTlis:function(callback){
+						Transaction_line_item.find({category:req.params.id}).exec(callback);
 					},
-					updateTransactions:['getTransactions',function(results,callback){
-						var t_ids=_.map(results.getTransactions,'id');
-						Transaction.update({id:t_ids},{category:null}).exec(callback);
+					updateTlis:['getTlis',function(results,callback){
+						var t_ids=_.map(results.getTlis,'id');
+						Transaction_line_item.update({id:t_ids},{category:null}).exec(callback);
 					}],
-					deleteCategory:['updateTransactions',function(results,callback){
+					deleteCategory:['updateTlis',function(results,callback){
 						Category.destroy({id:req.params.id}).exec(callback);
 					}]
 				},function(err,results){
@@ -241,7 +241,7 @@ module.exports = {
 				
 				var locals={
 					category:results.getCategory,
-					transactions_count:results.getTransactionsCount,
+					tlis_count:results.getTlisCount,
 					children:results.getChildrenCategories,
 				};
 				console.log(locals);
