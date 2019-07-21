@@ -1,16 +1,16 @@
 <div class='ui container'>
 	<br>
 	<h2>Do you really want to confirm deleting this Category?</h2>
-	This action is permanent. You cant reverse this. All transactions under this category will be un-categorized when you delete this category.
+	This action is permanent. You cant reverse this. All tlis under this category will be un-categorized when you delete this category.
 	<div class='ui segment'>
 		<b>Name:</b> <%=category.name%><br>
 		<b>Description:</b> <%=category.description%><br>
 		<b>Budget:</b> <%=category.budget%><br>
 		<b>Parent:</b> <%=category.parent?category.parent.name:''%><br>
 		<b>Number of sub-categories:</b><%=children.length%><br>
-		<b>Transactions with this category:</b><b style='color:red'><%=transactions_count%></b><br>
-		<%if(transactions_count>0){%>
-			<b style='color:red'>On deletion of this category, all transactions with this category will become un-categorized. </b>
+		<b>Tlis with this category:</b><b style='color:red'><%=tlis_count%></b><br>
+		<%if(tlis_count>0){%>
+			<b style='color:red'>On deletion of this category, all tlis with this category will become un-categorized. </b>
 		<%}%>
 		<br>
 		<br>
