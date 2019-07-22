@@ -1,3 +1,18 @@
+<%
+var format_number=function(number){
+	return FormatService.formatNumber(number,req.query.number_format,req.query.precision);
+}
+function updateQueryStringParameter(uri, key, value) {
+	var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+	var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+	if (uri.match(re)) {
+	  return uri.replace(re, '$1' + key + "=" + value + '$2');
+	}
+	else {
+	  return uri + separator + key + "=" + value;
+	}
+  }
+%>
 <div class='ui container'>
 	<div class='ui grid'>
 		<!-- <div class='three wide tablet computer only column'></div> -->
@@ -132,6 +147,17 @@
 					<%})%>
 				</tbody>
 			</table>
+			<div class="ui pagination menu">
+				<a class="<%= page==1?'disabled':''%> item" href="<%=page==1?'#':updateQueryStringParameter(req.url, 'page', page-1)%>">
+					<i class="icon caret left"></i>
+				</a>
+				<div class="item">
+					<%=page%> / <%=pages%> 
+				</div>
+				<a class="<%= page==pages?'disabled':''%> item" href="<%=page==pages?'#':updateQueryStringParameter(req.url, 'page', page+1)%>">
+					<i class="icon caret right"></i>
+				</a>
+			</div>
 		</div>
 		<!-- <div class='three wide tablet computer only column'></div> -->
 	</div>

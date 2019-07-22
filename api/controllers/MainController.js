@@ -1770,9 +1770,22 @@ module.exports = {
 		})
 	},
 	listDocuments: function(req, res){
+		var locals={};
+
+		//pagination
+		var limit = req.query.limit?parseInt(req.query.limit): 20; //default to 20
+		var page = req.query.page?parseInt(req.query.page):1;
+		var skip = limit * (page-1);
+
+		locals.page = page;
+		locals.limit = limit;
+
 		async.auto({
 			getDocuments: function(cb){
-				Document.find({org:req.org.id}).populate('accounts').populate('statement_line_items').sort('id DESC').exec(cb);
+				Document.find({org:req.org.id}).populate('accounts').populate('statement_line_items').sort('id DESC').limit(limit).skip(skip).exec(cb);
+			},
+			getDocumentsCount: function(cb){
+				Document.count({org:req.org.id}).exec(cb);
 			},
 			getUnresolvedDoubtfullTransaction: function(cb){
 				var query = `SELECT count(*) AS unresolved_dts, sli.document FROM doubtful_transaction AS dt INNER JOIN statement_line_item AS sli ON dt.sli = sli.id 
@@ -1810,11 +1823,11 @@ module.exports = {
 				}
 			});
 			
-			var locals={
-				documents:results.getDocuments,
-				moment: require('moment-timezone'),
-				timeline: timeline
-			}
+			//pagination
+			locals.pages = parseInt(results.getDocumentsCount/limit)? parseInt(results.getDocumentsCount/limit) : 1;
+			locals.documents = results.getDocuments,
+			locals.moment = require('moment-timezone'),
+			locals.timeline = timeline,
 			res.view('list_documents',locals);
 		})
 	},
