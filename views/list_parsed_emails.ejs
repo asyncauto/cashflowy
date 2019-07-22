@@ -19,6 +19,7 @@
 							<th>Data</th>
 							<th>View</th>
 							<th>T</th>
+							<th>Reparse</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -43,6 +44,8 @@
 									</a>
 									<%}%>
 								</td>
+								<td class='single line'><button class="ui basic blue button submit_pe_retry" data-pe-retry-id="<%=pe.id%>">RePrase</button>
+									<p class="pe_retry_err"></p>
 							</tr>
 						<%})%>
 					</tbody>
@@ -54,5 +57,22 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('.popup').popup();
+		$('.submit_pe_retry').click(function(e){
+			console.log('submit retry button clicked');
+			var pe_id=$(this).attr('data-pe-retry-id');
+			console.log(pe_id);
+			var button = this;
+			$(button).addClass('loading');
+			$(button).addClass('disabled');
+			$.post("/org/"+ <%=req.params.o_id%>+"/parsed_email/"+pe_id + "/retry",function(result,status){
+				console.log(result, status)
+			}).fail(function(jqXHR, textStatus, errorThrown) {
+				alert("Error: "+jqXHR.responseJSON.error);
+				$(button).removeClass('loading');
+				$(button).removeClass('disabled');
+			}).success(function() {
+				location.reload();
+			});
+		});
 	});
 </script>

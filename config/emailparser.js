@@ -133,6 +133,7 @@ module.exports.emailparser = {
                 if (pe.body_parser_used == 'received_money_v1') {
                     pe.data.third_party = pe.extracted_data.from_phone + '(' + pe.extracted_data.from_name + ')';
                     pe.data.acc_number = pe.extracted_data.to;
+                    pe.data.original_amount = pe.extracted_data.amount;
                 } else {
                     pe.data.acc_number = pe.extracted_data.from_phone;
                     if (pe.extracted_data.to_phone)
