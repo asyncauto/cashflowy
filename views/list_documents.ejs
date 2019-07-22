@@ -35,7 +35,10 @@
 					timeline.on('click', function (properties) {
 						console.log('click', properties);
 						$('tr').removeClass('active');
-						$('tr[data-d_id='+properties.item+']').addClass('active');
+						$('tr[data-d_id='+properties.item.split('_')[0]+']').addClass('active');
+						$('html, body').animate({
+							scrollTop: $('tr[data-d_id='+properties.item.split('_')[0]+']').offset().top
+						}, 2000);
 						});
 				</script>
 				

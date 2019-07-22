@@ -1795,7 +1795,7 @@ module.exports = {
 				if(d.data && d.data.transactions_from_date && d.data.transactions_to_date){
 					_.forEach(d.accounts, function(a){
 						timeline.items.push({
-							id: d.id,
+							id: d.id + '_' + a.id,
 							content: `${d.id}: ${d.details.original_filename}`,
 							start: d.data.transactions_from_date,
 							end: d.data.transactions_to_date,
