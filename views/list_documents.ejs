@@ -26,146 +26,196 @@ function updateQueryStringParameter(uri, key, value) {
 			background: #f5f5f5;
 			}
 			</style>
+				<%if(!timeline.items.length){%>
+					<div class="ui compact message">
+						<p>No data found</p>
+					</div>
+				<%}else{%>
 
-				<div id="visualization" class="ui segment"></div>
-				
-				<script type="text/javascript">
+					<div id="visualization" class="ui segment"></div>
+					
+					<script type="text/javascript">
 
-					// create a data set with groups
-					var groups = new vis.DataSet(<%-JSON.stringify(timeline.groups)%>);
-					console.log(groups)
-					var items = new vis.DataSet(<%-JSON.stringify(timeline.items)%>);
+						// create a data set with groups
+						var groups = new vis.DataSet(<%-JSON.stringify(timeline.groups)%>);
+						console.log(groups)
+						var items = new vis.DataSet(<%-JSON.stringify(timeline.items)%>);
 
 
-					// create visualization
-					var container = document.getElementById('visualization');
-					var options = {
-						groupOrder: 'content'  // groupOrder can be a property name or a sorting function
-					};
+						// create visualization
+						var container = document.getElementById('visualization');
+						var options = {
+							groupOrder: 'content'  // groupOrder can be a property name or a sorting function
+						};
 
-					var timeline = new vis.Timeline(container);
-					timeline.setOptions(options);
-					timeline.setGroups(groups);
-					timeline.setItems(items);
-					timeline.on('click', function (properties) {
-						console.log('click', properties);
-						$('tr').removeClass('active');
-						$('tr[data-d_id='+properties.item.split('_')[0]+']').addClass('active');
-						$('html, body').animate({
-							scrollTop: $('tr[data-d_id='+properties.item.split('_')[0]+']').offset().top
-						}, 2000);
-						});
-				</script>
-				
+						var timeline = new vis.Timeline(container);
+						timeline.setOptions(options);
+						timeline.setGroups(groups);
+						timeline.setItems(items);
+						timeline.on('click', function (properties) {
+							console.log('click', properties);
+							$('tr').removeClass('active');
+							$('tr[data-d_id='+properties.item.split('_')[0]+']').addClass('active');
+							$('html, body').animate({
+								scrollTop: $('tr[data-d_id='+properties.item.split('_')[0]+']').offset().top
+							}, 2000);
+							});
+					</script>
+				<%}%>	
 		</div>
-		<div class='sixteen wide computer sixteen wide mobile  column'>
-			<h1>Your Documents: </h1>
-			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
-				<thead>
-					<tr>
-						<th>Id</th>
-						<th>From</th>
-						<th>To</th>
-						<th>Type</th>
-						<th>Accounts</th>
-						<th>Description</th>
-						<th>Line items found</th>
-						<th>Line items processed</th>
-						<th>Action required</th>
-						<th>File name</th>				
-                        <th>Status</th>
-					</tr>
-				</thead>
-				<tbody>
-					<%documents.forEach(function(doc){%>
-						<tr data-d_id='<%=doc.id%>' class='document'>
-							<td><a href="/org/<%=req.org.id%>/document/<%=doc.id%>"><%=doc.id%></a></td>
-							<td>
-								<% if(doc.data && doc.data.transactions_from_date){ %>
-								<%-moment(doc.data.transactions_from_date).tz('Asia/Kolkata').format('MMM')%></br>
-								<span style="font-size: 1.2rem;"><%-moment(doc.data.transactions_from_date).tz('Asia/Kolkata').format('DD')%></span></br>
-								<span style="font-size: 0.75rem;"><%-moment(doc.data.transactions_from_date).tz('Asia/Kolkata').format('YYYY')%></span>
-								</span>
-								<%}%>
-							</td>
-							<td>
-								<% if(doc.data && doc.data.transactions_to_date){ %>
-								<%-moment(doc.data.transactions_to_date).tz('Asia/Kolkata').format('MMM')%></br>
-								<span style="font-size: 1.2rem;"><%-moment(doc.data.transactions_to_date).tz('Asia/Kolkata').format('DD')%></span></br>
-								<span style="font-size: 0.75rem;"><%-moment(doc.data.transactions_to_date).tz('Asia/Kolkata').format('YYYY')%></span>
-								</span>
-								<%}%>
-							</td>
-							<td><%=doc.type%></td>
-							<td><% doc.accounts.forEach(function(a){%>
-								<span>
-									<a href="/org/<%=req.org.id%>/account/<%=a.id%>"><%=a.name%></a>
-								</span><br>
+</div>
+		<div class="ui grid">
+			<div class='five wide computer only column'>
+				<h2>Filters
+					<% if(req.query.ids){%>
+						<div class="ui horizontal blue label">
+							<b>ID:  </b> <%= req.query.ids %>
+						</div>
+					<%}%>
+				</h2>
+				<form class="ui form segment" action="" method='get'>
+					<div class="field">
+						<label>Account:</label>
+						<div class="ui fluid filter_txn scrolling dropdown basic button">
+							<input type="hidden" name="account" value='<%=req.query.account?req.query.account:''%>'>
+							<i class="dropdown icon"></i>
+							<div class="text">All</div>
+							<div class="menu transition hidden" tabindex="-1">
+								<div class="item active selected" data-value='all'>All</div>
+								<%accounts.forEach(function(a){%>
+									<div class="item" data-value='<%= a.id %>'><%= a.name %></div>
 								<%})%>
-							</td>
-							<td>
-								<!-- describe the document -->
-								<span class='description'><%-doc.description?doc.description:''%></span>
-								<a class='edit' data-id='<%=doc.id%>' href='' style="<%=(!doc.description)?'background:yellow':''%>">edit</a><br>
-
-								<div class='edit_description' data-id='<%=doc.id%>' style='display:none;'>
-									
-									<div class="ui fluid input">
-										<input type="text" name='description' value='<%-doc.description?doc.description:''%>'>
-									</div>
-									<br>
-									<button class="ui teal button submit_edit_desc" data-id='<%=doc.id%>' >save</button>
-									<button class="ui red button cancel_edit_desc" data-id='<%=doc.id%>' >cancel</button>
-								</div>
-							</td>
-							<td>
-								<%= (doc.extracted_data && doc.extracted_data.transactions? doc.extracted_data.transactions.length: 0) %>
-							</td>
-							<td>
-								<%= doc.statement_line_items? doc.statement_line_items.length:0 %>
-							</td>
-							<td>
-								<%- doc.unresolved_dts?'<span style="color:red">'+doc.unresolved_dts+'</span>': '<span style="color:green">None</span>'%>
-							</td>
-							<td>
-								<%=doc.extracted_data ? doc.extracted_data.file_name : doc.details && doc.details.original_filename? doc.details.original_filename:'-'  %>
-							</td>
-							
-							<% if(doc.extracted_data && doc.extracted_data.transactions){ %>
-								<% if(doc.statement_line_items.length == doc.extracted_data.transactions.length) {%>
-									<td><i class="icon green checkmark"></i>Document processed successfully</td>
-								<% }else if(doc.statement_line_items.length < doc.extracted_data.transactions.length){ %>
-									<td><i class="icon grey spinner"></i>Processing line items<br>
-								<span style="font-size:0.70rem;">&nbsp;&nbsp;<%= doc.statement_line_items.length %> line items processed out of <%= doc.extracted_data.transactions.length %></span></td>
-								<% } %>
-							<% }else if(new Date() - new Date(doc.createdAt) < 150000){ %>
-								<td><i class="icon spinner"></i>Parsing in progress</td>
-							<% }else { %>
-								<td><i class="icon yellow attention"></i>Unable to Parse the Document</td>
-							<% } %>
+							</div>
+						</div>
+					</div>
+					<div class="field">
+						<label>From:</label>
+						<input type="date" placeholder="YYYY-MM-DD"  name="date_gte" value="<%=date_gte%>">
+					</div>
+					<div class="field">
+						<label>To:</label>
+						<input type="date" placeholder="YYYY-MM-DD" name="date_lte" value="<%=date_lte%>">
+					</div>
+					<div class="field">
+						<label>Results per page:</label>
+						<input type="number" placeholder="20"  name="limit" value="<%=limit%>">
+					</div>
+					<div class="field">
+						<label>Description contains:</label>
+						<span style="font-size: 0.8em">(<b>empty</b>: to filter blank descriptions)</span>
+						<input type="text" name="description" placeholder="ex: house loan" value="<%= req.query.description ? req.query.description: ''%>">
+					</div>
+		
+					<div class='ui orange left aligned button' id='submit_form'>Update filter</div>
+					<div class='ui blue right aligned button' id='reset_form'>Reset filter</div>
+				</form>
+			</div>
+			<div class='eleven wide computer sixteen wide tablet sixteen wide mobile column'>
+				<h1>Your Documents: </h1>
+				<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
+					<thead>
+						<tr>
+							<th>From</th>
+							<th>To</th>
+							<th>Doubtful Txns</th>
+							<th>Type</th>
+							<th>Accounts</th>
+							<th>Description</th>
+							<th>File name</th>				
+							<th>Parsed</th>
 						</tr>
-					<%})%>
-				</tbody>
-			</table>
-			<div class="ui pagination menu">
-				<a class="<%= page==1?'disabled':''%> item" href="<%=page==1?'#':updateQueryStringParameter(req.url, 'page', page-1)%>">
-					<i class="icon caret left"></i>
-				</a>
-				<div class="item">
-					<%=page%> / <%=pages%> 
+					</thead>
+					<tbody>
+						<%documents.forEach(function(doc){%>
+							<tr data-d_id='<%=doc.document_id%>' class='document'>
+								<td>
+									<% if(doc.document_data && doc.transactions_from_date){ %>
+									<%-moment(doc.transactions_from_date).tz('Asia/Kolkata').format('MMM')%></br>
+									<span style="font-size: 1.2rem;"><%-moment(doc.transactions_from_date).tz('Asia/Kolkata').format('DD')%></span></br>
+									<span style="font-size: 0.75rem;"><%-moment(doc.transactions_from_date).tz('Asia/Kolkata').format('YYYY')%></span>
+									</span>
+									<%}%>
+								</td>
+								<td>
+									<% if(doc.document_data && doc.transactions_to_date){ %>
+									<%-moment(doc.transactions_to_date).tz('Asia/Kolkata').format('MMM')%></br>
+									<span style="font-size: 1.2rem;"><%-moment(doc.transactions_to_date).tz('Asia/Kolkata').format('DD')%></span></br>
+									<span style="font-size: 0.75rem;"><%-moment(doc.transactions_to_date).tz('Asia/Kolkata').format('YYYY')%></span>
+									</span>
+									<%}%>
+								</td>
+								<td><%- doc.unresolved_dts?'<span style="color:red">'+doc.unresolved_dts+'</span>': '<span style="color:green">None</span>'%><a href="/org/<%=req.org.id%>/document/<%=doc.document_id%>"><i class="external alternate icon"></i></a>
+									
+								</td>
+								<td><%=doc.document_type%></td>
+								<td>
+									<span>
+										<a href="/org/<%=req.org.id%>/account/<%=doc.account_id%>"><%=doc.account_name%></a>
+									</span><br>
+								</td>
+								<td>
+									<!-- describe the document -->
+									<span class='description'><%-doc.document_description?doc.document_description:''%></span>
+									<a class='edit' data-id='<%=doc.document_id%>' href='' style="<%=(!doc.document_description)?'background:yellow':''%>">edit</a><br>
+
+									<div class='edit_description' data-id='<%=doc.document_id%>' style='display:none;'>
+										
+										<div class="ui fluid input">
+											<input type="text" name='description' value='<%-doc.document_description?doc.document_description:''%>'>
+										</div>
+										<br>
+										<button class="ui teal button submit_edit_desc" data-id='<%=doc.document_id%>' >save</button>
+										<button class="ui red button cancel_edit_desc" data-id='<%=doc.document_id%>' >cancel</button>
+									</div>
+								</td>
+								<td>
+									<%=doc.document_data ? doc.document_data.file_name : doc.document_details && doc.document_details.original_filename? doc.document_details.original_filename:'-'  %>
+								</td>
+								
+								<% if(doc.document_data && doc.document_data.transactions){ %>
+									<td data-tooltip="Document processed successfully"><i class="icon green checkmark" ></i></td>
+								<% }else if(new Date() - new Date(doc.document_createdAt) < 150000){ %>
+									<td data-tooltip="Parsing in progress"><i class="icon spinner"></i></td>
+								<% }else { %>
+									<td data-tooltip="Unable to Parse the Document"><i class="icon yellow attention"></i></td>
+								<% } %>
+							</tr>
+						<%})%>
+					</tbody>
+				</table>
+				<div class="ui pagination menu">
+					<a class="<%= page==1?'disabled':''%> item" href="<%=page==1?'#':updateQueryStringParameter(req.url, 'page', page-1)%>">
+						<i class="icon caret left"></i>
+					</a>
+					<div class="item">
+						<%=page%> / <%=pages%> 
+					</div>
+					<a class="<%= page==pages?'disabled':''%> item" href="<%=page==pages?'#':updateQueryStringParameter(req.url, 'page', page+1)%>">
+						<i class="icon caret right"></i>
+					</a>
 				</div>
-				<a class="<%= page==pages?'disabled':''%> item" href="<%=page==pages?'#':updateQueryStringParameter(req.url, 'page', page+1)%>">
-					<i class="icon caret right"></i>
-				</a>
 			</div>
 		</div>
-		<!-- <div class='three wide tablet computer only column'></div> -->
 	</div>
-</div>
+
 <a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/document/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new document" data-position="left center" data-inverted=""><i class="file alternate outline icon"></i></a>
 <script type="text/javascript">
 	$(document).ready(function(){
-		$('.popup').popup();
+		$('#submit_form').click(function(){
+			console.log('clicked on form submit');
+			$('input').each(function(i) {
+				var $input = $(this);
+				if ($input.val() == '')
+					$input.attr('disabled', 'disabled');
+			});
+			$( "form" ).submit();
+		});
+		$('#reset_form').click(function(){
+			window.location = "/org/"+"<%=req.params.o_id%>"+'/documents';
+		});
+
+		$('.dropdown').dropdown();
+
 		$('.extra_options.dropdown').dropdown();
 		$('.edit').click(function(e){
 			e.preventDefault();

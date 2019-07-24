@@ -1779,19 +1779,100 @@ module.exports = {
 
 		locals.page = page;
 		locals.limit = limit;
+		locals.skip = skip
+
+		locals.date_gte = (req.query.date_gte) ? req.query.date_gte: moment().subtract(2, 'years').format('YYYY-MM-DD'); // defaults to 2 years
+		locals.date_lte = (req.query.date_lte) ? req.query.date_lte: moment().format('YYYY-MM-DD');
+		
 
 		async.auto({
-			getDocuments: function(cb){
-				Document.find({org:req.org.id}).populate('accounts').populate('statement_line_items').sort('id DESC').limit(limit).skip(skip).exec(cb);
+			getAccounts: function(cb){
+				Account.find({org:req.org.id}).exec(function(err, accounts){
+					if(err) return cb(err);
+					locals.accounts = (req.query.account)? GeneralService.whereIn([req.query.account]): GeneralService.whereIn(_.map(accounts,'id'));
+					return cb(null, accounts);
+				});
 			},
-			getDocumentsCount: function(cb){
-				Document.count({org:req.org.id}).exec(cb);
-			},
-			getUnresolvedDoubtfullTransaction: function(cb){
-				var query = `SELECT count(*) AS unresolved_dts, sli.document FROM doubtful_transaction AS dt INNER JOIN statement_line_item AS sli ON dt.sli = sli.id 
-				WHERE sli.org =${req.org.id} AND json_extract_path(dt.details::json, 'status') IS NULL GROUP BY sli.document`
-				sails.sendNativeQuery(query,cb);
-			}
+			getDocuments: ['getAccounts', function(results, cb){
+				var filtered_list_documents_query = `
+					SELECT
+					*
+					FROM (
+						SELECT
+							"document"."org" AS org,
+							"document"."data" as document_data,
+							"document"."createdAt" as "document_createdAt",
+							"document"."type" AS document_type,
+							"document"."id" AS document_id,
+							"account"."id" AS account_id,
+							"account"."name" AS account_name,
+							"document"."details" AS document_details,
+							"document"."description" AS document_description,
+							data ->> 'transactions_from_date' AS transactions_from_date,
+							data ->> 'transactions_to_date' AS transactions_to_date
+						FROM
+							"document"
+						LEFT JOIN account_docs__document_accounts ON account_docs__document_accounts.document_accounts = "document"."id"
+						LEFT JOIN account ON account_docs__document_accounts.account_docs = account.id
+					WHERE
+						"document"."org" = ${req.org.id}
+						AND "account_docs__document_accounts"."account_docs" in ${locals.accounts}
+						AND data ->> 'transactions_to_date' > '${locals.date_gte}'
+						AND data ->> 'transactions_from_date' < '${locals.date_lte}'
+						LIMIT ${locals.limit} OFFSET ${locals.skip}) AS doc
+						LEFT JOIN (
+							SELECT
+								count(*) AS unresolved_dts, sli.document AS sli_document_id
+							FROM
+								doubtful_transaction AS dt
+								INNER JOIN statement_line_item AS sli ON dt.sli = sli.id
+							WHERE
+								sli.org = ${req.org.id}
+								AND json_extract_path(dt.details::json, 'status') IS NULL
+							GROUP BY
+								sli.document) AS ut ON doc.document_id = ut.sli_document_id
+							ORDER BY "doc"."document_data" ->> 'transactions_to_date' DESC`
+				sails.sendNativeQuery(filtered_list_documents_query, cb)
+			}],
+			getDocumentsCount: ['getAccounts', function(results, cb){
+				var documents_count = `
+					SELECT
+					count(*)
+					FROM (
+						SELECT
+							"document"."org" AS org,
+							"document"."data" as document_data,
+							"document"."type" AS document_type,
+							"document"."id" AS document_id,
+							"account"."id" AS account_id,
+							"account"."name" AS account_name,
+							"document"."details" AS document_details,
+							"document"."description" AS document_description,
+							data ->> 'transactions_from_date' AS transactions_from_date,
+							data ->> 'transactions_to_date' AS transactions_to_date
+						FROM
+							"document"
+						LEFT JOIN account_docs__document_accounts ON account_docs__document_accounts.document_accounts = "document"."id"
+						LEFT JOIN account ON account_docs__document_accounts.account_docs = account.id
+					WHERE
+						"document"."org" = ${req.org.id}
+						AND "account_docs__document_accounts"."account_docs" in ${locals.accounts}
+						AND data ->> 'transactions_to_date' > '${locals.date_gte}' 
+						AND data ->> 'transactions_from_date' < '${locals.date_lte}') AS doc
+						LEFT JOIN (
+							SELECT
+								count(*) AS unresolved_dts, sli.document AS sli_document_id
+							FROM
+								doubtful_transaction AS dt
+								INNER JOIN statement_line_item AS sli ON dt.sli = sli.id
+							WHERE
+								sli.org = ${req.org.id}
+								AND json_extract_path(dt.details::json, 'status') IS NULL
+							GROUP BY
+								sli.document) AS ut ON doc.document_id = ut.sli_document_id
+					`
+				sails.sendNativeQuery(documents_count, cb)
+			}]
 		}, function(err, results){
 			if(err) return res.view('500', err);
 			
@@ -1800,34 +1881,30 @@ module.exports = {
 				items:[]
 			}
 
-			_.forEach(results.getDocuments, function(d){
-				var udt = _.find(results.getUnresolvedDoubtfullTransaction.rows, {document: d.id});
-				if(udt)
-					d.unresolved_dts = udt.unresolved_dts
-			
-				if(d.data && d.data.transactions_from_date && d.data.transactions_to_date){
-					_.forEach(d.accounts, function(a){
-						timeline.items.push({
-							id: d.id + '_' + a.id,
-							content: `${d.id}: ${d.details.original_filename}`,
-							start: d.data.transactions_from_date,
-							end: d.data.transactions_to_date,
-							group: a.id
-						})
-						if(!_.find(timeline.groups, {id:a.id}))
-							timeline.groups.push({
-								id: a.id,
-								content: `<a href=/org/${req.org.id}/account/${a.id}>${a.name}<a>`
-							})
+			_.forEach(results.getDocuments.rows, function(d){
+
+				if(d.document_data && d.transactions_from_date && d.transactions_to_date){
+					timeline.items.push({
+						id: d.document_id + '_' + d.account_id,
+						content: `${d.document_id}: ${d.document_details.original_filename}`,
+						start: d.transactions_from_date,
+						end: d.transactions_to_date,
+						group: d.account_id
 					})
+					if(!_.find(timeline.groups, {id:d.account_id}))
+						timeline.groups.push({
+							id: d.account_id,
+							content: `<a href=/org/${req.org.id}/account/${d.account_id}>${d.account_name}<a>`
+						})
 				}
 			});
 			
 			//pagination
-			locals.pages = parseInt(results.getDocumentsCount/limit)? parseInt(results.getDocumentsCount/limit) : 1;
-			locals.documents = results.getDocuments,
-			locals.moment = require('moment-timezone'),
-			locals.timeline = timeline,
+			locals.pages = parseInt(results.getDocumentsCount.rows[0].count/limit)? parseInt(results.getDocumentsCount.rows[0].count/limit) : 1;
+			locals.documents = results.getDocuments.rows;
+			locals.moment = require('moment-timezone');
+			locals.timeline = timeline;
+			locals.accounts = results.getAccounts;
 			res.view('list_documents',locals);
 		})
 	},
