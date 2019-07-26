@@ -144,7 +144,7 @@ function updateQueryStringParameter(uri, key, value) {
 									</span>
 									<%}%>
 								</td>
-								<td><%- doc.unresolved_dts?'<span style="color:red">'+doc.unresolved_dts+'</span>': '<span style="color:green">None</span>'%><a href="/org/<%=req.org.id%>/document/<%=doc.document_id%>"><i class="external alternate icon"></i></a>
+								<td><a href="/org/<%=req.org.id%>/document/<%=doc.document_id%>" target="_blank"><%- doc.unresolved_dts?'<span style="color:red">'+doc.unresolved_dts+'</span>': '<span style="color:green">None</span>'%><i class="external alternate icon"></i></a>
 									
 								</td>
 								<td><%=doc.document_type%></td>
