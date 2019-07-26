@@ -77,7 +77,7 @@ module.exports = {
 							{
 								parsed_email: pe.id,
 								status: 'PARSED', extracted_data: parsed_email.extracted_data
-							}).exec(function(err, pf_u){
+							}).exec(function (err, pf_u) {
 								sails.log.info(err, pf_u);
 							});
 						cb(err, pe)
@@ -90,7 +90,12 @@ module.exports = {
 	parseInboundEmail: function (inbound_data, callback) {
 		async.auto({
 			getEmail: function (cb) {
-				Email.findOne({ email: inbound_data.To.toLowerCase() }).exec(function (err, email) {
+				//check for manual forward or auto forward
+				var email = ((inbound_data.subject.startsWith("Fwd:") ||
+					inbound_data["stripped-text"].startsWith("---------- Forwarded message ---------")) &&
+					inbound_data.To.includes("@mail.cashflowy.in")) ? inbound_data.sender.toLowerCase() :
+					inbound_data.To.toLowerCase()
+				Email.findOne({ email: email }).exec(function (err, email) {
 					if (err) return cb(err);
 					if (!email) return cb(new Error('EMAIL_NOT_FOUND'));
 					return cb(null, email);

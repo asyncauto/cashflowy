@@ -1,3 +1,4 @@
+var moment = require('moment-timezone');
 module.exports.emailparser = {
     // apply global first, then override with individual filter modifiers
     beforeModifyData: function (pe) {
@@ -23,7 +24,7 @@ module.exports.emailparser = {
             pe.data.acc_number = pe.data.account_last_4_digits;
         return pe
     },
-    afterModifyData: function(pe){
+    afterModifyData: function (pe) {
         const fx = require('money');
         fx.base = 'INR';
         fx.rates = sails.config.fx_rates;
@@ -68,6 +69,24 @@ module.exports.emailparser = {
             modifyData: function (pe) {
                 pe.data.acc_number = pe.email + '-amazon_pay';
                 pe.data.original_amount = pe.extracted_data.amount;
+                return pe;
+            }
+        },
+        {
+            name: 'AmazonPayRefundFilter',
+            modifyData: function (pe) {
+                pe.data.acc_number = pe.email + '-amazon_pay';
+                pe.data.original_amount = pe.extracted_data.amount;
+                //date format '25 Jul 2019' 
+                // if date extracted from the email is same as the recieved_time the use the recieved time as it contians both date and time info. 
+                //Else use the  extracted date.
+                if (pe.data.date) {
+                    if (moment(pe.data.date, 'D MMM YYYY').isSame(new Date(), 'day')) {
+                        pe.data.occuredAt = pe.data.email_received_time;
+                    }else{
+                        pe.data.occuredAt = moment(pe.data.date, 'D MMM YYYY').tz('Asia/Kolkata').toDate();
+                    }
+                }
                 return pe;
             }
         },
