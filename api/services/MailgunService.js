@@ -49,11 +49,18 @@ module.exports = {
 			extractDataFromMessageBody: function (cb) {
 				var opts = {
 					email_type: options.email_type,
-					body: options.inbound_data['body-plain']
+					body: options.inbound_data['body-plain'].replace(/[\r\n]+/g," ")
 				}
 				GmailService.extractDataFromMessageBody(opts, cb);
 			},
-			findOrCreateParsedEmail: ['extractDataFromMessageBody', function (results, cb) {
+			exctractDatetimeforManualForward: function(cb){
+				var opts = {
+					email_type: 'GmailManualForwardDateFilter',
+					body: options.inbound_data['body-plain'].replace(/[\r\n]+/g," ")
+				}
+				GmailService.extractDataFromMessageBody(opts, cb);
+			},
+			findOrCreateParsedEmail: ['extractDataFromMessageBody', 'exctractDatetimeforManualForward', function (results, cb) {
 				var parsed_email = {
 					extracted_data: results.extractDataFromMessageBody.ed,
 					org: options.org,
@@ -66,12 +73,14 @@ module.exports = {
 					}
 				}
 				parsed_email.extracted_data.email_received_time = new Date(options.inbound_data['Date']);
-
+				if(results.exctractDatetimeforManualForward && results.exctractDatetimeforManualForward.body_parser_used){
+					parsed_email.extracted_data.forward_orignal_date = _.get(results, 'exctractDatetimeforManualForward.ed.datetime')
+				}
 				if (parsed_email.body_parser_used == '') {
 					cb(new Error('INVALID_FILTER'));
 				} else {
 					// console.log('parser success');
-					Parsed_email.findOrCreate({ message_id: parsed_email.message_id }, parsed_email).exec(function (err, pe) {
+					Parsed_email.findOrCreate({ message_id: parsed_email.message_id }, parsed_email).exec(function (err, pe, created) {
 						// log to status of the parsing to success.
 						Parse_failure.update({ message_id: parsed_email.message_id },
 							{

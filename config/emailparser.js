@@ -9,14 +9,17 @@ module.exports.emailparser = {
         pe.data.original_amount = -(pe.extracted_data.amount);
         pe.data.type = 'income_expense';
         pe.data.third_party = pe.extracted_data.whom_you_paid ? pe.extracted_data.whom_you_paid : pe.extracted_data.third_party;
+        // date priority
         if (pe.data.date && pe.data.time) {
             pe.data.occuredAt = new Date(pe.data.date + ' ' + pe.data.time + '+5:30');
-            if (pe.data.occuredAt == 'Invalid Date')
-                pe.data.occuredAt = pe.data.email_received_time;
         }
-        else
+        else if (pe.data.forward_orignal_date) {
+            pe.data.occuredAt = moment(pe.data.forward_orignal_date, 'ddd, MMM D, YYYY at mm:ss AM').toDate()
+        } else if (pe.data.occuredAt == 'Invalid Date') {
             pe.data.occuredAt = pe.data.email_received_time;
-
+        } else {
+            pe.data.occuredAt = pe.data.email_received_time;
+        }
         //default acc_number
         if (pe.data.credit_card_last_4_digits)
             pe.data.acc_number = pe.data.credit_card_last_4_digits;
@@ -83,7 +86,7 @@ module.exports.emailparser = {
                 if (pe.data.date) {
                     if (moment(pe.data.date, 'D MMM YYYY').isSame(new Date(), 'day')) {
                         pe.data.occuredAt = pe.data.email_received_time;
-                    }else{
+                    } else {
                         pe.data.occuredAt = moment(pe.data.date, 'D MMM YYYY').tz('Asia/Kolkata').toDate();
                     }
                 }
