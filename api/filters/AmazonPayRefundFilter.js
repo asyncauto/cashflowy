@@ -238,7 +238,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'*Refund Date* -'
+							q:'Refund Date'
 						},
 						{
 							type:'find_end_position',
@@ -257,7 +257,16 @@ module.exports={
 								beginning_of_line:true
 							},
 							q:'Hi'
-                        },
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'- '
+						},
                         {
 							type:'trim',
 						}
