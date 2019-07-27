@@ -140,7 +140,7 @@ module.exports = {
 					t.to_account=results.getToAccount.id;
 				}
 		
-				Transaction.create(t).exec(function(err,result){
+				Transaction.findOrCreate(t, t).exec(function(err,result){
 					callback(err,result);
 				});
 				
