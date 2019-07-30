@@ -2030,9 +2030,9 @@ module.exports = {
 							throw new Error('INVALID_PASSWORD_ENTERED');
 						}
 
-					//else try passwords
+					//else try saved passwords or no password option
 					else{
-						for (const sp of org.details.statement_passwords) {
+						for (const sp of _.union(org.details.statement_passwords, [''])) {
 							try{
 								const { stdout, stderr } = await exec(`qpdf -password=${sp} -decrypt ${results.uploadFile[0].fd} ${uf}`);
 								console.log('output', stdout, stderr);
