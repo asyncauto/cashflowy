@@ -96,6 +96,11 @@ module.exports = {
 									tags: _.get(rule, 'details.action.set.tags', '').split(',')
 								}
 							}
+							if (rule.action == 'set_category') {
+								tli_update = {
+									category: _.get(rule, 'details.action.set.category', '')
+								}
+							}
 						}
 					});
 					cb(null, tli_update);
@@ -107,12 +112,12 @@ module.exports = {
 					cb(err, r);
 				});
 			}],
-			predictCategory: function (cb) {
+			predictCategory: ['updatedTli', function (cb) {
 				//if category present return
 				if (created.category) return cb(null);
 
 				MLService.predictCategory(created, cb);
-			}
+			}]
 		}, function (err) {
 			cb(err);
 		});

@@ -2387,10 +2387,15 @@ module.exports = {
 			},
 			getTags: function(cb){
 				Tag.find({or:[{org:req.org.id},{type:'global'}]}).exec(cb);
+			},
+			getCategories: function(callback){
+				Category.find({org:req.org.id}).sort('name ASC').exec(callback);
 			}
 		},function(err, results){
 			if(err) return res.serverError(err);
 			if(!results.findRule) return res.view('404');
+			var orderedCategories=GeneralService.orderCategories(results.getCategories);
+
 			if(req.body){
 				var update = _.pick(req.body, ['trigger' , 'action', 'description', 'status', 'type']);
 				var details = _.omit(req.body, ['trigger' , 'action', 'description', 'status', 'type']);
@@ -2404,7 +2409,8 @@ module.exports = {
 					var locals = {
 						rule: u_r[0],
 						accounts: results.getAccounts,
-						tags: results.getTags
+						tags: results.getTags,
+						categories: orderedCategories
 					}
 					res.view('create_rule', locals);
 				})
@@ -2412,7 +2418,8 @@ module.exports = {
 				var locals = {
 					rule: results.findRule,
 					accounts: results.getAccounts,
-					tags: results.getTags
+					tags: results.getTags,
+					categories: orderedCategories
 				}
 				res.view('create_rule', locals);
 			}

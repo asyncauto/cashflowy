@@ -25,12 +25,12 @@ module.exports.rule={
 			description:'apply tags to the tli',
 			allowed_triggers:['tli_after_create'],
 		},
-		// {
-		// 	slug:'set_category',
-		// 	title:'Set category',
-		// 	description:'Set a category for this tli',
-		// 	allowed_triggers:['tli_after_create'],
-		// },
+		{
+			slug:'set_category',
+			title:'Set category',
+			description:'Set a category for this tli',
+			allowed_triggers:['tli_after_create'],
+		},
 		{
 			slug:'modify_pe_data',
 			title:'Modify parsed data from email',

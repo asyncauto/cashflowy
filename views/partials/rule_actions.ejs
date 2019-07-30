@@ -55,3 +55,21 @@
         </div>
     </div>
 </div>
+
+<div class="ui segment rule_set" data-rule-action='set_category'>
+    <div class="field">
+        <label>Category: </label>
+        <div class="ui category_dd fluid dropdown">
+            <input type="hidden" name='details.action.set.category' value='<%=_.get(rule, 'details.action.set.category', '')%>'>
+            <div class="text">All</div>
+            <i class="dropdown icon"></i>
+            <div class="fluid menu">
+                <div class="item" data-value="">All</div>
+                <div class="item" data-value="empty">- Empty -</div>
+                <%categories.forEach(function(category){%>
+                    <%- partial('category_dropdown', {category: category}) %>
+                <%})%>
+            </div>
+        </div>
+    </div>
+</div>
