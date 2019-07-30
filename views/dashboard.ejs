@@ -106,7 +106,7 @@
                                 <div class="item">
                                     <i class=" book middle aligned icon"></i>
                                     <div class="content">
-                                        <a class="header" href='/transactions?account=<%=account.id%>'><%=account.name%></a>
+                                        <a class="header" href='/org/<%=req.org.id%>/account/<%=account.id%>'><%=account.name%></a>
                                         <%if(account.details && account.details.last_snapshot){%>
                                             <div class="description popup" data-content='Balance in the account as per last snapshot - <%=GeneralService.timeAgo(account.updatedAt)%>'>Rs. <%=account.details.last_snapshot.balance%> (<%=GeneralService.timeAgo(account.updatedAt)%>)</div>
                                         <%}else{%>
