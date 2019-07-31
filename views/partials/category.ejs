@@ -6,7 +6,7 @@
 			(<span class='popup' 
 				style="color:<%=(-category.super_sum<=category.budget)?'green':'red'%>;" 
 				title=""  
-				data-html="<h3><%=(-category.super_sum<=category.budget)?'Within Budget':'You overspend'%></h3>SubCategories spend=<%=-(category.super_sum-category.t_sum)%><br></h3>Direct category spend=<%=-(category.t_sum)%><br>Total spend=<%=-category.super_sum%><br>Allocated budget=<%=category.budget%><br>"
+				data-html="<h3><%=(-category.super_sum<=category.budget)?'Within Budget':'You overspend'%></h3>Sub-budget spend=<%=-(category.super_sum-category.t_sum)%><br></h3>Direct budget spend=<%=-(category.t_sum)%><br>Total spend=<%=-category.super_sum%><br>Allocated budget=<%=category.budget%><br>"
 				data-variation="wide"
 				>
 				<%=(-category.super_sum*100/category.budget).toFixed(1)%>%
