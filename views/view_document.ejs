@@ -1,4 +1,9 @@
 <div class='ui container'>
+	<div class="ui breadcrumb compact basic segment">
+		<a class="section" href="/org/<%=req.org.id%>/documents">Documents</a>
+		<i class="right angle icon divider"></i>
+		<div class="active section">view Document</div>
+	</div>
 	<% if(doc.extracted_data){%>
 	<div class= 'ui grid'>
 		<div class='sixteen wide column'>
@@ -277,8 +282,13 @@
 		
 
 	</div>
+	<%} else if(new Date() - new Date(doc.createdAt) < 300000){ %>
+		<div class='ui message'>
+			<div class="ui header"><i class="icon spinner"></i>Parsing in progress</div>
+			<p>Check back in a minute</p>
+		</div>
 	<% } else{ %>
-	<div class="ui negative message">No data found</div>
+	<div class="ui negative message">Not able to parse any line items</div>
 	<% } %>
 	
 </div>

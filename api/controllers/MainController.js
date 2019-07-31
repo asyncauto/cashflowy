@@ -2110,7 +2110,7 @@ module.exports = {
 					 return res.view('create_document', locals);
 				}
 				else	
-					return res.redirect('/org/' + req.org.id +"/documents");
+					return res.redirect('/org/' + req.org.id +"/document/" + results.createDocument.id);
 			})
 			
 		}
