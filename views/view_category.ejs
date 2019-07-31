@@ -10,12 +10,12 @@
 	<div class='ui grid'>
 		<div class='sixteen wide column'>
 			<h1><%=category.name%></h1>
-			<a href="/category/<%=category.id%>/edit">edit</a><br/>
+			<a href="/org/<%=req.org.id%>/category/<%=category.id%>/edit">edit</a><br/>
 			<h3>Details:</h3>
 			<b>Description:</b> <%=category.description%><br/>
 			<b>Budget:</b> INR <%=category.budget%><br/>
 			<%if(category.parent){%>
-				<b>Parent:</b> <a href="/category/<%=category.parent.id%>"><%=category.parent.name%></a><br/>
+				<b>Parent:</b> <a href="/org/<%=req.org.id%>/category/<%=category.parent.id%>"><%=category.parent.name%></a><br/>
 			<%}%>
 			<b>Type:</b> <%=category.type%><br/>
 			<!-- <b>Has data from:</b> 25th June  -->
@@ -47,7 +47,7 @@
 					</div>
 					
 				</div>
-				<a class="statistic" href='/transactions?category=<%=category.id%>&txn_type=income'>
+				<a class="statistic" href='/org/<%=req.org.id%>/transactions?category=<%=category.id%>&txn_type=income'>
 					<div class="">
 						Total income
 					</div>
@@ -56,7 +56,7 @@
 					</div>
 					
 				</a>
-				<a class="statistic" href='/transactions?category=<%=account.id%>&txn_type=expense'>
+				<a class="statistic" href='/org/<%=req.org.id%>/transactions?category=<%=account.id%>&txn_type=expense'>
 					<div class="">
 						Total expense
 					</div>
@@ -91,7 +91,7 @@
 				</h3>
 				<div class="ui tiny statistics">
 					
-					<a class="statistic" href='/transactions?category=<%=category.id%>&txn_type=income&date_from=<%=date_from%>&date_to=<%=date_to%>'>
+					<a class="statistic" href='/org/<%=req.org.id%>/transactions?category=<%=category.id%>&txn_type=income&date_from=<%=date_from%>&date_to=<%=date_to%>'>
 						<div class="">
 							Income
 						</div>
@@ -100,7 +100,7 @@
 						</div>
 						
 					</a>
-					<a class="statistic" href='/transactions?category=<%=category.id%>&txn_type=expense&date_from=<%=date_from%>&date_to=<%=date_to%>'>
+					<a class="statistic" href='/org/<%=req.org.id%>/transactions?category=<%=category.id%>&txn_type=expense&date_from=<%=date_from%>&date_to=<%=date_to%>'>
 						<div class="">
 							Expense
 						</div>
@@ -157,7 +157,7 @@
 
 	
 </div>
-<a class="circular ui icon right floated primary big button" href="/account/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new account" data-position="left center" data-inverted=""><i class="icon book"></i></a>
+<a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/account/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new account" data-position="left center" data-inverted=""><i class="icon book"></i></a>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('.popup').popup();
