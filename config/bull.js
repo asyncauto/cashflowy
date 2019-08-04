@@ -9,19 +9,19 @@ module.exports.bull = {
         },
         {
             name: 'calculate_uam_each_org',
-            active: true,
+            active: false,
             repeat: { cron: "0 */12 * * *" },
             data: {}
         },
         {
             name: 'send_weekly_email_each_user',
-            active: true,
+            active: false,
             repeat: { cron: "0 0 * * 0" },
             data: {}
         },
         {
             name: 'send_monthly_email_each_user',
-            active: true,
+            active: false,
             repeat: { cron: "0 0 1 * *" },
             data: {}
         },
