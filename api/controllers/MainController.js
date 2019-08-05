@@ -831,6 +831,16 @@ module.exports = {
 					return true;
 			});
 			
+			if(month==1)		
+ 				locals.prev=(parseInt(year)-1)+'-12';		
+ 			else		
+ 				locals.prev=year+'-'+(parseInt(month)-1)		
+
+  			if(month==12)		
+ 				locals.next=(parseInt(year)+1)+'-1'		
+ 			else		
+ 				locals.next=year+'-'+(parseInt(month)+1);
+			
 			res.view('dashboard',locals);
 		})
 

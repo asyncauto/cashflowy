@@ -1,104 +1,74 @@
-<script src="/js/d3.js"></script>
-<script src="/js/d3.layout.js"></script>
-<style type="text/css">
-    text {
-        font-size: 13.7px;
-    }
-    .toolTip {
-        position: absolute;
-        display: none;
-        width: auto;
-        height: auto;
-        background: none repeat scroll 0 0 white;
-        border: 0 none;
-        border-radius: 8px 8px 8px 8px;
-        color: black;
-        font: 12px sans-serif;
-        padding: 5px;
-        text-align: center;
-    }
-    /* .container {
-    max-width: 1270px;
-    margin: 0 auto;
-} */
-</style>
 <div class='ui container'>
-        
-        <div class='ui stackable grid'>
-            <div class="ui row">
-                <div class='ui sixteen wide column'>
-                    
-                    <div class='ui center aligned basic segment'>
-                        <div class="ui horizontal divider header">
-                            <a href="/org/<%=req.org.id%>/dashboard/?month=<%=prev%>">
-                                <i class="angle left icon big"></i>
-                            </a>
-                            
-                                <%=req.query.month?req.query.month:(req.query.year?req.query.year:new Date().toISOString().substring(0,7))%>
-                            
+
+    <div class='ui stackable grid'>
+        <div class="ui row">
+            <div class='ui sixteen wide column'>
+
+                <div class='ui center aligned basic segment'>
+                    <div class="ui horizontal divider header">
+                        <a href="/org/<%=req.org.id%>/dashboard/?month=<%=prev%>">
+                            <i class="angle left icon big"></i>
+                        </a>
+
+                        <%=req.query.month?req.query.month:(req.query.year?req.query.year:new Date().toISOString().substring(0,7))%>
+
                             <a href="/org/<%=req.org.id%>/dashboard/?month=<%=next%>">
                                 <i class="angle right icon big"> </i>
                             </a>
-                        </div>
                     </div>
                 </div>
             </div>
-            <div class="ui row">
-                <div class='ui sixteen wide column'>
-                    <div class="ui fluid three cards">
-                        <div class="card">
-                            <div class="content">
-                                <div class="header">
+        </div>
+        <div class='ui row'>
+            <div class='ui seven wide column'>
+                <div class="ui row">
+                    <div class="ui segment">
+                        <h3>Action items</h3>
+                        <div class="content">
+                            <div class="meta">
                                 Transactions
-                                </div>
-                                <div class="meta">
-                                Action items
-                                </div>
-                                <div class="description">
+                            </div>
+                            <div class="description">
                                 <div class="ui unordered list">
-                                    <a class="item" target="_blank" href="/org/<%=req.org.id%>/transactions?category=empty&date_from=<%-start_of_month.toISOString().substring(0,10)%>&date_to=<%-end_of_month.toISOString().substring(0,10)%>"><span><i class="warning circle icon"></i><%=tlis_without_category%> transactions without category<i class="external alternate icon"></i></span></a>
-                                    <a class="item" target="_blank" href="/org/<%=req.org.id%>/transactions?description=empty&date_from=<%-start_of_month.toISOString().substring(0,10)%>&date_to=<%-end_of_month.toISOString().substring(0,10)%>"><span><i class="warning circle icon"></i><%=tlis_without_description%> transactions without description<i class="external alternate icon"></i></span></a>
-                                </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="content">
-                                <div class="header">
-                                Invoices
-                                </div>
-                                <div class="meta">
-                                Action items
-                                </div>
-                                <div class="description">
-                                    <div class="ui unordered list">
-                                        <a class="item" target="_blank" href="/org/<%=req.org.id%>/invoices?date_from=<%-start_of_month.toISOString().substring(0,10)%>&date_to=<%-end_of_month.toISOString().substring(0,10)%>"><span><i class="warning circle icon"></i><%=invoice_without_category%> Invoices without category<i class="external alternate icon"></i></span></a>
-                                    </div>
+                                    <a class="item" target="_blank" href="/org/<%=req.org.id%>/transactions?category=empty&date_from=<%-start_of_month.toISOString().substring(0,10)%>&date_to=<%-end_of_month.toISOString().substring(0,10)%>">
+                                        <span>
+                                            <i class="warning circle icon"></i>
+                                            <%=tlis_without_category%> transactions without category
+                                                <i class="external alternate icon"></i>
+                                        </span>
+                                    </a>
+                                    <a class="item" target="_blank" href="/org/<%=req.org.id%>/transactions?description=empty&date_from=<%-start_of_month.toISOString().substring(0,10)%>&date_to=<%-end_of_month.toISOString().substring(0,10)%>">
+                                        <span>
+                                            <i class="warning circle icon"></i>
+                                            <%=tlis_without_description%> transactions without description
+                                                <i class="external alternate icon"></i>
+                                        </span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="card">
-                            <div class="content">
-                                <div class="header">
+                        <div class="content">
+                            <div class="meta">
                                 Statements
-                                </div>
-                                <div class="meta">
-                                Action items
-                                </div>
-                                <div class="description">
-                                    <div class="ui unordered list">
-                                        <% accounts_for_which_statements_missing.forEach(function(account){%>
-                                            <a class="item" target="_blank" href="/org/<%=req.org.id%>/document/create"><span><i class="warning circle icon"></i>Statement missing for <%=account.name%><i class="external alternate icon"></i></span></a>
+                            </div>
+                            <div class="description">
+                                <div class="ui unordered list">
+                                    <% accounts_for_which_statements_missing.forEach(function(account){%>
+                                        <a class="item" target="_blank" href="/org/<%=req.org.id%>/document/create">
+                                            <span>
+                                                <i class="warning circle icon"></i>Statement missing for
+                                                <%=account.name%>
+                                                    <i class="external alternate icon"></i>
+                                            </span>
+                                        </a>
                                         <%})%>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class='ui row'>
-                <div class='ui five wide column'>
+                </br>
+                <div class="ui row">
                     <div class='ui segment'>
                         <h3>List of accounts</h3>
                         <div class="ui relaxed divided list">
@@ -106,34 +76,37 @@
                                 <div class="item">
                                     <i class=" book middle aligned icon"></i>
                                     <div class="content">
-                                        <a class="header" href='/org/<%=req.org.id%>/account/<%=account.id%>'><%=account.name%></a>
+                                        <a class="header" href='/org/<%=req.org.id%>/account/<%=account.id%>'>
+                                            <%=account.name%>
+                                        </a>
                                         <%if(account.details && account.details.last_snapshot){%>
-                                            <div class="description popup" data-content='Balance in the account as per last snapshot - <%=GeneralService.timeAgo(account.updatedAt)%>'>Rs. <%=account.details.last_snapshot.balance%> (<%=GeneralService.timeAgo(account.updatedAt)%>)</div>
-                                        <%}else{%>
-                                            <div class="description popup" data-content='Balance in account is the balance in the last known snapshot taken of the account. This account does not seem to have a snapshot. Create a snapshot to show balance here '>Balance unknown</div>
-                                        <%}%>
+                                            <div class="description popup" data-content='Balance in the account as per last snapshot - <%=GeneralService.timeAgo(account.updatedAt)%>'>Rs.
+                                                <%=account.details.last_snapshot.balance%> (
+                                                    <%=GeneralService.timeAgo(account.updatedAt)%>)</div>
+                                            <%}else{%>
+                                                <div class="description popup" data-content='Balance in account is the balance in the last known snapshot taken of the account. This account does not seem to have a snapshot. Create a snapshot to show balance here '>Balance unknown</div>
+                                                <%}%>
                                     </div>
                                 </div>
-                            <%})%>
+                                <%})%>
                         </div>
                     </div>
                 </div>
-                <div class='ui eleven wide column'>
-                    <div class='ui segment'>
-                        <div class='ui header'>Expense per category</div>
-                            <div class="ui list">
-                                <%categories.forEach(function(category){%>
-                                    <%- partial('partials/category', {category: category}) %>
+            </div>
+            <div class='ui nine wide column'>
+                <div class='ui segment'>
+                    <div class='ui header'>Expense per category</div>
+                    <div class="ui relaxed list">
+                        <%categories.forEach(function(category){%>
+                            <%- partial('partials/category', {category: category}) %>
                                 <%})%>
-                            </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/transaction/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new transaction" data-position="left center" data-inverted=""><i class="icon question"></i></a>
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $('.ui.accordion').accordion();
-        })
-    </script>
+</div>
+<a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/transaction/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;"
+    data-tooltip="Add new transaction" data-position="left center" data-inverted="">
+    <i class="icon question"></i>
+</a>
