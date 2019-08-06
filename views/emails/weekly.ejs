@@ -25,15 +25,15 @@
 
 <%if(transactions.missing.description){%>
 	<p style="color:red"><%=transactions.missing.description%> transactions does not have description. </p>
-	<p>Plz consider adding description. Months into the future, if you have to audit your accounts, description will help you remember a transaction. </p>
+	<p>Please consider adding description. Months into the future, if you have to audit your accounts, description will help you remember a transaction. </p>
 <%}else{%>
 	<p style="color:green">All transactions has descriptions. - Good job</p>
 <%}%>
 
 <%if(transactions.missing.category){%>
-	<p style="color:red"><%=transactions.missing.category%> transactions does not have a category. </p>
-	<p>Categorizing transactions deliberately helps you be consious of your spending. Additionally categories help you budget your spendings. </p>
+	<p style="color:red"><%=transactions.missing.category%> transactions does not have a budget. </p>
+	<p>Categorizing transactions deliberately as budgets helps you be conscious of your spending. </p>
 <%}else{%>
-	<p style="color:green">All transactions has category. - Good job</p>
+	<p style="color:green">All transactions has budget category. - Good job</p>
 <%}%>
 

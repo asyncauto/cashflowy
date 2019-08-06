@@ -1,16 +1,16 @@
 <div class='ui container'>
 	<br>
-	<h2>Do you really want to confirm deleting this Category?</h2>
-	This action is permanent. You cant reverse this. All tlis under this category will be un-categorized when you delete this category.
+	<h2>Do you really want to confirm deleting this Budget?</h2>
+	This action is permanent. You can't reverse this. All TLIs under this budget will be un-categorized when you delete this category.
 	<div class='ui segment'>
 		<b>Name:</b> <%=category.name%><br>
 		<b>Description:</b> <%=category.description%><br>
 		<b>Budget:</b> <%=category.budget%><br>
 		<b>Parent:</b> <%=category.parent?category.parent.name:''%><br>
-		<b>Number of sub-categories:</b><%=children.length%><br>
-		<b>Tlis with this category:</b><b style='color:red'><%=tlis_count%></b><br>
+		<b>Number of sub-budgets:</b><%=children.length%><br>
+		<b>TLIs with this category:</b><b style='color:red'><%=tlis_count%></b><br>
 		<%if(tlis_count>0){%>
-			<b style='color:red'>On deletion of this category, all tlis with this category will become un-categorized. </b>
+			<b style='color:red'>On deletion of this budget, all TLIs with this budget will become un-categorized. </b>
 		<%}%>
 		<br>
 		<br>
@@ -27,7 +27,7 @@
 			<a href="/transactions" class='ui button'>Cancel</a>
 			<input type="submit" class="ui red <%-(children.length>0)?'disabled':''%> button" value="Delete">
 			<%if(children.length>0){%>
-				This category cant be deleted as it has sub-categories. Delete the sub-categories first.
+				This budget can't be deleted as it has sub-budgets. Delete the sub-budgets first.
 			<%}%>
 		</form>
 	</div>
