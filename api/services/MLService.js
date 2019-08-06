@@ -5,8 +5,6 @@ var machinelearning = new AWS.MachineLearning({
     region: sails.config.aws.region
 });
 
-var async = require('async');
-
 module.exports = {
     predictCategory: function (tli, cb) {
         async.auto({

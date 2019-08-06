@@ -112,11 +112,12 @@ module.exports = {
 					cb(err, r);
 				});
 			}],
-			predictCategory: ['updatedTli', function (cb) {
+			predictCategory: ['updatedTli', function (results, cb) {
+				var updated_tli = _.get(results, 'updatedTli[0]', created)
 				//if category present return
-				if (created.category) return cb(null);
+				if (updated_tli.category) return cb(null);
 
-				MLService.predictCategory(created, cb);
+				MLService.predictCategory(updated_tli, cb);
 			}]
 		}, function (err) {
 			cb(err);
