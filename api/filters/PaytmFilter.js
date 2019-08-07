@@ -5,403 +5,7 @@ module.exports={
 	body_parsers:[
 		{
 			version:'you_paid_v1',
-			description:'as of sept 2018',
-			fields:[
-				{
-					name:'to_name',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Money Sent Successfully'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Your Updated Paytm Wallet Balance'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'To'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'From'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'\'s Paytm Wallet Linked to'
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'to_phone',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Money Sent Successfully'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Your Updated Paytm Wallet Balance'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'To'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'From'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'\'s Paytm Wallet Linked to'
-						},
-						
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'from_name',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Money Sent Successfully'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Your Updated Paytm Wallet Balance'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'From'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'\'s Paytm Wallet Linked to'
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'from_phone',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Money Sent Successfully'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Your Updated Paytm Wallet Balance'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'From'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'\'s Paytm Wallet Linked to'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Transaction Id:'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'substring',
-							options:{
-								start:0,
-								end:10,
-							}
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'amount',
-					type:'float',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Money Sent Successfully'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Your Updated Paytm Wallet Balance'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'To'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'currency',
-					type:'string',
-					filters:[
-						{
-							type:'is',
-							value:'INR'
-						},
-					]
-				},
-				{
-					name:'reference_number',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Money Sent Successfully'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Your Updated Paytm Wallet Balance'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Transaction Id:'
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'balance_amount',
-					type:'float',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Your Updated Paytm Wallet Balance'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'View Passbook'
-						},
-						{
-							type:'substring',
-							options:{
-								start:1,
-								// end:3,
-							}
-						},
-						{
-							type:'trim',
-						},
-						
-					]
-				},
-				{
-					name:'balance_currency',
-					type:'string',
-					filters:[
-						{
-							type:'is',
-							value:'INR'
-						},
-					]
-				},
-			]
-		},
-		{
-			version:'you_paid_v2',
-			description:'as of sept 2018',
+			description:'as of aug 2019',
 			fields:[
 				{
 					name:'to_name',
@@ -462,7 +66,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Money Sent Successfully'
+							q:'Money Paid Successfully'
 						},
 						{
 							type:'find_end_position',
@@ -495,7 +99,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'\'s Paytm Wallet Linked to'
+							q:`'s Paytm Account Linked`
 						},
 						{
 							type:'trim',
@@ -513,7 +117,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Money Sent Successfully'
+							q:'Money Paid Successfully'
 						},
 						{
 							type:'find_end_position',
@@ -546,7 +150,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'\'s Paytm Wallet Linked to'
+							q:'Paytm Account Linked to'
 						},
 						{
 							type:'find_end_position',
@@ -556,6 +160,15 @@ module.exports={
 								beginning_of_line:true
 							},
 							q:'Transaction Id:'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'<#m_'
 						},
 						{
 							type:'trim',
@@ -568,7 +181,7 @@ module.exports={
 							}
 						},
 						{
-							type:'trim',
+							type:'trim'
 						},
 					]
 				},
@@ -644,7 +257,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Money Sent Successfully'
+							q:'Money Paid Successfully'
 						},
 						{
 							type:'find_end_position',
@@ -698,11 +311,22 @@ module.exports={
 							q:'View Passbook'
 						},
 						{
-							type:'substring',
+							type:'find_start_position',
+							criteria:'text_match_after',
 							options:{
-								start:1,
-								// end:3,
-							}
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'₹*'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'*'
 						},
 						{
 							type:'trim',
