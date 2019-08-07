@@ -473,7 +473,7 @@ module.exports = {
 					third_party: _.get(pe, 'data.third_party', null),
 					original_amount: _.get(pe, 'data.original_amount', 0),
 					amount_inr: _.get(pe, 'data.amount_inr', 0),
-					occuredAt: _.get(pe, 'data.occuredAt', new Date())
+					occuredAt: _.get(pe, 'data.occuredAt', new Date()).toISOString()
 				}
 
 				if(pe.transaction)

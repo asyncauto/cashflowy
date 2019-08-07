@@ -44,12 +44,17 @@ module.exports.emailparser = {
                     pe.data.third_party = pe.extracted_data.from_phone + '(' + pe.extracted_data.from_name + ')';
                     pe.data.acc_number = pe.extracted_data.to;
                     pe.data.original_amount = pe.extracted_data.amount;
-                } else {
+                } 
+                else {
                     pe.data.acc_number = pe.extracted_data.from_phone;
                     if (pe.extracted_data.to_phone)
                         pe.data.third_party = pe.extracted_data.to_phone + '(' + pe.extracted_data.to_name + ')';
                     else
                         pe.data.third_party = pe.extracted_data.to_name;
+                }
+                // use last 4 digit incase of paid via payment gateway.
+                if (pe.body_parser_used == 'you_paid_pg_v1') {
+                    pe.data.acc_number = pe.data.from_phone.substr(pe.data.from_phone.length - 4)
                 }
                 return pe;
             }
@@ -111,7 +116,7 @@ module.exports.emailparser = {
                         pe.data.occuredAt = moment(pe.data.date, 'D MMM YYYY').tz('Asia/Kolkata').toDate();
                     }
                 }
-               if (pe.data.forward_orignal_date) {
+                if (pe.data.forward_orignal_date) {
                     pe.data.occuredAt = moment(pe.data.forward_orignal_date, 'ddd, MMM D, YYYY at hh:mm A').tz('Asia/Kolkata').toDate()
                 } else if (pe.data.occuredAt == 'Invalid Date') {
                     pe.data.occuredAt = pe.data.email_received_time;
