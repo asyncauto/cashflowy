@@ -14,7 +14,7 @@ module.exports.emailparser = {
         if (pe.data.date && pe.data.time) {
             pe.data.occuredAt = new Date(pe.data.date + ' ' + pe.data.time + '+5:30');
         }
-        if (pe.data.occuredAt == 'Invalid Date') {
+        if (!_.isDate(pe.data.occuredAt)) {
             if (pe.data.forward_orignal_date) {
                 pe.data.occuredAt = moment(pe.data.forward_orignal_date, 'ddd, MMM D, YYYY at hh:mm AM').tz('Asia/Kolkata').toDate()
             }
@@ -37,6 +37,23 @@ module.exports.emailparser = {
         return pe
     },
     filters: [
+        {
+            name: 'PaytmFilter',
+            modifyData: function (pe) {
+                if (pe.body_parser_used == 'received_money_v1') {
+                    pe.data.third_party = pe.extracted_data.from_phone + '(' + pe.extracted_data.from_name + ')';
+                    pe.data.acc_number = pe.extracted_data.to;
+                    pe.data.original_amount = pe.extracted_data.amount;
+                } else {
+                    pe.data.acc_number = pe.extracted_data.from_phone;
+                    if (pe.extracted_data.to_phone)
+                        pe.data.third_party = pe.extracted_data.to_phone + '(' + pe.extracted_data.to_name + ')';
+                    else
+                        pe.data.third_party = pe.extracted_data.to_name;
+                }
+                return pe;
+            }
+        },
         {
             name: 'IciciCreditCardTransactionAlertFilter',
         },
@@ -158,23 +175,6 @@ module.exports.emailparser = {
                 if (pe.body_parser_used == 'credit_v1')
                     pe.data.original_amount = pe.extracted_data.amount;
                 return pe
-            }
-        },
-        {
-            name: 'PaytmFilter',
-            modifyData: function (pe) {
-                if (pe.body_parser_used == 'received_money_v1') {
-                    pe.data.third_party = pe.extracted_data.from_phone + '(' + pe.extracted_data.from_name + ')';
-                    pe.data.acc_number = pe.extracted_data.to;
-                    pe.data.original_amount = pe.extracted_data.amount;
-                } else {
-                    pe.data.acc_number = pe.extracted_data.from_phone;
-                    if (pe.extracted_data.to_phone)
-                        pe.data.third_party = pe.extracted_data.to_phone + '(' + pe.extracted_data.to_name + ')';
-                    else
-                        pe.data.third_party = pe.extracted_data.to_name;
-                }
-                return pe;
             }
         }
     ]
