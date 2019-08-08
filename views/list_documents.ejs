@@ -19,11 +19,7 @@ function updateQueryStringParameter(uri, key, value) {
 		<div class="sixteen wide computer sixteen wide mobile  column">
 			<style type="text/css">
 			.vis-item .vis-item-content {
-				padding: 1px !important;
-			}
-			/* alternating column backgrounds */
-			.vis-time-axis .vis-grid.vis-odd {
-			background: #f5f5f5;
+				padding: 0.5px !important;
 			}
 			</style>
 				<%if(!timeline.items.length){%>
@@ -45,7 +41,7 @@ function updateQueryStringParameter(uri, key, value) {
 						// create visualization
 						var container = document.getElementById('visualization');
 						var options = {
-							groupOrder: 'content'  // groupOrder can be a property name or a sorting function
+							groupOrder: 'type'  // groupOrder can be a property name or a sorting function
 						};
 
 						var timeline = new vis.Timeline(container);

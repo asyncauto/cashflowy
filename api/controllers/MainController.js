@@ -1546,6 +1546,7 @@ module.exports = {
 							"document"."id" AS document_id,
 							"account"."id" AS account_id,
 							"account"."name" AS account_name,
+							"account"."type" AS account_type,
 							"document"."details" AS document_details,
 							"document"."description" AS document_description,
 							data ->> 'transactions_from_date' AS transactions_from_date,
@@ -1586,6 +1587,7 @@ module.exports = {
 							"document"."id" AS document_id,
 							"account"."id" AS account_id,
 							"account"."name" AS account_name,
+							"account"."type" AS account_type,
 							"document"."details" AS document_details,
 							"document"."description" AS document_description,
 							data ->> 'transactions_from_date' AS transactions_from_date,
@@ -1621,6 +1623,8 @@ module.exports = {
 				items:[]
 			}
 
+			var nestedGroups = [];
+
 			_.forEach(results.getDocuments.rows, function(d){
 
 				if(d.document_data && d.transactions_from_date && d.transactions_to_date){
@@ -1634,8 +1638,11 @@ module.exports = {
 					if(!_.find(timeline.groups, {id:d.account_id}))
 						timeline.groups.push({
 							id: d.account_id,
-							content: `<a href=/org/${req.org.id}/account/${d.account_id}>${d.account_name}<a>`
-						})
+							type: d.account_type,
+							name: d.account_name,
+							className: d.account_type,
+							content: `<a href=/org/${req.org.id}/account/${d.account_id}>${d.account_name}<a><br>(${d.account_type})`
+						});
 				}
 			});
 			
