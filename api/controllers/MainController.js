@@ -464,7 +464,7 @@ module.exports = {
 				const fx = require('money');
 				fx.base='INR';
 				fx.rates=sails.config.fx_rates;
-
+				var occuredAt = _.get(pe, 'data.occuredAt', new Date());
 				var t={
 					original_currency:pe.data.currency,
 					createdBy:'parsed_email',
@@ -473,7 +473,7 @@ module.exports = {
 					third_party: _.get(pe, 'data.third_party', null),
 					original_amount: _.get(pe, 'data.original_amount', 0),
 					amount_inr: _.get(pe, 'data.amount_inr', 0),
-					occuredAt: _.get(pe, 'data.occuredAt', new Date()).toISOString()
+					occuredAt: _.isDate(occuredAt) ? occuredAt.toISOString() : occuredAt
 				}
 
 				if(pe.transaction)
