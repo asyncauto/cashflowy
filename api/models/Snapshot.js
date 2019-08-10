@@ -14,7 +14,7 @@ module.exports = {
 		},
 		createdBy:{
 			type:'string',
-			isIn:['user','parsed_email', 'parsed_document']
+			isIn:['user','parsed_email', 'parsed_statement']
 		},
 		details: {
 		  type: "json",

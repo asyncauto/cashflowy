@@ -7,7 +7,7 @@ fx.rates=sails.config.fx_rates;
 var convertSliToTransaction = function(sli){
 	var t={
 		original_currency:sli.data.currency,
-		createdBy:'parsed_document',
+		createdBy:'parsed_statement',
 		type:'income_expense',
 		account:sli.data.acc_no,
 		third_party:sli.data.paid_whom,
