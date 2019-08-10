@@ -107,7 +107,7 @@ function updateQueryStringParameter(uri, key, value) {
 				</form>
 			</div>
 			<div class='eleven wide computer sixteen wide tablet sixteen wide mobile column'>
-				<h1>Your Documents: </h1>
+				<h1>Your Statements: </h1>
 				<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
 					<thead>
 						<tr>
@@ -122,10 +122,10 @@ function updateQueryStringParameter(uri, key, value) {
 						</tr>
 					</thead>
 					<tbody>
-						<%documents.forEach(function(doc){%>
-							<tr data-d_id='<%=doc.document_id%>' class='document'>
+						<%statements.forEach(function(doc){%>
+							<tr data-d_id='<%=doc.statement_id%>' class='statement'>
 								<td>
-									<% if(doc.document_data && doc.transactions_from_date){ %>
+									<% if(doc.statement_data && doc.transactions_from_date){ %>
 									<%-moment(doc.transactions_from_date).tz('Asia/Kolkata').format('MMM')%></br>
 									<span style="font-size: 1.2rem;"><%-moment(doc.transactions_from_date).tz('Asia/Kolkata').format('DD')%></span></br>
 									<span style="font-size: 0.75rem;"><%-moment(doc.transactions_from_date).tz('Asia/Kolkata').format('YYYY')%></span>
@@ -133,47 +133,47 @@ function updateQueryStringParameter(uri, key, value) {
 									<%}%>
 								</td>
 								<td>
-									<% if(doc.document_data && doc.transactions_to_date){ %>
+									<% if(doc.statement_data && doc.transactions_to_date){ %>
 									<%-moment(doc.transactions_to_date).tz('Asia/Kolkata').format('MMM')%></br>
 									<span style="font-size: 1.2rem;"><%-moment(doc.transactions_to_date).tz('Asia/Kolkata').format('DD')%></span></br>
 									<span style="font-size: 0.75rem;"><%-moment(doc.transactions_to_date).tz('Asia/Kolkata').format('YYYY')%></span>
 									</span>
 									<%}%>
 								</td>
-								<td><a href="/org/<%=req.org.id%>/document/<%=doc.document_id%>" target="_blank"><%- doc.unresolved_dts?'<span style="color:red">'+doc.unresolved_dts+'</span>': '<span style="color:green">None</span>'%><i class="external alternate icon"></i></a>
+								<td><a href="/org/<%=req.org.id%>/statement/<%=doc.statement_id%>" target="_blank"><%- doc.unresolved_dts?'<span style="color:red">'+doc.unresolved_dts+'</span>': '<span style="color:green">None</span>'%><i class="external alternate icon"></i></a>
 									
 								</td>
-								<td><%=doc.document_type%></td>
+								<td><%=doc.statement_type%></td>
 								<td>
 									<span>
 										<a href="/org/<%=req.org.id%>/account/<%=doc.account_id%>"><%=doc.account_name%></a>
 									</span><br>
 								</td>
 								<td>
-									<!-- describe the document -->
-									<span class='description'><%-doc.document_description?doc.document_description:''%></span>
-									<a class='edit' data-id='<%=doc.document_id%>' href='' style="<%=(!doc.document_description)?'background:yellow':''%>">edit</a><br>
+									<!-- describe the statement -->
+									<span class='description'><%-doc.statement_description?doc.statement_description:''%></span>
+									<a class='edit' data-id='<%=doc.statement_id%>' href='' style="<%=(!doc.statement_description)?'background:yellow':''%>">edit</a><br>
 
-									<div class='edit_description' data-id='<%=doc.document_id%>' style='display:none;'>
+									<div class='edit_description' data-id='<%=doc.statement_id%>' style='display:none;'>
 										
 										<div class="ui fluid input">
-											<input type="text" name='description' value='<%-doc.document_description?doc.document_description:''%>'>
+											<input type="text" name='description' value='<%-doc.statement_description?doc.statement_description:''%>'>
 										</div>
 										<br>
-										<button class="ui teal button submit_edit_desc" data-id='<%=doc.document_id%>' >save</button>
-										<button class="ui red button cancel_edit_desc" data-id='<%=doc.document_id%>' >cancel</button>
+										<button class="ui teal button submit_edit_desc" data-id='<%=doc.statement_id%>' >save</button>
+										<button class="ui red button cancel_edit_desc" data-id='<%=doc.statement_id%>' >cancel</button>
 									</div>
 								</td>
 								<td>
-									<%=doc.document_data ? doc.document_data.file_name : doc.document_details && doc.document_details.original_filename? doc.document_details.original_filename:'-'  %>
+									<%=doc.statement_data ? doc.statement_data.file_name : doc.statement_details && doc.statement_details.original_filename? doc.statement_details.original_filename:'-'  %>
 								</td>
 								
-								<% if(doc.document_data && doc.document_data.transactions){ %>
-									<td data-tooltip="Document processed successfully"><i class="icon green checkmark" ></i></td>
-								<% }else if(new Date() - new Date(doc.document_createdAt) < 150000){ %>
+								<% if(doc.statement_data && doc.statement_data.transactions){ %>
+									<td data-tooltip="Statement processed successfully"><i class="icon green checkmark" ></i></td>
+								<% }else if(new Date() - new Date(doc.statement_createdAt) < 150000){ %>
 									<td data-tooltip="Parsing in progress"><i class="icon spinner"></i></td>
 								<% }else { %>
-									<td data-tooltip="Unable to Parse the Document"><i class="icon yellow attention"></i></td>
+									<td data-tooltip="Unable to Parse the Statement"><i class="icon yellow attention"></i></td>
 								<% } %>
 							</tr>
 						<%})%>
@@ -194,7 +194,7 @@ function updateQueryStringParameter(uri, key, value) {
 		</div>
 	</div>
 
-<a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/document/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new document" data-position="left center" data-inverted=""><i class="file alternate outline icon"></i></a>
+<a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/statement/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new statement" data-position="left center" data-inverted=""><i class="file alternate outline icon"></i></a>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('#submit_form').click(function(){
@@ -207,7 +207,7 @@ function updateQueryStringParameter(uri, key, value) {
 			$( "form" ).submit();
 		});
 		$('#reset_form').click(function(){
-			window.location = "/org/"+"<%=req.params.o_id%>"+'/documents';
+			window.location = "/org/"+"<%=req.params.o_id%>"+'/statements';
 		});
 
 		$('.dropdown').dropdown();
@@ -235,11 +235,11 @@ function updateQueryStringParameter(uri, key, value) {
 		});
 		$('.submit_edit_desc').click(function(e){
 			console.log('submit button clicked');
-			var doc_id=$(this).parents('.document').attr('data-d_id');
+			var doc_id=$(this).parents('.statement').attr('data-d_id');
 			console.log(doc_id);
-			var description=$('.document[data-d_id='+doc_id+']').find('input[name=description]').val();
-			$('.document[data-d_id='+doc_id+'] span.description').text(description);
-			$('.document[data-d_id='+doc_id+'] span.description').show();
+			var description=$('.statement[data-d_id='+doc_id+']').find('input[name=description]').val();
+			$('.statement[data-d_id='+doc_id+'] span.description').text(description);
+			$('.statement[data-d_id='+doc_id+'] span.description').show();
 			// /api/edit_desc
 			var button = this;
 			$(button).addClass('loading');

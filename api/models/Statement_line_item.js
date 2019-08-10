@@ -9,8 +9,8 @@ var async = require('async');
 module.exports = {
 
 	attributes: {
-		document:{
-			model:'document',
+		statement:{
+			model:'statement',
 			required:true
 		},
 		pos:{
@@ -51,7 +51,7 @@ module.exports = {
 		// create our job queue
 		var queue = new Bull('queue',{redis:sails.config.bull.redis});
 		var data={
-			title:'afterCreate_sli, document ='+sli.document+', row='+sli.pos,
+			title:'afterCreate_sli, statement ='+sli.statement+', row='+sli.pos,
 			sli:sli,
 			info:{ // this is for readability
 				// user:req.body.user_id

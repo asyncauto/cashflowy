@@ -188,13 +188,13 @@ function updateQueryStringParameter(uri, key, value) {
 					<input type="date" placeholder="YYYY-MM-DD" name="date_to" value="<%= req.query.date_to ? req.query.date_to: ''%>">
 				</div>
 				<div class="field">
-					<label>Extracted from document: </label>
+					<label>Extracted from statement: </label>
 					<div class="ui filter_txn fluid dropdown basic button">
-						<input type="hidden" name="document" value="<%=req.query.document?req.query.document:'' %>">
+						<input type="hidden" name="statement" value="<%=req.query.statement?req.query.statement:'' %>">
 						<div class="text">All</div>
 						<i class="dropdown icon"></i>
 						<div class="fluid menu">
-							<%documents.forEach(function(doc){%>
+							<%statements.forEach(function(doc){%>
 								<div class="item" data-value='<%= doc.id %>'><%=doc.parsed_data ? doc.parsed_data.file_name : doc.details && doc.details.original_filename? doc.details.original_filename:'-'%> (<%=doc.type%>)</div>
 							<%})%>
 						</div>
@@ -365,7 +365,7 @@ function updateQueryStringParameter(uri, key, value) {
 											<i class='mail icon'></i>extracted from email - <%=pe.email%><br>
 										<%}) %>
 										<%t.slis.forEach(function(sli){ %>
-											<i class='file alternate outline icon'></i>extracted from document - <a href="/org/<%=req.org.id%>/document/<%=sli.document.id%>"><%=sli.document.id%></a> - line no - <%=sli.pos+1%><br>
+											<i class='file alternate outline icon'></i>extracted from statement - <a href="/org/<%=req.org.id%>/statement/<%=sli.statement.id%>"><%=sli.statement.id%></a> - line no - <%=sli.pos+1%><br>
 										<%}) %>
 									<%}%>
 									<br>

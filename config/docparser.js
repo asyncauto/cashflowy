@@ -26,7 +26,7 @@ module.exports.docparser={
 			docparser_id:'bzqxicqhpsrk',
 			type:'hdfc_credit_card',
 			name:'HDFC Credit Card',
-			validateParsedDocument:function(parsed_data){
+			validateParsedStatement:function(parsed_data){
 				return true;
 			},
 			// before it is saved in the database
@@ -113,7 +113,7 @@ module.exports.docparser={
 			docparser_id:'qyflunkxpizn',
 			type:'hsbc_credit_card',
 			name:'HSBC Credit card',
-			validateParsedDocument:function(parsed_data){
+			validateParsedStatement:function(parsed_data){
 				return true;
 			},
 			// before it is saved in the database

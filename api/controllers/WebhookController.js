@@ -20,7 +20,7 @@ module.exports = {
         if (req.query.secret != sails.config.docparser.webhook_secret)
             return res.status(403).json({ status: 'failure', error: 'athorization failed' });
 
-        var transformExtractedDataFromDocument=function(extacted_data,filter){
+        var transformExtractedDataFromStatement=function(extacted_data,filter){
             //before modify common formator
             var data = sails.config.docparser.beforeModifyParsedData(extacted_data);
 
@@ -38,22 +38,22 @@ module.exports = {
         var filter;
         
         async.auto({
-            findDocument: function (cb) {
+            findStatement: function (cb) {
                 // req.body.remote_id = 5;
-                Document.findOne({ id: parseInt(req.body.remote_id) }).exec(function(err, doc){
+                Statement.findOne({ id: parseInt(req.body.remote_id) }).exec(function(err, doc){
                     if(err) return cb(err);
-                    if(!doc) return cb(new Error('document not found'));
+                    if(!doc) return cb(new Error('statement not found'));
                     filter = _.find(sails.config.docparser.filters,{docparser_id: doc.parser_used});
-                    data=transformExtractedDataFromDocument(extracted_data,filter);
+                    data=transformExtractedDataFromStatement(extracted_data,filter);
                     return cb(null, doc);
                 });
             },
-            findAccounts: ['findDocument', function(results, cb){
+            findAccounts: ['findStatement', function(results, cb){
                 var accounts = [];
                 async.forEach(data.acc_numbers, function(ac, cb){
                     // check for last 4 digits.
-                    Account.findOrCreate({acc_number: {endsWith: ac.substr(-4)}, org: results.findDocument.org},
-                        {acc_number: ac, org: results.findDocument.org, name: 'Auto Generated: '+ ac, type: "bank"}).exec(function(e, a){
+                    Account.findOrCreate({acc_number: {endsWith: ac.substr(-4)}, org: results.findStatement.org},
+                        {acc_number: ac, org: results.findStatement.org, name: 'Auto Generated: '+ ac, type: "bank"}).exec(function(e, a){
                             if(e) return cb(e);
                             accounts.push(a);
                             // set the primary account id 
@@ -65,16 +65,16 @@ module.exports = {
                     cb(err, accounts);
                 })
             }],
-            updateDocument: ['findAccounts' ,function (results,cb) {
-                Document.update({ id: parseInt(req.body.remote_id) }, 
+            updateStatement: ['findAccounts' ,function (results,cb) {
+                Statement.update({ id: parseInt(req.body.remote_id) }, 
                 { 
                     extracted_data: extracted_data, 
                     data: data,
                     type:filter.type, 
                     accounts: _.map(results.findAccounts, 'id')}).exec(cb);
             }],
-            // check if the document entered is duplicate of something else
-            createStatementLineItems:['updateDocument',function(results,cb){
+            // check if the statement entered is duplicate of something else
+            createStatementLineItems:['updateStatement',function(results,cb){
                 console.log('statement line items will be created here\n\n\n\n');
                 // Line items will only be created if they dont already exist. 
                 var pos=0;
@@ -84,17 +84,17 @@ module.exports = {
                     var statement_line_item={
                         extracted_data: extracted_data.transactions[pos],
                         data: data.transactions[pos],
-                        document:results.findDocument.id,
+                        statement:results.findStatement.id,
                         pos:pos,
                         details:{
-                            parser_used:results.findDocument.parser_used,
-                            type:_.find(sails.config.docparser.filters,{docparser_id:results.findDocument.parser_used}).type,
+                            parser_used:results.findStatement.parser_used,
+                            type:_.find(sails.config.docparser.filters,{docparser_id:results.findStatement.parser_used}).type,
                         },
-                        org:results.findDocument.org // this is sort of reduntant
+                        org:results.findStatement.org // this is sort of reduntant
                     }
 
                     var find={
-                        document:results.findDocument.id,
+                        Statement:results.findStatement.id,
                         pos:pos
                     }
 
@@ -105,13 +105,13 @@ module.exports = {
                 });
                 // cb(null);
             }],
-            createSnapshots: ['updateDocument', function(results, cb){
+            createSnapshots: ['updateStatement', function(results, cb){
                 async.eachOfLimit(data.transactions, 1, function(t, index, cb){
                     var next_data = _.get(data.transactions, `${[index+1]}.date`, null);
                     if(t.balance && t.date != next_data){
                         var ss={
                             account:data.acc_id,
-                            createdBy:'parsed_document',
+                            createdBy:'parsed_statement',
                             balance: t.balance,
                             takenAt: moment(t.date, 'YYYY-MM-DD').tz('Asia/Kolkata').endOf('day').toISOString()
                         }

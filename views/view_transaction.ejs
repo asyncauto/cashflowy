@@ -139,7 +139,7 @@ var format_number=function(number){
 										<i class='mail icon'></i>extracted from email - <%=pe.email%><br>
 									<%}) %>
 									<%t.slis.forEach(function(sli){ %>
-										<i class='file alternate outline icon'></i>extracted from document - <a href="/org/<%=req.org.id%>/document/<%=sli.document.id%>"><%=sli.document.id%></a> - line no - <%=sli.pos+1%><br>
+										<i class='file alternate outline icon'></i>extracted from statement - <a href="/org/<%=req.org.id%>/statement/<%=sli.statement.id%>"><%=sli.statement.id%></a> - line no - <%=sli.pos+1%><br>
 									<%}) %>
 								<%}%>
 								<br>

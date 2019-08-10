@@ -1,8 +1,8 @@
 <div class='ui container'>
 	<div class="ui breadcrumb compact basic segment">
-		<a class="section" href="/org/<%=req.org.id%>/documents">Documents</a>
+		<a class="section" href="/org/<%=req.org.id%>/statements">Statements</a>
 		<i class="right angle icon divider"></i>
-		<div class="active section">view Document</div>
+		<div class="active section">view Statement</div>
 	</div>
 	<% if(doc.extracted_data){%>
 	<div class= 'ui grid'>
@@ -193,7 +193,7 @@
 				<%}%>
 			</div>
 			<div class="ui tab" data-tab="second">
-				Your transactions associated with this parsed document
+				Your transactions associated with this parsed statement
 				<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
 					<tbody>
 						<%slis.forEach(function(sli){%>

@@ -131,14 +131,14 @@ module.exports.routes = {
   'GET /org/:o_id/rule/:id/delete':'MainController.deleteRule',
   'POST /org/:o_id/rule/:id/delete':'MainController.deleteRule',
 
-  'GET /org/:o_id/documents':'MainController.listDocuments',
-  'GET /org/:o_id/document/create':'MainController.createDocument',
-  'POST /org/:o_id/document/create':'MainController.createDocument',
-  'GET /org/:o_id/document/:id':'MainController.viewDocument',
-  'GET /org/:o_id/document/:id/edit':'MainController.editDocument',
-  'POST /org/:o_id/document/:id/edit':'MainController.editDocument',
-  'GET /org/:o_id/document/:id/delete':'MainController.deleteDocument',
-  'POST /org/:o_id/document/:id/delete':'MainController.deleteDocument',
+  'GET /org/:o_id/statements':'MainController.listStatements',
+  'GET /org/:o_id/statement/create':'MainController.createStatement',
+  'POST /org/:o_id/statement/create':'MainController.createStatement',
+  'GET /org/:o_id/statement/:id':'MainController.viewStatement',
+  'GET /org/:o_id/statement/:id/edit':'MainController.editStatement',
+  'POST /org/:o_id/statement/:id/edit':'MainController.editStatement',
+  'GET /org/:o_id/statement/:id/delete':'MainController.deleteStatement',
+  'POST /org/:o_id/statement/:id/delete':'MainController.deleteStatement',
   
 
   'GET /org/:o_id/pnls':'MainController.listPnLs',

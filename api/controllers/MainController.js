@@ -724,20 +724,20 @@ module.exports = {
 				var accounts =  _.map(results.getAccounts,'id');
 				Invoice.count({category: null, account:accounts, date:{'<':end_of_month, '>':start_of_month}}).exec(callback);
 			}],
-			getDocumentsCount: function(callback){
-				Document.count({org:req.org.id}).exec(callback);
+			getStatementsCount: function(callback){
+				Statement.count({org:req.org.id}).exec(callback);
 			},
 			getAccountsWhereStatementsArePresentForThatMonth: ['getAccounts', function(results, callback){
 				var query = `WITH sli AS (
 					SELECT
 						(data ->> 'date') AS sli_date,
-						document,
+						statement,
 						statement_line_item.id,
-						account_docs__document_accounts.account_docs as account,
+						account_statements__statement_accounts.account_statements as account,
 						org,
 						statement_line_item."createdAt"
 					FROM
-						statement_line_item left JOIN account_docs__document_accounts on account_docs__document_accounts.document_accounts = statement_line_item."document"
+						statement_line_item left JOIN account_statements__statement_accounts on account_statements__statement_accounts.statement_accounts = statement_line_item."statement"
 				)
 				SELECT
 					account
@@ -864,16 +864,16 @@ module.exports = {
 			getAccounts:function(callback){
 				Account.find({org:req.org.id}).exec(callback);
 			},
-			getDocuments:function(callback){ // only for filter
-				Document.find({org:req.org.id}).sort('createdAt DESC').exec(callback);
+			getStatements:function(callback){ // only for filter
+				Statement.find({org:req.org.id}).sort('createdAt DESC').exec(callback);
 			},
-			getTransactionsInDocument:function(callback){
-				if(req.query.document){
-					Statement_line_item.find({document:req.query.document}).exec(callback);
+			getTransactionsInStatement:function(callback){
+				if(req.query.statement){
+					Statement_line_item.find({statement:req.query.statement}).exec(callback);
 				}else
 					callback(null);
 			},
-			getTlis:['getAccounts','getTransactionsInDocument',function(results,callback){
+			getTlis:['getAccounts','getTransactionsInStatement',function(results,callback){
 				//account filter
 				var accounts=[];
 				if(!_.isNaN(parseInt(req.query.account))){
@@ -886,8 +886,8 @@ module.exports = {
 				var filter={
 					account:accounts,
 				}
-				if(req.query.document){
-					filter.transaction=_.filter(_.map(results.getTransactionsInDocument,'transaction'));
+				if(req.query.statement){
+					filter.transaction=_.filter(_.map(results.getTransactionsInStatement,'transaction'));
 					console.log(filter.id);
 				}
 				// category filter
@@ -988,7 +988,7 @@ module.exports = {
 			}],
 			getSLIs:['getTlis',function(results,callback){
 				var t_ids=_.map(results.getTlis,function(tli){return tli.transaction.id});
-				Statement_line_item.find({transaction:t_ids}).populate('document').exec(callback);
+				Statement_line_item.find({transaction:t_ids}).populate('statement').exec(callback);
 			}]
 		},function(err,results){
 			if (err)
@@ -1032,7 +1032,7 @@ module.exports = {
 			
 			locals.accounts=results.getAccounts;
 			locals.tags=results.getTags;
-			locals.documents=results.getDocuments;
+			locals.statements=results.getStatements;
 			locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.moment=require('moment-timezone');
 			locals.query_string=require('query-string');
@@ -1310,18 +1310,6 @@ module.exports = {
 		},function(err,results){
 			res.send(results);
 		})
-		// GmailService.getMessageDetails(options,function(err,data){
-		// 	var log={
-		// 		user:1,
-		// 		log_type:'credit_card_alert',
-		// 		medium:'email',
-		// 		extracted_data:data,
-		// 		email:'alexjv89@gmail.com',
-		// 		message_id:message_id
-		// 	}
-		// 	console.log(data);
-		// 	res.send(data);
-		// });
 	},
 	editDescription:function(req,res){
 		if(req.body.tli){
@@ -1354,16 +1342,16 @@ module.exports = {
 				}
 			})
 		}else if(req.body.doc){
-			Document.findOne({id:req.body.doc}).exec(function(err,doc){
+			Statement.findOne({id:req.body.doc}).exec(function(err,doc){
 				if(doc.org==req.org.id){
-					Document.update({id:doc.id},{description:req.body.description}).exec(function(err,result){
+					Statement.update({id:doc.id},{description:req.body.description}).exec(function(err,result){
 						if(err)
 							throw err;
 						else
 							res.send('ok');
 					});
 				}else{
-					res.send(400,'you cant edit that document');
+					res.send(400,'you cant edit that statement');
 				}
 			})
 		}
@@ -1509,7 +1497,7 @@ module.exports = {
 			res.send(result);
 		})
 	},
-	listDocuments: function(req, res){
+	listStatements: function(req, res){
 		var locals={};
 
 		//pagination
@@ -1533,37 +1521,37 @@ module.exports = {
 					return cb(null, accounts);
 				});
 			},
-			getDocuments: ['getAccounts', function(results, cb){
-				var filtered_list_documents_query = `
+			getStatements: ['getAccounts', function(results, cb){
+				var filtered_list_statements_query = `
 					SELECT
 					*
 					FROM (
 						SELECT
-							"document"."org" AS org,
-							"document"."data" as document_data,
-							"document"."createdAt" as "document_createdAt",
-							"document"."type" AS document_type,
-							"document"."id" AS document_id,
+							"statement"."org" AS org,
+							"statement"."data" as statement_data,
+							"statement"."createdAt" as "statement_createdAt",
+							"statement"."type" AS statement_type,
+							"statement"."id" AS statement_id,
 							"account"."id" AS account_id,
 							"account"."name" AS account_name,
 							"account"."type" AS account_type,
-							"document"."details" AS document_details,
-							"document"."description" AS document_description,
+							"statement"."details" AS statement_details,
+							"statement"."description" AS statement_description,
 							data ->> 'transactions_from_date' AS transactions_from_date,
 							data ->> 'transactions_to_date' AS transactions_to_date
 						FROM
-							"document"
-						LEFT JOIN account_docs__document_accounts ON account_docs__document_accounts.document_accounts = "document"."id"
-						LEFT JOIN account ON account_docs__document_accounts.account_docs = account.id
+							"statement"
+						LEFT JOIN account_statements__statement_accounts ON account_statements__statement_accounts.statement_accounts = "statement"."id"
+						LEFT JOIN account ON account_statements__statement_accounts.account_statements = account.id
 					WHERE
-						"document"."org" = ${req.org.id}
-						AND "account_docs__document_accounts"."account_docs" in ${locals.accounts}
+						"statement"."org" = ${req.org.id}
+						AND "account_statements__statement_accounts"."account_statements" in ${locals.accounts}
 						AND data ->> 'transactions_to_date' > '${locals.date_gte}'
 						AND data ->> 'transactions_from_date' < '${locals.date_lte}'
 						LIMIT ${locals.limit} OFFSET ${locals.skip}) AS doc
 						LEFT JOIN (
 							SELECT
-								count(*) AS unresolved_dts, sli.document AS sli_document_id
+								count(*) AS unresolved_dts, sli.statement AS sli_statement_id
 							FROM
 								doubtful_transaction AS dt
 								INNER JOIN statement_line_item AS sli ON dt.sli = sli.id
@@ -1571,39 +1559,39 @@ module.exports = {
 								sli.org = ${req.org.id}
 								AND json_extract_path(dt.details::json, 'status') IS NULL
 							GROUP BY
-								sli.document) AS ut ON doc.document_id = ut.sli_document_id
-							ORDER BY "doc"."document_data" ->> 'transactions_to_date' DESC`
-				sails.sendNativeQuery(filtered_list_documents_query, cb)
+								sli.statement) AS ut ON doc.statement_id = ut.sli_statement_id
+							ORDER BY "doc"."statement_data" ->> 'transactions_to_date' DESC`
+				sails.sendNativeQuery(filtered_list_statements_query, cb)
 			}],
-			getDocumentsCount: ['getAccounts', function(results, cb){
-				var documents_count = `
+			getStatementsCount: ['getAccounts', function(results, cb){
+				var statements_count = `
 					SELECT
 					count(*)
 					FROM (
 						SELECT
-							"document"."org" AS org,
-							"document"."data" as document_data,
-							"document"."type" AS document_type,
-							"document"."id" AS document_id,
+							"statement"."org" AS org,
+							"statement"."data" as statement_data,
+							"statement"."type" AS statement_type,
+							"statement"."id" AS statement_id,
 							"account"."id" AS account_id,
 							"account"."name" AS account_name,
 							"account"."type" AS account_type,
-							"document"."details" AS document_details,
-							"document"."description" AS document_description,
+							"statement"."details" AS statement_details,
+							"statement"."description" AS statement_description,
 							data ->> 'transactions_from_date' AS transactions_from_date,
 							data ->> 'transactions_to_date' AS transactions_to_date
 						FROM
-							"document"
-						LEFT JOIN account_docs__document_accounts ON account_docs__document_accounts.document_accounts = "document"."id"
-						LEFT JOIN account ON account_docs__document_accounts.account_docs = account.id
+							"statement"
+						LEFT JOIN account_statements__statement_accounts ON account_statements__statement_accounts.statement_accounts = "statement"."id"
+						LEFT JOIN account ON account_statements__statement_accounts.account_statements = account.id
 					WHERE
-						"document"."org" = ${req.org.id}
-						AND "account_docs__document_accounts"."account_docs" in ${locals.accounts}
+						"statement"."org" = ${req.org.id}
+						AND "account_statements__statement_accounts"."account_statements" in ${locals.accounts}
 						AND data ->> 'transactions_to_date' > '${locals.date_gte}' 
 						AND data ->> 'transactions_from_date' < '${locals.date_lte}') AS doc
 						LEFT JOIN (
 							SELECT
-								count(*) AS unresolved_dts, sli.document AS sli_document_id
+								count(*) AS unresolved_dts, sli.statement AS sli_statement_id
 							FROM
 								doubtful_transaction AS dt
 								INNER JOIN statement_line_item AS sli ON dt.sli = sli.id
@@ -1611,9 +1599,9 @@ module.exports = {
 								sli.org = ${req.org.id}
 								AND json_extract_path(dt.details::json, 'status') IS NULL
 							GROUP BY
-								sli.document) AS ut ON doc.document_id = ut.sli_document_id
+								sli.statement) AS ut ON doc.statement_id = ut.sli_statement_id
 					`
-				sails.sendNativeQuery(documents_count, cb)
+				sails.sendNativeQuery(statements_count, cb)
 			}]
 		}, function(err, results){
 			if(err) return res.view('500', err);
@@ -1625,12 +1613,12 @@ module.exports = {
 
 			var nestedGroups = [];
 
-			_.forEach(results.getDocuments.rows, function(d){
+			_.forEach(results.getStatements.rows, function(d){
 
-				if(d.document_data && d.transactions_from_date && d.transactions_to_date){
+				if(d.statement_data && d.transactions_from_date && d.transactions_to_date){
 					timeline.items.push({
-						id: d.document_id + '_' + d.account_id,
-						content: `${d.document_id}: ${d.document_details.original_filename}`,
+						id: d.statement_id + '_' + d.account_id,
+						content: `${d.statement_id}: ${d.statement_details.original_filename}`,
 						start: d.transactions_from_date,
 						end: d.transactions_to_date,
 						group: d.account_id
@@ -1647,21 +1635,21 @@ module.exports = {
 			});
 			
 			//pagination
-			locals.pages = parseInt(results.getDocumentsCount.rows[0].count/limit)? parseInt(results.getDocumentsCount.rows[0].count/limit) : 1;
-			locals.documents = results.getDocuments.rows;
+			locals.pages = parseInt(results.getStatementsCount.rows[0].count/limit)? parseInt(results.getStatementsCount.rows[0].count/limit) : 1;
+			locals.statements = results.getStatements.rows;
 			locals.moment = require('moment-timezone');
 			locals.timeline = timeline;
 			locals.accounts = results.getAccounts;
-			res.view('list_documents',locals);
+			res.view('list_statements',locals);
 		})
 	},
-	viewDocument:function(req,res){
+	viewStatement:function(req,res){
 		async.auto({
 			getDoc:function(callback){
-				Document.findOne({id:req.params.id, org:req.org.id}).exec(callback);
+				Statement.findOne({id:req.params.id, org:req.org.id}).exec(callback);
 			},
 			getSLIs:function(callback){
-				Statement_line_item.find({document:req.params.id}).populate('transaction').sort('pos ASC').exec(callback);
+				Statement_line_item.find({statement:req.params.id}).populate('transaction').sort('pos ASC').exec(callback);
 			},
 			getDoubtfulTransactions:['getSLIs',function(results,callback){
 				Doubtful_transaction.find({sli:_.map(results.getSLIs,'id')}).exec(callback);
@@ -1701,7 +1689,7 @@ module.exports = {
 				moment:require('moment-timezone'),
 			};
 			// res.send(locals);
-			res.view('view_document',locals);
+			res.view('view_statement',locals);
 		})
 		// get
 			// show extracted data 
@@ -1710,13 +1698,13 @@ module.exports = {
 			// ones that has been marked as 
 	},
 	
-	createDocument: async function(req, res) {
+	createStatement: async function(req, res) {
 		if (req.method == 'GET') {
 			var locals = {
 				type: '',
 				message: ''
 			}
-			res.view('create_document', locals)
+			res.view('create_statement', locals)
 		} else {
 			var locals = {
 				type: '',
@@ -1743,8 +1731,8 @@ module.exports = {
 						cb(err, data);
 					});
 				}],
-				createDocument: ['uploadOriginalFileToS3', function (results, cb) {
-					Document.create({ 
+				createStatement: ['uploadOriginalFileToS3', function (results, cb) {
+					Statement.create({ 
 						org: req.org.id, 
 						parser_used: req.body.type, 
 						details:{
@@ -1753,7 +1741,7 @@ module.exports = {
 							s3_location: results.uploadOriginalFileToS3.Location, 
 							s3_bucket: results.uploadOriginalFileToS3.Bucket} }).exec(cb);
 				}],
-				removePassword: ['createDocument', async function(results){
+				removePassword: ['createStatement', async function(results){
 					const pdf = require('pdf-parse');
 					const util = require('util');
 					const exec = util.promisify(require('child_process').exec);
@@ -1825,7 +1813,7 @@ module.exports = {
 						json:true,
 						formData:
 							{
-								remote_id: results.createDocument.id,
+								remote_id: results.createStatement.id,
 								file:
 									{
 										value: fs.createReadStream(results.removePassword),
@@ -1854,19 +1842,19 @@ module.exports = {
 
 				if(error){
 					 locals.message = error.message
-					 return res.view('create_document', locals);
+					 return res.view('create_statement', locals);
 				}
 				else	
-					return res.redirect('/org/' + req.org.id +"/document/" + results.createDocument.id);
+					return res.redirect('/org/' + req.org.id +"/statement/" + results.createStatement.id);
 			})
 			
 		}
 	},
-	editDocument:function(req,res){
-		res.send('edit a document here');
+	editStatement:function(req,res){
+		res.send('edit a statement here');
 	},
-	deleteDocument:function(req,res){
-		res.send('delete a document using this');
+	deleteStatement:function(req,res){
+		res.send('delete a statement using this');
 	},
 	listTags:function(req,res){
 		Tag.find({org:req.org.id}).exec(function(err,tags){

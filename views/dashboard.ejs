@@ -54,7 +54,7 @@
                             <div class="description">
                                 <div class="ui unordered list">
                                     <% accounts_for_which_statements_missing.forEach(function(account){%>
-                                        <a class="item" target="_blank" href="/org/<%=req.org.id%>/document/create">
+                                        <a class="item" target="_blank" href="/org/<%=req.org.id%>/statement/create">
                                             <span>
                                                 <i class="warning circle icon"></i>Statement missing for
                                                 <%=account.name%>

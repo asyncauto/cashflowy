@@ -31,8 +31,8 @@ module.exports = {
 			type:'string', // 
 			required:true
 		},
-		docs:{
-			collection:'document',
+		statements:{
+			collection:'statement',
 			via:'accounts',
 			dominant:true
 		},
