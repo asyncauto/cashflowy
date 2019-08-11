@@ -3052,10 +3052,10 @@ module.exports = {
 	},
 
 	downloadDocument: async function(req, res){
-		var file = await Document.findOne({ id: inputs.id, org: req.org.id });
+		var file = await Document.findOne({ id: req.params.id, org: req.org.id });
 		if (!file) res.status(404).view('404');
    		res.attachment(file.fileName);
 		var downloading = await sails.startDownload(file.fd);
-		res.send(downloading);
+		downloading.pipe(res);
 	}
 }
