@@ -53,7 +53,11 @@ module.exports = {
 		transaction: {
 			model: 'transaction',
 			required: true
-		}
+		},
+        documents:{
+			collection: 'document',
+			via:'tli'
+        }
 	},
 
 	afterCreate: function (created, cb) {

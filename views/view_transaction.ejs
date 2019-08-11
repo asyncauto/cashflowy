@@ -126,6 +126,33 @@ var format_number=function(number){
 						<!-- <td></td>
 						<td></td> -->
 						</tr>
+						<tr>
+							<td colspan='6' style='padding:7px;opacity: 0.7;'>
+									<h4>Attachements:</h4>
+									<div class="ui list">
+										<% tli.documents.forEach(function(d, j){ %>
+											<a class="item header" href="/org/<%=req.org.id%>/document/<%=d.id%>/download"><%=d.filename%></a><%=d.description%>
+										<%})%>
+									</div>
+									<form method="POST" action="/org/<%=req.org.id%>/document/create?redirect=true" class="ui form" enctype="multipart/form-data"> 
+										<div class="ui three fields">
+											<input type="hidden" name='tli' value="<%=tli.id%>">
+											<div class="ui field">
+												<label>description</label>
+												<input type="text" placeholder="add a description about the file" name='description'>
+											</div>
+											<div class="ui field">
+												<label>select</label>
+												<input type="file" placeholder="bill, notes.." name='attachment' required>
+											</div>
+											<div class="ui field">
+												<label>upload</label>
+												<input type="submit" class="ui button">
+											</div>
+										</div>
+									</form>
+								</td>
+						</tr>
 					<%})%>
 					<tr>
 						<td colspan='5' style='padding:7px;opacity: 0.7;'>
@@ -143,7 +170,6 @@ var format_number=function(number){
 									<%}) %>
 								<%}%>
 								<br>
-								<a href="/org/1/transaction/<%=t.id%>">View more details</a>
 							</span>
 						</td>
 					</tr>
@@ -161,7 +187,8 @@ var format_number=function(number){
 					<!-- <a class="item" data-tab="third">Original File</a> -->
 				</div>
 				<div class="ui tab active" data-tab="first">
-					<%-pe.details.inbound['body-html']%>
+					<iframe srcdoc="<%=pe.details.inbound['body-html']%>" style="position: relative; width: 100%; height:500px;" frameborder="0"></iframe>
+					</div>
 				</div>
 				<div class="ui tab" data-tab="second">
 					<pre><%=JSON.stringify(pe.extracted_data,null,'    ')%></pre>

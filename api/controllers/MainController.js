@@ -1163,7 +1163,7 @@ module.exports = {
 		})
 	},
 	viewTransaction:function(req,res){
-		
+
 		async.auto({
 			getTransaction:function(callback){
 				Transaction.findOne({id:req.params.id}).populate('account').exec(callback);
@@ -1175,14 +1175,14 @@ module.exports = {
 				Statement_line_item.find({transaction:req.params.id}).exec(callback);
 			},
 			getTlis:function(callback){
-				Transaction_line_item.find({transaction:req.params.id}).populate('tags').exec(callback);
+				Transaction_line_item.find({transaction:req.params.id}).populate('tags').populate('documents').exec(callback);
 			},
 			getCategories:function(callback){
 				Category.find({org:req.params.o_id}).sort('name ASC').exec(callback);
 			},
 			getTags:function(callback){
 				Tag.find({org:req.params.o_id}).sort('name ASC').exec(callback);	
-			}
+			},
 		},function(err,results){
 			var locals={
 				moment:require('moment-timezone'),
@@ -3038,4 +3038,24 @@ module.exports = {
 			
 		}
 	},
+	createDocument: async function(req, res){
+        var uploaded = await sails.uploadOne(req.file('attachment'));
+		var document = await Document.create({ filename: uploaded.filename, 
+			fd: uploaded.fd, mime: uploaded.type, 
+			org: req.org.id, tli: _.get(req, 'body.tli', null), description: _.get(req, 'body.description', null) }).fetch();
+		if(req.query.redirect == 'true')
+			return res.redirect(req.headers.referer);
+       	res.json(document);
+	},
+	deleteDocument: async function(req, res){
+
+	},
+
+	downloadDocument: async function(req, res){
+		var file = await Document.findOne({ id: inputs.id, org: req.org.id });
+		if (!file) res.status(404).view('404');
+   		res.attachment(file.fileName);
+		var downloading = await sails.startDownload(file.fd);
+		res.send(downloading);
+	}
 }

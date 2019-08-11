@@ -369,7 +369,7 @@ function updateQueryStringParameter(uri, key, value) {
 										<%}) %>
 									<%}%>
 									<br>
-									<a href="/org/1/transaction/<%=t.id%>">View more details</a>
+									<a href="/org/<%=req.org.id%>/transaction/<%=t.id%>">View more details</a>
 								</span>
 							</td>
 						</tr>

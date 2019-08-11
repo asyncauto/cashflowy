@@ -33,7 +33,8 @@ module.exports = {
 
     description:{
       type: 'string',
-      columnType: 'text'
+      columnType: 'text',
+      allowNull: true
     },
 
     details: {

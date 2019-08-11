@@ -40,6 +40,7 @@
     "sails-hook-grunt": "^3.1.1",
     "sails-hook-orm": "^2.1.1",
     "sails-hook-sockets": "^1.5.5",
+    "sails-hook-uploads": "^0.4.3",
     "sails-postgresql": "^1.0.2",
     "skipper-s3": "^0.6.0",
     "textract": "^2.5.0",

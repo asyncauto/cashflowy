@@ -139,6 +139,16 @@ module.exports.routes = {
   'POST /org/:o_id/statement/:id/edit':'MainController.editStatement',
   'GET /org/:o_id/statement/:id/delete':'MainController.deleteStatement',
   'POST /org/:o_id/statement/:id/delete':'MainController.deleteStatement',
+
+  'GET /org/:o_id/documents':'MainController.listDocuments',
+  'GET /org/:o_id/document/create':'MainController.createDocument',
+  'POST /org/:o_id/document/create':'MainController.createDocument',
+  'GET /org/:o_id/document/:id':'MainController.viewDocument',
+  'GET /org/:o_id/document/:id/download':'MainController.downloadDocument',
+  'GET /org/:o_id/document/:id/edit':'MainController.editDocument',
+  'POST /org/:o_id/document/:id/edit':'MainController.editDocument',
+  'GET /org/:o_id/document/:id/delete':'MainController.deleteDocument',
+  'POST /org/:o_id/document/:id/delete':'MainController.deleteDocument',
   
 
   'GET /org/:o_id/pnls':'MainController.listPnLs',

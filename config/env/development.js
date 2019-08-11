@@ -71,5 +71,13 @@ module.exports = {
 		site_url: process.env.METABASE_SITE_URL,
 		secret_key: process.env.METABASE_SECRET_KEY
 	},
-	api_token_secret: process.env.API_TOKEN_SECRET
+	api_token_secret: process.env.API_TOKEN_SECRET,
+
+	uploads: {
+    adapter: require('skipper-s3'),
+    key: process.env.AWS_ACCESS_KEY,
+    secret: process.env.AWS_ACCESS_SECRET,
+    bucket: process.env.AWS_BUCKET,
+    region: process.env.AWS_REGION,
+   }
 };
