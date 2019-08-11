@@ -135,6 +135,7 @@ module.exports.routes = {
   'GET /org/:o_id/statement/create':'MainController.createStatement',
   'POST /org/:o_id/statement/create':'MainController.createStatement',
   'GET /org/:o_id/statement/:id':'MainController.viewStatement',
+  'GET /org/:o_id/statement/:id/download':'MainController.downloadStatement',
   'GET /org/:o_id/statement/:id/edit':'MainController.editStatement',
   'POST /org/:o_id/statement/:id/edit':'MainController.editStatement',
   'GET /org/:o_id/statement/:id/delete':'MainController.deleteStatement',
