@@ -13,7 +13,7 @@ module.exports = {
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
 
-    fileName: {
+    filename: {
       type: 'string',
       columnType: 'text',
       required: true
@@ -31,9 +31,18 @@ module.exports = {
       required: true
     },
 
+    description:{
+      type: 'string',
+      columnType: 'text'
+    },
+
     details: {
       type: 'json',
       columnType: 'jsonb'
+    },
+
+    tli:{
+      model: 'transaction_line_item'
     },
 
     org: {
