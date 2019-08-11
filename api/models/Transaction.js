@@ -28,7 +28,7 @@ module.exports = {
         },
         createdBy: {
             type: 'string',
-            isIn: ['user', 'parsed_email', 'parsed_document']
+            isIn: ['user', 'parsed_email', 'parsed_statement']
         },
         third_party: { // only for income/expense. 
             type: 'string',
