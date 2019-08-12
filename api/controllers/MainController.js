@@ -1691,23 +1691,26 @@ module.exports = {
 			// res.send(locals);
 			res.view('view_statement',locals);
 		})
-		// get
-			// show extracted data 
-			// statement line items 
-			// transactions created from each of the statement line item
-			// ones that has been marked as 
 	},
 	downloadStatement: async function(req, res){
 		var statement = await Statement.findOne({ id: req.params.id, org: req.org.id });
 		if (!statement) res.status(404).view('404');
 
-		var fd = _.get(statement, 'details.s3_key');
+		var fd =  _.get(statement, 'details.s3_key');
+		var decrypted_fd = 'decrypted_' + fd;
+
 		var filename = _.get(statement, 'details.original_filename')
 
 		if(!fd || !filename) res.status(404).view('404');
 		
-   		res.attachment(filename);
-		var downloading = await sails.startDownload(fd);
+		res.attachment(filename);
+
+		// try to download the decrypted file else download the orginal file
+		try{
+			var downloading = await sails.startDownload(decrypted_fd);
+		} catch(err){
+			var downloading = await sails.startDownload(fd);
+		}
 		downloading.pipe(res);
 	},
 	createStatement: async function(req, res) {
