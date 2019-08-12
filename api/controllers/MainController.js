@@ -873,7 +873,10 @@ module.exports = {
 				}else
 					callback(null);
 			},
-			getTlis:['getAccounts','getTransactionsInStatement',function(results,callback){
+			getCategories:function(callback){
+				Category.find({org:req.org.id}).sort('name ASC').exec(callback);
+			},
+			getTlis:['getAccounts','getTransactionsInStatement','getCategories', function(results,callback){
 				//account filter
 				var accounts=[];
 				if(!_.isNaN(parseInt(req.query.account))){
@@ -892,7 +895,14 @@ module.exports = {
 				}
 				// category filter
 				if(!_.isNaN(parseInt(req.query.category)))
-					filter.category=req.query.category;
+					filter.category=[parseInt(req.query.category)];
+				// include sub categoriess	
+				if(req.query.include_subcategories == 'true'){
+					_.forEach(results.getCategories, function(c){
+						if(c.parent == req.query.category)
+							filter.category.push(c.id);
+					})
+				}
 				else if(req.query.category == 'empty')
 					filter.category = null;
 				
@@ -969,9 +979,6 @@ module.exports = {
 				tli_filter = filter;
 				Transaction_line_item.find(filter).sort(sort).limit(limit).skip(skip).populate('tags').populate('transaction').exec(callback);
 			}],
-			getCategories:function(callback){
-				Category.find({org:req.org.id}).sort('name ASC').exec(callback);
-			},
 			getTliCount: ['getTlis', function(results, callback){
 				Transaction_line_item.count(tli_filter).exec(callback);
 			}],
@@ -994,7 +1001,7 @@ module.exports = {
 			if (err)
 				throw err;
 			locals.tlis = results.getTlis
-			locals.pages = parseInt(results.getTliCount/limit)? parseInt(results.getTliCount/limit) : 1;
+			locals.pages = Math.ceil(parseFloat(results.getTliCount/limit)? parseFloat(results.getTliCount/limit) : 1);
 			var accounts=results.getAccounts;
 			locals.new_transactions=results.getTransactions;
 			locals.new_transactions.forEach(function(t){

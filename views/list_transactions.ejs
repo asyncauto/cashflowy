@@ -137,6 +137,12 @@ function updateQueryStringParameter(uri, key, value) {
 							<%})%>
 						</div>
 					</div>
+					<div class="field">
+						<div class="ui checkbox">
+							<input type="checkbox" tabindex="0" class="hidden" name="include_subcategories" value="true" <%=req.query.include_subcategories == 'true'? 'checked' : ''%>>
+							<label>Include sub categories</label>
+						</div>
+					</div>
 				</div>
 
 				<div class="field">
@@ -544,6 +550,7 @@ function updateQueryStringParameter(uri, key, value) {
 
 		$('.dropdown.precision').dropdown();
 		$('.dropdown.number_format').dropdown();
+		$('.ui.checkbox').checkbox();
 		
 	});
 </script>
