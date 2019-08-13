@@ -1629,7 +1629,8 @@ module.exports = {
 			}
 
 			var nestedGroups = [];
-
+			
+			var orginal_statement_s3_keys = []
 			_.forEach(results.getStatements.rows, function(d){
 
 				if(d.statement_data && d.transactions_from_date && d.transactions_to_date){
@@ -1649,6 +1650,9 @@ module.exports = {
 							content: `<a href=/org/${req.org.id}/account/${d.account_id}>${d.account_name}<a><br>(${d.account_type})`
 						});
 				}
+				if(_.get(d, 'statement_details.s3_key'))
+					orginal_statement_s3_keys.push(d.statement_details.s3_key);
+					orginal_statement_s3_keys.push('decrypted_' + d.statement_details.s3_key);
 			});
 			
 			//pagination
@@ -1657,6 +1661,27 @@ module.exports = {
 			locals.moment = require('moment-timezone');
 			locals.timeline = timeline;
 			locals.accounts = results.getAccounts;
+
+			//build the url for downloading statements
+			locals.download_original_statements = _.isEmpty(req.query)? req.url + '?download=true': req.url + '&download=true'
+			
+			//download statements
+			if(req.query.download == "true"){
+				//if not statement attached, return 404
+				if(!orginal_statement_s3_keys.length)
+					return res.status(404).view('404');
+				//set the filename
+				res.attachment(moment().format('LLL') + ' cashflowy statements.zip');
+				var s3 = new AWS.S3({
+					accessKeyId: sails.config.aws.key,
+					secretAccessKey: sails.config.aws.secret,
+					region: sails.config.aws.region
+				});
+				s3Zip
+				.archive({ s3:s3, bucket: sails.config.aws.bucket}, '', orginal_statement_s3_keys)
+				.pipe(res);
+				return;
+			}
 			res.view('list_statements',locals);
 		})
 	},
@@ -3102,7 +3127,7 @@ module.exports = {
 
 		if(req.query.download == 'true'){
 			//set the filename
-			res.attachment(moment().format('LLL') + 'cashflowy documents.zip');
+			res.attachment(moment().format('LLL') + ' cashflowy documents.zip');
 			var s3 = new AWS.S3({
 				accessKeyId: sails.config.aws.key,
 				secretAccessKey: sails.config.aws.secret,
