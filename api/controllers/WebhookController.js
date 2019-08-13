@@ -94,7 +94,7 @@ module.exports = {
                     }
 
                     var find={
-                        Statement:results.findStatement.id,
+                        statement:results.findStatement.id,
                         pos:pos
                     }
 
