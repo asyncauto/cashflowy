@@ -131,7 +131,7 @@ var format_number=function(number){
 									<h4>Attachements:</h4>
 									<div class="ui list">
 										<% tli.documents.forEach(function(d, j){ %>
-											<a class="item header" href="/org/<%=req.org.id%>/document/<%=d.id%>/download"><%=d.filename%></a><%=d.description%>
+											<a class="item header" href="/org/<%=req.org.id%>/document/<%=d.id%>?download=true"><%=d.filename%></a><%=d.description%>
 										<%})%>
 									</div>
 									<form method="POST" action="/org/<%=req.org.id%>/document/create?redirect=true" class="ui form" enctype="multipart/form-data"> 

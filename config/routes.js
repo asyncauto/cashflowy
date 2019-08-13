@@ -145,7 +145,6 @@ module.exports.routes = {
   'GET /org/:o_id/document/create':'MainController.createDocument',
   'POST /org/:o_id/document/create':'MainController.createDocument',
   'GET /org/:o_id/document/:id':'MainController.viewDocument',
-  'GET /org/:o_id/document/:id/download':'MainController.downloadDocument',
   'GET /org/:o_id/document/:id/edit':'MainController.editDocument',
   'POST /org/:o_id/document/:id/edit':'MainController.editDocument',
   'GET /org/:o_id/document/:id/delete':'MainController.deleteDocument',

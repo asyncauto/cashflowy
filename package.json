@@ -34,6 +34,7 @@
     "query-string": "^6.8.2",
     "rc": "^1.2.8",
     "read-last-lines": "^1.7.1",
+    "s3-zip": "^3.1.0",
     "sails": "^1.2.3",
     "sails-disk": "~0.10.9",
     "sails-helper": "^2.0.0",

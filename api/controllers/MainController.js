@@ -9,6 +9,7 @@ const async = require('async');
 const fx = require('money');
 const AWS = require('aws-sdk');
 const moment = require('moment-timezone');
+const s3Zip = require('s3-zip');
 
 fx.base='INR';
 fx.rates=sails.config.fx_rates;
@@ -3070,14 +3071,52 @@ module.exports = {
        	res.json(document);
 	},
 	deleteDocument: async function(req, res){
-
 	},
+	listDocuments: async function(req, res){
+		var archiver = require('archiver');
+		var archive = archiver('zip');
 
-	downloadDocument: async function(req, res){
+		//filter object, defaults to org id.
+		var filter = {
+			org: req.org.id
+		}
+		
+		if(req.query.ids){
+			var ids = req.query.ids.split(',')
+			filter.id = _.filter(ids, function(id){
+				if(_.isNumber(parseInt(id)))
+					return id;
+			});
+		}
+		// get filtered documents
+		var documents = await Document.find(filter);
+
+		if(req.query.download == 'true'){
+			//set the filename
+			res.attachment(moment().format('LLL') + 'cashflowy documents.zip');
+			var s3 = new AWS.S3({
+				accessKeyId: sails.config.aws.key,
+				secretAccessKey: sails.config.aws.secret,
+				region: sails.config.aws.region
+			});
+			s3Zip
+			.archive({ s3:s3, bucket: sails.config.aws.bucket}, '',
+				_.map(documents, function(d){return d.fd;}))
+			.pipe(res);
+		}else{
+			res.json(documents);
+		}	
+	},
+	viewDocument: async function(req, res){
 		var file = await Document.findOne({ id: req.params.id, org: req.org.id });
 		if (!file) res.status(404).view('404');
-   		res.attachment(file.fileName);
-		var downloading = await sails.startDownload(file.fd);
-		downloading.pipe(res);
+		if(req.query.download == 'true'){
+			res.attachment(file.fileName);
+			var downloading = await sails.startDownload(file.fd);
+			return downloading.pipe(res);
+		}else{
+			res.json(file);
+		}
+   		
 	}
 }
