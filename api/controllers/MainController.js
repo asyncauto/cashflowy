@@ -978,7 +978,7 @@ module.exports = {
 					})}
 				}
 				tli_filter = filter;
-				Transaction_line_item.find(filter).sort(sort).limit(limit).skip(skip).populate('tags').populate('transaction').exec(callback);
+				Transaction_line_item.find(filter).sort(sort).limit(limit).skip(skip).populate('tags').populate('transaction').populate('documents').exec(callback);
 			}],
 			getTliCount: ['getTlis', function(results, callback){
 				Transaction_line_item.count(tli_filter).exec(callback);
@@ -1023,7 +1023,10 @@ module.exports = {
 					if(t.id==sli.transaction)
 						t.slis.push(sli);
 				});
-			})
+			});
+
+			locals.download_documents = '/org/' + req.org.id + '/documents'+ '?download=true&ids=';
+
 			locals.tlis.forEach(function(tli){
 				accounts.forEach(function(account){ // expanding account in the transaction object
 					if(tli.account==account.id)
@@ -1034,8 +1037,13 @@ module.exports = {
 
 				var moment = require('moment-timezone');
 				tli.occuredAt=moment(tli.occuredAt).tz('Asia/Kolkata').format();
-				var t = _.find(locals.new_transactions,{id:tli.transaction.id});
+				var t = _.find(locals.new_transactions,{ id:tli.transaction.id });
 				t.tlis.push(tli);
+
+				//append document ids to download url
+				_.forEach(tli.documents, function(d){
+					locals.download_documents = locals.download_documents + d.id + ','
+				})
 			})
 			
 			locals.accounts=results.getAccounts;
@@ -1044,6 +1052,7 @@ module.exports = {
 			locals.categories=GeneralService.orderCategories(results.getCategories);
 			locals.moment=require('moment-timezone');
 			locals.query_string=require('query-string');
+
 			if(req.query.download_csv=='true'){
 				const json2csv = require('json2csv').parse;
 				const csvString = json2csv(locals.tlis);
