@@ -175,4 +175,12 @@ module.exports = {
 				}
 			});
 	},
+
+	createOrgEmail: function(options, callback){
+		var DOMAIN = sails.config.mailgun.domain;
+		var APIKEY = sails.config.mailgun.api_key;
+		mailgun.post(`/domains/${DOMAIN}/credentials`, {"login": options.email}, function (error, body) {
+			console.log(body);
+		  });
+	}
 }

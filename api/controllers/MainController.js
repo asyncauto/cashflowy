@@ -2732,16 +2732,28 @@ module.exports = {
 		var locals = {};
 		res.view('view_org', locals);
 	},
-	createOrg: function (req, res) {
+	createOrg: async function (req, res) {
 		var locals = {};
+		var domain = sails.config.mailgun.domain;
 		if(req.body){
 			var org= req.body;
 			org.owner=req.user.id;
+			org.email = req.body.email +'@'+domain;
+			var org_email = await Org.findOne({where:{email : org.email}});
+			locals.org = org;
+			//console.log(org_email);
+			if(org_email && org.email=== org_email.email){
+				//console.log('Email already exists');
+				locals.org.message = 'Email already exists';
+				res.view('create_org', locals);
+			}else{
+			MailgunService.createOrgEmail({email:org.email});
 			Org.create(org).exec(function(err, o){
 				if(err)
 					throw(err);
 				res.redirect('/org/'+o.id+'/dashboard');
-			})
+				})
+			}
 		}else{
 			locals.org={};
 			res.view('create_org', locals);
@@ -2756,7 +2768,7 @@ module.exports = {
 		if(!org)
 			res.view('404');
 		if(req.body){
-			var updated = await Org.update(org.id,{name: req.body.name, description: req.body.description, type: req.body.type});
+			var updated = await Org.update(org.id,{name: req.body.name, description: req.body.description, type: req.body.type, email:req.body.email});
 			locals.org = updated[0];
 		}
 		res.view('create_org', locals);
