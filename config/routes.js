@@ -71,6 +71,8 @@ module.exports.routes = {
   'GET /org/:o_id/transaction/:id/delete':'MainController.deleteTransaction',
   'POST /org/:o_id/transaction/:id/delete':'MainController.deleteTransaction',
 
+  'GET /org/:o_id/bulk_ops':'MainController.bulkOps',
+
 
   'GET /org/:o_id/invoices': 'MainController.listInvoices',
   'GET /org/:o_id/invoice/create': 'MainController.createInvoice',

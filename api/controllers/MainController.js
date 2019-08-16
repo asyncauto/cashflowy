@@ -3152,5 +3152,9 @@ module.exports = {
 			res.json(file);
 		}
    		
+	},
+	bulkOps:function(req,res){
+		var locals={}
+		res.view('bulk_ops',locals);
 	}
 }
