@@ -1650,9 +1650,10 @@ module.exports = {
 							content: `<a href=/org/${req.org.id}/account/${d.account_id}>${d.account_name}<a><br>(${d.account_type})`
 						});
 				}
-				if(_.get(d, 'statement_details.s3_key'))
+				if(_.get(d, 'statement_details.s3_key')){
 					orginal_statement_s3_keys.push(d.statement_details.s3_key);
 					orginal_statement_s3_keys.push('decrypted_' + d.statement_details.s3_key);
+				}
 			});
 			
 			//pagination
@@ -1671,15 +1672,16 @@ module.exports = {
 				if(!orginal_statement_s3_keys.length)
 					return res.status(404).view('404');
 				//set the filename
-				res.attachment(moment().format('LLL') + ' cashflowy statements.zip');
+				res.attachment(moment().format('ll') + ' cashflowy statements.zip');
 				var s3 = new AWS.S3({
 					accessKeyId: sails.config.aws.key,
 					secretAccessKey: sails.config.aws.secret,
 					region: sails.config.aws.region
 				});
+
 				s3Zip
-				.archive({ s3:s3, bucket: sails.config.aws.bucket}, '', orginal_statement_s3_keys)
-				.pipe(res);
+					.archive({ s3:s3, bucket: sails.config.aws.bucket, debug: true}, '', orginal_statement_s3_keys)
+					.pipe(res);
 				return;
 			}
 			res.view('list_statements',locals);

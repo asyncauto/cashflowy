@@ -8,7 +8,7 @@
     "@sentry/node": "^4.6.6",
     "async": "^2.6.3",
     "atob": "^2.1.2",
-    "aws-sdk": "^2.504.0",
+    "aws-sdk": "^2.513.0",
     "bcryptjs": "^2.4.3",
     "bull": "^3.10.0",
     "cheerio": "^1.0.0-rc.3",
@@ -37,7 +37,7 @@
     "s3-zip": "^3.1.0",
     "sails": "^1.2.3",
     "sails-disk": "~0.10.9",
-    "sails-helper": "^2.0.0",
+    "sails-helper": "^2.0.2",
     "sails-hook-grunt": "^3.1.1",
     "sails-hook-orm": "^2.1.1",
     "sails-hook-sockets": "^1.5.5",
@@ -63,7 +63,7 @@
   "devDependencies": {
     "business-stack-generator": "^1.2.6",
     "expect": "^23.6.0",
-    "inquirer": "^6.5.0",
+    "inquirer": "^6.5.1",
     "mocha": "^3.5.3"
   }
 }
