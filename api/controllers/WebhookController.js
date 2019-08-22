@@ -23,8 +23,15 @@ module.exports = {
         if(!req.body.remote_id)
             return res.status(404).json({status: 'failure',  error: 'remote_id not found'});
 
+        // get the env variable from where the statement is uploaded.
+        var remote_id_env = req.body.remote_id.split('_')[0];
+
+        // if remote id'e env  doesn't match with sails env then ignore.
+        if(remote_id_env != process.env.NODE_ENV)
+            return res.status(400).json({status: 'error', error: 'missmatch between sails env and remote id env'})
+
         //format for remote id production_1 or development_1 
-        var remote_id = parseInt(req.body.remote_id.split('_')[1]);
+        var statement_id = parseInt(req.body.remote_id.split('_')[1]);
 
         var transformExtractedDataFromStatement=function(extacted_data,filter){
             //before modify common formator
@@ -46,7 +53,7 @@ module.exports = {
         async.auto({
             findStatement: function (cb) {
                 // remote_id = 1;
-                Statement.findOne({ id: remote_id }).exec(function(err, doc){
+                Statement.findOne({ id: statement_id }).exec(function(err, doc){
                     if(err) return cb(err);
                     if(!doc) return cb(new Error('statement not found'));
                     filter = _.find(sails.config.docparser.filters,{docparser_id: doc.parser_used});
@@ -72,7 +79,7 @@ module.exports = {
                 })
             }],
             updateStatement: ['findAccounts' ,function (results,cb) {
-                Statement.update({ id: remote_id }, 
+                Statement.update({ id: statement_id }, 
                 { 
                     extracted_data: extracted_data, 
                     data: data,
