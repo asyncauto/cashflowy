@@ -20,6 +20,12 @@ module.exports = {
         if (req.query.secret != sails.config.docparser.webhook_secret)
             return res.status(403).json({ status: 'failure', error: 'athorization failed' });
 
+        if(!req.body.remote_id)
+            return res.status(404).json({status: 'failure',  error: 'remote_id not found'});
+
+        //format for remote id production_1 or development_1 
+        var remote_id = parseInt(req.body.remote_id.split('_')[1]);
+
         var transformExtractedDataFromStatement=function(extacted_data,filter){
             //before modify common formator
             var data = sails.config.docparser.beforeModifyParsedData(extacted_data);
@@ -39,8 +45,8 @@ module.exports = {
         
         async.auto({
             findStatement: function (cb) {
-                // req.body.remote_id = 5;
-                Statement.findOne({ id: parseInt(req.body.remote_id) }).exec(function(err, doc){
+                // remote_id = 1;
+                Statement.findOne({ id: remote_id }).exec(function(err, doc){
                     if(err) return cb(err);
                     if(!doc) return cb(new Error('statement not found'));
                     filter = _.find(sails.config.docparser.filters,{docparser_id: doc.parser_used});
@@ -66,7 +72,7 @@ module.exports = {
                 })
             }],
             updateStatement: ['findAccounts' ,function (results,cb) {
-                Statement.update({ id: parseInt(req.body.remote_id) }, 
+                Statement.update({ id: remote_id }, 
                 { 
                     extracted_data: extracted_data, 
                     data: data,

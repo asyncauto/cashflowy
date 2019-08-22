@@ -32,7 +32,7 @@ module.exports = {
 	},
 	bull: {
 		redis: {
-			host: '127.0.0.1',
+			host: process.env.REDIS_HOST,
 			port: 6379,
 			db: 4,
 			maxRetriesPerRequest: null,
@@ -41,9 +41,9 @@ module.exports = {
 	},
 	session: {
 		adapter: 'connect-redis',
-		host: '127.0.0.1',
+		host: process.env.REDIS_HOST,
 		port: 6379,
-		db: 0,
+		db: 5,
 	},
 	slack_webhook: process.env.SLACK_WEBHOOK,
 	mailgun: {
