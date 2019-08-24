@@ -33,14 +33,21 @@
 					<label>Description</label>
 					<input type="text" name="description" placeholder="What is this org about" value="<%=org.description%>">
 				</div>
-				<div class="ui error message">
-					<div class="header">Error</div>
-					<p><%=org.message%></p>
+				<div class="field">
+					<label>Email</label>
+					<input type="text" name="email" placeholder="create an email for this org with cashflowy" value="<%=org.email%>">
 				</div>
+				<% if (org.message) { %>
+					<div class="ui error message" style="display: block;">
+						<div class="header">Error</div>
+						<p><%=org.message%></p>
+					</div>
+				  <% } %>
+				
 				<input type="submit" class="ui button" value="Submit">
 				<div class="ui success message">
 					<div class="header">Org created</div>
-					You just created a organisation
+					You just created an organisation
 				</div>
 			</form>
 		</div>
@@ -71,6 +78,5 @@
 			},
 		});
 	})
-
 </script>
 
