@@ -102,7 +102,7 @@ module.exports = {
 				//check for manual forward or auto forward
 				var email = ((inbound_data.subject.startsWith("Fwd:") ||
 					inbound_data["stripped-text"].startsWith("---------- Forwarded message ---------")) &&
-					inbound_data.To.includes("@mail.cashflowy.in")) ? inbound_data.sender.toLowerCase() :
+					inbound_data.To.includes("@"+ sails.mailgun.domain)) ? inbound_data.sender.toLowerCase() :
 					inbound_data.To.toLowerCase()
 				Email.findOne({ email: email }).exec(function (err, email) {
 					if (err) return cb(err);
