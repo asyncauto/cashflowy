@@ -19,6 +19,8 @@ module.exports = {
         },
         email:{
             type: 'string',
+            unique: true,
+            allowNull: true
         },
         is_active:{
             type: 'boolean',
