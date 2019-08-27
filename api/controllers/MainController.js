@@ -2773,12 +2773,12 @@ module.exports = {
 		if(req.body){
 			var req_email = req.body.email ? req.body.email + '@' + sails.config.mailgun.domain: null;
 			//Email once created, cannot be changed
-			if(req_email && req_email != org.email){
+			if(req_email && org.email && req_email != org.email){
 				locals.message = 'Email once created, cannot be changed';
 				return res.view('create_org', locals);
 			}
 			try{
-				var updated = await Org.update(org.id,{name: req.body.name, description: req.body.description, type: req.body.type, email:req.body.email})
+				var updated = await Org.update(org.id,{name: req.body.name, description: req.body.description, type: req.body.type, email:req_email})
 				.intercept('E_UNIQUE', ()=>{ return new Error('There is already an Org using that email address!') });
 
 				locals.org = updated[0];
