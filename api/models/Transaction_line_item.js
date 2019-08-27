@@ -115,13 +115,6 @@ module.exports = {
 				Transaction_line_item.update(created.id, results.applyRule).exec(function (err, r) {
 					cb(err, r);
 				});
-			}],
-			predictCategory: ['updatedTli', function (results, cb) {
-				var updated_tli = _.get(results, 'updatedTli[0]', created)
-				//if category present return
-				if (updated_tli.category) return cb(null);
-
-				MLService.predictCategory(updated_tli, cb);
 			}]
 		}, function (err) {
 			cb(err);
