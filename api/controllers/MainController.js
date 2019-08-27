@@ -1758,6 +1758,9 @@ module.exports = {
 		downloading.pipe(res);
 	},
 	createStatement: async function(req, res) {
+		console.log('req.org:');
+		console.log(req.org);
+		var statements_string="";
 		if (req.method == 'GET') {
 			var locals = {
 				type: '',
@@ -1770,145 +1773,173 @@ module.exports = {
 				message: ''
 			}
 			async.auto({
-				uploadFile: function (cb) {
+				uploadFiles: function (cb) {
 					req.file('file').upload(function (err, uploadedFiles) {
 						if (err) return cb(err);
 						cb(null, uploadedFiles)
 					});
 				},
-				uploadOriginalFileToS3: ['uploadFile', function(results, cb){
-					var s3 = new AWS.S3({
-						accessKeyId: sails.config.aws.key,
-						secretAccessKey: sails.config.aws.secret,
-						region: sails.config.aws.region
-					});
-					var params = {Bucket: sails.config.aws.bucket, 
-						Key: _.get(results, 'uploadFile[0].stream.fd'), 
-						Body: fs.createReadStream(results.uploadFile[0].fd)
-					};
-					s3.upload(params, function(err, data) {
-						cb(err, data);
-					});
-				}],
-				createStatement: ['uploadOriginalFileToS3', function (results, cb) {
-					Statement.create({ 
-						org: req.org.id, 
-						parser_used: req.body.type, 
-						details:{
-							s3_key:results.uploadOriginalFileToS3.key, 
-							original_filename:results.uploadFile[0].filename, 
-							s3_location: results.uploadOriginalFileToS3.Location, 
-							s3_bucket: results.uploadOriginalFileToS3.Bucket} }).exec(cb);
-				}],
-				removePassword: ['createStatement', async function(results){
-					const pdf = require('pdf-parse');
-					const util = require('util');
-					const exec = util.promisify(require('child_process').exec);
-					var fsExists = util.promisify(require('fs').exists);
-
-					var org = await Org.findOne(req.org.id);
-
-					var uf = results.uploadFile[0].fd.split('/')
-					uf[uf.length -1] = 'decrypted_'+uf[uf.length -1];
-					uf = uf.join('/');
-
-					// if user enters the password try first
-					if(req.body.password)
-						try{
-							const { stdout, stderr } = await exec(`qpdf -password=${req.body.password} -decrypt ${results.uploadFile[0].fd} ${uf}`);
-							console.log('output', stdout, stderr);
-						}
-						catch(error){
-							// pass
-							console.log('error', error);
-							throw new Error('INVALID_PASSWORD_ENTERED');
-						}
-
-					//else try saved passwords or no password option
-					else{
-						for (const sp of _.union(org.details.statement_passwords, [''])) {
-							try{
-								const { stdout, stderr } = await exec(`qpdf -password=${sp} -decrypt ${results.uploadFile[0].fd} ${uf}`);
-								console.log('output', stdout, stderr);
-							}
-							catch(error){
-								// pass
-								console.log('error', error);
-							}
-						}
-					}
-					console.log('came here, should come after the for loop')
-					var decrypted_file_exists = await fsExists(uf);
-					if(decrypted_file_exists){
-						// if worked
-						if(req.body.password){
-							org.details.statement_passwords = _.union(org.details.statement_passwords, [req.body.password])
-							await Org.update(org.id, {details: org.details});
-						}
-						return uf;
-					}
-					else
-						throw new Error('PASSWORD_DECRYPTION_FAILED');
-				}],
-				uploadDecryptedFileToS3: ['removePassword', function(results, cb){
-					var s3 = new AWS.S3({
-						accessKeyId: sails.config.aws.key,
-						secretAccessKey: sails.config.aws.secret,
-						region: sails.config.aws.region
-					});
-					var params = {Bucket: sails.config.aws.bucket, 
-						Key: 'decrypted_' + _.get(results, 'uploadFile[0].stream.fd'), 
-						Body: fs.createReadStream(results.removePassword)
-					};
-					s3.upload(params, function(err, data) {
-						cb(err, data);
-					});
-				}],
-				sendToDocParser: ['removePassword', 'uploadFile', function (results, cb) {
-	
-					var options = {
-						method: 'POST',
-						url: `https://${sails.config.docparser.api_key}:@api.docparser.com/v1/document/upload/${req.body.type}`,
-						json:true,
-						formData:
-							{
-								remote_id: process.env.NODE_ENV + '_' + results.createStatement.id,
-								file:
-									{
-										value: fs.createReadStream(results.removePassword),
-										options:
-											{
-												filename: results.uploadFile[0].filename,
-												contentType: null
-											}
+				processFiles:['uploadFiles',function(results,cb){
+					async.eachOf(results.uploadFiles,function(u_file,index,callback){
+						async.auto({	
+							uploadOriginalFileToS3:  function( cb){
+								var s3 = new AWS.S3({
+									accessKeyId: sails.config.aws.key,
+									secretAccessKey: sails.config.aws.secret,
+									region: sails.config.aws.region
+								});
+								var params = {Bucket: sails.config.aws.bucket, 
+									Key: _.get(u_file, 'stream.fd'), 
+									Body: fs.createReadStream(u_file.fd)
+								};
+								s3.upload(params, function(err, data) {
+									cb(err, data);
+								});
+							},
+							createStatement: ['uploadOriginalFileToS3', function (results, cb) {
+								Statement.create({ 
+									org: req.org.id, 
+									parser_used: req.body.type, 
+									details:{
+										s3_key:results.uploadOriginalFileToS3.key, 
+										original_filename:u_file.filename, 
+										s3_location: results.uploadOriginalFileToS3.Location, 
+										s3_bucket: results.uploadOriginalFileToS3.Bucket} }).exec(cb);
+							}],
+							removePassword: ['createStatement', async function(results){
+								const pdf = require('pdf-parse');
+								const util = require('util');
+								const exec = util.promisify(require('child_process').exec);
+								var fsExists = util.promisify(require('fs').exists);
+			
+								var org = await Org.findOne(req.org.id);
+			
+								var uf = u_file.fd.split('/')
+								uf[uf.length -1] = 'decrypted_'+uf[uf.length -1];
+								uf = uf.join('/');
+			
+								// if user enters the password try first
+								if(req.body.password)
+									try{
+										const { stdout, stderr } = await exec(`qpdf -password=${req.body.password} -decrypt ${u_file.fd} ${uf}`);
+										console.log('output', stdout, stderr);
 									}
-							}
+									catch(error){
+										// pass
+										console.log('error', error);
+										throw new Error('INVALID_PASSWORD_ENTERED');
+									}
+			
+								//else try saved passwords or no password option
+								else{
+									for (const sp of _.union(org.details.statement_passwords, [''])) {
+										try{
+											const { stdout, stderr } = await exec(`qpdf -password=${sp} -decrypt ${u_file.fd} ${uf}`);
+											console.log('output', stdout, stderr);
+										}
+										catch(error){
+											// pass
+											console.log('error', error);
+										}
+									}
+								}
+								console.log('came here, should come after the for loop')
+								var decrypted_file_exists = await fsExists(uf);
+								if(decrypted_file_exists){
+									// if worked
+									if(req.body.password){
+										org.details.statement_passwords = _.union(org.details.statement_passwords, [req.body.password])
+										await Org.update(org.id, {details: org.details});
+									}
+									return uf;
+								}
+								else
+									throw new Error('PASSWORD_DECRYPTION_FAILED');
+							}],
+							uploadDecryptedFileToS3: ['removePassword', function(results, cb){
+								var s3 = new AWS.S3({
+									accessKeyId: sails.config.aws.key,
+									secretAccessKey: sails.config.aws.secret,
+									region: sails.config.aws.region
+								});
+								var params = {Bucket: sails.config.aws.bucket, 
+									Key: 'decrypted_' + _.get(u_file, 'stream.fd'), 
+									Body: fs.createReadStream(results.removePassword)
+								};
+								s3.upload(params, function(err, data) {
+									cb(err, data);
+								});
+							}],
+							sendToDocParser: ['removePassword', function (results, cb) {
+				
+								var options = {
+									method: 'POST',
+									url: `https://${sails.config.docparser.api_key}:@api.docparser.com/v1/document/upload/${req.body.type}`,
+									json:true,
+									formData:
+										{
+											remote_id: process.env.NODE_ENV + '_' + results.createStatement.id,
+											file:
+												{
+													value: fs.createReadStream(results.removePassword),
+													options:
+														{
+															filename: u_file.filename,
+															contentType: null
+														}
+												}
+										}
+								};
+			
+								request(options, function (error, response, body) {
+									if (error) return cb(error);
+									if(body && body.error)
+										return cb(new Error(body.error));
+									cb(null, body);
+								});
+				
+							}]
+						}, function(error, results){
+							console.log('error:');
+							console.log(error);
+							console.log('results:==');
+							// console.log(results);
+							statements_string=statements_string+results.createStatement.id+','
+							console.log('statements_string')
+							console.log(statements_string)
+							callback();
+
+						})
+					},function(err){
+						cb(err)
+					})
+						
+				
+
+				}]},
+				function(error, results){
+					var locals ={
+						type:'',
+						message:''
 					};
-
-					request(options, function (error, response, body) {
-						if (error) return cb(error);
-						if(body && body.error)
-							return cb(new Error(body.error));
-						cb(null, body);
-					});
-	
-				}]
-			}, function(error, results){
-				 var locals ={
-					 type:'',
-					 message:''
-				 };
-
-				if(error){
-					 locals.message = error.message
-					 return res.view('create_statement', locals);
-				}
-				else	
-					return res.redirect('/org/' + req.org.id +"/statement/" + results.createStatement.id);
-			})
+   
+				   if(error){
+						locals.message = error.message
+						return res.view('create_statement', locals);
+				   }
+				   else	
+				   console.log('flow completed:');
+				   console.log();
+				   statements_string=statements_string.substring(0, statements_string.length - 1);
+					return res.redirect('/org/' + req.org.id +"/statements_status?statements=" + statements_string);
+					//    return res.redirect('/org/' + req.org.id +"/statement/" + results.createStatement.id);
+			   })
+				
+				
 			
 		}
 	},
+
 	editStatement:function(req,res){
 		res.send('edit a statement here');
 	},
@@ -3158,5 +3189,17 @@ module.exports = {
 	bulkOps:function(req,res){
 		var locals={}
 		res.view('bulk_ops',locals);
+	},
+	listStatementsUploadStatus:function(req,res){
+		console.log('req.query:');
+		console.log(req.query);
+		console.log(req.org)
+		if(req.query&&req.query.statements){
+			var statement_ids=req.query.statements.split(',')
+			Statement.find({id:{in:statement_ids},org:req.org.id}).exec(function(err,statements){
+				var locals={statements:statements};
+				res.view('list_statement_statuses',locals)
+			})
+		}
 	}
 }
