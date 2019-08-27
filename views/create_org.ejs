@@ -35,25 +35,26 @@
 				</div>
 				<div class="field">
 					<label>Email</label>
-					<input type="text" name="email" placeholder="create an email for this org with cashflowy" value="<%=org.email%>">
+					<input type="text" name="email" placeholder="email id to forward emails and statements to cashflowy" value="<%=org.email? org.email.split('@')[0]:''%>">
+					<span>@<%=sails.config.mailgun.domain%></span>
 				</div>
-				<% if (org.message) { %>
+				<% if (message) { %>
 					<div class="ui error message" style="display: block;">
 						<div class="header">Error</div>
-						<p><%=org.message%></p>
+						<p><%=message%></p>
 					</div>
 				  <% } %>
 				
 				<input type="submit" class="ui button" value="Submit">
 				<div class="ui success message">
-					<div class="header">Org created</div>
-					You just created an organisation
+					<div class="header">Org <%=create_or_edit%></div>
+					You just <%=create_or_edit%> an organisation
 				</div>
 			</form>
 		</div>
 		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
 			<div class='ui segment'>
-				You are creating an org. 
+				<%=create_or_edit%> an org. 
 				<br/><br/>
 				<!-- <b>Email:</b> 
 				For now we support only gmail address. The gmail address can be a business gmail address also. 

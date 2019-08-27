@@ -2735,43 +2735,59 @@ module.exports = {
 		res.view('view_org', locals);
 	},
 	createOrg: async function (req, res) {
-		var locals = {};
+		var locals = {
+			message:''
+		};
 		var domain = sails.config.mailgun.domain;
 		if(req.body){
 			var org= req.body;
 			org.owner=req.user.id;
-			org.email = req.body.email +'@'+domain;
-			var org_email = await Org.findOne({where:{email : org.email}});
+			org.email = req.body.email? req.body.email +'@'+domain: req.body.email;
+
 			locals.org = org;
-			//console.log(org_email);
-			if(org_email && org.email=== org_email.email){
-				//console.log('Email already exists');
-				locals.org.message = 'Email already exists';
-				res.view('create_org', locals);
-			}else{
-			MailgunService.createOrgEmail({email:org.email});
-			Org.create(org).exec(function(err, o){
-				if(err)
-					throw(err);
-				res.redirect('/org/'+o.id+'/dashboard');
-				})
+
+			try{
+				var o = await Org.create(org)
+				.intercept('E_UNIQUE', ()=>{ return new Error('There is already an Org using that email address!') });
+				if(org.email)
+					await MailgunService.createSmtpCredential({email:org.email});
+				return res.redirect('/org/'+o.id+'/dashboard');
+			}catch(err){
+				locals.message = err.message;
+				return res.view('create_org', locals);
 			}
 		}else{
 			locals.org={};
-			res.view('create_org', locals);
+			return res.view('create_org', locals);
 		}
 	},
 	editOrg: async function (req, res) {
 		var locals = {
-			status:''
+			message:''
 		};
 		var org = await Org.findOne(req.org.id);
 		locals.org = org;
 		if(!org)
 			res.view('404');
+
 		if(req.body){
-			var updated = await Org.update(org.id,{name: req.body.name, description: req.body.description, type: req.body.type, email:req.body.email});
-			locals.org = updated[0];
+			var req_email = req.body.email ? req.body.email + '@' + sails.config.mailgun.domain: null;
+			//Email once created, cannot be changed
+			if(req_email && req_email != org.email){
+				locals.message = 'Email once created, cannot be changed';
+				return res.view('create_org', locals);
+			}
+			try{
+				var updated = await Org.update(org.id,{name: req.body.name, description: req.body.description, type: req.body.type, email:req.body.email})
+				.intercept('E_UNIQUE', ()=>{ return new Error('There is already an Org using that email address!') });
+
+				locals.org = updated[0];
+				//udate in mailgun if a new email id is added
+				if(req_email)
+					await MailgunService.createSmtpCredential({email:req_email});
+			}catch(err){
+				locals.message = err.message;
+			}
 		}
 		res.view('create_org', locals);
 	},
