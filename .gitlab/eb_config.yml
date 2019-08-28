@@ -1,0 +1,6 @@
+global:
+  application_name: Cashflowy app
+  default_region: us-east-1
+  profile: eb-cli
+  sc: git
+  workspace_type: Application
