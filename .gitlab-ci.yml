@@ -17,9 +17,6 @@ deploy_to_dev:
    - printf "[profile eb-cli]\nregion=us-east-1" >> ~/.aws/config
    - mkdir .elasticbeanstalk
    - mv .gitlab/eb_config.yml .elasticbeanstalk/config.yml
-   - cat .elasticbeanstalk/config.yml
-   - cat ~/.aws/credentials
-   - cat ~/.aws/config
    - eb deploy CashflowyApp-dev
 
 deploy_to_prod:
