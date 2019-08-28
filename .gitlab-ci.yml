@@ -1,0 +1,43 @@
+image: asyncauto/nodejs_gitlab_ci:latest
+
+variables:
+  AWS_ACCESS_KEY: $AWS_ACCESS_KEY
+  AWS_SECRET_KEY: $AWS_SECRET_KEY
+
+stages:
+  - deploy
+
+deploy_to_dev:
+  stage: deploy
+  only:
+    - develop
+  variables:
+    NODE_ENV: development
+  environment:
+    name: dev
+  script:
+   - mkdir ~/.aws/
+   - touch ~/.aws/credentials
+   - printf "[eb-cli]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$AWS_ACCESS_KEY" "$AWS_SECRET_KEY" >> ~/.aws/credentials
+   - touch ~/.aws/config
+   - printf "[profile eb-cli]\nregion=ap-southeast-1" >> ~/.aws/config
+   - mkdir .elasticbeanstalk
+   - mv .gitlab/eb_config.yml .elasticbeanstalk/config.yml
+   - eb deploy CashflowyApp-dev
+
+deploy_to_prod:
+  stage: deploy
+  only:
+    - master
+  environment:
+    name: prod
+  when: manual
+  script:
+   - mkdir ~/.aws/
+   - touch ~/.aws/credentials
+   - printf "[eb-cli]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$AWS_ACCESS_KEY" "$AWS_SECRET_KEY" >> ~/.aws/credentials
+   - touch ~/.aws/config
+   - printf "[profile eb-cli]\nregion=ap-southeast-1" >> ~/.aws/config
+   - mkdir .elasticbeanstalk
+   - mv .gitlab/eb_config.yml .elasticbeanstalk/config.yml
+   - eb deploy CashflowyApp-env
