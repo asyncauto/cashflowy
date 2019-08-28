@@ -134,6 +134,7 @@ module.exports.routes = {
   'POST /org/:o_id/rule/:id/delete':'MainController.deleteRule',
 
   'GET /org/:o_id/statements':'MainController.listStatements',
+  'GET /org/:o_id/statements_status':'MainController.listStatementsUploadStatus',
   'GET /org/:o_id/statement/create':'MainController.createStatement',
   'POST /org/:o_id/statement/create':'MainController.createStatement',
   'GET /org/:o_id/statement/:id':'MainController.viewStatement',
