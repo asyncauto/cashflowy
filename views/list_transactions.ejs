@@ -258,9 +258,6 @@ function updateQueryStringParameter(uri, key, value) {
 								</a>
 							</div>
 						</div>
-						<a href="/org/<%=req.org.id%>/bulk_ops/?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>" target="_blank" data-tooltip="Bulk operations">
-							Bulk
-						</a>
 						<a href="<%=download_documents%>" target="_blank" data-tooltip="Download attachments">
 							<i class='large file archive outline icon'></i>
 						</a>
