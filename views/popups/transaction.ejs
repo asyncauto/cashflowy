@@ -6,10 +6,10 @@
 %>
 <table class='ui basic unstackable table' style='display: block;overflow-x:scroll;'>
 	<tbody>
-		<%t.transaction_categories.forEach(function(tc,i){%>
+		<%t.tcs.forEach(function(tc,i){%>
 			<tr class='transaction top aligned' data-tc-id='<%=tc.id%>'>
 				<%if(i==0){%>
-					<td rowspan='<%=t.transaction_categories.length+1%>'>
+					<td rowspan='<%=t.tcs.length+1%>'>
 						<span class='popup' data-html='<%-moment(tc.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>'>
 						<%-moment(tc.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
 						<span style='font-size: 1.5rem;'><%-moment(tc.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>

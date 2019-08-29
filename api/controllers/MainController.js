@@ -375,10 +375,10 @@ module.exports = {
 			})
 			results.getParsedEmails.forEach(function(pe){
 				if(pe.transaction){
-					pe.transaction.tlis=[];
+					pe.transaction.tcs=[];
 					results.getTransactionCategories.forEach(function(tc){
 						if(tc.transaction==_.get(pe, 'transaction.id')){
-							pe.transaction.transaction_categories.push(tc);
+							pe.transaction.tcs.push(tc);
 						}
 					});
 				}
