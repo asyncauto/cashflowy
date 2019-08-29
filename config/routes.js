@@ -72,6 +72,8 @@ module.exports.routes = {
   'POST /org/:o_id/transaction/:id/delete':'MainController.deleteTransaction',
 
   'GET /org/:o_id/bulk_ops':'MainController.bulkOps',
+  'GET /org/:o_id/bulk_ops/edit_category':'MainController.bulkOpsEditCategory',
+  'POST /org/:o_id/bulk_ops/edit_category':'MainController.bulkOpsEditCategory',
 
 
   'GET /org/:o_id/invoices': 'MainController.listInvoices',

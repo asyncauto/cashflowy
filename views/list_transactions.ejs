@@ -222,8 +222,9 @@ function updateQueryStringParameter(uri, key, value) {
 		<div class='eleven wide computer sixteen wide tablet sixteen wide mobile column'>
 			
 			<%
-				req.query.download_csv='true';
-				var download_path = req.path+'?'+query_string.stringify(req.query);
+				var query = _.cloneDeep(req.query);
+				query.download_csv='true';
+				var download_path = req.path+'?'+query_string.stringify(query);
 			%>
 			<div class='ui grid'>
 				<div class='eight wide column'>
@@ -231,7 +232,25 @@ function updateQueryStringParameter(uri, key, value) {
 				</div>
 				<div class='eight wide column right aligned'>
 					<!-- <div class='ui basic right aligned compact segment'> -->
-						<a href="/org/<%=req.org.id%>/bulk_ops/?t_ids=<%=_.map(new_transactions,'id').join(',')%>" target="_blank" data-tooltip="Bulk operations">
+						<div class="ui bulk dropdown">
+							<div class="text">Bulk</div>
+							<i class="dropdown icon"></i>
+							<div class="menu transition hidden" tabindex="-1">
+								<a class="item" href="/org/<%=req.org.id%>/bulk_ops/edit_category?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
+									Edit Category
+								</a>
+								<a class="disabled item" href="/org/<%=req.org.id%>/bulk_ops/edit_description?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
+									Edit Description
+								</a>
+								<a class="disabled item" href="/org/<%=req.org.id%>/bulk_ops/add_tag?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
+									Add Tag
+								</a>
+								<a class="disabled item" href="/org/<%=req.org.id%>/bulk_ops/remove_tag?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
+									Remove Tag
+								</a>
+							</div>
+						</div>
+						<a href="/org/<%=req.org.id%>/bulk_ops/?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>" target="_blank" data-tooltip="Bulk operations">
 							Bulk
 						</a>
 						<a href="<%=download_documents%>" target="_blank" data-tooltip="Download attachments">
@@ -489,6 +508,7 @@ function updateQueryStringParameter(uri, key, value) {
 				window.location = "/org/"+"<%=req.params.o_id%>"+'/transactions?'+$.param(params);
 			}
 		});
+		$('.bulk.ui.dropdown').dropdown();
 		$('.tags_dd.ui.dropdown')
 		  .dropdown({
 			allowAdditions: true,
