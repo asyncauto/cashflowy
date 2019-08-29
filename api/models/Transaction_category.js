@@ -47,7 +47,7 @@ module.exports = {
 		},
 		tags: {
 			collection: 'tag',
-			via: 'tlis',
+			via: 'transaction_categories',
 			dominant: true
 		},
 		transaction: {
@@ -56,7 +56,10 @@ module.exports = {
 		},
         documents:{
 			collection: 'document',
-			via:'tli'
+			via:'transaction_category'
+        },
+        transaction_group: {
+            model: 'transaction_group'
         }
 	},
 
@@ -110,9 +113,9 @@ module.exports = {
 					cb(null, tli_update);
 				})
 			}],
-			updatedTli: ['applyRule', function (results, cb) {
+			updatedTransactionCategory: ['applyRule', function (results, cb) {
 				if (!results.applyRule) return cb(null);
-				Transaction_line_item.update(created.id, results.applyRule).exec(function (err, r) {
+				Transaction_category.update(created.id, results.applyRule).exec(function (err, r) {
 					cb(err, r);
 				});
 			}]

@@ -38,15 +38,21 @@ module.exports = {
             model: 'account',
             required: true
         },
-        transaction_line_items:{
-			collection: 'transaction_line_item',
+        transaction_categories:{
+			collection: 'transaction_category',
 			via: 'transaction'
-		}
+		},
+        transaction_group: {
+            model: 'transaction_group'
+        }
     },
 
-    beforeCreate: function (data, cb) {
+    beforeCreate: async function (data, cb) {
         if (_.isDate(data.occuredAt))
             data.occuredAt = data.occuredAt.toISOString()
+        // create a tg and tag the tg id to transaction
+        var tg = await Transaction_group.create()
+        data.transaction_group = tg.id
         cb();
     },
     beforeUpdate: function (data, cb) {
@@ -54,8 +60,8 @@ module.exports = {
             data.occuredAt = data.occuredAt.toISOString()
         cb();
     },
-    afterCreate: function (created, cb) {
-        Transaction_line_item.create({
+    afterCreate: async function (created, cb) {
+        Transaction_category.create({
             original_amount: created.original_amount,
             original_currency: created.original_currency,
             amount_inr: created.amount_inr,
@@ -63,7 +69,8 @@ module.exports = {
             account: created.account,
             type: created.type,
             transaction: created.id,
-            occuredAt: created.occuredAt
+            occuredAt: created.occuredAt,
+            transaction_group: created.transaction_group
         }).exec(cb);
     }
 }
