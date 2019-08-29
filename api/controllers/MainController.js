@@ -3230,12 +3230,39 @@ module.exports = {
 				res.view('bulk_ops_edit_category',locals);
 			})
 		}else{
-			var t_ids=req.body.t_ids.split(',');
+			var tli_ids=req.body.t_ids.split(',');
 			var category = req.body.category;
 			// console.log(t_ids);
 			// console.log(category);
-			var filter= JSON.parse(req.query.filter);
-			res.redirect('/org/' + req.org.id +'/transactions?'+require('query-string').stringify(filter));
+			async.auto({
+				getTlis: function(cb){
+					Transaction_line_item.find(tli_ids).populate('account').exec(cb)
+				},
+				updateTlis: ['getTlis', function(results, cb){
+					// to make sure that only the tlis in the org are updated. 
+					// This is so that people dont mess around with the url.
+					var relevant_tlis=[];
+					results.getTlis.forEach(function(tli){
+						if(_.get(tli, 'account.org') == req.org.id)
+							relevant_tlis.push(tli.id);
+					});
+					console.log(relevant_tlis);
+					Transaction_line_item.update({id: relevant_tlis}, {category:category}).exec(cb);
+				}]
+			}, function(err, results){
+				if(err){
+					switch (err.message) {
+						case 'INVALID_ACCESS':
+							return res.status(401).json({error: 'INVALID_ACCESS'});
+							break;
+						default:
+							return res.status(500).json({error: err.message});
+							break;
+					}
+				}
+				var filter= JSON.parse(req.query.filter);
+				res.redirect('/org/' + req.org.id +'/transactions?'+require('query-string').stringify(filter));
+			})
 			// res.send('Bulk operation successful, return to list_trasactions');
 		}
 	},

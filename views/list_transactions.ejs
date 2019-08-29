@@ -232,11 +232,19 @@ function updateQueryStringParameter(uri, key, value) {
 				</div>
 				<div class='eight wide column right aligned'>
 					<!-- <div class='ui basic right aligned compact segment'> -->
+						<%
+							var tli_ids=[];
+							new_transactions.forEach(function(t){
+								t.tlis.forEach(function(tli){
+									tli_ids.push(tli.id);
+								})
+							})
+						%>
 						<div class="ui bulk dropdown">
 							<div class="text">Bulk</div>
 							<i class="dropdown icon"></i>
 							<div class="menu transition hidden" tabindex="-1">
-								<a class="item" href="/org/<%=req.org.id%>/bulk_ops/edit_category?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
+								<a class="item" href="/org/<%=req.org.id%>/bulk_ops/edit_category?t_ids=<%=tli_ids.join(',')%>&filter=<%=JSON.stringify(req.query)%>">
 									Edit Category
 								</a>
 								<a class="disabled item" href="/org/<%=req.org.id%>/bulk_ops/edit_description?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
