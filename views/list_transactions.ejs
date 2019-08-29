@@ -231,7 +231,7 @@ function updateQueryStringParameter(uri, key, value) {
 				</div>
 				<div class='eight wide column right aligned'>
 					<!-- <div class='ui basic right aligned compact segment'> -->
-						<a href="/org/<%=req.org.id%>/bulk_ops/?t_ids=<%=_.map(new_transactions,'id').join(',')%>" target="_blank" data-tooltip="Bulk operations">
+						<a href="/org/<%=req.org.id%>/bulk_ops/?t_ids=<%=_.map(transactions,'id').join(',')%>" target="_blank" data-tooltip="Bulk operations">
 							Bulk
 						</a>
 						<a href="<%=download_documents%>" target="_blank" data-tooltip="Download attachments">
@@ -246,15 +246,15 @@ function updateQueryStringParameter(uri, key, value) {
 			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
 			<!-- <table class="ui celled structured table" style="display: block;overflow-x:scroll;"> -->
 				<tbody>
-					<%new_transactions.forEach(function(t){%>
-						<%t.tlis.forEach(function(tli,i){%>
-							<tr class='transaction top aligned' data-tli-id='<%=tli.id%>'>
+					<%transactions.forEach(function(t){%>
+						<%t.tcs.forEach(function(tc,i){%>
+							<tr class='transaction top aligned' data-tc-id='<%=tc.id%>'>
 								<%if(i==0){%>
-									<td rowspan="<%=t.tlis.length+1%>">
-										<span class='popup' data-html="<%-moment(tli.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
-										<%-moment(tli.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
-										<span style="font-size: 1.5rem;"><%-moment(tli.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
-										<span style="font-size: 0.75rem;"><%-moment(tli.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
+									<td rowspan="<%=t.tcs.length+1%>">
+										<span class='popup' data-html="<%-moment(tc.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
+										<%-moment(tc.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+										<span style="font-size: 1.5rem;"><%-moment(tc.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+										<span style="font-size: 0.75rem;"><%-moment(tc.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
 										</span>
 										<!-- <a href="#" class='show_details'>details</a> -->
 									</td>
@@ -262,8 +262,8 @@ function updateQueryStringParameter(uri, key, value) {
 								<td>
 									<!-- category  -->
 									<span style="opacity: 0.5;">Category:</span>
-									<div class="ui category dropdown" style="<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>">
-										<input type="hidden" name="category" value="<%=tli.category%>">
+									<div class="ui category dropdown" style="<%=(tc.type=='income_expense'&&!tc.category)?'background:yellow':''%>">
+										<input type="hidden" name="category" value="<%=tc.category%>">
 										<div class="text">None</div>
 										<i class="dropdown icon"></i>
 										<div class="menu">
@@ -275,20 +275,20 @@ function updateQueryStringParameter(uri, key, value) {
 									<!-- &nbsp;&nbsp;&nbsp; <span style="opacity: 0.5">| Tags:</span> -->
 									<div class='ui divider' style='margin-top: 0px; margin-bottom: 0px;'></div>
 									<!-- description -->
-									<span class='description'><%-tli.description?tli.description:''%></span>
-									<a class='edit' data-id='<%=tli.id%>' href='' style="<%=(!tli.description)?'background:yellow':''%>">edit</a><br>
+									<span class='description'><%-tc.description?tc.description:''%></span>
+									<a class='edit' data-id='<%=tc.id%>' href='' style="<%=(!tc.description)?'background:yellow':''%>">edit</a><br>
 
-									<div class='edit_description' data-id='<%=tli.id%>' style='display:none;'>
+									<div class='edit_description' data-id='<%=tc.id%>' style='display:none;'>
 										<div class="ui fluid input">
-											<input type="text" name='description' value='<%-tli.description?tli.description:''%>'>
+											<input type="text" name='description' value='<%-tc.description?tc.description:''%>'>
 										</div>
 										<br>
-										<button class="ui teal button submit_edit_desc" data-id='<%=tli.id%>' >save</button>
-										<button class="ui red button cancel_edit_desc" data-id='<%=tli.id%>' >cancel</button>
+										<button class="ui teal button submit_edit_desc" data-id='<%=tc.id%>' >save</button>
+										<button class="ui red button cancel_edit_desc" data-id='<%=tc.id%>' >cancel</button>
 									</div>
 									<span style="opacity: 0.5;">Tags:</span>
 									<span class='tags'>
-										<%- partial('partials/display_tags', {tags: tli.tags}) %>
+										<%- partial('partials/display_tags', {tags: tc.tags}) %>
 									</span>
 									<i class="add_tags2 link plus icon" style="opacity: 0.5;"></i>
 									<div class="ui add_tags_popup popup">
@@ -296,7 +296,7 @@ function updateQueryStringParameter(uri, key, value) {
 										<button class='ui teal disabled button submit_edit_tags'>update</button>
 										<div class='ui tags_dd fluid multiple search selection dropdown'>
 											<%
-												var tag_names=_.map(tli.tags,'id');
+												var tag_names=_.map(tc.tags,'id');
 												var tags_string=tag_names.join(',');
 											%>
 											<input name='tags' type='hidden' value='<%=tags_string%>'>
@@ -315,38 +315,38 @@ function updateQueryStringParameter(uri, key, value) {
 									<br>
 								</td>
 								<td>
-									<%if(tli.type=='income_expense'){
-										if(tli.original_amount<0){%> 
+									<%if(tc.type=='income_expense'){
+										if(tc.original_amount<0){%> 
 											<span style='opacity: 0.5'>You paid</span><br>
-											<b style='color:red' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=(format_number(-tli.original_amount))%></b>
+											<b style='color:red' class="<%-tc.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tc.amount_inr)%>"><%=tc.original_currency%> <%=(format_number(-tc.original_amount))%></b>
 										<%}else{%>
 											<span style='opacity: 0.5'>You got</span><br>
-											<b style='color:#5bc5a2' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%-tli.amount_inr%>"><%=tli.original_currency%> <%=(format_number(tli.original_amount))%></b>
+											<b style='color:#5bc5a2' class="<%-tc.original_currency!='INR'?'popup':''%>" data-html="INR <%-tc.amount_inr%>"><%=tc.original_currency%> <%=(format_number(tc.original_amount))%></b>
 										<%}
 									}else{%>
 										<span style='opacity: 0.5'>You transferred</span><br>
-										<b style='' class="<%-tli.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tli.amount_inr)%>"><%=tli.original_currency%> <%=format_number((-tli.original_amount))%></b>
+										<b style='' class="<%-tc.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tc.amount_inr)%>"><%=tc.original_currency%> <%=format_number((-tc.original_amount))%></b>
 									<%}%>
 								</td>
 								<td>
-									<%if(tli.original_amount<0){%> 
+									<%if(tc.original_amount<0){%> 
 										<span style='opacity: 0.5'>from</span><br>
 									<%}else{%>
 										<span style='opacity: 0.5'>deposited to</span><br>
 									<%}%>
-									<%=tli.account.name%>
+									<%=tc.account.name%>
 								</td>
 								<td>
-									<%if(tli.type=='income_expense'){%> 
-										<%if(tli.original_amount<0){%> 
+									<%if(tc.type=='income_expense'){%> 
+										<%if(tc.original_amount<0){%> 
 											<span style='opacity: 0.5'>to</span><br>
 										<%}else{%>
 											<span style='opacity: 0.5'>from</span><br>
 										<%}%>
-										<%=tli.third_party%>
+										<%=tc.third_party%>
 									<%}else{%>
 										<span style='opacity: 0.5'>to</span><br>
-										<%=tli.to_account.name%>
+										<%=tc.to_account.name%>
 									<%}%>
 								</td>
 								<td>
@@ -377,7 +377,7 @@ function updateQueryStringParameter(uri, key, value) {
 											<i class='mail icon'></i>extracted from email - <%=pe.email%><br>
 										<%}) %>
 										<%t.slis.forEach(function(sli){ %>
-											<i class='file alternate outline icon'></i>extracted from statement - <a href="/org/<%=req.org.id%>/statement/<%=sli.statement.id%>"><%=sli.statement.id%></a> - line no - <%=sli.pos+1%><br>
+											<i class='file alternate outcne icon'></i>extracted from statement - <a href="/org/<%=req.org.id%>/statement/<%=sli.statement.id%>"><%=sli.statement.id%></a> - line no - <%=sli.pos+1%><br>
 										<%}) %>
 									<%}%>
 									<br>
@@ -411,43 +411,43 @@ function updateQueryStringParameter(uri, key, value) {
 		$('.edit').click(function(e){
 			e.preventDefault();
 			$(this).hide();
-			var tli_id=$(this).attr('data-id');
+			var tc_id=$(this).attr('data-id');
 			console.log('description clicked');
-			console.log(tli_id);
+			console.log(tc_id);
 			// if(!edit_active)
-			$('tr[data-tli-id='+tli_id+']').find('span.description').hide();
+			$('tr[data-tc-id='+tc_id+']').find('span.description').hide();
 			$(this).parent().find('.edit_description').show();
 			// edit_active=true;
 		});
 		$('.cancel_edit_desc').click(function(e){
 			console.log('cancel button clicked');
-			var tli_id=$(this).attr('data-id');
+			var tc_id=$(this).attr('data-id');
 			// edit_active=false;
 			$(this).parent().hide();
-			$(this).parents('tr[data-tli-id='+tli_id+']').find('span.description').show();
-			$(this).parents('tr[data-tli-id='+tli_id+']').find('.edit').show();
+			$(this).parents('tr[data-tc-id='+tc_id+']').find('span.description').show();
+			$(this).parents('tr[data-tc-id='+tc_id+']').find('.edit').show();
 			// $(this).parents().find('.edit[data-id='+t_id+']').show();
 		});
 		$('.submit_edit_desc').click(function(e){
 			console.log('submit button clicked');
-			// var tli_id=$(this).parents('.tli').attr('data-tli-id');
-			var tli_id=$(this).attr('data-id');
-			console.log(tli_id);
-			var description=$('tr[data-tli-id='+tli_id+']').find('input[name=description]').val();
-			$('tr[data-tli-id='+tli_id+'] span.description').text(description);
-			$('tr[data-tli-id='+tli_id+'] span.description').show();
+			// var tc_id=$(this).parents('.tc').attr('data-tc-id');
+			var tc_id=$(this).attr('data-id');
+			console.log(tc_id);
+			var description=$('tr[data-tc-id='+tc_id+']').find('input[name=description]').val();
+			$('tr[data-tc-id='+tc_id+'] span.description').text(description);
+			$('tr[data-tc-id='+tc_id+'] span.description').show();
 			// /api/edit_desc
 			var button = this;
 			$(button).addClass('loading');
 			$(button).addClass('disabled');
-			$.post("/org/"+"<%=req.params.o_id%>"+"/api/edit_desc", {tli: tli_id,description:description}, function(result,status){
+			$.post("/org/"+"<%=req.params.o_id%>"+"/api/edit_desc", {tc: tc_id,description:description}, function(result,status){
 				console.log('result = '+result);
 				console.log('status = '+status);// this runs only on sucess
 				if(status=='success'){
 					$(button).removeClass('loading');
 					$(button).removeClass('disabled');
 					$(button).parent().hide();
-					$(button).parents().find('.edit[data-id='+tli_id+']').show();
+					$(button).parents().find('.edit[data-id='+tc_id+']').show();
 				}
 			});
 		});
@@ -455,10 +455,10 @@ function updateQueryStringParameter(uri, key, value) {
 			onChange:function(value, text, $choice){
 				var dd = this;
 				$(this).addClass('disabled loading');
-				var tli_id=$(this).parents('tr').attr('data-tli-id');
-				console.log(tli_id);
+				var tc_id=$(this).parents('tr').attr('data-tc-id');
+				console.log(tc_id);
 				$.ajax({
-					url:"/org/"+"<%=req.params.o_id%>"+"/tli/"+tli_id,
+					url:"/org/"+"<%=req.params.o_id%>"+"/transaction_category/"+tc_id,
 					data:{category: value},
 					type:'PUT',
 					success:function(response){
@@ -505,14 +505,14 @@ function updateQueryStringParameter(uri, key, value) {
 		$('.submit_edit_tags').click(function(e){
 			$(this).addClass('disabled');
 			console.log('here here');
-			var tli_id=$(this).parents('tr').attr('data-tli-id');
+			var tc_id=$(this).parents('tr').attr('data-tc-id');
 			var tags_string=$(this).parents('tr').find('.add_tags_popup').find('input[name=tags]').val();
-			console.log(tli_id);
+			console.log(tc_id);
 			console.log(tags_string);
 			var dd = this;
 			$.ajax({
 				url:"/org/"+"<%=req.params.o_id%>"+"/api/edit_tags/",
-				data:{new_tags: tags_string.split(','),tli_id:tli_id},
+				data:{new_tags: tags_string.split(','),tc_id:tc_id},
 				type:'POST',
 				success:function(response){
 					console.log('success');

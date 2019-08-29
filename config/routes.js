@@ -67,7 +67,7 @@ module.exports.routes = {
   'GET /org/:o_id/transaction/:id':'MainController.viewTransaction',
   'GET /org/:o_id/transaction/:id/edit':'MainController.editTransaction',
   'POST /org/:o_id/transaction/:id/edit':'MainController.editTransaction',
-  'PUT /org/:o_id/tli/:id':'MainController.updateTli',
+  'PUT /org/:o_id/transaction_category/:id':'MainController.updateTransactionCategory',
   'GET /org/:o_id/transaction/:id/delete':'MainController.deleteTransaction',
   'POST /org/:o_id/transaction/:id/delete':'MainController.deleteTransaction',
 

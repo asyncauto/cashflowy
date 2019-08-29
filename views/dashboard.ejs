@@ -33,14 +33,14 @@
                                     <a class="item" target="_blank" href="/org/<%=req.org.id%>/transactions?category=empty&date_from=<%-start_of_month.toISOString().substring(0,10)%>&date_to=<%-end_of_month.toISOString().substring(0,10)%>">
                                         <span>
                                             <i class="warning circle icon"></i>
-                                            <%=tlis_without_category%> transactions without category
+                                            <%=transaction_categories_without_category%> transactions without category
                                                 <i class="external alternate icon"></i>
                                         </span>
                                     </a>
                                     <a class="item" target="_blank" href="/org/<%=req.org.id%>/transactions?description=empty&date_from=<%-start_of_month.toISOString().substring(0,10)%>&date_to=<%-end_of_month.toISOString().substring(0,10)%>">
                                         <span>
                                             <i class="warning circle icon"></i>
-                                            <%=tlis_without_description%> transactions without description
+                                            <%=transaction_categories_without_description%> transactions without description
                                                 <i class="external alternate icon"></i>
                                         </span>
                                     </a>

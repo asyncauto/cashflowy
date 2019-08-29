@@ -104,9 +104,9 @@
 			e.preventDefault();
 			// alert('show details clicked');
 			console.log('show details clicked');
-			var tli_id=$(this).parents('.tli').attr('data-tli-id');
-			console.log(tli_id);
-			$('#details_'+tli_id).toggle();
+			var tc_id=$(this).parents('.tc').attr('data-tc-id');
+			console.log(tc_id);
+			$('#details_'+tc_id).toggle();
 		});
 		$('.menu .item').tab({
 			onLoad:function(t){

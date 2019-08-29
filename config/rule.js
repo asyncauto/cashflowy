@@ -1,10 +1,10 @@
 module.exports.rule={
 	triggers:[
 		{
-			slug:'tli_after_create',
-			title:'After creating a tli',
-			description:'This event is fired after a tli is created',
-			model:'tli'
+			slug:'transaction_category_after_create',
+			title:'After creating a transaction category',
+			description:'This event is fired after a transactin_category is created',
+			model:'transaction_category'
 		},
 		{
 			slug:'parsed_email_before_create',
@@ -16,20 +16,20 @@ module.exports.rule={
 		{
 			slug:'mark_as_transfer',
 			title:'Mark as transfer',
-			description:'change the tli type to transfer',
-			allowed_triggers:['tli_after_create'],
+			description:'change the transaction_category type to transfer',
+			allowed_triggers:['transaction_category_after_create'],
 		},
 		{
 			slug:'apply_tags',
 			title:'Apply Tags',
-			description:'apply tags to the tli',
-			allowed_triggers:['tli_after_create'],
+			description:'apply tags to the transaction_category',
+			allowed_triggers:['transaction_category_after_create'],
 		},
 		{
 			slug:'set_category',
 			title:'Set category',
-			description:'Set a category for this tli',
-			allowed_triggers:['tli_after_create'],
+			description:'Set a category for this transaction_category',
+			allowed_triggers:['transaction_category_after_create'],
 		},
 		{
 			slug:'modify_pe_data',

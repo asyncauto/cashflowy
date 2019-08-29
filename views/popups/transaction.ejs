@@ -6,14 +6,14 @@
 %>
 <table class='ui basic unstackable table' style='display: block;overflow-x:scroll;'>
 	<tbody>
-		<%t.tlis.forEach(function(tli,i){%>
-			<tr class='transaction top aligned' data-tli-id='<%=tli.id%>'>
+		<%t.transaction_categories.forEach(function(tc,i){%>
+			<tr class='transaction top aligned' data-tc-id='<%=tc.id%>'>
 				<%if(i==0){%>
-					<td rowspan='<%=t.tlis.length+1%>'>
-						<span class='popup' data-html='<%-moment(tli.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>'>
-						<%-moment(tli.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
-						<span style='font-size: 1.5rem;'><%-moment(tli.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
-						<span style='font-size: 0.75rem;'><%-moment(tli.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
+					<td rowspan='<%=t.transaction_categories.length+1%>'>
+						<span class='popup' data-html='<%-moment(tc.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>'>
+						<%-moment(tc.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+						<span style='font-size: 1.5rem;'><%-moment(tc.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+						<span style='font-size: 0.75rem;'><%-moment(tc.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
 						</span>
 						<!-- <a href='#' class='show_details'>details</a> -->
 					</td>
@@ -21,9 +21,9 @@
 				<td>
 					<!-- category  -->
 					<span style='opacity: 0.5;'>Category:</span>
-					<div class='ui category dropdown' style='<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>'>
-						<input type='hidden' name='category' value='<%=tli.category%>'>
-						<div class='text'><%=tli.category_name%></div>
+					<div class='ui category dropdown' style='<%=(tc.type=='income_expense'&&!tc.category)?'background:yellow':''%>'>
+						<input type='hidden' name='category' value='<%=tc.category%>'>
+						<div class='text'><%=tc.category_name%></div>
 						<i class='dropdown icon'></i>
 						<div class='menu'>
 							<%categories.forEach(function(category){%>
@@ -34,20 +34,20 @@
 					<!-- &nbsp;&nbsp;&nbsp; <span style='opacity: 0.5'>| Tags:</span> -->
 					<div class='ui divider' style='margin-top: 0px; margin-bottom: 0px;'></div>
 					<!-- description -->
-					<span class='description'><%-tli.description?tli.description:''%></span>
-					<a class='edit' data-id='<%=tli.id%>' href='' style='<%=(!tli.description)?'background:yellow':''%>'>edit</a><br>
+					<span class='description'><%-tc.description?tc.description:''%></span>
+					<a class='edit' data-id='<%=tc.id%>' href='' style='<%=(!tc.description)?'background:yellow':''%>'>edit</a><br>
 
-					<div class='edit_description' data-id='<%=tli.id%>' style='display:none;'>
+					<div class='edit_description' data-id='<%=tc.id%>' style='display:none;'>
 						<div class='ui fluid input'>
-							<input type='text' name='description' value='<%-tli.description?tli.description:''%>'>
+							<input type='text' name='description' value='<%-tc.description?tc.description:''%>'>
 						</div>
 						<br>
-						<button class='ui teal button submit_edit_desc' data-id='<%=tli.id%>' >save</button>
-						<button class='ui red button cancel_edit_desc' data-id='<%=tli.id%>' >cancel</button>
+						<button class='ui teal button submit_edit_desc' data-id='<%=tc.id%>' >save</button>
+						<button class='ui red button cancel_edit_desc' data-id='<%=tc.id%>' >cancel</button>
 					</div>
 					<span style='opacity: 0.5;'>Tags:</span>
 					<span class='tags'>
-						<%- partial('../partials/display_tags', {tags: tli.tags}) %>
+						<%- partial('../partials/display_tags', {tags: tc.tags}) %>
 					</span>
 					<i class='add_tags2 link plus icon' style='opacity: 0.5;'></i>
 					<div class='ui add_tags_popup popup'>
@@ -55,7 +55,7 @@
 						<button class='ui teal disabled button submit_edit_tags'>update</button>
 						<div class='ui tags_dd fluid multiple search selection dropdown'>
 							<%
-								var tag_names=_.map(tli.tags,'id');
+								var tag_names=_.map(tc.tags,'id');
 								var tags_string=tag_names.join(',');
 							%>
 							<input name='tags' type='hidden' value='<%=tags_string%>'>
@@ -72,38 +72,38 @@
 					<br>
 				</td>
 				<td>
-					<%if(tli.type=='income_expense'){
-						if(tli.original_amount<0){%> 
+					<%if(tc.type=='income_expense'){
+						if(tc.original_amount<0){%> 
 							<span style='opacity: 0.5'>You paid</span><br>
-							<b style='color:red' class='<%-tli.original_currency!='INR'?'popup':''%>' data-html='INR <%=(-tli.amount_inr)%>'><%=tli.original_currency%> <%=(format_number(-tli.original_amount))%></b>
+							<b style='color:red' class='<%-tc.original_currency!='INR'?'popup':''%>' data-html='INR <%=(-tc.amount_inr)%>'><%=tc.original_currency%> <%=(format_number(-tc.original_amount))%></b>
 						<%}else{%>
 							<span style='opacity: 0.5'>You got</span><br>
-							<b style='color:#5bc5a2' class='<%-tli.original_currency!='INR'?'popup':''%>' data-html='INR <%-tli.amount_inr%>'><%=tli.original_currency%> <%=(format_number(tli.original_amount))%></b>
+							<b style='color:#5bc5a2' class='<%-tc.original_currency!='INR'?'popup':''%>' data-html='INR <%-tc.amount_inr%>'><%=tc.original_currency%> <%=(format_number(tc.original_amount))%></b>
 						<%}
 					}else{%>
 						<span style='opacity: 0.5'>You transferred</span><br>
-						<b style='' class='<%-tli.original_currency!='INR'?'popup':''%>' data-html='INR <%=(-tli.amount_inr)%>'><%=tli.original_currency%> <%=format_number((-tli.original_amount))%></b>
+						<b style='' class='<%-tc.original_currency!='INR'?'popup':''%>' data-html='INR <%=(-tc.amount_inr)%>'><%=tc.original_currency%> <%=format_number((-tc.original_amount))%></b>
 					<%}%>
 				</td>
 				<td>
-					<%if(tli.original_amount<0){%> 
+					<%if(tc.original_amount<0){%> 
 						<span style='opacity: 0.5'>from</span><br>
 					<%}else{%>
 						<span style='opacity: 0.5'>deposited to</span><br>
 					<%}%>
-					<%=tli.account.name%>
+					<%=tc.account.name%>
 				</td>
 				<td>
-					<%if(tli.type=='income_expense'){%> 
-						<%if(tli.original_amount<0){%> 
+					<%if(tc.type=='income_expense'){%> 
+						<%if(tc.original_amount<0){%> 
 							<span style='opacity: 0.5'>to</span><br>
 						<%}else{%>
 							<span style='opacity: 0.5'>from</span><br>
 						<%}%>
-						<%=tli.third_party%>
+						<%=tc.third_party%>
 					<%}else{%>
 						<span style='opacity: 0.5'>to</span><br>
-						<%=tli.to_account.name%>
+						<%=tc.to_account.name%>
 					<%}%>
 				</td>
 			<!-- <td></td>
