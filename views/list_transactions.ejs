@@ -234,9 +234,9 @@ function updateQueryStringParameter(uri, key, value) {
 					<!-- <div class='ui basic right aligned compact segment'> -->
 						<%
 							var tc_ids=[];
-							new_transactions.forEach(function(t){
-								t.tlis.forEach(function(tli){
-									tli_ids.push(tli.id);
+							transactions.forEach(function(t){
+								t.tcs.forEach(function(tc){
+									tc_ids.push(tc.id);
 								})
 							})
 						%>
@@ -244,16 +244,16 @@ function updateQueryStringParameter(uri, key, value) {
 							<div class="text">Bulk</div>
 							<i class="dropdown icon"></i>
 							<div class="menu transition hidden" tabindex="-1">
-								<a class="item" href="/org/<%=req.org.id%>/bulk_ops/edit_category?t_ids=<%=tli_ids.join(',')%>&filter=<%=JSON.stringify(req.query)%>">
+								<a class="item" href="/org/<%=req.org.id%>/bulk_ops/edit_category?t_ids=<%=tc_ids.join(',')%>&filter=<%=JSON.stringify(req.query)%>">
 									Edit Category
 								</a>
-								<a class="disabled item" href="/org/<%=req.org.id%>/bulk_ops/edit_description?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
+								<a class="disabled item" href="/org/<%=req.org.id%>/bulk_ops/edit_description?t_ids=<%=_.map(transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
 									Edit Description
 								</a>
-								<a class="disabled item" href="/org/<%=req.org.id%>/bulk_ops/add_tag?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
+								<a class="disabled item" href="/org/<%=req.org.id%>/bulk_ops/add_tag?t_ids=<%=_.map(transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
 									Add Tag
 								</a>
-								<a class="disabled item" href="/org/<%=req.org.id%>/bulk_ops/remove_tag?t_ids=<%=_.map(new_transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
+								<a class="disabled item" href="/org/<%=req.org.id%>/bulk_ops/remove_tag?t_ids=<%=_.map(transactions,'id').join(',')%>&filter=<%=JSON.stringify(req.query)%>">
 									Remove Tag
 								</a>
 							</div>

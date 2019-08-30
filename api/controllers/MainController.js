@@ -3181,24 +3181,24 @@ module.exports = {
 				res.view('bulk_ops_edit_category',locals);
 			})
 		}else{
-			var tli_ids=req.body.t_ids.split(',');
+			var tc_ids=req.body.t_ids.split(',');
 			var category = req.body.category;
 			// console.log(t_ids);
 			// console.log(category);
 			async.auto({
-				getTlis: function(cb){
-					Transaction_line_item.find(tli_ids).populate('account').exec(cb)
+				getTransactionCategories: function(cb){
+					Transaction_category.find(tc_ids).populate('account').exec(cb)
 				},
-				updateTlis: ['getTlis', function(results, cb){
+				updateTransactionCategories: ['getTransactionCategories', function(results, cb){
 					// to make sure that only the tlis in the org are updated. 
 					// This is so that people dont mess around with the url.
-					var relevant_tlis=[];
-					results.getTlis.forEach(function(tli){
-						if(_.get(tli, 'account.org') == req.org.id)
-							relevant_tlis.push(tli.id);
+					var relevant_tcs=[];
+					results.getTransactionCategories.forEach(function(tc){
+						if(_.get(tc, 'account.org') == req.org.id)
+							relevant_tcs.push(tc.id);
 					});
-					console.log(relevant_tlis);
-					Transaction_line_item.update({id: relevant_tlis}, {category:category}).exec(cb);
+					console.log(relevant_tcs);
+					Transaction_category.update({id: relevant_tcs}, {category:category}).exec(cb);
 				}]
 			}, function(err, results){
 				if(err){
