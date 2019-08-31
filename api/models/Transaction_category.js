@@ -70,7 +70,7 @@ module.exports = {
 			},
 			applyRule: ['getAccount', function (results, cb) {
 				var tli_update;
-				Rule.find({ org: results.getAccount.org, status: 'active', trigger: 'tli_after_create' }).exec(function (err, rules) {
+				Rule.find({ org: results.getAccount.org, status: 'active', trigger: 'transaction_category_after_create' }).exec(function (err, rules) {
 					rules.forEach(function (rule) {
 						// check if criteria matches the condition
 						var condition = _.get(rule, 'details.trigger.condition', {});

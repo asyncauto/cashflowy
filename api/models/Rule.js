@@ -24,7 +24,7 @@ module.exports = {
 			type:'string',
 			isIn: [
 				"parsed_email_before_create",
-				"tli_after_create"
+				"transaction_category_after_create"
 			]
 		},
 		action:{
