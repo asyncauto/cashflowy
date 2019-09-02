@@ -1,0 +1,53 @@
+
+<div class='ui container'>
+	<h2>Perform bulk operations - Edit category</h2>
+	<p>Selected transactions = <%=req.query.t_ids%></p>
+	<p>Selection number of transactions = <%=req.query.t_ids.split(',').length%></p>
+
+
+	<div class='ui grid'>
+		<!-- <div class='four wide column'></div> -->
+		<div class='eleven wide column'>
+			
+			<form class="ui form segment" action="" method='POST'>
+				<h3>Choose Category:</h3>
+				<input type="hidden" name="t_ids" value="<%=req.query.t_ids%>">
+				<div class='field'>
+					<label>Category</label>
+					<div class="ui category basic dropdown button">
+						<input type="hidden" name="category" value="">
+						<div class="text">choose category</div>
+						&nbsp;&nbsp;<i class="dropdown icon"></i>
+						<div class="menu">
+							<%categories.forEach(function(category){%>
+								<%- partial('partials/category_dropdown', {category: category}) %>
+							<%})%>
+						</div>
+					</div>
+				</div>
+				<div class="ui error message">
+					<div class="header">Error</div>
+				</div>
+				<input type="submit" class="ui button" value="Submit">
+			</form>
+		</div>
+		<div class='five wide column'>
+			<h3>Note:</h3>
+			If the transaction is previously categorised, this action will recategorise it. 
+			This action applies to transactions that are already categorised and to transactions without any category. 
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.dropdown').dropdown();
+		$('.ui.form').form({
+			fields: {
+				category:'empty',
+			},
+			onSuccess:function(e,fields){
+				$(this).addClass('loading');
+			},
+		});
+	})
+</script>

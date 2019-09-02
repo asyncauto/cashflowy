@@ -17,6 +17,11 @@ module.exports = {
             type: 'string',
             isIn:['personal','business']
         },
+        email:{
+            type: 'string',
+            unique: true,
+            allowNull: true
+        },
         is_active:{
             type: 'boolean',
             defaultsTo: true

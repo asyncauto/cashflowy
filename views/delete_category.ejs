@@ -8,8 +8,8 @@
 		<b>Budget:</b> <%=category.budget%><br>
 		<b>Parent:</b> <%=category.parent?category.parent.name:''%><br>
 		<b>Number of sub-budgets:</b><%=children.length%><br>
-		<b>TLIs with this category:</b><b style='color:red'><%=tlis_count%></b><br>
-		<%if(tlis_count>0){%>
+		<b>TLIs with this category:</b><b style='color:red'><%=transaction_categories_count%></b><br>
+		<%if(transaction_categories_count>0){%>
 			<b style='color:red'>On deletion of this budget, all TLIs with this budget will become un-categorized. </b>
 		<%}%>
 		<br>

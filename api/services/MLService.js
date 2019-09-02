@@ -6,18 +6,18 @@ var machinelearning = new AWS.MachineLearning({
 });
 
 module.exports = {
-    predictCategory: function (tli, cb) {
+    predictCategory: function (tc, cb) {
         async.auto({
             getAccount: function (cb) {
-                Account.findOne(tli.account).exec(cb);
+                Account.findOne(tc.account).exec(cb);
             },
             createPredictionPayload: ['getAccount', function (results, cb) {
                 var payload = {
-                    // createdBy: tli.createdBy,
-                    // description: tli.description,
-                    // account: tli.account ? tli.account.toString() : '',
-                    // to_account: tli.to_account ? tli.to_account.toString() : '',
-                    third_party: tli.third_party,
+                    // createdBy: tc.createdBy,
+                    // description: tc.description,
+                    // account: tc.account ? tc.account.toString() : '',
+                    // to_account: tc.to_account ? tc.to_account.toString() : '',
+                    third_party: tc.third_party,
                 }
                 // payload = _.pick(payload, _.identity);
                 cb(null, payload)
@@ -41,14 +41,14 @@ module.exports = {
                 var category_name = results.getPrediction.Prediction.predictedLabel
                 Category.find({ name: category_name, org: results.getAccount.org }).exec(cb);
             }],
-            addCategoryToTli: ['findOrCreateCategory', function (results, cb) {
+            addCategoryToTransactionCategory: ['findOrCreateCategory', function (results, cb) {
                 if (!_.get(results, 'findOrCreateCategory[0]', null)) return cb(null);
-                Transaction_line_item.update(tli.id, { category: results.findOrCreateCategory[0].id }).exec(cb);
+                Transaction_category.update(tc.id, { category: results.findOrCreateCategory[0].id }).exec(cb);
             }],
             addPredictionTag: ['findOrCreateCategory', async function (results) {
                 if (!_.get(results, 'findOrCreateCategory[0]', null)) return;
                 var pc_tag = await Tag.findOrCreate({ name: 'predicted_category', type: 'global' }, { name: 'predicted_category', type: 'global' });
-                return await Tag.addToCollection(pc_tag.id, 'tlis').members([tli.id]).tolerate('E_UNIQUE');
+                return await Tag.addToCollection(pc_tag.id, 'tcs').members([tc.id]).tolerate('E_UNIQUE');
             }]
         }, cb);
     }

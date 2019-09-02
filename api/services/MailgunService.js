@@ -175,4 +175,9 @@ module.exports = {
 				}
 			});
 	},
+
+	createSmtpCredential: async function(options){
+		var DOMAIN = sails.config.mailgun.domain;
+		var data = await mailgun.post(`/domains/${DOMAIN}/credentials`, {"login": options.email});
+	}
 }

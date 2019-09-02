@@ -47,7 +47,7 @@ module.exports = {
 		},
 		tags: {
 			collection: 'tag',
-			via: 'tlis',
+			via: 'transaction_categories',
 			dominant: true
 		},
 		transaction: {
@@ -56,7 +56,10 @@ module.exports = {
 		},
         documents:{
 			collection: 'document',
-			via:'tli'
+			via:'transaction_category'
+        },
+        transaction_group: {
+            model: 'transaction_group'
         }
 	},
 
@@ -67,7 +70,7 @@ module.exports = {
 			},
 			applyRule: ['getAccount', function (results, cb) {
 				var tli_update;
-				Rule.find({ org: results.getAccount.org, status: 'active', trigger: 'tli_after_create' }).exec(function (err, rules) {
+				Rule.find({ org: results.getAccount.org, status: 'active', trigger: 'transaction_category_after_create' }).exec(function (err, rules) {
 					rules.forEach(function (rule) {
 						// check if criteria matches the condition
 						var condition = _.get(rule, 'details.trigger.condition', {});
@@ -110,18 +113,11 @@ module.exports = {
 					cb(null, tli_update);
 				})
 			}],
-			updatedTli: ['applyRule', function (results, cb) {
+			updatedTransactionCategory: ['applyRule', function (results, cb) {
 				if (!results.applyRule) return cb(null);
-				Transaction_line_item.update(created.id, results.applyRule).exec(function (err, r) {
+				Transaction_category.update(created.id, results.applyRule).exec(function (err, r) {
 					cb(err, r);
 				});
-			}],
-			predictCategory: ['updatedTli', function (results, cb) {
-				var updated_tli = _.get(results, 'updatedTli[0]', created)
-				//if category present return
-				if (updated_tli.category) return cb(null);
-
-				MLService.predictCategory(updated_tli, cb);
 			}]
 		}, function (err) {
 			cb(err);

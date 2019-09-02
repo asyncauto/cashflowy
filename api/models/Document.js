@@ -42,8 +42,8 @@ module.exports = {
       columnType: 'jsonb'
     },
 
-    tli:{
-      model: 'transaction_line_item'
+    transaction_category:{
+      model: 'transaction_category'
     },
 
     org: {
