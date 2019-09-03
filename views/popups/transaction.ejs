@@ -20,10 +20,12 @@
 				<%}%>
 				<td>
 					<!-- category  -->
-					<span style='opacity: 0.5;'>Category:</span>
-					<div class='ui category dropdown' style='<%=(tc.type=='income_expense'&&!tc.category)?'background:yellow':''%>'>
-						<input type='hidden' name='category' value='<%=tc.category%>'>
-						<div class='text'><%=tc.category_name%></div>
+
+					<span style='opacity: 0.5;'>Budget:</span>
+					<div class='ui category dropdown' style='<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>'>
+						<input type='hidden' name='category' value='<%=tli.category%>'>
+						<div class='text'><%=tli.category_name%></div>
+
 						<i class='dropdown icon'></i>
 						<div class='menu'>
 							<%categories.forEach(function(category){%>
