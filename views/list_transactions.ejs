@@ -287,8 +287,8 @@ function updateQueryStringParameter(uri, key, value) {
 									<!-- category  -->
 
 									<span style="opacity: 0.5;">Budget:</span>
-									<div class="ui category dropdown" style="<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>">
-										<input type="hidden" name="category" value="<%=tli.category%>">
+									<div class="ui category dropdown" style="<%=(tc.type=='income_expense'&&!tc.category)?'background:yellow':''%>">
+										<input type="hidden" name="category" value="<%=tc.category%>">
 
 										<div class="text">None</div>
 										<i class="dropdown icon"></i>
