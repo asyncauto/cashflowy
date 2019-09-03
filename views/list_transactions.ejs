@@ -124,7 +124,7 @@ function updateQueryStringParameter(uri, key, value) {
 				</div>
 					 
 				<div class="field">
-					<label>Category: </label>
+					<label>Budget: </label>
 					<div class="ui filter_txn fluid dropdown basic button">
 						<input type="hidden" name="category" value="<%=req.query.category?req.query.category:'' %>">
 						<div class="text">All</div>
@@ -285,9 +285,11 @@ function updateQueryStringParameter(uri, key, value) {
 								<%}%>
 								<td>
 									<!-- category  -->
-									<span style="opacity: 0.5;">Category:</span>
-									<div class="ui category dropdown" style="<%=(tc.type=='income_expense'&&!tc.category)?'background:yellow':''%>">
-										<input type="hidden" name="category" value="<%=tc.category%>">
+
+									<span style="opacity: 0.5;">Budget:</span>
+									<div class="ui category dropdown" style="<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>">
+										<input type="hidden" name="category" value="<%=tli.category%>">
+
 										<div class="text">None</div>
 										<i class="dropdown icon"></i>
 										<div class="menu">
