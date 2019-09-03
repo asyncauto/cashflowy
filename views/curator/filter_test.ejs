@@ -4,110 +4,99 @@
 		<div class='eight wide table eight wide computer sixteen wide mobile column'>
 			<h4 class="ui horizontal divider header">
 				<!-- <i class="list icon"></i> -->
-				Test body parsers
+				Test Email body parsers
 			</h4>
 			<form class="ui <%=status%> form " action="" method='post'>
 				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
-				
-				<div class="field">
-					<label>Select email</label>
-					<div class="ui fluid search selection dropdown">
-						<input type="hidden" name="email_id" value="<%-email_id?email_id:3%>">
-						<i class="dropdown icon"></i>
-						<div class="default text">Select email</div>
-						<div class="menu">
-							<%emails.forEach(function(email){%>
-								<div class="item" data-value="<%=email.id%>"><%=email.email%></div>
-							<%})%>
-						</div>
-					</div>
-				</div>
-				<div class="field">
-					<label>Message ID</label>
-					<input type="text" name="m_id" value="<%=m_id?m_id:''%>">
-				</div>
-
 				<div class="field">
 					<label>Filters</label>
 					<div class="ui fluid search selection dropdown">
-						<input type="hidden" name="filter" value="<%-filter?filter:filters[0]%>">
+						<input type="hidden" name="filter" value="<%=filter?filter.name:filters[0].name%>" required>
 						<i class="dropdown icon"></i>
 						<div class="default text">Select filter</div>
 						<div class="menu">
 							<%filters.forEach(function(filter){%>
-								<div class="item" data-value="<%=filter%>"><%=filter%></div>
-							<%})%>
+								<div class="item" data-value="<%=filter.name%>">
+									<%=filter.name%>
+								</div>
+								<%})%>
 						</div>
 					</div>
 				</div>
 				<div class="field">
-					
-					<label>Body parser</label>
-					<input type="text" name="body_parser" value="<%=body_parser%>">
+					<label>webhook body</label>
+					<textarea name="mailgun_webhook_body" required><%=mailgun_webhook_body?JSON.stringify(mailgun_webhook_body, null, 2):''%></textarea>
 				</div>
 
-				
 				<input type="submit" class="ui button" value="Submit">
 				<div class="ui error message">
-					<%if(typeof(results)!='undefined' && results.parsed_email && results.parsed_email.body_parser_used){%>
-						<div class="header">
-							Success
-						</div>
-						<p><%=results.parsed_email.body_parser_used%></p>
-					<%}else{%>
+					<%if(error){%>
 						<div class="header">
 							Error
 						</div>
-						<p>this email did not fit the specified body parser</p>
-					<%}%>
+						<p>
+							<%=error%>
+						</p>
+						<%}%>
 				</div>
 				<div class="ui success message">
-					<div class="header">Domain created</div>
-					You just created a domain
+					<div class="header">Posted</div>
 				</div>
 			</form>
-			<%if(typeof results!="undefined"){%>
-				<!-- <div class='ui segment'>
-					<h3>Results</h3>
-					
-						
-				</div> -->
-				<form class="ui form">
-					<div class="field">
-					    <label>Results</label>
-					    <textarea rows="20"><%=JSON.stringify(results.parsed_email,null,"\t")%></textarea>
-					</div>
-				</form>
+			<%if(req.body){%>
+				<div class="ui segment">
+					<h3>
+						Results:
+					</h3>
+					<form class="ui form">
+						<div class="field">
+							<label>Email id</label>
+							<p>
+								<%=email_id?email_id:'-'%>
+							</p>
+						</div>
+						<div class="field">
+							<label>Body parser used</label>
+							<p>
+								<%=body_parser_used?body_parser_used:'-'%>
+							</p>
+						</div>
+						<div class="field">
+							<label>Extracted Data</label>
+							<p>
+								<textarea rows="<%=extracted_data?10:1%>"><%=extracted_data?JSON.stringify(extracted_data,null,2):''%></textarea>
+							</p>
+						</div>
+					</form>
+				</div>
 			<%}%>
-		</div>
-		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
-			<div class='ui segment'>
-				You are creating a manual transaction. If you paid via digital means, you most likely dont need to do this
-				<br/><br/>
-				<!-- <b>Email:</b> 
-				For now we support only gmail address. The gmail address can be a business gmail address also. 
-				<br/><br/>
-				<b>Token:</b>
-				You will need to enter token detail here for now. It will be automated later.  -->
-			</div>
 		</div>
 	</div>
 </div>
 
-
-<script type="text/javascript">
-	$(document).ready(function(){
-		$('.dropdown').dropdown();
-		$('.ui.form').form({
+<script>
+	$('.ui.dropdown').dropdown();
+	// custom form validation rule
+	$.fn.form.settings.rules.isValidJSON = function (value) {
+		try {
+			JSON.parse(value);
+			return true;
+		} catch (err) {
+			return false;
+		}
+	};
+	$('.ui.form')
+		.form({
 			fields: {
-				original_amount     : 'empty',
-				original_currency   : 'empty',
-				date : 'empty',
-				time : 'empty',
-				description : 'empty',
-				account_id:'empty',
+				mailgun_webhook_body: {
+					identifier: 'mailgun_webhook_body',
+					rules: [
+						{
+							type: 'isValidJSON',
+							prompt: 'enter a valid json'
+						}
+					]
+				}
 			}
-		});
-	})
-
+		})
 </script>

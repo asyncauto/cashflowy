@@ -21,6 +21,15 @@ var generateHTML = function (email, cb) {
 		cb('email object is malformed');
 }
 
+var findEmailIdFromWebhook = function (inbound_data) {
+	//check for manual forward or auto forward
+	var email = ((inbound_data.subject.startsWith("Fwd:") ||
+		inbound_data["stripped-text"].startsWith("---------- Forwarded message ---------")) &&
+		inbound_data.To.includes("@" + sails.config.mailgun.domain)) ? inbound_data.sender.toLowerCase() :
+		inbound_data.To.toLowerCase()
+	return email;
+}
+
 module.exports = {
 	sendEmail: function (options, callback) {
 		var data = {
@@ -49,14 +58,14 @@ module.exports = {
 			extractDataFromMessageBody: function (cb) {
 				var opts = {
 					email_type: options.email_type,
-					body: options.inbound_data['body-plain'].replace(/[\r\n]+/g," ")
+					body: options.inbound_data['body-plain'].replace(/[\r\n]+/g, " ")
 				}
 				EmailParserService.extractDataFromMessageBody(opts, cb);
 			},
-			exctractDatetimeforManualForward: function(cb){
+			exctractDatetimeforManualForward: function (cb) {
 				var opts = {
 					email_type: 'GmailManualForwardDateFilter',
-					body: options.inbound_data['body-plain'].replace(/[\r\n]+/g," ")
+					body: options.inbound_data['body-plain'].replace(/[\r\n]+/g, " ")
 				}
 				EmailParserService.extractDataFromMessageBody(opts, cb);
 			},
@@ -73,7 +82,7 @@ module.exports = {
 					}
 				}
 				parsed_email.extracted_data.email_received_time = new Date(options.inbound_data['Date']);
-				if(results.exctractDatetimeforManualForward && results.exctractDatetimeforManualForward.body_parser_used){
+				if (results.exctractDatetimeforManualForward && results.exctractDatetimeforManualForward.body_parser_used) {
 					parsed_email.extracted_data.forward_orignal_date = _.get(results, 'exctractDatetimeforManualForward.ed.datetime')
 				}
 				if (parsed_email.body_parser_used == '') {
@@ -100,10 +109,7 @@ module.exports = {
 		async.auto({
 			getEmail: function (cb) {
 				//check for manual forward or auto forward
-				var email = ((inbound_data.subject.startsWith("Fwd:") ||
-					inbound_data["stripped-text"].startsWith("---------- Forwarded message ---------")) &&
-					inbound_data.To.includes("@"+ sails.config.mailgun.domain)) ? inbound_data.sender.toLowerCase() :
-					inbound_data.To.toLowerCase()
+				var email = findEmailIdFromWebhook(inbound_data);
 				Email.findOne({ email: email }).exec(function (err, email) {
 					if (err) return cb(err);
 					if (!email) return cb(new Error('EMAIL_NOT_FOUND'));
@@ -176,8 +182,10 @@ module.exports = {
 			});
 	},
 
-	createSmtpCredential: async function(options){
+	createSmtpCredential: async function (options) {
 		var DOMAIN = sails.config.mailgun.domain;
-		var data = await mailgun.post(`/domains/${DOMAIN}/credentials`, {"login": options.email});
-	}
+		var data = await mailgun.post(`/domains/${DOMAIN}/credentials`, { "login": options.email });
+	},
+
+	findEmailIdFromWebhook: findEmailIdFromWebhook
 }
