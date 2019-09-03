@@ -51,14 +51,14 @@ module.exports = {
 					email_type: options.email_type,
 					body: options.inbound_data['body-plain'].replace(/[\r\n]+/g," ")
 				}
-				GmailService.extractDataFromMessageBody(opts, cb);
+				EmailParserService.extractDataFromMessageBody(opts, cb);
 			},
 			exctractDatetimeforManualForward: function(cb){
 				var opts = {
 					email_type: 'GmailManualForwardDateFilter',
 					body: options.inbound_data['body-plain'].replace(/[\r\n]+/g," ")
 				}
-				GmailService.extractDataFromMessageBody(opts, cb);
+				EmailParserService.extractDataFromMessageBody(opts, cb);
 			},
 			findOrCreateParsedEmail: ['extractDataFromMessageBody', 'exctractDatetimeforManualForward', function (results, cb) {
 				var parsed_email = {

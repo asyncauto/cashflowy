@@ -14,7 +14,6 @@
     "cheerio": "^1.0.0-rc.3",
     "connect-redis": "^3.4.2",
     "ejs": "2.5.5",
-    "googleapis": "^27.0.0",
     "grunt": "^1.0.4",
     "include-all": "^1.0.0",
     "inline-css": "^2.4.2",

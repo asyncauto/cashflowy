@@ -416,7 +416,7 @@ module.exports = {
 					email_type: results.getParsedEmail.type,
 					body: results.getParsedEmail.details.inbound['body-plain']
 				}
-				GmailService.extractDataFromMessageBody(opts, cb);
+				EmailParserService.extractDataFromMessageBody(opts, cb);
 			}],
 			updateParsedEmail: ['reParse', function(results, cb){
 				var to_update = _.pick(results.getParsedEmail, ['email', 'body_parser_used', 'data','extracted_data'])
@@ -1287,14 +1287,14 @@ module.exports = {
 				var options={
 					message_id:message_id
 				}
-				GmailService.getMessageBody(options,callback);
+				EmailParserService.getMessageBody(options,callback);
 			},
 			extractDataFromMessageBody:['getMessageBody',function(results,callback){
 				var options={
 					email_type:email_type,
 					body:results.getMessageBody
 				}
-				GmailService.extractDataFromMessageBody(options,callback);
+				EmailParserService.extractDataFromMessageBody(options,callback);
 			}]
 		},function(err,results){
 			res.send(results);

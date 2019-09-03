@@ -22,12 +22,6 @@ module.exports = function (callback) {
 		BackgroundService.deleteBullTasks(1000, 'completed')
 		done();
 	})
-	
-	queue.process('surface_crawl_each_user', 1,function(job,done){
-		BackgroundService.surfaceCrawl({}, function(err, result){
-			done(err,result);
-		});
-	});
 
 	queue.process('send_weekly_email_each_user', 1,function(job,done){
 		BackgroundService.sendWeeklyEmails({}, function(err, result){
