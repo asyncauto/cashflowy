@@ -1,10 +1,10 @@
 module.exports.rule={
 	triggers:[
 		{
-			slug:'transaction_category_after_create',
-			title:'After creating a transaction category',
-			description:'This event is fired after a transactin_category is created',
-			model:'transaction_category'
+			slug:'transaction_after_create',
+			title:'After a transaction is created',
+			description:'This event is fired after a transactin is created',
+			model:'transaction'
 		},
 		{
 			slug:'parsed_email_before_create',
@@ -16,20 +16,20 @@ module.exports.rule={
 		{
 			slug:'mark_as_transfer',
 			title:'Mark as transfer',
-			description:'change the transaction_category type to transfer',
-			allowed_triggers:['transaction_category_after_create'],
+			description:'change the transaction type to transfer',
+			allowed_triggers:['transaction_after_create'],
 		},
 		{
 			slug:'apply_tags',
 			title:'Apply Tags',
-			description:'apply tags to the transaction_category',
-			allowed_triggers:['transaction_category_after_create'],
+			description:'apply tags to the transaction',
+			allowed_triggers:['transaction_after_create'],
 		},
 		{
-			slug:'set_category',
+			slug:'set_categorys',
 			title:'Set category',
-			description:'Set a category for this transaction_category',
-			allowed_triggers:['transaction_category_after_create'],
+			description:'Set a category for this transaction',
+			allowed_triggers:['transaction_after_create'],
 		},
 		{
 			slug:'modify_pe_data',

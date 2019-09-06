@@ -115,7 +115,7 @@ module.exports = {
 					callback(null);
 				}
 			},
-			findOrCreateTransaction: ['getAccount', 'getToAccount', function (results, callback) {
+			findOrCreateTransactionEvent: ['getAccount', 'getToAccount', function (results, callback) {
 				//skip if it only contains information about account balance.
 
 				if (pe.data.type == 'balance')
@@ -140,16 +140,16 @@ module.exports = {
 					t.to_account = results.getToAccount.id;
 				}
 
-				Transaction.findOrCreate(t, t).exec(function (err, result) {
+				Transaction_event.findOrCreate(t, t).exec(function (err, result) {
 					callback(err, result);
 				});
 
 			}],
-			updateParsedEmail: ['findOrCreateTransaction', function (results, callback) {
+			updateParsedEmail: ['findOrCreateTransactionEvent', function (results, callback) {
 				//skip if it only contains information about account balance.
 				if (pe.data.type == 'balance')
 					return callback(null);
-				Parsed_email.update({ id: pe.id }, { transaction: results.findOrCreateTransaction.id }).exec(callback);
+				Parsed_email.update({ id: pe.id }, { transaction_event: results.findOrCreateTransactionEvent.id }).exec(callback);
 			}],
 			createSnapshotIfPossible: ['getAccount', function (results, callback) {
 				// console.log('create snapshot');
