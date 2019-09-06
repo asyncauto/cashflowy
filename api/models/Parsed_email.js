@@ -40,8 +40,8 @@ module.exports = {
 			required: true,
 			unique: true,
 		},
-		transaction: { // the accociated transaction
-			model: 'transaction',
+		transaction_event: { // the accociated transaction
+			model: 'transaction_event',
 			// required is true, but when initially created, it is created without a ref to transaction.
 		},
 		details: {

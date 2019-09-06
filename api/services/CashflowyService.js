@@ -1,10 +1,9 @@
-var async=require('async');
 const fx = require('money');
 var moment = require('moment-timezone');
 fx.base='INR';
 fx.rates=sails.config.fx_rates;
 
-var convertSliToTransaction = function(sli){
+var convertSliToTransactionEvent = function(sli){
 	var t={
 		original_currency:sli.data.currency,
 		createdBy:'parsed_statement',
@@ -83,12 +82,12 @@ var convertSliToTransaction = function(sli){
 	return t;
 }
 
-var findSimilarTransactions = function(options,callback){
+var findSimilarTransactionEvents = function(options,callback){
 	// console.log('this is the thing that is done');
 	var t=options.t;
 	var accounts=options.accounts;
 	var escape=[];
-	var query = 'select * from transaction';
+	var query = 'select * from transaction_event';
 	query+=' where';
 	query+=` (("original_amount">${t.original_amount-10} AND "original_amount"<${t.original_amount+10}) `;
 	query+=` OR ("original_amount">${-t.original_amount-10} AND "original_amount"<${-t.original_amount+10})) `;
@@ -118,7 +117,7 @@ var findSimilarTransactions = function(options,callback){
 	});
 }
 
-var identifyExistingTransaction=function(options){
+var identifyExistingTransactionEvent=function(options){
 	similar_transactions=options.similar_transactions;
 	new_t=options.new_t;
 	if(similar_transactions.length==0)
@@ -150,9 +149,9 @@ var identifyExistingTransaction=function(options){
 
 module.exports={
 	internal:{
-		convertSliToTransaction:convertSliToTransaction,
-		findSimilarTransactions:findSimilarTransactions,
-		identifyExistingTransaction:identifyExistingTransaction,
+		convertSliToTransactionEvent:convertSliToTransactionEvent,
+		findSimilarTransactionEvents:findSimilarTransactionEvents,
+		identifyExistingTransactionEvent:identifyExistingTransactionEvent,
 	},
 	afterCreate_SLI:function(sli,callback){
 		// check if transaction exists, 
@@ -166,7 +165,7 @@ module.exports={
 		if(!sli.data.currency)
 			sli.data.currency='INR'
 		console.log('\n\n\n ------------');
-		var t = convertSliToTransaction(sli);
+		var t = convertSliToTransactionEvent(sli);
 		console.log(t);
 		// callback('error');
 		var unique_transaction_flag=false;
@@ -190,32 +189,34 @@ module.exports={
 			},
 			getOrgAccounts:function(callback){ 
 				// needed for finding similar transactions
-				// to compare with transactions from accounts that belong to the same user. 
+				// to compare with transactions from accounts that belong to the same user.  
 				Account.find({org:sli.org}).exec(callback);
 			},
-			findSimilarTransactions:['getOrgAccounts',function(results,callback){
+			findSimilarTransactionEvents:['getOrgAccounts',function(results,callback){
 				var options={t:t,accounts:_.map(results.getOrgAccounts,'id')};
-				findSimilarTransactions(options,callback);
+				findSimilarTransactionEvents(options,callback);
 			}],
-			createTransactionIfNew:['getAccount','findSimilarTransactions',function(results,callback){
-				sli.transaction=null;
+			createTransactionEvent:['getAccount','findSimilarTransactionEvents',function(results,callback){
+				//only create a transaction_event if its unique
+				sli.transaction_event=null;
 				t.account=results.getAccount.id;
-				if(results.findSimilarTransactions.length==0){
+				if(results.findSimilarTransactionEvents.length==0){
 					unique_transaction_flag = true;
-					Transaction.create(t).exec(callback);
+					Transaction_event.create(t).exec(callback);
 				}else{
+					//else create a doubtful transaction
 					var dt={
 						transaction:t,
-						similar_transactions:results.findSimilarTransactions,
+						similar_transactions:results.findSimilarTransactionEvents,
 						sli:sli.id,
 					}
 					Doubtful_transaction.create(dt).exec(callback);
 				}
 			}],
-			updateSli:['createTransactionIfNew',function(results,callback){
+			updateSli:['createTransactionEvent',function(results,callback){
 				if(unique_transaction_flag){
-					sli.transaction=results.createTransactionIfNew.id;
-					Statement_line_item.update({id:sli.id},{transaction:sli.transaction}).exec(callback);
+					sli.transaction_event=results.createTransactionEvent.id;
+					Statement_line_item.update({id:sli.id},{transaction_event:sli.transaction_event}).exec(callback);
 				} else
 					callback(null);
 			}]

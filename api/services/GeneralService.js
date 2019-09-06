@@ -50,6 +50,8 @@ module.exports={
 			if(i!=(arr.length-1))
 				result+=", ";
 		});
+		if(!arr.length)
+			result+='0'
 		result+=')';
 		return result;
 	},

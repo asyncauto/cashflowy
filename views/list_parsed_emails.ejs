@@ -37,10 +37,10 @@
 									</a>
 								</td>
 								<td>
-									<%if(pe.transaction){%>
-									<a class="popup" href="/org/<%=req.params.o_id%>/transaction/<%=pe.transaction.id%>" data-html="<%- partial('popups/transaction', {t: pe.transaction,categories:categories,tags:tags}) %>" data-variation="very wide">
+									<%if(pe.transaction_event){%>
+									<a class="popup" href="/org/<%=req.params.o_id%>/transaction_event/<%=pe.transaction_event.id%>" data-html="<%- partial('popups/transaction', {t: pe.transaction_event,categories:categories,tags:tags}) %>" data-variation="very wide">
 										<!-- <i class='dollar icon popup' ></i> -->
-										<%=pe.transaction.amount_inr%>
+										<%=pe.transaction_event.amount_inr%>
 									</a>
 									<%}%>
 								</td>

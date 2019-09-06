@@ -242,7 +242,7 @@ module.exports = {
 				
 				var locals={
 					category:results.getCategory,
-					transaction_categories_count:results.getTransactionCategoriesCount,
+					transactions_count:results.getTransactionCategoriesCount,
 					children:results.getChildrenCategories,
 				};
 				console.log(locals);
@@ -349,15 +349,15 @@ module.exports = {
 		async.auto({
 			getParsedEmails:function(callback){
 				Parsed_email.find({org:req.params.o_id})
-					.populate('transaction')
+					.populate('transaction_event')
 					.sort('createdAt DESC')
 					.limit(limit)
 					.skip(skip)
 					.exec(callback);
 			},
-			getTransactionCategories:['getParsedEmails',function(results,callback){
-				var t_ids=_.map(results.getParsedEmails,'transaction.id');
-				Transaction_category.find({transaction:t_ids}).populate('tags').populate('account').exec(callback);
+			getTransactions:['getParsedEmails',function(results,callback){
+				var te_ids=_.map(results.getParsedEmails,'transaction_event.id');
+				Transaction.find({transaction_event:te_ids}).populate('tags').populate('account').exec(callback);
 			}],
 			getCategories:function(callback){
 				Category.find({org:req.params.o_id}).sort('name ASC').exec(callback);
@@ -367,25 +367,25 @@ module.exports = {
 			}
 		},function(err,results){
 			var categories= GeneralService.orderCategories(results.getCategories);
-			results.getTransactionCategories.forEach(function(tc){
+			results.getTransactions.forEach(function(tc){
 				categories.forEach(function(cat){
 					if(tc.category==cat.id)
 						tc.category_name=cat.name;
 				})
 			})
 			results.getParsedEmails.forEach(function(pe){
-				if(pe.transaction){
-					pe.transaction.tcs=[];
-					results.getTransactionCategories.forEach(function(tc){
-						if(tc.transaction==_.get(pe, 'transaction.id')){
-							pe.transaction.tcs.push(tc);
+				if(pe.transaction_event){
+					pe.transaction_event.ts=[];
+					results.getTransactions.forEach(function(t){
+						if(t.transaction_event==_.get(pe, 'transaction_event.id')){
+							pe.transaction_event.ts.push(t);
 						}
 					});
 				}
 			})
 			var locals={
 				parsed_emails:results.getParsedEmails,
-				transaction_categories:results.getTransactionCategories,
+				transactions:results.getTransactions,
 				categories:GeneralService.orderCategories(results.getCategories),
 				tags:results.getTags,
 				page: page,
@@ -456,7 +456,7 @@ module.exports = {
 					callback(err,result);
 				});
 			}],
-			findOrCreateTransaction:['updateParsedEmail', 'getAccount',function(results,callback){
+			findOrCreateTransactionEvent:['updateParsedEmail', 'getAccount',function(results,callback){
 				//skip if it only contains information about account balance.
 				var pe = results.updateParsedEmail[0]
 
@@ -466,7 +466,7 @@ module.exports = {
 				fx.base='INR';
 				fx.rates=sails.config.fx_rates;
 				var occuredAt = _.get(pe, 'data.occuredAt', new Date());
-				var t={
+				var te={
 					original_currency:pe.data.currency,
 					createdBy:'parsed_email',
 					type: pe.data.type,
@@ -477,17 +477,17 @@ module.exports = {
 					occuredAt: _.isDate(occuredAt) ? occuredAt.toISOString() : occuredAt
 				}
 
-				if(pe.transaction)
-					Transaction.update({id:pe.transaction}, t).exec(function(err, txn){
+				if(pe.transaction_event)
+					Transaction_event.update({id:pe.transaction_event}, te).exec(function(err, txn){
 						if(err) return callback(err);
 						return callback(null, txn[0]);
 					});
 				else
-					Transaction.findOrCreate(t, t).exec(function(err, txn){callback(err, txn);});
+					Transaction_event.findOrCreate(te, te).exec(function(err, txn){callback(err, txn);});
 			}],
-			updateTransactionCategory: ['findOrCreateTransaction', function(results, callback){
+			updateTransaction: ['findOrCreateTransaction', function(results, callback){
 				var pe = results.updateParsedEmail[0]
-				var tc = {
+				var t = {
 					original_currency:pe.data.currency,
 					type: pe.data.type,
 					account:results.getAccount.id,
@@ -497,20 +497,20 @@ module.exports = {
 					occuredAt: _.get(pe, 'data.occuredAt', new Date())
 				}
 				//update tc if this transaction contains only one tc
-				Transaction_category.find({transaction: results.findOrCreateTransaction.id}).exec(function(err, tcs){
+				Transaction.find({transaction_event: results.findOrCreateTransactionEvent.id}).exec(function(err, ts){
 					if(err) return callback(err);
-					if(tcs.length == 1)
-						Transaction_category.update({id: tcs[0].id}, tc).exec(callback)
+					if(ts.length == 1)
+						Transaction.update({id: ts[0].id}, t).exec(callback)
 					else
 						return callback(null);
 				})
 			}],
-			updateParsedEmailWithTxnId:['findOrCreateTransaction',function(results,callback){
+			updateParsedEmailWithTransactionEvent:['findOrCreateTransactionEvent',function(results,callback){
 				var pe = results.updateParsedEmail[0]
 				//skip if it only contains information about account balance.
 				if(pe.data.type=='balance')
 					return callback(null);
-				Parsed_email.update({id:pe.id},{transaction:results.findOrCreateTransaction.id}).exec(callback);
+				Parsed_email.update({id:pe.id},{transaction_event:results.findOrCreateTransactionEvent.id}).exec(callback);
 			}],
 			createSnapshotIfPossible:['getAccount',function(results,callback){
 				var pe = results.updateParsedEmail[0]
@@ -690,7 +690,6 @@ module.exports = {
 			});
 		}
 	},
-
 	dashboard:function(req,res){
 		var month=null,year=null;
 		if(req.query.month){
@@ -713,13 +712,13 @@ module.exports = {
 			getCategories:function(callback){
 				Category.find({org:req.org.id}).exec(callback);
 			},
-			getTransactionCategoriesWithOutDescription: ['getAccounts', function(results, callback){
+			getTransactionsWithOutDescription: ['getAccounts', function(results, callback){
 				var accounts =  _.map(results.getAccounts,'id')
-				Transaction_category.count({description: null, account:accounts, occuredAt:{'<':end_of_month, '>':start_of_month}}).exec(callback);
+				Transaction.count({description: null, account:accounts, occuredAt:{'<':end_of_month, '>':start_of_month}}).exec(callback);
 			}],
-			getTransactionCategoriesWithOutCategory: ['getAccounts', function(results, callback){
+			getTransactionsWithOutCategory: ['getAccounts', function(results, callback){
 				var accounts =  _.map(results.getAccounts,'id')
-				Transaction_category.count({category: null, account:accounts, occuredAt:{'<':end_of_month, '>':start_of_month}}).exec(callback);
+				Transaction.count({category: null, account:accounts, occuredAt:{'<':end_of_month, '>':start_of_month}}).exec(callback);
 			}],
 			getStatementsCount: function(callback){
 				Statement.count({org:req.org.id}).exec(callback);
@@ -751,7 +750,7 @@ module.exports = {
 			getCategorySpending:['getAccounts',function(results,callback){
 
 				var escape=[year];
-				var query = 'select count(*),sum(amount_inr),category from transaction_category';
+				var query = 'select count(*),sum(amount_inr),category from transaction';
 				query+=' where';
 				query+=" type='income_expense'";
 				query+=' AND EXTRACT(YEAR FROM "occuredAt") = $1';
@@ -792,8 +791,8 @@ module.exports = {
 				current:year+'-'+month,
 				accounts:results.getAccounts,
 				categories:GeneralService.orderCategories(results.getCategories),
-				transaction_categories_without_category: results.getTlisWithOutCategory,
-				transaction_categories_without_description: results.getTlisWithOutDescription,
+				transactions_without_category: results.getTransactionsWithOutCategory,
+				transactions_without_description: results.getTransactionsWithOutDescription,
 				start_of_month: start_of_month,
 				end_of_month: end_of_month
 			}
@@ -819,9 +818,6 @@ module.exports = {
 		})
 
 	},
-	setupChecklist: function(req, res){
-		
-	},
 	listTransactions:function(req,res){
 		var locals={};
 		//pagination
@@ -829,7 +825,7 @@ module.exports = {
 		var limit = req.query.limit?parseInt(req.query.limit): 25;
 		var page = req.query.page?parseInt(req.query.page):1;
 		var skip = limit * (page-1);
-		var transaction_category_filter;
+		var transaction_filter;
 
 		locals.page = page;
 		locals.limit = limit;
@@ -841,7 +837,7 @@ module.exports = {
 			getStatements:function(callback){ // only for filter
 				Statement.find({org:req.org.id}).sort('createdAt DESC').exec(callback);
 			},
-			getTransactionsInStatement:function(callback){
+			getTransactionEventsInStatement:function(callback){
 				if(req.query.statement){
 					Statement_line_item.find({statement:req.query.statement}).exec(callback);
 				}else
@@ -850,7 +846,7 @@ module.exports = {
 			getCategories:function(callback){
 				Category.find({org:req.org.id}).sort('name ASC').exec(callback);
 			},
-			getTransactionCategories:['getAccounts','getTransactionsInStatement','getCategories', function(results,callback){
+			getTransactions:['getAccounts','getTransactionEventsInStatement','getCategories', function(results,callback){
 				//account filter
 				var accounts=[];
 				if(!_.isNaN(parseInt(req.query.account))){
@@ -864,7 +860,7 @@ module.exports = {
 					account:accounts,
 				}
 				if(req.query.statement){
-					filter.transaction=_.filter(_.map(results.getTransactionsInStatement,'transaction'));
+					filter.transaction_event=_.filter(_.map(results.getTransactionEventsInStatement,'transaction'));
 					console.log(filter.id);
 				}
 				// category filter
@@ -945,76 +941,76 @@ module.exports = {
 				
 				// id corresponds to transaction id not tcs
 				if(req.query.ids){
-					filter.transaction = {in: _.map(req.query.ids.split(','), function (each) {
+					filter.id = {in: _.map(req.query.ids.split(','), function (each) {
 						if(parseInt(each))
 							return parseInt(each);
 					})}
 				}
-				transaction_category_filter = filter;
-				Transaction_category.find(filter).sort(sort).limit(limit).skip(skip).populate('tags').populate('transaction').populate('documents').exec(callback);
+				transaction_filter = filter;
+				Transaction.find(filter).sort(sort).limit(limit).skip(skip).populate('tags').populate('transaction_event').populate('documents').exec(callback);
 			}],
-			getTransactionCategoriesCount: ['getTransactionCategories', function(results, callback){
-				Transaction_category.count(transaction_category_filter).exec(callback);
+			getTransactionsCount: ['getTransactions', function(results, callback){
+				Transaction.count(transaction_filter).exec(callback);
 			}],
 			getTags:function(callback){
 				Tag.find({or:[{org:req.org.id}, {type:'global'}]}).exec(callback);
 			},
-			getTransactions:['getTransactionCategories',function(results,callback){
-				var t_ids=_.map(results.getTransactionCategories,function(tc){return tc.transaction.id});
-				Transaction.find({id:t_ids}).sort('occuredAt DESC').exec(callback);
+			getTransactionEvents:['getTransactions',function(results,callback){
+				var te_ids=_.map(results.getTransactions,function(t){return t.transaction_event.id});
+				Transaction_event.find({id:te_ids}).sort('occuredAt DESC').exec(callback);
 			}],
-			getParsedEmails:['getTransactionCategories',function(results,callback){
-				var t_ids=_.map(results.getTransactionCategories,function(tc){return tc.transaction.id});
-				Parsed_email.find({transaction:t_ids}).exec(callback);
+			getParsedEmails:['getTransactions',function(results,callback){
+				var te_ids=_.map(results.getTransactions,function(t){return t.transaction_event.id});
+				Parsed_email.find({transaction_event:te_ids}).exec(callback);
 			}],
-			getSLIs:['getTransactionCategories',function(results,callback){
-				var t_ids=_.map(results.getTransactionCategories,function(tc){return tc.transaction.id});
-				Statement_line_item.find({transaction:t_ids}).populate('statement').exec(callback);
+			getSLIs:['getTransactions',function(results,callback){
+				var te_ids=_.map(results.getTransactions,function(t){return t.transaction_event.id});
+				Statement_line_item.find({transaction_event:te_ids}).populate('statement').exec(callback);
 			}]
 		},function(err,results){
 			if (err)
 				throw err;
-			locals.transaction_categories = results.getTransactionCategories
-			locals.pages = Math.ceil(parseFloat(results.getTransactionCategoriesCount/limit)? parseFloat(results.getTransactionCategoriesCount/limit) : 1);
+			locals.transactions = results.getTransactions
+			locals.pages = Math.ceil(parseFloat(results.getTransactionsCount/limit)? parseFloat(results.getTransactionsCount/limit) : 1);
 			var accounts=results.getAccounts;
-			locals.transactions=results.getTransactions;
+			locals.transaction_events=results.getTransactionEvents;
+			locals.transaction_events.forEach(function(te){
+				te.ts=[];
+				accounts.forEach(function(account){ // expanding account in the transaction object
+					if(te.account==account.id)
+						te.account=account;
+					if(te.to_account==account.id)
+						te.to_account=account;
+				});
+				te.parsed_emails=[];
+				results.getParsedEmails.forEach(function(pe){
+					if(te.id == pe.transaction_event)
+						te.parsed_emails.push(pe);
+				});
+				te.slis=[];
+				results.getSLIs.forEach(function(sli){
+					if(te.id==sli.transaction)
+						te.slis.push(sli);
+				});
+			});
+
+			locals.download_documents = '/org/' + req.org.id + '/documents'+ '?download=true&ids=';
+
 			locals.transactions.forEach(function(t){
-				t.tcs=[];
 				accounts.forEach(function(account){ // expanding account in the transaction object
 					if(t.account==account.id)
 						t.account=account;
 					if(t.to_account==account.id)
 						t.to_account=account;
 				});
-				t.parsed_emails=[];
-				results.getParsedEmails.forEach(function(pe){
-					if(t.id == pe.transaction)
-						t.parsed_emails.push(pe);
-				});
-				t.slis=[];
-				results.getSLIs.forEach(function(sli){
-					if(t.id==sli.transaction)
-						t.slis.push(sli);
-				});
-			});
-
-			locals.download_documents = '/org/' + req.org.id + '/documents'+ '?download=true&ids=';
-
-			locals.transaction_categories.forEach(function(tc){
-				accounts.forEach(function(account){ // expanding account in the transaction object
-					if(tc.account==account.id)
-						tc.account=account;
-					if(tc.to_account==account.id)
-						tc.to_account=account;
-				});
 
 				var moment = require('moment-timezone');
-				tc.occuredAt=moment(tc.occuredAt).tz('Asia/Kolkata').format();
-				var t = _.find(locals.transactions,{ id:tc.transaction.id });
-				t.tcs.push(tc);
+				t.occuredAt=moment(t.occuredAt).tz('Asia/Kolkata').format();
+				var te = _.find(locals.transaction_events,{ id:t.transaction_event.id });
+				te.ts.push(t);
 
 				//append document ids to download url
-				_.forEach(tc.documents, function(d){
+				_.forEach(t.documents, function(d){
 					locals.download_documents = locals.download_documents + d.id + ','
 				})
 			})
@@ -1037,7 +1033,7 @@ module.exports = {
 				res.view('list_transactions',locals);
 		});
 	},
-	createTransaction: async function(req,res){
+	createTransactionEvent: async function(req,res){
 		Account.find({org:req.org.id}).exec(function(err,accounts){
 			if(req.body){ // post request
 				console.log(req.body);
@@ -1078,7 +1074,7 @@ module.exports = {
 				}
 				// console.log('before transaction find or create');
 				console.log(t);
-				Transaction.create(t).exec(async function(err,transaction){
+				Transaction_event.create(t).exec(async function(err,transaction){
 					if(err){
 						var locals={
 							occuredAt:'',
@@ -1096,7 +1092,7 @@ module.exports = {
 							balance_currency: 'INR'
 						}
 						console.log(locals);
-						res.view('create_transaction',locals);
+						res.view('create_transaction_event',locals);
 					}	
 					else{
 						if(req.body.referer && req.body.referer.includes('/transactions'))
@@ -1122,49 +1118,24 @@ module.exports = {
 					balance_currency: 'INR'
 				}
 				console.log(locals);
-				res.view('create_transaction',locals);
+				res.view('create_transaction_event',locals);
 			}
 		})
 	},
-	updateTransactionCategory: function(req,res){
-		async.auto({
-			getTransactionCategory: function(cb){
-				Transaction_category.findOne(req.params.id).populate('account').exec(cb)
-			},
-			updateTransactionCategory: ['getTransactionCategory', function(results, cb){
-				if(_.get(results, 'getTransactionCategory.account.org') != req.org.id)
-					return cb(new Error('INVALID_ACCESS'));
-				Transaction_category.update({id: req.params.id}, req.body).exec(cb);
-			}]
-		}, function(err, results){
-			if(err){
-				switch (err.message) {
-					case 'INVALID_ACCESS':
-						return res.status(401).json({error: 'INVALID_ACCESS'});
-						break;
-					default:
-						return res.status(500).json({error: err.message});
-						break;
-				}
-			}
-			var updated = _.get(results, 'updateTransactionCategory[0]', {})
-			return res.status(200).json(updated)
-		})
-	},
-	viewTransaction:function(req,res){
+	viewTransactionEvent:function(req,res){
 
 		async.auto({
-			getTransaction:function(callback){
-				Transaction.findOne({id:req.params.id}).populate('account').exec(callback);
+			getTransactionEvent:function(callback){
+				Transaction_event.findOne({id:req.params.id}).populate('account').exec(callback);
 			},
 			getParsedEmails:function(callback){
-				Parsed_email.find({transaction:req.params.id}).exec(callback);
+				Parsed_email.find({transaction_event:req.params.id}).exec(callback);
 			},
 			getSLIs:function(callback){
-				Statement_line_item.find({transaction:req.params.id}).exec(callback);
+				Statement_line_item.find({transaction_event:req.params.id}).exec(callback);
 			},
-			getTransactionCategories:function(callback){
-				Transaction_category.find({transaction:req.params.id}).populate('tags').populate('documents').exec(callback);
+			getTransactions:function(callback){
+				Transaction.find({transaction_event:req.params.id}).populate('tags').populate('documents').exec(callback);
 			},
 			getCategories:function(callback){
 				Category.find({org:req.params.o_id}).sort('name ASC').exec(callback);
@@ -1175,18 +1146,18 @@ module.exports = {
 		},function(err,results){
 			var locals={
 				moment:require('moment-timezone'),
-				t:results.getTransaction,
+				te:results.getTransactionEvent,
 				categories:GeneralService.orderCategories(results.getCategories),
 				tags:results.getTags,
 
 			}
-			locals.t.parsed_emails=results.getParsedEmails;
-			locals.t.slis=results.getSLIs;
-			locals.t.tcs=results.getTransactionCategories;
-			res.view('view_transaction',locals);
+			locals.te.parsed_emails=results.getParsedEmails;
+			locals.te.slis=results.getSLIs;
+			locals.te.ts=results.getTransactions;
+			res.view('view_transaction_event',locals);
 		})
 	},
-	editTransaction:function(req,res){
+	editTransactionEvent:function(req,res){
 		Account.find({org:req.org.id}).exec(function(err,accounts){
 			if(req.body){ // post request
 				console.log(req.body);
@@ -1220,14 +1191,14 @@ module.exports = {
 				}
 				// console.log('before transaction find or create');
 				console.log(t);
-				Transaction.update({id:req.params.id},t).exec(function(err,transaction){
+				Transaction_event.update({id:req.params.id},t).exec(function(err,transaction){
 					if(err)
 						throw err;
 					else
 						res.redirect('/org/' + req.org.id +'/transactions');
 				});
 			}else{ // view the form
-				Transaction.findOne({id:req.params.id}).exec(function(err,t){
+				Transaction_event.findOne({id:req.params.id}).exec(function(err,t){
 					var locals={
 						status:'',
 						message:'',
@@ -1251,54 +1222,29 @@ module.exports = {
 							locals.type='income';
 					}
 					console.log(locals);
-					res.view('create_transaction',locals);
+					res.view('create_transaction_event',locals);
 				});
 			}
 		})
 	},
-	deleteTransaction:function(req,res){
+	deleteTransactionEvent:function(req,res){
 		if(req.body && req.body.confirm){ // confirming delete
-			Transaction.destroy({id:req.params.id}).exec(function(err,t){
+			Transaction_event.destroy({id:req.params.id}).exec(function(err,t){
 				if(err)
 					throw(err);
-				Transaction_category.destroy({transaction: req.params.id}).exec(function(err,tc){
+				Transaction.destroy({transaction_event: req.params.id}).exec(function(err,tc){
 					if(err)
 						throw(err);
 					res.redirect('/org/' + req.org.id +'/transactions');
 				})
 			});
 		}else{ // showing the warning page
-			Transaction.findOne({id:req.params.id}).populate('account').populate('transaction_categories').exec(function(err,t){
+			Transaction_event.findOne({id:req.params.id}).populate('account').populate('transactions').exec(function(err,t){
 				t.occuredAt=new Date(t.occuredAt).toISOString();
 				var locals={t:t};
-				res.view('delete_transaction',locals);
+				res.view('delete_transaction_event',locals);
 			});
 		}
-	},
-	debug:function(req,res){
-		var email_type=req.query.email_type?req.query.email_type:'IciciCreditCardTransactionAlertFilter'
-		var message_id=req.query.message_id;
-		var options={
-			email_type:req.query.email_type,
-			message_id:message_id
-		}
-		async.auto({
-			getMessageBody:function(callback){
-				var options={
-					message_id:message_id
-				}
-				EmailParserService.getMessageBody(options,callback);
-			},
-			extractDataFromMessageBody:['getMessageBody',function(results,callback){
-				var options={
-					email_type:email_type,
-					body:results.getMessageBody
-				}
-				EmailParserService.extractDataFromMessageBody(options,callback);
-			}]
-		},function(err,results){
-			res.send(results);
-		})
 	},
 	editDescription:function(req,res){
 		if(req.body.tc){
@@ -1307,20 +1253,20 @@ module.exports = {
 				getAccounts:function(callback){
 					Account.find({org:req.org.id}).exec(callback);
 				},
-				getTransactionCategory:function(callback){
-					Transaction_category.findOne({id:req.body.tc}).exec(callback);
+				getTransaction:function(callback){
+					Transaction.findOne({id:req.body.tc}).exec(callback);
 				},
 			},function(err,results){
 				if(err)
 					throw err;
-				var tc = results.getTransactionCategory;
+				var t = results.getTransaction;
 				var flag=false;
 				results.getAccounts.forEach(function(account){
-					if(tc.account==account.id) // transaction in account of the user
+					if(t.account==account.id) // transaction in account of the user
 						flag=true;
 				});
 				if(flag){
-					Transaction_category.update({id:tc.id},{description:req.body.description}).exec(function(err,result){
+					Transaction.update({id:t.id},{description:req.body.description}).exec(function(err,result){
 						if(err)
 							throw err;
 						else
@@ -1665,7 +1611,7 @@ module.exports = {
 				Statement.findOne({id:req.params.id, org:req.org.id}).exec(callback);
 			},
 			getSLIs:function(callback){
-				Statement_line_item.find({statement:req.params.id}).populate('transaction').sort('pos ASC').exec(callback);
+				Statement_line_item.find({statement:req.params.id}).populate('transaction_event').sort('pos ASC').exec(callback);
 			},
 			getDoubtfulTransactions:['getSLIs',function(results,callback){
 				Doubtful_transaction.find({sli:_.map(results.getSLIs,'id')}).exec(callback);
@@ -1689,11 +1635,11 @@ module.exports = {
 			});
 			results.getSLIs.forEach(function(sli){
 				results.getAccounts.forEach(function(account){
-					if(sli.transaction){
-						if(sli.transaction.account==account.id)
-							sli.transaction.account=account;
-						if(sli.transaction.to_account==account.id)
-							sli.transaction.to_account=account;
+					if(sli.transaction_event){
+						if(sli.transaction_event.account==account.id)
+							sli.transaction_event.account=account;
+						if(sli.transaction_event.to_account==account.id)
+							sli.transaction_event.to_account=account;
 					}
 				})
 			})
@@ -1911,7 +1857,6 @@ module.exports = {
 			
 		}
 	},
-
 	editStatement:function(req,res){
 		res.send('edit a statement here');
 	},
@@ -1962,16 +1907,16 @@ module.exports = {
 		
 		var accounts = await Account.find({org: req.org.id});
 
-		var query = `SELECT sum (case when transaction_category.amount_inr >= 0 then transaction_category.amount_inr else 0 end) as income, sum (case when transaction_category.amount_inr < 0 then transaction_category.amount_inr else 0 end) as expense from transaction_category left JOIN tag_transaction_categories__transaction_category_tags on transaction_category.id = tag_transaction_categories__transaction_category_tags.transaction_category_tags WHERE tag_transaction_categories__transaction_category_tags.tag_transaction_categories = $1 and transaction_category."type" = 'income_expense'`
+		var query = `SELECT sum (case when transaction.amount_inr >= 0 then transaction.amount_inr else 0 end) as income, sum (case when transaction.amount_inr < 0 then transaction.amount_inr else 0 end) as expense from transaction left JOIN tag_transactions__transaction_tags on transaction.id = tag_transactions__transaction_tags.transaction_tags WHERE tag_transactions__transaction_tags.tag_transactions = $1 and transaction."type" = 'income_expense'`
 		var income_expense = (await sails.sendNativeQuery(query, [tag.id])).rows[0];
 
-		var date_filter = `date_trunc('week', NOW()) = date_trunc('week', "transaction_category"."occuredAt"::date)`;
+		var date_filter = `date_trunc('week', NOW()) = date_trunc('week', "transaction"."occuredAt"::date)`;
 		if(req.query.time_span == 'this-month'){
-			date_filter = `date_trunc('month', NOW()) = date_trunc('month', "transaction_category"."occuredAt"::date)`;
+			date_filter = `date_trunc('month', NOW()) = date_trunc('month', "transaction"."occuredAt"::date)`;
 		} else if(req.query.time_span == 'this-year'){
-			date_filter = `date_trunc('year', NOW()) = date_trunc('year', "transaction_category"."occuredAt"::date)`;
+			date_filter = `date_trunc('year', NOW()) = date_trunc('year', "transaction"."occuredAt"::date)`;
 		}
-		var filter_query = `SELECT sum (case when transaction_category.amount_inr >= 0 then transaction_category.amount_inr else 0 end) as income, sum (case when transaction_category.amount_inr < 0 then transaction_category.amount_inr else 0 end) as expense from transaction_category left JOIN tag_transaction_categories__transaction_category_tags on transaction_category.id = tag_transaction_categories__transaction_category_tags.transaction_category_tags WHERE tag_transaction_categories__transaction_category_tags.tag_transaction_categories = $1 and transaction_category."type" = 'income_expense' and ` + date_filter
+		var filter_query = `SELECT sum (case when transaction.amount_inr >= 0 then transaction.amount_inr else 0 end) as income, sum (case when transaction.amount_inr < 0 then transaction.amount_inr else 0 end) as expense from transaction left JOIN tag_transactions__transaction_tags on transaction.id = tag_transactions__transaction_tags.transaction_tags WHERE tag_transactions__transaction_tags.tag_transactions = $1 and transaction."type" = 'income_expense' and ` + date_filter
 		var filtered_income_expense = (await sails.sendNativeQuery(filter_query, [tag.id])).rows[0];
 
 		var locals = {
@@ -2045,16 +1990,16 @@ module.exports = {
 			getAllTags:function(callback){
 				Tag.find({or:[{org:req.org.id},{type:'global'}]}).exec(callback);
 			},
-			getTransactionCategory:function(callback){
+			getTransaction:function(callback){
 				// console.log(req.body);
-				Transaction_category.findOne({id:req.body.tc_id}).populate('tags').exec(callback);
+				Transaction.findOne({id:req.body.t_id}).populate('tags').exec(callback);
 			}
 		},function(err,results){
 			var org_tag_ids=_.map(results.getAllTags, 'id');
 			var requested_tag_ids = _(req.body.new_tags).filter(function(t){return parseInt(t)}).map(function(t){return parseInt(t);}).value()
 			var tag_ids_to_replace = _.intersection(org_tag_ids, requested_tag_ids)
-			Transaction_category.replaceCollection(results.getTransactionCategory.id, 'tags').members(tag_ids_to_replace).exec(function(err, txn){
-				Transaction_category.findOne({id:req.body.tc_id}).populate('tags').exec(function(err,new_t){
+			Transaction.replaceCollection(results.getTransaction.id, 'tags').members(tag_ids_to_replace).exec(function(err, txn){
+				Transaction.findOne({id:req.body.t_id}).populate('tags').exec(function(err,new_t){
 					res.view('partials/display_tags', {tags: new_t.tags,layout:false});
 				});
 			});
@@ -2105,21 +2050,21 @@ module.exports = {
 			getDT:function(callback){
 				Doubtful_transaction.findOne({id:req.params.id}).exec(callback);
 			},
-			createTransaction:['getDT',function(results,callback){
+			createTransactionEvent:['getDT',function(results,callback){
 				var t = results.getDT.transaction;
-				Transaction.create(t).exec(callback);
+				Transaction_event.create(t).exec(callback);
 			}],
-			updateDoubtfulTransaction:['getDT','createTransaction',function(results,callback){
+			updateDoubtfulTransaction:['getDT','createTransactionEvent',function(results,callback){
 				var dt = results.getDT;
 				if(!dt.details)
 					dt.details={};
 				dt.details.status='unique';
-				dt.details.related_txn_id=results.createTransaction.id;
+				dt.details.related_txn_id=results.createTransactionEvent.id;
 				Doubtful_transaction.update({id:dt.id},{details:dt.details}).exec(callback);
 			}],
-			updateSLI:['getDT','createTransaction',function(results,callback){
+			updateSLI:['getDT','createTransactionEvent',function(results,callback){
 				var sli_id = results.getDT.sli;
-				Statement_line_item.update({id:sli_id},{transaction:results.createTransaction.id}).exec(callback);
+				Statement_line_item.update({id:sli_id},{transaction_event:results.createTransactionEvent.id}).exec(callback);
 			}]
 		},function(err,results){
 			if(err)
@@ -2148,16 +2093,13 @@ module.exports = {
 			}],
 			updateSLI:['getDT',function(results,callback){
 				var sli_id = results.getDT.sli;
-				Statement_line_item.update({id:sli_id},{transaction:req.params.orig_txn_id}).exec(callback);
+				Statement_line_item.update({id:sli_id},{transaction_event:req.params.orig_txn_id}).exec(callback);
 			}]
 		},function(err,results){
 			if(err)
 				throw err;
 			res.send('marked as duplicate');
 		})
-		// res.send('all done');
-		// update doubtful transaction - mark as duplicate, and mention the transction id
-		// update sli or parsed email with the transaction id
 	},
 	listRules:function(req,res){
 		Rule.find({org:req.org.id}).exec(function(err, rules){
@@ -2342,7 +2284,7 @@ module.exports = {
 			getCategorySpendingPerMonth:['getAccounts',function(results,callback){
 
 				var escape=[req.query.date_from,req.query.date_to];
-				var query = 'select count(*),sum(amount_inr),EXTRACT(YEAR FROM "occuredAt") as "year",EXTRACT(MONTH FROM "occuredAt") as "month",category from transaction_category';
+				var query = 'select count(*),sum(amount_inr),EXTRACT(YEAR FROM "occuredAt") as "year",EXTRACT(MONTH FROM "occuredAt") as "month",category from transaction';
 				query+=' where';
 				query+=" type='income_expense'";
 				query+= ' AND CAST("occuredAt" AS date) BETWEEN CAST($1 AS date) AND CAST($2 AS date)';
@@ -3181,24 +3123,23 @@ module.exports = {
 				res.view('bulk_ops_edit_category',locals);
 			})
 		}else{
-			var tc_ids=req.body.t_ids.split(',');
+			var t_ids=req.body.t_ids.split(',');
 			var category = req.body.category;
 			// console.log(t_ids);
 			// console.log(category);
 			async.auto({
-				getTransactionCategories: function(cb){
-					Transaction_category.find(tc_ids).populate('account').exec(cb)
+				getTransactions: function(cb){
+					Transaction.find(t_ids).populate('account').exec(cb)
 				},
-				updateTransactionCategories: ['getTransactionCategories', function(results, cb){
+				updateTransactions: ['getTransactions', function(results, cb){
 					// to make sure that only the tlis in the org are updated. 
 					// This is so that people dont mess around with the url.
-					var relevant_tcs=[];
-					results.getTransactionCategories.forEach(function(tc){
+					var relevant_ts=[];
+					results.getTransactions.forEach(function(tc){
 						if(_.get(tc, 'account.org') == req.org.id)
-							relevant_tcs.push(tc.id);
+							relevant_ts.push(tc.id);
 					});
-					console.log(relevant_tcs);
-					Transaction_category.update({id: relevant_tcs}, {category:category}).exec(cb);
+					Transaction.update({id: relevant_ts}, {category:category}).exec(cb);
 				}]
 			}, function(err, results){
 				if(err){
@@ -3228,5 +3169,30 @@ module.exports = {
 				res.view('list_statement_statuses',locals)
 			})
 		}
+	},
+	updateTransaction: function(req,res){
+		async.auto({
+			getTransaction: function(cb){
+				Transaction.findOne(req.params.id).populate('account').exec(cb)
+			},
+			updateTransaction: ['getTransaction', function(results, cb){
+				if(_.get(results, 'getTransaction.account.org') != req.org.id)
+					return cb(new Error('INVALID_ACCESS'));
+				Transaction.update({id: req.params.id}, req.body).exec(cb);
+			}]
+		}, function(err, results){
+			if(err){
+				switch (err.message) {
+					case 'INVALID_ACCESS':
+						return res.status(401).json({error: 'INVALID_ACCESS'});
+						break;
+					default:
+						return res.status(500).json({error: err.message});
+						break;
+				}
+			}
+			var updated = _.get(results, 'updateTransaction[0]', {})
+			return res.status(200).json(updated)
+		})
 	}
 }

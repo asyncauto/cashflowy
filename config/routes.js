@@ -61,15 +61,16 @@ module.exports.routes = {
   // 'POST /account/:id/delete':'MainController.deleteAccount',
 
   
+  'GET /org/:o_id/transaction_event/create':'MainController.createTransactionEvent',
+  'POST /org/:o_id/transaction_event/create':'MainController.createTransactionEvent',
+  'GET /org/:o_id/transaction_event/:id':'MainController.viewTransactionEvent',
+  'GET /org/:o_id/transaction_event/:id/edit':'MainController.editTransactionEvent',
+  'POST /org/:o_id/transaction_event/:id/edit':'MainController.editTransactionEvent',
+  'GET /org/:o_id/transaction_event/:id/delete':'MainController.deleteTransactionEvent',
+  'POST /org/:o_id/transaction_event/:id/delete':'MainController.deleteTransactionEvent',
+
   'GET /org/:o_id/transactions':'MainController.listTransactions',
-  'GET /org/:o_id/transaction/create':'MainController.createTransaction',
-  'POST /org/:o_id/transaction/create':'MainController.createTransaction',
-  'GET /org/:o_id/transaction/:id':'MainController.viewTransaction',
-  'GET /org/:o_id/transaction/:id/edit':'MainController.editTransaction',
-  'POST /org/:o_id/transaction/:id/edit':'MainController.editTransaction',
-  'PUT /org/:o_id/transaction_category/:id':'MainController.updateTransactionCategory',
-  'GET /org/:o_id/transaction/:id/delete':'MainController.deleteTransaction',
-  'POST /org/:o_id/transaction/:id/delete':'MainController.deleteTransaction',
+  'PUT /org/:o_id/transaction/:id':'MainController.updateTransaction',
 
   'GET /org/:o_id/bulk_ops':'MainController.bulkOps',
   'GET /org/:o_id/bulk_ops/edit_category':'MainController.bulkOpsEditCategory',

@@ -44,7 +44,7 @@
 							<%slis.forEach(function(sli){%>
 								<% 
 									var t_created_flag=false;
-									if(sli.transaction)
+									if(sli.transaction_event)
 										t_created_flag=true;
 									var dt_status = '';
 									if(sli.dt && sli.dt.details && sli.dt.details.status){
@@ -98,7 +98,7 @@
 							<%slis.forEach(function(sli){%>
 								<% 
 									var t_created_flag=false;
-									if(sli.transaction)
+									if(sli.transaction_event)
 										t_created_flag=true;
 									var dt_status = '';
 									if(sli.dt && sli.dt.details && sli.dt.details.status){
@@ -152,7 +152,7 @@
 							<%slis.forEach(function(sli){%>
 								<% 
 									var t_created_flag=false;
-									if(sli.transaction)
+									if(sli.transaction_event)
 										t_created_flag=true;
 									var dt_status = '';
 									if(sli.dt && sli.dt.details && sli.dt.details.status){
@@ -200,9 +200,9 @@
 							<% 
 								var t_created_flag=false;
 								var t;
-								if(sli.transaction){
+								if(sli.transaction_event){
 									t_created_flag=true;
-									t=sli.transaction;
+									t=sli.transaction_event;
 									t.original_amount = t.original_amount.toFixed(2)
 								}
 								var dt_status = '';
@@ -257,11 +257,11 @@
 									<div class="ui basic icon top right pointing extra_options dropdown">
 										<i class="angle down icon"></i>
 										<div class="menu">
-											<a class="disabled item" href='/transaction/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
+											<a class="disabled item" href='/transaction_event/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
 											<a class='item add_tags' href=''>Add tags</a>
-											<a class="item" href='/transaction/<%=t.id%>/edit'>Edit</a>
+											<a class="item" href='/transaction_event/<%=t.id%>/edit'>Edit</a>
 											<!-- <a class="item" href='/transaction/<%=t.id%>/convert_to_transfer'>Convert to transfer</a> -->
-											<a class="item" href='/transaction/<%=t.id%>/delete'>Delete</a>
+											<a class="item" href='/transaction_event/<%=t.id%>/delete'>Delete</a>
 										</div>
 									</div>
 								</td>

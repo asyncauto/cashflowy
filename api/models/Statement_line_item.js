@@ -22,8 +22,8 @@ module.exports = {
 			type: 'json',
 			required: true,
 		},
-		transaction:{
-			model:'transaction'
+		transaction_event:{
+			model:'transaction_event'
 		},
 		org:{
 			model:'org'

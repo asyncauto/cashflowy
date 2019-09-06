@@ -9,16 +9,15 @@ module.exports = {
 
   attributes: {
 
-    transactions:{
-        collection: 'transaction',
+    transaction_events:{
+        collection: 'transaction_event',
         via: 'transaction_group'
     },
 
-    transaction_categories:{
-        collection: 'transaction_category',
+    transactions:{
+        collection: 'transaction',
         via: 'transaction_group'
     }
-
   }
 
 };

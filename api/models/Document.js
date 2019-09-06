@@ -42,8 +42,8 @@ module.exports = {
       columnType: 'jsonb'
     },
 
-    transaction_category:{
-      model: 'transaction_category'
+    transaction:{
+      model: 'transaction'
     },
 
     org: {

@@ -9,14 +9,14 @@ var format_number=function(number){
 			<h1> Details of a specific transaction:</h1>
 			<table class="ui basic unstackable table" style="display: block;overflow-x:scroll;">
 				<tbody>
-					<%t.tcs.forEach(function(tc,i){%>
-						<tr class='transaction top aligned' data-tc-id='<%=tc.id%>'>
+					<%te.ts.forEach(function(t,i){%>
+						<tr class='transaction top aligned' data-t-id='<%=t.id%>'>
 							<%if(i==0){%>
-								<td rowspan="<%=t.tcs.length+1%>">
-									<span class='popup' data-html="<%-moment(tc.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
-									<%-moment(tc.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
-									<span style="font-size: 1.5rem;"><%-moment(tc.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
-									<span style="font-size: 0.75rem;"><%-moment(tc.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
+								<td rowspan="<%=te.ts.length+1%>">
+									<span class='popup' data-html="<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
+									<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+									<span style="font-size: 1.5rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+									<span style="font-size: 0.75rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
 									</span>
 									<!-- <a href="#" class='show_details'>details</a> -->
 								</td>
@@ -25,8 +25,8 @@ var format_number=function(number){
 								<!-- category  -->
 
 								<span style="opacity: 0.5;">Budget:</span>
-								<div class="ui category dropdown" style="<%=(tli.type=='income_expense'&&!tli.category)?'background:yellow':''%>">
-									<input type="hidden" name="category" value="<%=tli.category%>">
+								<div class="ui category dropdown" style="<%=(t.type=='income_expense'&&!t.category)?'background:yellow':''%>">
+									<input type="hidden" name="category" value="<%=t.category%>">
 
 									<div class="text">None</div>
 									<i class="dropdown icon"></i>
@@ -39,20 +39,20 @@ var format_number=function(number){
 								<!-- &nbsp;&nbsp;&nbsp; <span style="opacity: 0.5">| Tags:</span> -->
 								<div class='ui divider' style='margin-top: 0px; margin-bottom: 0px;'></div>
 								<!-- description -->
-								<span class='description'><%-tc.description?tc.description:''%></span>
-								<a class='edit' data-id='<%=tc.id%>' href='' style="<%=(!tc.description)?'background:yellow':''%>">edit</a><br>
+								<span class='description'><%-t.description?t.description:''%></span>
+								<a class='edit' data-id='<%=t.id%>' href='' style="<%=(!t.description)?'background:yellow':''%>">edit</a><br>
 
-								<div class='edit_description' data-id='<%=tc.id%>' style='display:none;'>
+								<div class='edit_description' data-id='<%=t.id%>' style='display:none;'>
 									<div class="ui fluid input">
-										<input type="text" name='description' value='<%-tc.description?tc.description:''%>'>
+										<input type="text" name='description' value='<%-t.description?t.description:''%>'>
 									</div>
 									<br>
-									<button class="ui teal button submit_edit_desc" data-id='<%=tc.id%>' >save</button>
-									<button class="ui red button cancel_edit_desc" data-id='<%=tc.id%>' >cancel</button>
+									<button class="ui teal button submit_edit_desc" data-id='<%=t.id%>' >save</button>
+									<button class="ui red button cancel_edit_desc" data-id='<%=t.id%>' >cancel</button>
 								</div>
 								<span style="opacity: 0.5;">Tags:</span>
 								<span class='tags'>
-									<%- partial('partials/display_tags', {tags: tc.tags}) %>
+									<%- partial('partials/display_tags', {tags: t.tags}) %>
 								</span>
 								<i class="add_tags2 link plus icon" style="opacity: 0.5;"></i>
 								<div class="ui add_tags_popup popup">
@@ -60,7 +60,7 @@ var format_number=function(number){
 									<button class='ui teal disabled button submit_edit_tags'>update</button>
 									<div class='ui tags_dd fluid multiple search selection dropdown'>
 										<%
-											var tag_names=_.map(tc.tags,'id');
+											var tag_names=_.map(t.tags,'id');
 											var tags_string=tag_names.join(',');
 										%>
 										<input name='tags' type='hidden' value='<%=tags_string%>'>
@@ -79,38 +79,38 @@ var format_number=function(number){
 								<br>
 							</td>
 							<td>
-								<%if(tc.type=='income_expense'){
-									if(tc.original_amount<0){%> 
+								<%if(t.type=='income_expense'){
+									if(t.original_amount<0){%> 
 										<span style='opacity: 0.5'>You paid</span><br>
-										<b style='color:red' class="<%-tc.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tc.amount_inr)%>"><%=tc.original_currency%> <%=(format_number(-tc.original_amount))%></b>
+										<b style='color:red' class="<%-t.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(format_number(-t.original_amount))%></b>
 									<%}else{%>
 										<span style='opacity: 0.5'>You got</span><br>
-										<b style='color:#5bc5a2' class="<%-tc.original_currency!='INR'?'popup':''%>" data-html="INR <%-tc.amount_inr%>"><%=tc.original_currency%> <%=(format_number(tc.original_amount))%></b>
+										<b style='color:#5bc5a2' class="<%-t.original_currency!='INR'?'popup':''%>" data-html="INR <%-t.amount_inr%>"><%=t.original_currency%> <%=(format_number(t.original_amount))%></b>
 									<%}
 								}else{%>
 									<span style='opacity: 0.5'>You transferred</span><br>
-									<b style='' class="<%-tc.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-tc.amount_inr)%>"><%=tc.original_currency%> <%=format_number((-tc.original_amount))%></b>
+									<b style='' class="<%-t.original_currency!='INR'?'popup':''%>" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=format_number((-t.original_amount))%></b>
 								<%}%>
 							</td>
 							<td>
-								<%if(tc.original_amount<0){%> 
+								<%if(t.original_amount<0){%> 
 									<span style='opacity: 0.5'>from</span><br>
 								<%}else{%>
 									<span style='opacity: 0.5'>deposited to</span><br>
 								<%}%>
-								<%=tc.account.name%>
+								<%=t.account.name%>
 							</td>
 							<td>
-								<%if(tc.type=='income_expense'){%> 
-									<%if(tc.original_amount<0){%> 
+								<%if(t.type=='income_expense'){%> 
+									<%if(t.original_amount<0){%> 
 										<span style='opacity: 0.5'>to</span><br>
 									<%}else{%>
 										<span style='opacity: 0.5'>from</span><br>
 									<%}%>
-									<%=tc.third_party%>
+									<%=t.third_party%>
 								<%}else{%>
 									<span style='opacity: 0.5'>to</span><br>
-									<%=tc.to_account.name%>
+									<%=t.to_account.name%>
 								<%}%>
 							</td>
 							<td>
@@ -132,13 +132,13 @@ var format_number=function(number){
 							<td colspan='6' style='padding:7px;opacity: 0.7;'>
 									<h4>Attachements:</h4>
 									<div class="ui list">
-										<% tc.documents.forEach(function(d, j){ %>
+										<% t.documents.forEach(function(d, j){ %>
 											<a class="item header" href="/org/<%=req.org.id%>/document/<%=d.id%>?download=true"><%=d.filename%></a><%=d.description%>
 										<%})%>
 									</div>
 									<form method="POST" action="/org/<%=req.org.id%>/document/create?redirect=true" class="ui form" enctype="multipart/form-data"> 
 										<div class="ui three fields">
-											<input type="hidden" name='tc' value="<%=tc.id%>">
+											<input type="hidden" name='tc' value="<%=t.id%>">
 											<div class="ui field">
 												<label>description</label>
 												<input type="text" placeholder="add a description about the file" name='description'>
@@ -158,16 +158,16 @@ var format_number=function(number){
 					<%})%>
 					<tr>
 						<td colspan='5' style='padding:7px;opacity: 0.7;'>
-							<a href="#" style='color: black; opacity: 0.7;' class='show_details' data-t-id="<%=t.id%>">details <i class="caret down icon"></i></a>
+							<a href="#" style='color: black; opacity: 0.7;' class='show_details' data-t-id="<%=te.id%>">details <i class="caret down icon"></i></a>
 							<br>
-							<span id='details_<%=t.id%>' style='display:none;'>
-								<%if(t.parsed_emails.length==0 && t.slis.length==0){%>
+							<span id='details_<%=te.id%>' style='display:none;'>
+								<%if(te.parsed_emails.length==0 && te.slis.length==0){%>
 									this transactions was created manually<br>
 								<%}else{%>
-									<%t.parsed_emails.forEach(function(pe){ %>
+									<%te.parsed_emails.forEach(function(pe){ %>
 										<i class='mail icon'></i>extracted from email - <%=pe.email%><br>
 									<%}) %>
-									<%t.slis.forEach(function(sli){ %>
+									<%te.slis.forEach(function(sli){ %>
 										<i class='file alternate outcne icon'></i>extracted from statement - <a href="/org/<%=req.org.id%>/statement/<%=sli.statement.id%>"><%=sli.statement.id%></a> - line no - <%=sli.pos+1%><br>
 									<%}) %>
 								<%}%>
@@ -181,7 +181,7 @@ var format_number=function(number){
 		<div class='sixteen wide column'>
 			<h3>Related parsed emails:</h3>
 		</div>
-		<%t.parsed_emails.forEach(function(pe){%>
+		<%te.parsed_emails.forEach(function(pe){%>
 			<div class='sixteen wide column'>
 				<div class="ui tabular menu">
 					<a class="item active" data-tab="first">Original email body</a>
@@ -206,7 +206,7 @@ var format_number=function(number){
 		<div class='sixteen wide column'>
 			<h3>Related statement line items:</h3>
 		</div>
-		<%t.slis.forEach(function(sli){%>
+		<%te.slis.forEach(function(sli){%>
 			<div class='sixteen wide column'>
 				<div class="ui tabular menu">
 					<a class="item active" data-tab="first">Original email body</a>
@@ -226,7 +226,6 @@ var format_number=function(number){
 			</div>
 		<%})%>
 		<div class='sixteen wide column'>
-			<!-- <pre><%=JSON.stringify(t,null,'    ')%></pre> -->
 		</div>
 	</div>
 	
@@ -243,7 +242,7 @@ var format_number=function(number){
 			console.log('description clicked');
 			console.log(tc_id);
 			// if(!edit_active)
-			$('tr[data-tc-id='+tc_id+']').find('span.description').hide();
+			$('tr[data-t-id='+tc_id+']').find('span.description').hide();
 			$(this).parent().find('.edit_description').show();
 			// edit_active=true;
 		});
@@ -252,18 +251,18 @@ var format_number=function(number){
 			var tc_id=$(this).attr('data-id');
 			// edit_active=false;
 			$(this).parent().hide();
-			$(this).parents('tr[data-tc-id='+tc_id+']').find('span.description').show();
-			$(this).parents('tr[data-tc-id='+tc_id+']').find('.edit').show();
+			$(this).parents('tr[data-t-id='+tc_id+']').find('span.description').show();
+			$(this).parents('tr[data-t-id='+tc_id+']').find('.edit').show();
 			// $(this).parents().find('.edit[data-id='+t_id+']').show();
 		});
 		$('.submit_edit_desc').click(function(e){
 			console.log('submit button clicked');
-			// var tc_id=$(this).parents('.tc').attr('data-tc-id');
+			// var tc_id=$(this).parents('.tc').attr('data-t-id');
 			var tc_id=$(this).attr('data-id');
 			console.log(tc_id);
-			var description=$('tr[data-tc-id='+tc_id+']').find('input[name=description]').val();
-			$('tr[data-tc-id='+tc_id+'] span.description').text(description);
-			$('tr[data-tc-id='+tc_id+'] span.description').show();
+			var description=$('tr[data-t-id='+tc_id+']').find('input[name=description]').val();
+			$('tr[data-t-id='+tc_id+'] span.description').text(description);
+			$('tr[data-t-id='+tc_id+'] span.description').show();
 			// /api/edit_desc
 			var button = this;
 			$(button).addClass('loading');
@@ -283,7 +282,7 @@ var format_number=function(number){
 			onChange:function(value, text, $choice){
 				var dd = this;
 				$(this).addClass('disabled loading');
-				var tc_id=$(this).parents('tr').attr('data-tc-id');
+				var tc_id=$(this).parents('tr').attr('data-t-id');
 				console.log(tc_id);
 				$.ajax({
 					url:"/org/"+"<%=req.params.o_id%>"+"/tc/"+tc_id,
@@ -333,7 +332,7 @@ var format_number=function(number){
 		$('.submit_edit_tags').click(function(e){
 			$(this).addClass('disabled');
 			console.log('here here');
-			var tc_id=$(this).parents('tr').attr('data-tc-id');
+			var tc_id=$(this).parents('tr').attr('data-t-id');
 			var tags_string=$(this).parents('tr').find('.add_tags_popup').find('input[name=tags]').val();
 			console.log(tc_id);
 			console.log(tags_string);

@@ -29,8 +29,8 @@ module.exports = {
 			isIn:["red","orange","yellow","olive","green","teal","blue","violet","purple","pink","brown","grey","black"],
 			defaultsTo:'teal'
 		},
-		transaction_categories:{
-			collection:'transaction_category',
+		transactions:{
+			collection:'transaction',
 			via:'tags',
 		},
 	}
