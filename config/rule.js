@@ -26,7 +26,7 @@ module.exports.rule={
 			allowed_triggers:['transaction_after_create'],
 		},
 		{
-			slug:'set_categorys',
+			slug:'set_category',
 			title:'Set category',
 			description:'Set a category for this transaction',
 			allowed_triggers:['transaction_after_create'],

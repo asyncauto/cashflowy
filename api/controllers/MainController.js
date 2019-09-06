@@ -349,45 +349,28 @@ module.exports = {
 		async.auto({
 			getParsedEmails:function(callback){
 				Parsed_email.find({org:req.params.o_id})
-					.populate('transaction_event')
 					.sort('createdAt DESC')
 					.limit(limit)
 					.skip(skip)
 					.exec(callback);
 			},
-			getTransactions:['getParsedEmails',function(results,callback){
-				var te_ids=_.map(results.getParsedEmails,'transaction_event.id');
-				Transaction.find({transaction_event:te_ids}).populate('tags').populate('account').exec(callback);
-			}],
-			getCategories:function(callback){
-				Category.find({org:req.params.o_id}).sort('name ASC').exec(callback);
-			},
-			getTags:function(callback){
-				Tag.find({org:req.params.o_id}).sort('name ASC').exec(callback);	
-			}
+			getTransactionEvents: ['getParsedEmails', function(results, cb){
+				var te_ids=_.map(results.getParsedEmails,'transaction_event');
+				Transaction_event.find({id:te_ids}).populate('account').exec(cb);
+			}]
 		},function(err,results){
-			var categories= GeneralService.orderCategories(results.getCategories);
-			results.getTransactions.forEach(function(tc){
-				categories.forEach(function(cat){
-					if(tc.category==cat.id)
-						tc.category_name=cat.name;
-				})
-			})
 			results.getParsedEmails.forEach(function(pe){
 				if(pe.transaction_event){
-					pe.transaction_event.ts=[];
-					results.getTransactions.forEach(function(t){
-						if(t.transaction_event==_.get(pe, 'transaction_event.id')){
-							pe.transaction_event.ts.push(t);
+					results.getTransactionEvents.forEach(function(te){
+						if(te.id==_.get(pe, 'transaction_event')){
+							pe.transaction_event = te;
 						}
 					});
 				}
 			})
+
 			var locals={
 				parsed_emails:results.getParsedEmails,
-				transactions:results.getTransactions,
-				categories:GeneralService.orderCategories(results.getCategories),
-				tags:results.getTags,
 				page: page,
 				limit:limit,
 			}
@@ -485,7 +468,7 @@ module.exports = {
 				else
 					Transaction_event.findOrCreate(te, te).exec(function(err, txn){callback(err, txn);});
 			}],
-			updateTransaction: ['findOrCreateTransaction', function(results, callback){
+			updateTransaction: ['findOrCreateTransactionEvent', function(results, callback){
 				var pe = results.updateParsedEmail[0]
 				var t = {
 					original_currency:pe.data.currency,
@@ -496,7 +479,7 @@ module.exports = {
 					amount_inr: _.get(pe, 'data.amount_inr', 0),
 					occuredAt: _.get(pe, 'data.occuredAt', new Date())
 				}
-				//update tc if this transaction contains only one tc
+				//update t if this transaction contains only one t
 				Transaction.find({transaction_event: results.findOrCreateTransactionEvent.id}).exec(function(err, ts){
 					if(err) return callback(err);
 					if(ts.length == 1)

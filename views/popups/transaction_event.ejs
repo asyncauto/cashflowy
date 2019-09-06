@@ -1,0 +1,53 @@
+<%
+	var moment = GeneralService.includePackage('moment-timezone');
+	var format_number=function(number){
+		return FormatService.formatNumber(number,req.query.number_format,req.query.precision);
+	}
+	console.log('printing t: ',t)
+%>
+<table class='ui basic unstackable table' style='display: block;overflow-x:scroll;'>
+	<tbody>	
+			<tr class='transaction top aligned' data-t-id='<%=t.id%>'>
+					<td rowspan='1'>
+						<span class='popup' data-html='<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>'>
+						<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+						<span style='font-size: 1.5rem;'><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+						<span style='font-size: 0.75rem;'><%-moment(t.occuredAt).tz('Asia/Kolkata').format('YYYY')%></span>
+						</span>
+						<!-- <a href='#' class='show_details'>details</a> -->
+					</td>
+				<td>
+					<%if(t.type=='income_expense'){
+						if(t.original_amount<0){%> 
+							<span style='opacity: 0.5'>You paid</span><br>
+							<b style='color:red' class='<%-t.original_currency!='INR'?'popup':''%>' data-html='INR <%=(-t.amount_inr)%>'><%=t.original_currency%> <%=(format_number(-t.original_amount))%></b>
+						<%}else{%>
+							<span style='opacity: 0.5'>You got</span><br>
+							<b style='color:#5bc5a2' class='<%-t.original_currency!='INR'?'popup':''%>' data-html='INR <%-t.amount_inr%>'><%=t.original_currency%> <%=(format_number(t.original_amount))%></b>
+						<%}%>
+				</td>
+				<td>
+					<%if(t.original_amount<0){%> 
+						<span style='opacity: 0.5'>from</span><br>
+					<%}else{%>
+						<span style='opacity: 0.5'>deposited to</span><br>
+					<%}}%>
+					<%=t.account.name%>
+				</td>
+				<td>
+					<%if(t.type=='income_expense'){%> 
+						<%if(t.original_amount<0){%> 
+							<span style='opacity: 0.5'>to</span><br>
+						<%}else{%>
+							<span style='opacity: 0.5'>from</span><br>
+						<%}%>
+						<%=t.third_party%>
+					<%}%>
+				</td>
+			</tr>
+		<tr>
+			<td colspan='4' style='padding:7px;opacity: 0.7;'>
+			</td>
+		</tr>
+	</tbody>
+</table>

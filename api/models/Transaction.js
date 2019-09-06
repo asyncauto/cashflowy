@@ -113,9 +113,9 @@ module.exports = {
 					cb(null, tli_update);
 				})
 			}],
-			updatedTransactionCategory: ['applyRule', function (results, cb) {
+			updatedTransaction: ['applyRule', function (results, cb) {
 				if (!results.applyRule) return cb(null);
-				Transaction_category.update(created.id, results.applyRule).exec(function (err, r) {
+				Transaction.update(created.id, results.applyRule).exec(function (err, r) {
 					cb(err, r);
 				});
 			}]

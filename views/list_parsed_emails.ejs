@@ -18,7 +18,7 @@
 							<th>Parser</th>
 							<th>Data</th>
 							<th>View</th>
-							<th>T</th>
+							<th>Te</th>
 							<th>Reparse</th>
 						</tr>
 					</thead>
@@ -38,7 +38,7 @@
 								</td>
 								<td>
 									<%if(pe.transaction_event){%>
-									<a class="popup" href="/org/<%=req.params.o_id%>/transaction_event/<%=pe.transaction_event.id%>" data-html="<%- partial('popups/transaction', {t: pe.transaction_event,categories:categories,tags:tags}) %>" data-variation="very wide">
+									<a class="popup" href="/org/<%=req.params.o_id%>/transaction_event/<%=pe.transaction_event.id%>" data-html="<%- partial('popups/transaction_event', {t: pe.transaction_event}) %>" data-variation="very wide">
 										<!-- <i class='dollar icon popup' ></i> -->
 										<%=pe.transaction_event.amount_inr%>
 									</a>
