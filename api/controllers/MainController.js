@@ -3177,5 +3177,75 @@ module.exports = {
 			var updated = _.get(results, 'updateTransaction[0]', {})
 			return res.status(200).json(updated)
 		})
-	}
+	},
+	editTransaction:function(req,res){
+		Account.find({org:req.org.id}).exec(function(err,accounts){
+			if(req.body){ // post request
+				console.log(req.body);
+				const fx = require('money');
+				fx.base='INR';
+				fx.rates=sails.config.fx_rates;
+				var t={
+					original_currency:req.body.original_currency,
+					// original_amount:-(req.body.original_amount),
+					// amount_inr:-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"})),
+					occuredAt: new Date(req.body.date+' '+req.body.time+req.body.tz),
+					createdBy:'user',
+					// type:'income_expense',
+					description:req.body.description,
+					account:req.body.account_id,
+					third_party:req.body.third_party
+				}
+				if(req.body.type=='expense'){
+					t.type='income_expense';
+					t.original_amount=-(req.body.original_amount);
+					t.amount_inr=-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+				}else if(req.body.type=='income'){
+					t.type='income_expense';
+					t.original_amount=(req.body.original_amount);
+					t.amount_inr=(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+				}else if(req.body.type=='transfer'){
+					t.type='transfer';
+					t.original_amount=-(req.body.original_amount);
+					t.amount_inr=-(fx.convert(req.body.original_amount, {from: req.body.original_currency, to: "INR"}));
+					t.to_account=req.body.to_account;
+				}
+				// console.log('before transaction find or create');
+				console.log(t);
+				Transaction.update({id:req.params.id},t).exec(function(err,transaction){
+					if(err)
+						throw err;
+					else
+						res.redirect('/org/' + req.org.id +'/transactions');
+				});
+			}else{ // view the form
+				Transaction.findOne({id:req.params.id}).exec(function(err,t){
+					var locals={
+						status:'',
+						message:'',
+						occuredAt:new Date(t.occuredAt).toISOString(),
+						description:t.description,
+						original_amount:t.original_amount,
+						original_currency:t.original_currency,
+						third_party:t.third_party,
+						account_id:t.account,
+						to_account:t.to_account,
+						accounts:accounts,
+						// type:'expense',
+						// color:'red',
+					}
+					if(t.type=='transfer')
+						locals.type='transfer';
+					else if(t.type=='income_expense'){
+						if(t.original_amount<0)
+							locals.type='expense';
+						else
+							locals.type='income';
+					}
+					console.log(locals);
+					res.view('create_transaction',locals);
+				});
+			}
+		})
+	},
 }

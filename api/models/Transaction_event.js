@@ -38,6 +38,9 @@ module.exports = {
             model: 'account',
             required: true
         },
+        to_account: { // only for transfers. The account to which you transferred the money to.
+			model: 'account'
+		},
         transactions:{
 			collection: 'transaction',
 			via: 'transaction_event'
