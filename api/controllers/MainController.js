@@ -355,7 +355,7 @@ module.exports = {
 					.exec(callback);
 			},
 			getTransactionEvents: ['getParsedEmails', function(results, cb){
-				var te_ids=_.map(results.getParsedEmails,'transaction_event');
+				var te_ids=_.chain(results.getParsedEmails).map('transaction_event').filter().value();
 				Transaction_event.find({id:te_ids}).populate('account').exec(cb);
 			}]
 		},function(err,results){
