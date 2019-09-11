@@ -809,6 +809,9 @@ module.exports = {
 		var page = req.query.page?parseInt(req.query.page):1;
 		var skip = limit * (page-1);
 		var transaction_filter;
+		var query;
+		//sort filter
+		var sort;
 
 		locals.page = page;
 		locals.limit = limit;
@@ -829,7 +832,15 @@ module.exports = {
 			getCategories:function(callback){
 				Category.find({org:req.org.id}).sort('name ASC').exec(callback);
 			},
-			getTransactions:['getAccounts','getTransactionEventsInStatement','getCategories', function(results,callback){
+			getTransactions:['getAccounts','getTransactionEventsInStatement','getCategories', async function(results,callback){
+				if(req.query.tags){
+					query = `
+					select "transaction"."id" from "transaction" LEFT JOIN 
+					tag_transactions__transaction_tags on "transaction".id = tag_transactions__transaction_tags.transaction_tags 
+					WHERE tag_transactions__transaction_tags.tag_transactions in (${req.query.tags}) AND`
+				}else {
+					query = `select "transaction"."id" from "transaction" WHERE `
+				}
 				//account filter
 				var accounts=[];
 				if(!_.isNaN(parseInt(req.query.account))){
@@ -842,33 +853,41 @@ module.exports = {
 				var filter={
 					account:accounts,
 				}
+				if(filter.account.length)
+					query += ` "transaction".account in ${GeneralService.whereIn(filter.account)}`
+
 				if(req.query.statement){
 					filter.transaction_event=_.filter(_.map(results.getTransactionEventsInStatement,'transaction'));
-					console.log(filter.id);
+					query += ` AND "transaction".transaction_event in ${GeneralService.whereIn(filter.transaction_event)}`
 				}
 				// category filter
-				if(!_.isNaN(parseInt(req.query.category)))
+				if(!_.isNaN(parseInt(req.query.category))){
 					filter.category=[parseInt(req.query.category)];
-				// include sub categoriess	
-				if(req.query.include_subcategories == 'true'){
-					_.forEach(results.getCategories, function(c){
-						if(c.parent == req.query.category)
-							filter.category.push(c.id);
-					})
+					// include sub categoriess	
+					if(req.query.include_subcategories == 'true'){
+						_.forEach(results.getCategories, function(c){
+							if(c.parent == req.query.category)
+								filter.category.push(c.id);
+						})
+					}
+					query += ` AND "transaction".category in ${GeneralService.whereIn(filter.category)}`
 				}
-				else if(req.query.category == 'empty')
+				else if(req.query.category == 'empty'){
 					filter.category = null;
+					query += ` AND "transaction".category is NULL`
+				}
 				
 				// third party filter
-				if(req.query.third_party)
+				if(req.query.third_party){
 					filter.third_party = {contains: req.query.third_party }
+					query += ` AND "transaction".third_party ILIKE '%${req.query.third_party}%'`
+				}
 
 				// description filter
-				if(req.query.description)
+				if(req.query.description){
 					filter.description = {contains: req.query.description }
-
-				if(req.query.description == 'empty')
-					filter.description = null;
+					query += ` AND "transaction".description ILIKE '%${req.query.description}%'`
+				}
 
 
 				// txn type filter
@@ -876,14 +895,19 @@ module.exports = {
 					switch (req.query.txn_type) {
 						case 'transfer':
 							filter.type = 'transfer'
+							query += ` AND "transaction".type = transfer`
 							break;
 						case 'income':
 							filter.type = 'income_expense'
 							filter.amount_inr = {'>':0};
+							query += ` AND "transaction".type = income_expense`
+							query += ` AND "transaction".amount_inr > 0`
 							break;
 						case 'expense':
 							filter.type = 'income_expense'
 							filter.amount_inr = {'<':0};
+							query += ` AND "transaction".type = income_expense`
+							query += ` AND "transaction".amount_inr < 0`
 							break;
 						default:
 							break;
@@ -893,54 +917,81 @@ module.exports = {
 				//amount range filter
 				var amount_less_than  = !_.isNaN(parseInt(req.query.amount_less_than))?parseInt(req.query.amount_less_than) : null;
 				var amount_greater_than  = !_.isNaN(parseInt(req.query.amount_greater_than)) ? parseInt(req.query.amount_greater_than) : 0;
-				// default case
-				filter.or = 
-					[
-						{amount_inr :{'>': amount_greater_than > 0 ? amount_greater_than: (-1) * amount_greater_than }},
-						{amount_inr :{'<': amount_greater_than < 0 ?  amount_greater_than: (-1) * amount_greater_than}}
-					]
-				if(amount_less_than)
+
+				
+				if(amount_less_than){
 					filter.or = 
 						[
 							{amount_inr :{'<': amount_less_than > 0 ? amount_less_than: (-1) * amount_less_than , '>': amount_greater_than > 0 ? amount_greater_than: (-1) * amount_greater_than }},
 							{amount_inr :{'>': amount_less_than < 0 ?  amount_less_than: (-1) * amount_less_than, '<': amount_greater_than < 0 ?  amount_greater_than: (-1) * amount_greater_than}}
 						]
-					
+					query += ` AND abs("transaction"."amount_inr") < ${amount_less_than}`
+					}
+				else{
+					filter.or = 
+						[
+							{amount_inr :{'>': amount_greater_than > 0 ? amount_greater_than: (-1) * amount_greater_than }},
+							{amount_inr :{'<': amount_greater_than < 0 ?  amount_greater_than: (-1) * amount_greater_than}}
+						]
+					query += ` AND abs("transaction"."amount_inr") > ${amount_greater_than}`
+				}
 				// occured_at filter
 				try{
-					var date_to  = req.query.date_to ? moment(req.query.date_to, 'YYYY-MM-DD').endOf('day').tz('Asia/Kolkata').toDate() : new Date();
-					var date_from = req.query.date_from ? moment(req.query.date_from, 'YYYY-MM-DD').tz('Asia/Kolkata').toDate() : null;
-					//default case
-					filter.occuredAt = {'<': date_to };
-					if(date_from)
-						filter.occuredAt = {'>':date_from, '<': date_to };			
+					var date_to  = req.query.date_to ? moment(req.query.date_to, 'YYYY-MM-DD').endOf('day').tz('Asia/Kolkata').toISOString() : new Date().toISOString();
+					var date_from = req.query.date_from ? moment(req.query.date_from, 'YYYY-MM-DD').tz('Asia/Kolkata').toISOString() : null;
+					
+					if(date_from){
+						filter.occuredAt = {'>':date_from, '<': date_to }
+						query += ` AND "transaction"."occuredAt" > '${date_from}' AND "transaction"."occuredAt" < '${date_to}'`
+					}else{
+						filter.occuredAt = {'<': date_to };
+						query += ` AND "transaction"."occuredAt" < '${date_to}'`
+					}	
+					;			
 				} catch(err){
 					sails.log.error('error while parsing the dates', err);
 				}
-				//sort filter
-				var sort = 'occuredAt DESC';
-				if(req.query.sort)
-					sort = req.query.sort
-				
+
 				// id corresponds to transaction id not tcs
 				if(req.query.ids){
 					filter.id = {in: _.map(req.query.ids.split(','), function (each) {
 						if(parseInt(each))
 							return parseInt(each);
 					})}
+					query += ` AND "transaction"."id" in '${GeneralService.whereIn(filter.category)}'`
 				}
+
+				//group by transaction.id if tag filter is applied.
+				if(req.query.tags)
+					query += ` GROUP BY "transaction"."id"`					
+
+				if(req.query.sort){
+					sort = 'occuredAt ' + req.query.sort
+					query += ' ORDER BY "transaction"."occuredAt" '+ req.query.sort;
+				}
+				else{
+					sort = 'occuredAt ' + 'DESC';
+					query += ' ORDER BY "transaction"."occuredAt" DESC';
+				}
+			
 				transaction_filter = filter;
-				Transaction.find(filter).sort(sort).limit(limit).skip(skip).populate('tags').populate('transaction_event').populate('documents').exec(callback);
+				// get filtered transaction ids 
+				var ts = await sails.sendNativeQuery(query + ` LIMIT ${limit} OFFSET ${skip}`);
+
+				// quering again not to mess up the output.
+				var transactions = await Transaction.find({id:_.map(ts.rows, 'id')}).populate('tags').populate('transaction_event').populate('documents');
+				return transactions;
 			}],
-			getTransactionsCount: ['getTransactions', function(results, callback){
-				Transaction.count(transaction_filter).exec(callback);
+			getTransactionsCount: ['getTransactions', async function(results, callback){
+				var count_query = `select count(*) from (${query}) as t`
+				return (await sails.sendNativeQuery(count_query)).rows[0].count;
 			}],
 			getTags:function(callback){
 				Tag.find({or:[{org:req.org.id}, {type:'global'}]}).exec(callback);
 			},
 			getTransactionEvents:['getTransactions',function(results,callback){
 				var te_ids=_.map(results.getTransactions,function(t){return t.transaction_event.id});
-				Transaction_event.find({id:te_ids}).sort('occuredAt DESC').exec(callback);
+				Transaction_event.find({id:te_ids}).sort(sort).exec(callback);
 			}],
 			getParsedEmails:['getTransactions',function(results,callback){
 				var te_ids=_.map(results.getTransactions,function(t){return t.transaction_event.id});
@@ -3248,4 +3299,23 @@ module.exports = {
 			}
 		})
 	},
+	viewTransactionGroup: function(req, res){
+		async.auto({
+			getTransactionGroup: function(cb){
+				Transaction_group.findOne(req.params.id).exec(cb)
+			},
+			getTransactionEvents: function(cb){
+				Transaction_event.find({transaction_group: req.params.id}).populate('account').populate('to_account').exec(cb);
+			},
+			getTransactions: function(cb){
+				Transaction.find({transaction_group: req.params.id}).populate('account').populate('to_account').populate('tags').populate('category').exec(cb);
+			}
+		}, function(err, results){
+			var locals = {
+				transactions: results.getTransactions,
+				transaction_events: results.getTransactionEvents
+			}
+			res.view('view_transaction_group', locals)
+		})
+	}
 }
