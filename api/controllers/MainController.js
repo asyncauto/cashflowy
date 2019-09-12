@@ -860,6 +860,7 @@ module.exports = {
 					filter.transaction_event=_.filter(_.map(results.getTransactionEventsInStatement,'transaction'));
 					query += ` AND "transaction".transaction_event in ${GeneralService.whereIn(filter.transaction_event)}`
 				}
+
 				// category filter
 				if(!_.isNaN(parseInt(req.query.category))){
 					filter.category=[parseInt(req.query.category)];
@@ -954,11 +955,11 @@ module.exports = {
 
 				// id corresponds to transaction id not tcs
 				if(req.query.ids){
-					filter.id = {in: _.map(req.query.ids.split(','), function (each) {
+					filter.id = _.map(req.query.ids.split(','), function (each) {
 						if(parseInt(each))
-							return parseInt(each);
-					})}
-					query += ` AND "transaction"."id" in '${GeneralService.whereIn(filter.category)}'`
+							return parseInt(each);})
+
+					query += ` AND "transaction"."id" in ${GeneralService.whereIn(filter.id)}`
 				}
 
 				//group by transaction.id if tag filter is applied.
@@ -973,12 +974,11 @@ module.exports = {
 					sort = 'occuredAt ' + 'DESC';
 					query += ' ORDER BY "transaction"."occuredAt" DESC';
 				}
-			
-				transaction_filter = filter;
-				// get filtered transaction ids 
+
+				// get paginated transaction ids 
 				var ts = await sails.sendNativeQuery(query + ` LIMIT ${limit} OFFSET ${skip}`);
 
-				// quering again not to mess up the output.
+				// quering again to retain the output format. This can be optimized
 				var transactions = await Transaction.find({id:_.map(ts.rows, 'id')}).populate('tags').populate('transaction_event').populate('documents');
 				return transactions;
 			}],
