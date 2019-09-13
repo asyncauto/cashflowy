@@ -87,7 +87,7 @@ module.exports = {
 
 						condition.type = 'income_expense'
 						if (condition.third_party)
-							if (!created.third_party.includes(condition.third_party))
+							if (!created.third_party.toLowerCase().includes(condition.third_party.toLowerCase()))
 								return
 							else
 								delete condition.third_party
