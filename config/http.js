@@ -11,7 +11,10 @@
 
 const Sentry = require('@sentry/node');
 
-Sentry.init({ dsn: process.env.SENTRY_DNS });
+Sentry.init({
+  dsn: process.env.SENTRY_DNS,
+  environment: process.env.NODE_ENV
+});
 
 
 module.exports.http = {
