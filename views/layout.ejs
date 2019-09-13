@@ -53,10 +53,9 @@
             + Import stylesheets from other directories
             + Use a different or additional preprocessor, like SASS, SCSS or Stylus
     -->
-
-    <link rel="stylesheet" type="text/css" href="/semantic/semantic.min.css">
     <!--STYLES-->
     <link rel="stylesheet" href="/styles/importer.css">
+    <link rel="stylesheet" href="/styles/semantic/semantic.min.css">
     <link rel="stylesheet" href="/styles/vis-timeline-graph2d.min.css">
     <!--STYLES END-->
     <style>
@@ -127,16 +126,11 @@
 
     <!--SCRIPTS-->
     <script src="/js/dependencies/sails.io.js"></script>
-    <script src="/js/chart.js"></script>
-    <script src="/js/d3.js"></script>
-    <script src="/js/d3.layout.js"></script>
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/vis.js"></script>
+    <script src="/js/dependencies/jquery.min.js"></script>
+    <script src="/js/dependencies/chart.js"></script>
+    <script src="/js/dependencies/semantic.min.js"></script>
+    <script src="/js/dependencies/vis.js"></script>
     <!--SCRIPTS END-->
-    <script src="/js/dependencies/sails.io.js"></script>
-    <script src="/js/chart.js"></script>
-    <script src="/js/jquery.min.js"></script>
-    <script src="/semantic/semantic.min.js"></script>
 
     <!-- include partials/quora_style_login  -->
 
@@ -188,7 +182,7 @@
         Statements
       </a>
       <a class="item" href='/org/<%=req.org.id%>/rules'>
-        <i class="cogs outline icon"></i>
+        <i class="wrench icon"></i>
         Rules
       </a>
       <a class="item" href='/org/<%=req.org.id%>/invoices'>
@@ -204,7 +198,7 @@
         Assets
       </a>
       <a class="item" href='/org/<%=req.org.id%>/pnls'>
-        <i class="calculator outline icon"></i>
+        <i class="coins icon"></i>
         PnL
       </a>
       <a class="item" href='/org/<%=req.org.id%>/balance_sheets'>

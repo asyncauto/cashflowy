@@ -27,6 +27,9 @@ var jsFilesToInject = [
 
   // Load sails.io before everything else
   'js/dependencies/sails.io.js',
+  
+  // semantic has dependency on jquery
+  'js/dependencies/jquery.min.js',
 
   // Dependencies like jQuery, or Angular are brought in here
   'js/dependencies/**/*.js',
