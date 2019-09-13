@@ -857,7 +857,7 @@ module.exports = {
 					query += ` "transaction".account in ${GeneralService.whereIn(filter.account)}`
 
 				if(req.query.statement){
-					filter.transaction_event=_.filter(_.map(results.getTransactionEventsInStatement,'transaction'));
+					filter.transaction_event=_.filter(_.map(results.getTransactionEventsInStatement,'transaction_event'));
 					query += ` AND "transaction".transaction_event in ${GeneralService.whereIn(filter.transaction_event)}`
 				}
 
