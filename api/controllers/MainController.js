@@ -3087,7 +3087,7 @@ module.exports = {
         var uploaded = await sails.uploadOne(req.file('attachment'));
 		var document = await Document.create({ filename: uploaded.filename, 
 			fd: uploaded.fd, mime: uploaded.type, 
-			org: req.org.id, transaction_category: _.get(req, 'body.tc', null), description: _.get(req, 'body.description', null) }).fetch();
+			org: req.org.id, transaction: _.get(req, 'body.t', null), description: _.get(req, 'body.description', null) }).fetch();
 		if(req.query.redirect == 'true')
 			return res.redirect(req.headers.referer);
        	res.json(document);

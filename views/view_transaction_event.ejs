@@ -136,9 +136,9 @@ var format_number=function(number){
 											<a class="item header" href="/org/<%=req.org.id%>/document/<%=d.id%>?download=true"><%=d.filename%></a><%=d.description%>
 										<%})%>
 									</div>
-									<form method="POST" action="/org/<%=req.org.id%>/document/create?redirect=true" class="ui form" enctype="multipart/form-data"> 
+									<form method="POST" action="/org/<%=req.org.id%>/document/create?redirect=true" class="ui form document" enctype="multipart/form-data"> 
 										<div class="ui three fields">
-											<input type="hidden" name='tc' value="<%=t.id%>">
+											<input type="hidden" name='t' value="<%=t.id%>">
 											<div class="ui field">
 												<label>description</label>
 												<input type="text" placeholder="add a description about the file" name='description'>
@@ -383,6 +383,14 @@ var format_number=function(number){
 
 		$('.dropdown.precision').dropdown();
 		$('.dropdown.number_format').dropdown();
+		$('.ui.form.document').form({
+			fields: {
+				attachment : 'empty',
+			},
+			onSuccess:function(e,fields){
+				$(this).addClass('loading');
+			},
+		});
 		
 	});
 </script>

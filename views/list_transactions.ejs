@@ -388,6 +388,13 @@ function updateQueryStringParameter(uri, key, value) {
 									<%}%>
 								</td>
 								<td>
+								<span style="opacity: 0.5;">doc</span></br>
+								<%- !t.documents.length ? "<div>&mdash;</div>":'' %>
+								<% t.documents.forEach(function(d, j){ %>
+											<a class="item header" data-tooltip="<%=d.filename%>" data-position="bottom center" href="/org/<%=req.org.id%>/document/<%=d.id%>?download=true"><i class="file alternate outline icon"></i></a>
+									<%})%>
+								</td>
+								<td>
 									<div class="ui basic icon top right pointing extra_options dropdown">
 										<i class="angle down icon"></i>
 										<div class="menu">
@@ -397,8 +404,6 @@ function updateQueryStringParameter(uri, key, value) {
 										</div>
 									</div>
 								</td>
-							<!-- <td></td>
-							<td></td> -->
 							</tr>
 						<%})%>
 						<tr>
