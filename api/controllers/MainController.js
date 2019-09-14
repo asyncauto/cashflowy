@@ -916,42 +916,29 @@ module.exports = {
 				}
 
 				//amount range filter
-				var amount_less_than  = !_.isNaN(parseInt(req.query.amount_less_than))?parseInt(req.query.amount_less_than) : null;
-				var amount_greater_than  = !_.isNaN(parseInt(req.query.amount_greater_than)) ? parseInt(req.query.amount_greater_than) : 0;
-
-				
-				if(amount_less_than){
-					filter.or = 
-						[
-							{amount_inr :{'<': amount_less_than > 0 ? amount_less_than: (-1) * amount_less_than , '>': amount_greater_than > 0 ? amount_greater_than: (-1) * amount_greater_than }},
-							{amount_inr :{'>': amount_less_than < 0 ?  amount_less_than: (-1) * amount_less_than, '<': amount_greater_than < 0 ?  amount_greater_than: (-1) * amount_greater_than}}
-						]
+				if(!_.isNaN(parseInt(req.query.amount_less_than))){
+					var amount_less_than = parseInt(req.query.amount_less_than)
 					query += ` AND abs("transaction"."amount_inr") < ${amount_less_than}`
-					}
-				else{
-					filter.or = 
-						[
-							{amount_inr :{'>': amount_greater_than > 0 ? amount_greater_than: (-1) * amount_greater_than }},
-							{amount_inr :{'<': amount_greater_than < 0 ?  amount_greater_than: (-1) * amount_greater_than}}
-						]
+
+				}
+
+				if(!_.isNaN(parseInt(req.query.amount_greater_than))){
+					var amount_greater_than = parseInt(req.query.amount_greater_than)
 					query += ` AND abs("transaction"."amount_inr") > ${amount_greater_than}`
 				}
+				
 				// occured_at filter
-				try{
-					var date_to  = req.query.date_to ? moment(req.query.date_to, 'YYYY-MM-DD').endOf('day').tz('Asia/Kolkata').toISOString() : new Date().toISOString();
-					var date_from = req.query.date_from ? moment(req.query.date_from, 'YYYY-MM-DD').tz('Asia/Kolkata').toISOString() : null;
-					
-					if(date_from){
-						filter.occuredAt = {'>':date_from, '<': date_to }
-						query += ` AND "transaction"."occuredAt" > '${date_from}' AND "transaction"."occuredAt" < '${date_to}'`
-					}else{
-						filter.occuredAt = {'<': date_to };
-						query += ` AND "transaction"."occuredAt" < '${date_to}'`
-					}	
-					;			
-				} catch(err){
-					sails.log.error('error while parsing the dates', err);
+				var date_to  = req.query.date_to ? moment(req.query.date_to, 'YYYY-MM-DD').endOf('day').tz('Asia/Kolkata').toISOString() : new Date().toISOString();
+				var date_from = req.query.date_from ? moment(req.query.date_from, 'YYYY-MM-DD').tz('Asia/Kolkata').toISOString() : null;
+				
+				if(date_from){
+					filter.occuredAt = {'>':date_from, '<': date_to }
+					query += ` AND "transaction"."occuredAt" > '${date_from}'`
 				}
+				if(date_to){
+					filter.occuredAt = {'<': date_to };
+					query += ` AND "transaction"."occuredAt" < '${date_to}'`
+				};			
 
 				// id corresponds to transaction id not tcs
 				if(req.query.ids){
