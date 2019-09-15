@@ -1,0 +1,257 @@
+<%
+	var dte_status = '';
+	if(dte.details && dte.details.status){
+		dte_status = dte.details.status;
+	}
+%>
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='sixteen wide column'>
+			<h3>This doubtful transaction event: </h3>
+			<%var t = dte.transaction_event;%>
+			<b>Curation Status: </b>
+			<% if(dte_status){ %>
+			<td class='single line'><i class="icon checkmark"></i><%=dte_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
+			<% }else{ %>
+				<td class="single line"><i class="attention icon"></i> Requires Action</td>
+			<% } %>
+			<table class="ui basic unstackable table" style="display: auto;overflow-x:scroll;">
+				<tbody>
+					<tr class='transaction top aligned' data-tid='<%=t.id%>'>
+						<td>
+							<span class='popup' data-html="<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
+								
+							<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+							<span style="font-size: 1.5rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+							</span>
+						</td>
+						<td>
+							<%if(t.type=='income_expense'){
+								if(t.original_amount<0){%> 
+									<span style='opacity: 0.5'>You paid</span><br>
+									<b style='color:red' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></b>
+								<%}else{%>
+									<span style='opacity: 0.5'>You got</span><br>
+									<b style='color:#5bc5a2' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%-t.amount_inr%>"><%=t.original_currency%> <%=(t.original_amount)%></b>
+								<%}
+							}else{%>
+								<span style='opacity: 0.5'>You transferred</span><br>
+								<b style='' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></b>
+								
+							<%}%>
+						</td>
+						<td>
+							<%if(t.original_amount<0){%> 
+								<span style='opacity: 0.5'>from</span><br>
+							<%}else{%>
+								<span style='opacity: 0.5'>deposited to</span><br>
+							<%}%>
+							<%=t.account.name%> (org - <%=t.account.org%>)
+						</td>
+						<td>
+							<%if(t.type=='income_expense'){%> 
+								<%if(t.original_amount<0){%> 
+									<span style='opacity: 0.5'>to</span><br>
+								<%}else{%>
+									<span style='opacity: 0.5'>from</span><br>
+								<%}%>
+								<%=t.third_party%>
+							<%}else{%>
+								<span style='opacity: 0.5'>to</span><br>
+								<%=t.to_account.name%>
+							<%}%>
+						</td>
+						<td>
+							<div class="ui basic icon top right pointing extra_options dropdown">
+								<i class="angle down icon"></i>
+								<div class="menu">
+									<a class="disabled item" href='/transaction_event/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
+									<a class="item" href='/transaction_event/<%=t.id%>/delete'>Delete</a>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			
+		</div>
+		<%if(dte_status=='duplicate'){%>
+		<%
+			var t;
+			dte.similar_transaction_events.forEach(function(st){
+				if(st.id==dte.details.related_txn_id)
+					t=st;
+			})
+		%>
+		<div class='sixteen wide column'>
+			<h3>Is marked as duplicate of:</h3>
+			<table class="ui basic unstackable table" style="display: auto;overflow-x:scroll;">
+				<tbody>
+					<tr class='transaction top aligned' data-tid='<%=t.id%>'>
+						<td>
+							<span class='popup' data-html="<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
+								
+							<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+							<span style="font-size: 1.5rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+							<!-- <span style="font-size: 0.75rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('HH:mm')%></span> -->
+							</span>
+						</td>
+						<td>
+							<%if(t.type=='income_expense'){
+								if(t.original_amount<0){%> 
+									<span style='opacity: 0.5'>You paid</span><br>
+									<b style='color:red' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></b>
+								<%}else{%>
+									<span style='opacity: 0.5'>You got</span><br>
+									<b style='color:#5bc5a2' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%-t.amount_inr%>"><%=t.original_currency%> <%=(t.original_amount)%></b>
+								<%}
+							}else{%>
+								<span style='opacity: 0.5'>You transferred</span><br>
+								<b style='' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></b>
+								
+							<%}%>
+						</td>
+						<td>
+							<%if(t.original_amount<0){%> 
+								<span style='opacity: 0.5'>from</span><br>
+							<%}else{%>
+								<span style='opacity: 0.5'>deposited to</span><br>
+							<%}%>
+							<%=t.account.name%> (org - <%=t.account.org%>)
+						</td>
+						<td>
+							<%if(t.type=='income_expense'){%> 
+								<%if(t.original_amount<0){%> 
+									<span style='opacity: 0.5'>to</span><br>
+								<%}else{%>
+									<span style='opacity: 0.5'>from</span><br>
+								<%}%>
+								<%=t.third_party%>
+							<%}else{%>
+								<span style='opacity: 0.5'>to</span><br>
+								<%=t.to_account.name%>
+							<%}%>
+						</td>
+						<td>
+							<div class="ui basic icon top right pointing extra_options dropdown">
+								<i class="angle down icon"></i>
+								<div class="menu">
+									<a class="disabled item" href='/transaction_event/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
+									<a class='item add_tags' href=''>Add tags</a>
+									<a class="item" href='/transaction_event/<%=t.id%>/edit'>Edit</a>
+									<a class="item" href='/transaction_event/<%=t.id%>/delete'>Delete</a>
+								</div>
+							</div>
+						</td>
+						<!-- <td></td>
+						<td></td> -->
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<%}%>
+		<%if(dte_status){%>
+			<br>
+			<button class='ui button' id='redo_classification'>
+				redo this classification
+			</button>
+			<br>
+		<%}%>
+	</div>
+
+	<div class='ui grid'>
+		<div class='sixteen wide column'>
+			<h3>Looks similar to these existing transaction events: </h3>
+			<table class="ui basic unstackable table" style="display: auto;overflow-x:scroll;">
+				<tbody>
+					<%dte.similar_transaction_events.forEach(function(t){%>
+						<%if(dte.transaction_event.account.org==t.account.org){%>
+							<tr class='transaction top aligned' data-tid='<%=t.id%>'>
+								<td>
+									<span class='popup' data-html="<%-moment(t.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
+										
+									<%-moment(t.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+									<span style="font-size: 1.5rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+									<!-- <span style="font-size: 0.75rem;"><%-moment(t.occuredAt).tz('Asia/Kolkata').format('HH:mm')%></span> -->
+									</span>
+								</td>
+								<td>
+									<%if(t.type=='income_expense'){
+										if(t.original_amount<0){%> 
+											<span style='opacity: 0.5'>You paid</span><br>
+											<b style='color:red' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></b>
+										<%}else{%>
+											<span style='opacity: 0.5'>You got</span><br>
+											<b style='color:#5bc5a2' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%-t.amount_inr%>"><%=t.original_currency%> <%=(t.original_amount)%></b>
+										<%}
+									}else{%>
+										<span style='opacity: 0.5'>You transferred</span><br>
+										<b style='' class="<%-t.original_currency!='INR'?'popup':''%>"" data-html="INR <%=(-t.amount_inr)%>"><%=t.original_currency%> <%=(-t.original_amount)%></b>
+										
+									<%}%>
+								</td>
+								<td>
+									<%if(t.original_amount<0){%> 
+										<span style='opacity: 0.5'>from</span><br>
+									<%}else{%>
+										<span style='opacity: 0.5'>deposited to</span><br>
+									<%}%>
+									<%=t.account.name%> (org - <%=t.account.org%>)
+								</td>
+								<td>
+									<%if(t.type=='income_expense'){%> 
+										<%if(t.original_amount<0){%> 
+											<span style='opacity: 0.5'>to</span><br>
+										<%}else{%>
+											<span style='opacity: 0.5'>from</span><br>
+										<%}%>
+										<%=t.third_party%>
+									<%}else{%>
+										<span style='opacity: 0.5'>to</span><br>
+										<%=t.to_account.name%>
+									<%}%>
+								</td>
+								<td>
+									<div class="ui basic icon top right pointing extra_options dropdown">
+										<i class="angle down icon"></i>
+										<div class="menu">
+											<a class="disabled item" href='/transaction/<%=t.id%>/edit'><%=t.createdBy=='user'?'manual':'auto'%></a>
+											<a class="item" href='/transaction/<%=t.id%>/delete'>Delete</a>
+										</div>
+									</div>
+								</td>
+								<td>
+									<form class="ui form " action="/org/<%=req.params.o_id%>/dte/<%=dte.id%>/mark_as_duplicate_of/<%=t.id%>" method='post'>
+										<input type="submit" class="ui button <%=dte_status?'disabled':''%>" value="Doubtful txn is same as this">
+									</form>
+								</td>
+								<!-- <td></td>
+								<td></td> -->
+							</tr>
+						<%}%>
+					<%})%>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class='sixteen wide column'>
+			<form class="ui form " action="/org/<%=req.params.o_id%>/dte/<%=dte.id%>/mark_as_unique" method='post'>
+				<input type="submit" class="ui button <%=dte_status?'disabled':''%>" value="Doubtful txn is unique">
+			</form>
+		</div>
+	</div>
+	
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.popup').popup();
+		$('.dropdown').dropdown();
+		$('#redo_classification').click(function(){
+			$('.button.disabled').removeClass('disabled');
+			$(this).addClass('disabled')
+		})
+	})
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.21/moment-timezone.min.js"></script>

@@ -122,7 +122,7 @@ function updateQueryStringParameter(uri, key, value) {
 						<tr>
 							<th>From</th>
 							<th>To</th>
-							<th>Doubtful Txns</th>
+							<th>Doubtful Transaction Events</th>
 							<th>Type</th>
 							<th>Accounts</th>
 							<th>Description</th>
@@ -149,7 +149,7 @@ function updateQueryStringParameter(uri, key, value) {
 									</span>
 									<%}%>
 								</td>
-								<td><a href="/org/<%=req.org.id%>/statement/<%=doc.statement_id%>" target="_blank"><%- doc.unresolved_dts?'<span style="color:red">'+doc.unresolved_dts+'</span>': '<span style="color:green">None</span>'%><i class="external alternate icon"></i></a>
+								<td><a href="/org/<%=req.org.id%>/statement/<%=doc.statement_id%>" target="_blank"><%- doc.unresolved_dtes?'<span style="color:red">'+doc.unresolved_dtes+'</span>': '<span style="color:green">None</span>'%><i class="external alternate icon"></i></a>
 									
 								</td>
 								<td><%=doc.statement_type%></td>

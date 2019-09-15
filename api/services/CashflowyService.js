@@ -205,12 +205,12 @@ module.exports={
 					Transaction_event.create(t).exec(callback);
 				}else{
 					//else create a doubtful transaction
-					var dt={
-						transaction:t,
-						similar_transactions:results.findSimilarTransactionEvents,
+					var dte={
+						transaction_event:t,
+						similar_transaction_events:results.findSimilarTransactionEvents,
 						sli:sli.id,
 					}
-					Doubtful_transaction.create(dt).exec(callback);
+					Doubtful_transaction_event.create(dte).exec(callback);
 				}
 			}],
 			updateSli:['createTransactionEvent',function(results,callback){

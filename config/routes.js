@@ -202,9 +202,9 @@ module.exports.routes = {
   'DELETE /org/:o_id/member/:id': 'MainController.deleteMember',
 
 
-  'GET /org/:o_id/dt/:id':'MainController.viewDoubtfulTransaction',
-  'POST /org/:o_id/dt/:id/mark_as_unique':'MainController.markDTAsUnique', // api
-  'POST /org/:o_id/dt/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTAsDuplicate', // api
+  'GET /org/:o_id/dte/:id':'MainController.viewDoubtfulTransactionEvent',
+  'POST /org/:o_id/dte/:id/mark_as_unique':'MainController.markDTEAsUnique', // api
+  'POST /org/:o_id/dte/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTEAsDuplicate', // api
 
 
   'GET /org/:o_id/rules':'MainController.listRules',
