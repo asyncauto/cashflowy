@@ -1,0 +1,70 @@
+<div class='ui container'>
+	<div class='ui grid'>
+		<!-- <div class='three wide column'></div> -->
+		<div class='sixteen wide column'>
+			
+			<div class="ui pointing secondary menu">
+				
+				<!-- <a class="item" data-tab="third">Ignored</a> -->
+			</div>
+            <table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+                <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Data</th>
+                        <th>View</th>
+                        <th>Status</th>
+                        <th>Resolve</th>
+                        <th>Retry</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%parse_failures.forEach(function(pf){%>
+                        <tr>
+                            <td><%=pf.details.inbound.from%></td>
+                            <td><%=pf.details.inbound.To%></td>
+                            <td><%=pf.details.inbound.subject%></td>
+                            <td><%=pf.details.inbound.Date%></td>
+                            <td><i class='eye icon popup' data-html="<div class='header'>Extracted data</div><div class='content'><pre><%=JSON.stringify(pf.extracted_data,null,'    ')%></pre></div>"></i></td>
+                            <td>
+                                <a href="/org/<%=req.params.o_id%>/parse_failure/<%=pf.id%>">
+                                    <i class='file icon'></i>
+                                </a>
+                            </td>
+                            <td><%=pf.status%></td>
+                            <td><a class="ui tiny button" href="/curator/<%=pf.id%>/resolve_parse_failure">Resolve Manually</a></td>
+                            
+                            
+                            <td class='single line'><button class="ui basic blue <%=pf.status == 'PARSED'?'disabled':''%> button submit_retry" data-retry-id="<%=pf.id%>">Retry</button></td>
+                        </tr>
+                    <%})%>
+                </tbody>
+            </table>
+		</div>
+	</div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('.popup').popup();
+        $('.submit_retry').click(function(e){
+            console.log('submit retry button clicked');
+            var pf_id=$(this).attr('data-retry-id');
+            console.log(pf_id);
+            var button = this;
+            $(button).addClass('loading');
+            $(button).addClass('disabled');
+            $.post("/org/"+ <%=req.params.o_id%>+"/parse_failure/"+pf_id + "/retry",function(result,status){
+                console.log(result, status)
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                alert("Error: "+jqXHR.responseJSON.error);
+                $(button).removeClass('loading');
+                $(button).removeClass('disabled');
+            }).success(function() {
+                location.reload();
+            });
+        });
+    })
+</script>

@@ -53,5 +53,39 @@ module.exports = {
 			})
 		}
 		res.view('curator/filter_test', locals);
-	}
+	},
+	listAllParseFailures:function(req,res){
+		var limit = req.query.limit?parseInt(req.query.limit): 25;
+		var page = req.query.page?parseInt(req.query.page):1;
+		var skip = limit * (page-1);
+		async.auto({
+			getParseFailures:function(callback){
+				Parse_failure.find()
+					.sort('createdAt DESC')
+					.limit(limit)
+					.skip(skip)
+					.exec(callback);
+			},
+		},function(err,results){
+			var locals={
+				parse_failures:results.getParseFailures,
+				page: page,
+				limit:limit,
+			}
+			res.view('curator/list_all_parse_failures',locals);
+		})
+	},
+	resolveParseFailureManually:function(callback){
+		if(req.body){
+			//mark pf as resolved_manually
+			Parse_failure.update({id:req.params.pf_id}).set({status:'RESOLVED_MANUALLY'}).exec(function(err,pf){
+				if(err)
+					throw err
+				res.redirect(`curator/list_all_parse_failures`)
+			})
+		}else{
+			res.view('curator/resolve_parse_failures')
+		}
+	},
+	
 };

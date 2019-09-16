@@ -285,6 +285,12 @@ module.exports.routes = {
   'POST /webhook/docparser':'WebhookController.docparser',
   'POST /webhook/mailgun-inbound-parser': 'WebhookController.mailgunInboudParser',
 
+  //Parse failures
+  'GET /curator/parse_failures/': 'CuratorController.listAllParseFailures',
+  'GET /curator/:pf_id/resolve_parse_failure': 'CuratorController.resolveParseFailureManually',
+  'GET /curator/create_transaction': 'CuratorController.createTransaction',
+
+
 
   'GET /privacy': { view: 'privacy' },
   'GET /terms':{view:'terms'}
