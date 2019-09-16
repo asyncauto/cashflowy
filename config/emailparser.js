@@ -66,6 +66,9 @@ module.exports.emailparser = {
             name: 'IciciInternetBankingFilter',
         },
         {
+            name: 'IciciMobileBankingFilter',
+        },
+        {
             name: 'IciciDebitCardFilter',
         },
         {
