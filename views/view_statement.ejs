@@ -11,12 +11,12 @@
 			<b>File name:</b><%=doc.extracted_data.file_name%><br>
 			<b>Original File:</b><a href="<%=doc.extracted_data.media_link_original%>" target="_blank"><i class="blue large download icon"></i></a><br>
 			<b>Number of transactions processed:</b><%=doc.extracted_data.transactions.length%><br>
-			<b>Possible duplicates:</b><%=doubtful_transactions.length%><br>
+			<b>Possible duplicates:</b><%=doubtful_transaction_events.length%><br>
 			<b>Parser Used:</b> <%=doc.parser_used%><br>
 			<b>Doc type:</b> <%=doc.type%><br>
 		</div>
 		<div class='sixteen wide column'>
-			<h4><%=unresolved_dts.length%> items needs your attention </h4>
+			<h4><%=unresolved_dtes.length%> items needs your attention </h4>
 			
 			<div class="ui tabular menu">
 				<a class="item active" data-tab="first">SLI</a>
@@ -46,12 +46,12 @@
 									var t_created_flag=false;
 									if(sli.transaction_event)
 										t_created_flag=true;
-									var dt_status = '';
-									if(sli.dt && sli.dt.details && sli.dt.details.status){
-										dt_status = sli.dt.details.status;
+									var dte_status = '';
+									if(sli.dte && sli.dte.details && sli.dte.details.status){
+										dt_status = sli.dte.details.status;
 									}
 								%>	
-								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dt_status){%>class="positive"<%}%> >
+								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dte_status){%>class="positive"<%}%> >
 									<td><%=sli.pos+1%></td>
 										<td class='single line'><%=sli.extracted_data.date%></td>
 										<td class=''><%=sli.extracted_data.paid_whom%></td>
@@ -59,10 +59,10 @@
 										<td class='single line'><%=sli.extracted_data.debit%></td>
 										<td class='single line'><%=sli.extracted_data.balance%></td>
 										<td class='single line'><%=sli.extracted_data.acc_no%></td>
-									<%if(sli.dt){%>
-										<td class='single line'><a target='_blank' href='/org/<%=req.org.id%>/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
-										<% if(dt_status){ %>
-										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
+									<%if(sli.dte){%>
+										<td class='single line'><a target='_blank' href='/org/<%=req.org.id%>/dte/<%=sli.dte.id%>'><%=sli.dte.similar_transaction_events.length%></a></td>
+										<% if(dte_status){ %>
+										<td class='single line'><i class="icon checkmark"></i><%=dte_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
 										<% }else{ %>
 											<td class="single line"><i class="attention icon"></i> Requires Action</td>
 										<% } %>
@@ -100,21 +100,21 @@
 									var t_created_flag=false;
 									if(sli.transaction_event)
 										t_created_flag=true;
-									var dt_status = '';
-									if(sli.dt && sli.dt.details && sli.dt.details.status){
-										dt_status = sli.dt.details.status;
+									var dte_status = '';
+									if(sli.dte && sli.dte.details && sli.dte.details.status){
+										dte_status = sli.dte.details.status;
 									}
 								%>	
-								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dt_status){%>class="positive"<%}%> >
+								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dte_status){%>class="positive"<%}%> >
 									<td><%=sli.pos+1%></td>
 										<td class='single line'><%=sli.extracted_data.date%></td>
 										<td class=''><%=sli.extracted_data.details%></td>
 										<td class='single line' style='font-color:red;'><%=sli.extracted_data.amount%></td>
 										<td class='single line'><%=sli.extracted_data.dr_cr%></td>
-									<%if(sli.dt){%>
-										<td class='single line'><a target='_blank' href='/org/<%=req.org.id%>/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
-										<% if(dt_status){ %>
-										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
+									<%if(sli.dte){%>
+										<td class='single line'><a target='_blank' href='/org/<%=req.org.id%>/dte/<%=sli.dte.id%>'><%=sli.dte.similar_transaction_events.length%></a></td>
+										<% if(dte_status){ %>
+										<td class='single line'><i class="icon checkmark"></i><%=dte_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
 										<% }else{ %>
 											<td class="single line"><i class="attention icon"></i> Requires Action</td>
 										<% } %>
@@ -154,12 +154,12 @@
 									var t_created_flag=false;
 									if(sli.transaction_event)
 										t_created_flag=true;
-									var dt_status = '';
-									if(sli.dt && sli.dt.details && sli.dt.details.status){
-										dt_status = sli.dt.details.status;
+									var dte_status = '';
+									if(sli.dte && sli.dte.details && sli.dte.details.status){
+										dte_status = sli.dte.details.status;
 									}
 								%>	
-								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dt_status){%>class="positive"<%}%> >
+								<tr data-tid='<%=sli.id%>' <%if(!t_created_flag){%>class="warning"<%}%> <%if(dte_status){%>class="positive"<%}%> >
 									<td><%=sli.pos+1%></td>
 										<td class='single line'><%=sli.extracted_data.date%></td>
 										<td class=''><%=sli.extracted_data.details%></td>
@@ -167,10 +167,10 @@
 										<td class='single line'><%=sli.extracted_data.original_amount%></td>
 										<td class='single line' style='font-color:red;'><%=sli.extracted_data.amount_inr%></td>
 										<td class='single line'><%=sli.extracted_data.dr_cr%></td>
-									<%if(sli.dt){%>
-										<td class='single line'><a target='_blank' href='/org/<%=req.org.id%>/dt/<%=sli.dt.id%>'><%=sli.dt.similar_transactions.length%></a></td>
-										<% if(dt_status){ %>
-										<td class='single line'><i class="icon checkmark"></i><%=dt_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
+									<%if(sli.dte){%>
+										<td class='single line'><a target='_blank' href='/org/<%=req.org.id%>/dte/<%=sli.dte.id%>'><%=sli.dte.similar_transaction_events.length%></a></td>
+										<% if(dte_status){ %>
+										<td class='single line'><i class="icon checkmark"></i><%=dte_status =='duplicate' ? "Marked As Duplicate" : "Marked As Unique"%></a></td>
 										<% }else{ %>
 											<td class="single line"><i class="attention icon"></i> Requires Action</td>
 										<% } %>
@@ -205,9 +205,9 @@
 									t=sli.transaction_event;
 									t.original_amount = t.original_amount.toFixed(2)
 								}
-								var dt_status = '';
-								if(sli.dt && sli.dt.details && sli.dt.details.status){
-									dt_status = sli.dt.details.status;
+								var dte_status = '';
+								if(sli.dte && sli.dte.details && sli.dte.details.status){
+									dte_status = sli.dte.details.status;
 								}
 							%>
 							<%if(t){%>

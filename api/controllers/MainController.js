@@ -1507,13 +1507,13 @@ module.exports = {
 						LIMIT ${locals.limit} OFFSET ${locals.skip}) AS doc
 						LEFT JOIN (
 							SELECT
-								count(*) AS unresolved_dts, sli.statement AS sli_statement_id
+								count(*) AS unresolved_dtes, sli.statement AS sli_statement_id
 							FROM
-								doubtful_transaction AS dt
-								INNER JOIN statement_line_item AS sli ON dt.sli = sli.id
+								Doubtful_transaction_event AS dte
+								INNER JOIN statement_line_item AS sli ON dte.sli = sli.id
 							WHERE
 								sli.org = ${req.org.id}
-								AND json_extract_path(dt.details::json, 'status') IS NULL
+								AND json_extract_path(dte.details::json, 'status') IS NULL
 							GROUP BY
 								sli.statement) AS ut ON doc.statement_id = ut.sli_statement_id
 							ORDER BY "doc"."statement_data" ->> 'transactions_to_date' DESC`
@@ -1547,13 +1547,13 @@ module.exports = {
 						AND data ->> 'transactions_from_date' < '${locals.date_lte}') AS doc
 						LEFT JOIN (
 							SELECT
-								count(*) AS unresolved_dts, sli.statement AS sli_statement_id
+								count(*) AS unresolved_dtes, sli.statement AS sli_statement_id
 							FROM
-								doubtful_transaction AS dt
-								INNER JOIN statement_line_item AS sli ON dt.sli = sli.id
+								Doubtful_transaction_event AS dte
+								INNER JOIN statement_line_item AS sli ON dte.sli = sli.id
 							WHERE
 								sli.org = ${req.org.id}
-								AND json_extract_path(dt.details::json, 'status') IS NULL
+								AND json_extract_path(dte.details::json, 'status') IS NULL
 							GROUP BY
 								sli.statement) AS ut ON doc.statement_id = ut.sli_statement_id
 					`
@@ -1634,22 +1634,22 @@ module.exports = {
 			getSLIs:function(callback){
 				Statement_line_item.find({statement:req.params.id}).populate('transaction_event').sort('pos ASC').exec(callback);
 			},
-			getDoubtfulTransactions:['getSLIs',function(results,callback){
-				Doubtful_transaction.find({sli:_.map(results.getSLIs,'id')}).exec(callback);
+			getDoubtfulTransactionEvents:['getSLIs',function(results,callback){
+				Doubtful_transaction_event.find({sli:_.map(results.getSLIs,'id')}).exec(callback);
 			}],
 			getAccounts:function(callback){
 				Account.find({org:req.org.id}).exec(callback);
 			}
 		},function(err,results){
-			var unresolved_dts=[]
-			results.getDoubtfulTransactions.forEach(function(dt){
-				if(!dt.details.status)
-					unresolved_dts.push(_.cloneDeep(dt));
+			var unresolved_dtes=[]
+			results.getDoubtfulTransactionEvents.forEach(function(dte){
+				if(!dte.details.status)
+					unresolved_dtes.push(_.cloneDeep(dte));
 			});
-			results.getDoubtfulTransactions.forEach(function(dt){
+			results.getDoubtfulTransactionEvents.forEach(function(dte){
 				results.getSLIs.forEach(function(sli){
-					if(dt.sli==sli.id){
-						sli.dt=dt;
+					if(dte.sli==sli.id){
+						sli.dte=dte;
 						// dt.sli=sli;
 					}
 				})
@@ -1667,8 +1667,8 @@ module.exports = {
 			var locals={
 				doc:results.getDoc,
 				slis:results.getSLIs,
-				doubtful_transactions:results.getDoubtfulTransactions,
-				unresolved_dts:unresolved_dts,
+				doubtful_transaction_events:results.getDoubtfulTransactionEvents,
+				unresolved_dtes:unresolved_dtes,
 				moment:require('moment-timezone'),
 			};
 			// res.send(locals);
@@ -2026,16 +2026,16 @@ module.exports = {
 			});
 		});
 	},
-	viewDoubtfulTransaction:function(req,res){
+	viewDoubtfulTransactionEvent:function(req,res){
 		async.auto({
-			getDT:function(callback){
-				Doubtful_transaction.findOne({id:req.params.id}).exec(callback);
+			getDTE:function(callback){
+				Doubtful_transaction_event.findOne({id:req.params.id}).exec(callback);
 			},
-			getAccounts:['getDT',function(results,callback){
-				var dt = results.getDT;
-				var account_ids = _.map(dt.similar_transactions,'account');
-				var to_account_ids = _.map(dt.similar_transactions,'to_account');
-				account_ids.push(dt.transaction.account);
+			getAccounts:['getDTE',function(results,callback){
+				var dte = results.getDTE;
+				var account_ids = _.map(dte.similar_transaction_events,'account');
+				var to_account_ids = _.map(dte.similar_transaction_events,'to_account');
+				account_ids.push(dte.transaction_event.account);
 				to_account_ids.forEach(function(acc){
 					if(acc)
 						account_ids.push(acc);
@@ -2047,10 +2047,10 @@ module.exports = {
 		},function(err,results){
 			
 			results.getAccounts.forEach(function(account){
-				if(account.id==results.getDT.transaction.account)
-					results.getDT.transaction.account=account;
+				if(account.id==results.getDTE.transaction_event.account)
+					results.getDTE.transaction_event.account=account;
 			});
-			results.getDT.similar_transactions.forEach(function(st){
+			results.getDTE.similar_transaction_events.forEach(function(st){
 				results.getAccounts.forEach(function(account){
 					if(account.id==st.account)
 						st.account=account;
@@ -2060,31 +2060,31 @@ module.exports = {
 			})
 
 			var locals={
-				dt:results.getDT,
+				dte:results.getDTE,
 				moment:require('moment-timezone'),
 			};
-			res.view('view_doubtful_transaction',locals);
+			res.view('view_doubtful_transaction_event',locals);
 		})
 	},
-	markDTAsUnique:function(req,res){
+	markDTEAsUnique:function(req,res){
 		async.auto({
-			getDT:function(callback){
-				Doubtful_transaction.findOne({id:req.params.id}).exec(callback);
+			getDTE:function(callback){
+				Doubtful_transaction_event.findOne({id:req.params.id}).exec(callback);
 			},
-			createTransactionEvent:['getDT',function(results,callback){
-				var t = results.getDT.transaction;
+			createTransactionEvent:['getDTE',function(results,callback){
+				var t = results.getDTE.transaction_event;
 				Transaction_event.create(t).exec(callback);
 			}],
-			updateDoubtfulTransaction:['getDT','createTransactionEvent',function(results,callback){
-				var dt = results.getDT;
-				if(!dt.details)
-					dt.details={};
-				dt.details.status='unique';
-				dt.details.related_txn_id=results.createTransactionEvent.id;
-				Doubtful_transaction.update({id:dt.id},{details:dt.details}).exec(callback);
+			updateDoubtfulTransactionEvent:['getDTE','createTransactionEvent',function(results,callback){
+				var dte = results.getDTE;
+				if(!dte.details)
+					dte.details={};
+				dte.details.status='unique';
+				dte.details.related_txn_id=results.createTransactionEvent.id;
+				Doubtful_transaction_event.update({id:dte.id},{details:dte.details}).exec(callback);
 			}],
-			updateSLI:['getDT','createTransactionEvent',function(results,callback){
-				var sli_id = results.getDT.sli;
+			updateSLI:['getDTE','createTransactionEvent',function(results,callback){
+				var sli_id = results.getDTE.sli;
 				Statement_line_item.update({id:sli_id},{transaction_event:results.createTransactionEvent.id}).exec(callback);
 			}]
 		},function(err,results){
@@ -2092,28 +2092,22 @@ module.exports = {
 				throw err;
 			res.send('new transaction is created');
 		})
-		// create transaction
-		// update doubtful transaction - mark as unique and add the transaction id
-		// update sli or parsed email with the transaction id
 	},
-	markDTAsDuplicate:function(req,res){
-		console.log('came here');
-		console.log(req.params.id);
-		console.log(req.params.orig_txn_id);
+	markDTEAsDuplicate:function(req,res){
 		async.auto({
-			getDT:function(callback){
-				Doubtful_transaction.findOne({id:req.params.id}).exec(callback);
+			getDTE:function(callback){
+				Doubtful_transaction_event.findOne({id:req.params.id}).exec(callback);
 			},
-			updateDoubtfulTransaction:['getDT',function(results,callback){
-				var dt = results.getDT;
-				if(!dt.details)
-					dt.details={};
-				dt.details.status='duplicate';
-				dt.details.related_txn_id=req.params.orig_txn_id;
-				Doubtful_transaction.update({id:dt.id},{details:dt.details}).exec(callback);
+			updateDoubtfulTransactionEvent:['getDTE',function(results,callback){
+				var dte = results.getDTE;
+				if(!dte.details)
+					dte.details={};
+				dte.details.status='duplicate';
+				dte.details.related_txn_id=req.params.orig_txn_id;
+				Doubtful_transaction_event.update({id:dte.id},{details:dte.details}).exec(callback);
 			}],
-			updateSLI:['getDT',function(results,callback){
-				var sli_id = results.getDT.sli;
+			updateSLI:['getDTE',function(results,callback){
+				var sli_id = results.getDTE.sli;
 				Statement_line_item.update({id:sli_id},{transaction_event:req.params.orig_txn_id}).exec(callback);
 			}]
 		},function(err,results){

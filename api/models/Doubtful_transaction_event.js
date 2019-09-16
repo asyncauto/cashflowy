@@ -9,10 +9,10 @@ var async = require('async');
 module.exports = {
 
 	attributes: {
-		transaction:{
+		transaction_event:{
 			type:'json',
 		},
-		similar_transactions:{
+		similar_transaction_events:{
 			type:'json',
 		},
 		sli:{
