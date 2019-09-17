@@ -15,10 +15,15 @@ module.exports.emailparser = {
             pe.data.occuredAt = new Date(pe.data.date + ' ' + pe.data.time + '+5:30');
         }
         if (!_.isDate(pe.data.occuredAt)) {
+
             if (pe.data.forward_orignal_date) {
-                pe.data.occuredAt = moment(pe.data.forward_orignal_date, 'ddd, MMM D, YYYY at hh:mm AM').tz('Asia/Kolkata').toDate()
+                var forward_orignal_date=pe.data.forward_orignal_date.substring(5)
+                pe.data.occuredAt = moment(forward_orignal_date, 'MMM D, YYYY at hh:mm A').tz('Asia/Kolkata').toDate()
             }
         } else {
+            pe.data.occuredAt = pe.data.email_received_time;
+        }
+        if (!_.isDate(pe.data.occuredAt)){
             pe.data.occuredAt = pe.data.email_received_time;
         }
 
@@ -57,8 +62,6 @@ module.exports.emailparser = {
                     pe.data.acc_number = pe.data.from_phone.substr(pe.data.from_phone.length - 4)
                 }
 
-                pe.data.occuredAt = pe.data.email_received_time;
-
                 return pe;
             }
         },
@@ -72,7 +75,6 @@ module.exports.emailparser = {
                 if (pe.body_parser_used == 'received_money_v1') {
                     pe.data.original_amount = pe.extracted_data.amount;
                 }
-                pe.data.occuredAt = pe.data.email_received_time;
 
                 return pe;
             }
@@ -116,7 +118,6 @@ module.exports.emailparser = {
             modifyData: function (pe) {
                 pe.data.acc_number = pe.email + '-amazon_pay';
                 pe.data.original_amount = pe.extracted_data.amount;
-                pe.data.occuredAt = pe.data.email_received_time;
 
                 return pe;
             }
