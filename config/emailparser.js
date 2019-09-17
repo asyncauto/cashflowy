@@ -61,6 +61,18 @@ module.exports.emailparser = {
         },
         {
             name: 'IciciCreditCardTransactionAlertFilter',
+           
+        },
+        { 
+            name:'IciciCreditCardPaymentReceivedFilter',
+            modifyData: function (pe) {
+                if (pe.body_parser_used == 'received_money_v1') {
+                    pe.data.original_amount = pe.extracted_data.amount;
+                }
+                return pe;
+            }
+
+
         },
         {
             name: 'IciciInternetBankingFilter',
