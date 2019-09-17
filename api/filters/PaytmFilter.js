@@ -1557,7 +1557,7 @@ module.exports={
 		},
 		{
 			version:'received_money_v1',
-			description:'as of sept 2018',
+			description:'as of sept 2019',
 			fields:[
 				{
 					name:'to',
