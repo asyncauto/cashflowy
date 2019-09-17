@@ -319,7 +319,7 @@ module.exports = {
 		var skip = limit * (page-1);
 		async.auto({
 			getParseFailures:function(callback){
-				Parse_failure.find({org:req.params.o_id})
+				Parse_failure.find({org:req.params.o_id,status:'FAILED'})
 					.sort('createdAt DESC')
 					.limit(limit)
 					.skip(skip)

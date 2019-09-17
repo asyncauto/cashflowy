@@ -56,6 +56,9 @@ module.exports.emailparser = {
                 if (pe.body_parser_used == 'you_paid_pg_v1') {
                     pe.data.acc_number = pe.data.from_phone.substr(pe.data.from_phone.length - 4)
                 }
+
+                pe.data.occuredAt = pe.data.email_received_time;
+
                 return pe;
             }
         },
@@ -69,6 +72,8 @@ module.exports.emailparser = {
                 if (pe.body_parser_used == 'received_money_v1') {
                     pe.data.original_amount = pe.extracted_data.amount;
                 }
+                pe.data.occuredAt = pe.data.email_received_time;
+
                 return pe;
             }
 
@@ -111,6 +116,8 @@ module.exports.emailparser = {
             modifyData: function (pe) {
                 pe.data.acc_number = pe.email + '-amazon_pay';
                 pe.data.original_amount = pe.extracted_data.amount;
+                pe.data.occuredAt = pe.data.email_received_time;
+
                 return pe;
             }
         },
