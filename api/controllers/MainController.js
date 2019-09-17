@@ -2026,6 +2026,33 @@ module.exports = {
 			});
 		});
 	},
+	listDoubtfulTransactionEvent: function(req, res){
+		var locals = {
+			moment:  moment
+		};
+		var filter = {
+			org: req.org.id
+		}
+		if(req.query.status)
+			filter.status = req.query.status;
+		async.auto({
+			getAccounts: function(cb){
+				Account.find({org: req.org.id}).exec(cb);
+			},
+			getDTEs: function(cb){
+				Doubtful_transaction_event.find(filter).sort('createdAt DESC').exec(cb);
+			}
+		}, function(err, results){
+			results.getDTEs.forEach(function(dte){
+				results.getAccounts.forEach(function(account){
+					if(account.id==dte.transaction_event.account)
+						dte.transaction_event.account=account;
+				});
+			})
+			locals.dtes = results.getDTEs
+			res.view('list_doubtful_transaction_event', locals);
+		});
+	},
 	viewDoubtfulTransactionEvent:function(req,res){
 		async.auto({
 			getDTE:function(callback){
@@ -2077,11 +2104,11 @@ module.exports = {
 			}],
 			updateDoubtfulTransactionEvent:['getDTE','createTransactionEvent',function(results,callback){
 				var dte = results.getDTE;
+				dte.status='unique';
 				if(!dte.details)
 					dte.details={};
-				dte.details.status='unique';
 				dte.details.related_txn_id=results.createTransactionEvent.id;
-				Doubtful_transaction_event.update({id:dte.id},{details:dte.details}).exec(callback);
+				Doubtful_transaction_event.update({id:dte.id},{details:dte.details, status: dte.status}).exec(callback);
 			}],
 			updateSLI:['getDTE','createTransactionEvent',function(results,callback){
 				var sli_id = results.getDTE.sli;
@@ -2090,7 +2117,10 @@ module.exports = {
 		},function(err,results){
 			if(err)
 				throw err;
-			res.send('new transaction is created');
+			if(req.header('Referer'))
+				res.redirect(req.header('Referer'));
+			else
+				res.send('new transaction is created');
 		})
 	},
 	markDTEAsDuplicate:function(req,res){
@@ -2100,11 +2130,11 @@ module.exports = {
 			},
 			updateDoubtfulTransactionEvent:['getDTE',function(results,callback){
 				var dte = results.getDTE;
+				dte.status='duplicate';
 				if(!dte.details)
 					dte.details={};
-				dte.details.status='duplicate';
 				dte.details.related_txn_id=req.params.orig_txn_id;
-				Doubtful_transaction_event.update({id:dte.id},{details:dte.details}).exec(callback);
+				Doubtful_transaction_event.update({id:dte.id},{details:dte.details, status: dte.status}).exec(callback);
 			}],
 			updateSLI:['getDTE',function(results,callback){
 				var sli_id = results.getDTE.sli;
@@ -2113,7 +2143,10 @@ module.exports = {
 		},function(err,results){
 			if(err)
 				throw err;
-			res.send('marked as duplicate');
+			if(req.header('Referer'))
+				res.redirect(req.header('Referer'));
+			else
+				res.send('marked as duplicate');
 		})
 	},
 	listRules:function(req,res){
