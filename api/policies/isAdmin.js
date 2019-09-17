@@ -1,5 +1,5 @@
 module.exports = function (req, res, next) {
-    if (_.includes([1, 6], req.user.id)) {
+    if (_.includes(sails.config.admins, req.user.id)) {
         return next();
     }
     else {

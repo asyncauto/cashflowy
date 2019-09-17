@@ -74,10 +74,11 @@ module.exports = {
 	api_token_secret: process.env.API_TOKEN_SECRET,
 
 	uploads: {
-    adapter: require('skipper-s3'),
-    key: process.env.AWS_ACCESS_KEY,
-    secret: process.env.AWS_ACCESS_SECRET,
-    bucket: process.env.AWS_BUCKET,
-    region: process.env.AWS_REGION,
-   }
+	    adapter: require('skipper-s3'),
+	    key: process.env.AWS_ACCESS_KEY,
+	    secret: process.env.AWS_ACCESS_SECRET,
+	    bucket: process.env.AWS_BUCKET,
+	    region: process.env.AWS_REGION,
+   },
+   admins: process.env.ADMINS.split(',').map(parseInt)
 };

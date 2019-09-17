@@ -209,6 +209,7 @@ module.exports={
 						transaction_event:t,
 						similar_transaction_events:results.findSimilarTransactionEvents,
 						sli:sli.id,
+						org: sli.org
 					}
 					Doubtful_transaction_event.create(dte).exec(callback);
 				}
