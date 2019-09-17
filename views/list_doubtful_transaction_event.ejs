@@ -1,0 +1,112 @@
+<div class='ui container'>
+    <div class='ui grid'>
+        <div class="ui row">
+            <div class="three wide column">
+                <form class="ui form" method="get">
+                    <div class="ui field">
+                        <label>
+                            Filter by status:
+                        </label>
+                        <div class="ui selection dropdown">
+                            <input type="hidden" name="status" value="<%= req.query.status?req.query.status:''%>">
+                            <i class="dropdown icon"></i>
+                            <div class="default text">status</div>
+                            <div class="menu">
+                                <div class="item" data-value="">All</div>
+                                <div class="item" data-value="unresolved">Unresolved</div>
+                                <div class="item" data-value="duplicate">Marked as duplicate</div>
+                                <div class="item" data-value="unique">Marked as unique</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <br>
+        <div class="ui row">
+            <div class="sixteen wide column">
+                <table class="ui basic unstackable table" style="display: auto;overflow-x:scroll;">
+                    <tbody>
+                        <% dtes.forEach(function(dte){ 
+                            var te = dte.transaction_event; %>
+                        <tr class='transaction top aligned <%=dte.status? "positive":''%>' >
+                            <td>
+                                <span class='popup'
+                                    data-html="<%-moment(te.occuredAt).tz('Asia/Kolkata').format('h:mm a')%>">
+
+                                    <%-moment(te.occuredAt).tz('Asia/Kolkata').format('MMM')%></br>
+                                    <span
+                                        style="font-size: 1.5rem;"><%-moment(te.occuredAt).tz('Asia/Kolkata').format('DD')%></span></br>
+                                </span>
+                            </td>
+                            <td>
+                                <%if(te.type=='income_expense'){
+                                            if(te.original_amount<0){%>
+                                <span style='opacity: 0.5'>You paid</span><br>
+                                <b style='color:red' class="<%-te.original_currency!='INR'?'popup':''%>"" data-html="
+                                    INR <%=(-te.amount_inr)%>"><%=te.original_currency%> <%=(-te.original_amount)%></b>
+                                <%}else{%>
+                                <span style='opacity: 0.5'>You got</span><br>
+                                <b style='color:#5bc5a2'
+                                    class="<%-te.original_currency!='INR'?'popup':''%>"" data-html=" INR
+                                    <%-te.amount_inr%>"><%=te.original_currency%> <%=(te.original_amount)%></b>
+                                <%}
+                                        }else{%>
+                                <span style='opacity: 0.5'>You transferred</span><br>
+                                <b class="<%-te.original_currency!='INR'?'popup':''%>"" data-html=" INR
+                                    <%=(-te.amount_inr)%>"><%=te.original_currency%> <%=(-te.original_amount)%></b>
+                                <%}%>
+                                    </td>
+                                    <td>
+                                        <%if(te.original_amount<0){%>
+                                <span style='opacity: 0.5'>from</span><br>
+                                <%}else{%>
+                                <span style='opacity: 0.5'>deposited to</span><br>
+                                <%}%>
+                                        <%=te.account.name%>
+                            </td>
+                            <td>
+                                <%if(te.type=='income_expense'){%>
+                                <%if(te.original_amount<0){%>
+                                <span style='opacity: 0.5'>to</span><br>
+                                <%}else{%>
+                                <span style='opacity: 0.5'>from</span><br>
+                                <%}%>
+                                            <%=te.third_party%>
+                                <%}else{%>
+                                <span style='opacity: 0.5'>to</span><br>
+                                <%=te.to_account.name%>
+                                <%}%>
+                                    </td>
+                                <td>
+                                    <span style='opacity: 0.5'>similar transactions</span><br>
+                                    <%= dte.similar_transaction_events.length%> 
+                                </td>
+                                <td>
+                                    <span><% if(dte.status){
+                                                if(dte.status == "duplicate"){%>
+                                                    <i class="icon checkmark"></i>Marked duplicate
+                                                <%}else{%>
+                                                    <i class="icon checkmark"></i>Marked unique
+                                                <%}}%> 
+                                    </span><br>
+                                    <a class="ui button" href="/org/<%=req.org.id%>/dte/<%=dte.id%>" target="_blank"><%=!dte.status? "Resolve":"Redo" %> </a>
+                                </td>
+                                </tr>
+                        <%})%>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.dropdown').dropdown({
+            onChange: function (event) {
+                window.location = `/org/<%=req.org.id%>/dtes?status=${event}`
+            }
+        });
+        $('popup').popup()
+    });
+</script>

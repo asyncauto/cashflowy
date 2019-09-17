@@ -21,6 +21,13 @@ module.exports = {
 		parsed_email:{
 			model:'parsed_email',
 		},
+		org:{
+			model: 'org'
+		},
+		status:{
+			type: 'string',
+			isIn:['duplicate', 'unique']
+		},
 		details: { // additional stuff that you want to add
 			type: 'json',
 			defaultsTo:{}

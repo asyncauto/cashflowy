@@ -201,7 +201,7 @@ module.exports.routes = {
   'GET /org/:o_id/member/:id/delete': 'MainController.deleteMember',
   'DELETE /org/:o_id/member/:id': 'MainController.deleteMember',
 
-
+  'GET /org/:o_id/dtes': 'MainController.listDoubtfulTransactionEvent',
   'GET /org/:o_id/dte/:id':'MainController.viewDoubtfulTransactionEvent',
   'POST /org/:o_id/dte/:id/mark_as_unique':'MainController.markDTEAsUnique', // api
   'POST /org/:o_id/dte/:id/mark_as_duplicate_of/:orig_txn_id':'MainController.markDTEAsDuplicate', // api
