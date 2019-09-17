@@ -79,5 +79,6 @@ module.exports = {
 	  secret: process.env.AWS_ACCESS_SECRET,
 	  bucket: process.env.AWS_BUCKET,
 	  region: process.env.AWS_REGION
-   }
+   },
+   admins: process.env.ADMINS.split(',').map(parseInt)
 };
