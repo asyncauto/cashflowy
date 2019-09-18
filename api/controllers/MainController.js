@@ -335,12 +335,19 @@ module.exports = {
 		})
 	},
 	viewParseFailure:function(req,res){
-		Parse_failure.findOne({org:req.params.o_id,id:req.params.pf_id}).exec(function(err,pf){
-			var locals={
-				pf:pf
-			}
-			res.view('view_parse_failure',locals);
-		})
+		var limit = req.query.limit?parseInt(req.query.limit): 25;
+		var page = req.query.page?parseInt(req.query.page):1;
+		var skip = limit * (page-1);
+		Parse_failure.findOne({org:req.params.o_id,id:req.params.pf_id})
+			.sort('createdAt DESC')
+			.limit(limit)
+			.skip(skip)
+			.exec(function(err,pf){
+				var locals={
+					pf:pf
+				}
+				res.view('view_parse_failure',locals);
+			})
 	},
 	listParsedEmails:function(req,res){
 		var limit = req.query.limit?parseInt(req.query.limit): 25;
