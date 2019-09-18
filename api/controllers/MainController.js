@@ -1010,7 +1010,7 @@ module.exports = {
 				});
 				te.slis=[];
 				results.getSLIs.forEach(function(sli){
-					if(te.id==sli.transaction)
+					if(te.id==sli.transaction_event)
 						te.slis.push(sli);
 				});
 			});
