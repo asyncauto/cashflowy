@@ -77,8 +77,16 @@ var convertSliToTransactionEvent = function(sli){
 
 	// t.amount_inr=t.original_amount;
 	if(t.original_amount && !t.amount_inr)
-		t.amount_inr=fx.convert(t.original_amount, {from: sli.data.currency, to: "INR"});
-
+		try{
+			t.amount_inr=fx.convert(t.original_amount, {from: sli.data.currency, to: "INR"});
+		} catch(err){
+			sails.config.sentry.withScope(scope => {
+				scope.setTag('original_amount', t.original_amount);
+				scope.setTag('currency', sli.data.currency);
+				sails.config.sentry.captureException(err);
+			});
+			t.amount_inr = t.original_amount;
+		}
 	return t;
 }
 
