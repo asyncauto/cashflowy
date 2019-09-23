@@ -397,7 +397,7 @@ module.exports = {
 			reParse: ['getParsedEmail', function(results, cb){
 				var opts = {
 					email_type: results.getParsedEmail.type,
-					body: results.getParsedEmail.details.inbound['body-plain']
+					body: results.getParsedEmail.details.inbound['body-plain'].replace(/[\r\n]+/g, " ")
 				}
 				EmailParserService.extractDataFromMessageBody(opts, cb);
 			}],
