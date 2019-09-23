@@ -10,6 +10,12 @@
  *
  */
 
+var sentry = require('@sentry/node');
+sentry.init({
+	dsn: process.env.SENTRY_DNS,
+	environment: process.env.NODE_ENV
+});
+
 module.exports = {
 
 	/***************************************************************************
@@ -69,16 +75,22 @@ module.exports = {
 		prediction_endpoint: process.env.AWS_PREDICTION_ENDPOINT,
 		kms_key_id: process.env.AWS_KMS_KEY_ID
 	},
+
 	sockets: {
 		onlyAllowOrigins: ["https://app.cashflowy.in"]
 	},
+
 	api_token_secret: process.env.API_TOKEN_SECRET,
+
 	uploads: {
-	  adapter: require('skipper-s3'),
-	  key: process.env.AWS_ACCESS_KEY,
-	  secret: process.env.AWS_ACCESS_SECRET,
-	  bucket: process.env.AWS_BUCKET,
-	  region: process.env.AWS_REGION
-   },
-   admins: process.env.ADMINS.split(',').map(parseInt)
+		adapter: require('skipper-s3'),
+		key: process.env.AWS_ACCESS_KEY,
+		secret: process.env.AWS_ACCESS_SECRET,
+		bucket: process.env.AWS_BUCKET,
+		region: process.env.AWS_REGION
+	},
+
+	admins: process.env.ADMINS.split(',').map(parseInt),
+
+	sentry: sentry
 };

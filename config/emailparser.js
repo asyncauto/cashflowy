@@ -38,7 +38,16 @@ module.exports.emailparser = {
         const fx = require('money');
         fx.base = 'INR';
         fx.rates = sails.config.fx_rates;
-        pe.data.amount_inr = fx.convert(pe.data.original_amount, { from: pe.data.currency, to: "INR" });
+        try{
+            pe.data.amount_inr = fx.convert(pe.data.original_amount, { from: pe.data.currency, to: "INR" });
+        }catch(err){
+            sails.config.sentry.withScope(scope => {
+				scope.setTag('original_amount', pe.data.original_amount);
+				scope.setTag('currency', pe.data.currency);
+				sails.config.sentry.captureException(err);
+			});
+            pe.data.amount_inr = pe.data.original_amount;
+        }
         return pe
     },
     filters: [

@@ -397,7 +397,7 @@ module.exports = {
 			reParse: ['getParsedEmail', function(results, cb){
 				var opts = {
 					email_type: results.getParsedEmail.type,
-					body: results.getParsedEmail.details.inbound['body-plain']
+					body: results.getParsedEmail.details.inbound['body-plain'].replace(/[\r\n]+/g, " ")
 				}
 				EmailParserService.extractDataFromMessageBody(opts, cb);
 			}],
@@ -1010,7 +1010,7 @@ module.exports = {
 				});
 				te.slis=[];
 				results.getSLIs.forEach(function(sli){
-					if(te.id==sli.transaction)
+					if(te.id==sli.transaction_event)
 						te.slis.push(sli);
 				});
 			});
@@ -1045,8 +1045,44 @@ module.exports = {
 
 			if(req.query.download_csv=='true'){
 				const json2csv = require('json2csv').parse;
-				const csvString = json2csv(locals.ts);
-				res.setHeader('Content-disposition', 'attachment; filename=transactions-filtered.csv');
+				var transactions_csv = _.cloneDeep(locals.transactions);
+				_.forEach(transactions_csv, function(t){
+					delete t.createdAt;
+					delete t.updatedAt;
+					delete t.documents;
+					delete t.transaction_event;
+					delete t.transaction_group;
+					if(t.type != 'transfer'){
+						if(t.amount_inr>0){
+							t.type = 'income'
+						}else{
+							t.type = 'expense'
+						}
+					}
+					t.account_number = t.account.acc_number;
+					t.account_name = t.account.name;
+					delete t.account;
+					if(t.to_account){
+						t.to_account_name = t.to_account.name;
+						t.to_account_number = t.to_account.acc_number;
+						delete t.to_account;
+					}
+					if(t.category){
+						_.forEach(locals.categories, function(c){
+							if(c.id == t.category)
+								t.category = c.fullname
+						})
+					}
+					if(t.tags){
+						var tags_strs = ''
+						_.forEach(t.tags, function(tag){
+							tags_strs += tag+', '
+						});
+						t.tags = tags_strs;
+					}
+				});
+				const csvString = json2csv(transactions_csv);
+				res.setHeader('Content-disposition', `attachment; filename=${moment().format("DD_MMM_YYYY")}_transactions_filtered.csv`);
 				res.set('Content-Type', 'text/csv');
 				res.status(200).send(csvString);
 			}
