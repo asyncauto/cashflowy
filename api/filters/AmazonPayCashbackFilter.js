@@ -509,6 +509,135 @@ module.exports={
 				},
 			]
 		},
+		{
+			version:'promotional_act_v1',
+			description:'as of sep 2019',
+			fields:[
+				{
+					name:'currency',
+					type:'string',
+					filters:[
+						{
+							type:'is',
+							value:'INR'
+						},
+					]
+				},
+				{
+					name:'amount',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Here’s your'
+						},
+						
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'You’ve got this cashback for your Amazon Pay order'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'cashback '
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Rs.'
+						},
+						{
+							type:'trim',
+						},					
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
+						},
+					]
+				},
+				{
+					name:'third_party',
+					type:'string',
+					filters:[
+						{
+							type:'is',
+							value:'Amazon'
+						},
+					]
+				},
+				{
+					name:'balance_currency',
+					type:'string',
+					filters:[
+						{
+							type:'is',
+							value:'INR'
+						},
+					]
+				},
+				{
+					name:'balance_amount',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Your updated Amazon Pay balance is'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'. For details,'
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Rs.'
+						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
+						},
+					]
+				},
+			]
+		},
 	]
 	
 }
