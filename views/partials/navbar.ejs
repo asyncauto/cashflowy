@@ -1,92 +1,95 @@
-<div class="ui grid" style="padding-bottom: 0.5em">
-	<!-- Definition of the nav bar when seen on a computer -->
-	<div class="ui sixteen wide column">
-		<div class="ui stackable secondary pointing large menu" id="threads" >
-			<!-- <div class="ui container" > -->
-			<%if(req.user){%>
-			<a class="item click-sidebar"><i class="sidebar icon"></i></a>
-			<%}%>
-			<a class="item home header <%if(req.page=='dashboard'){%>active<%}%>" href="/">
-				Cashflowy
-			</a>
-			<%if(req.org){%>
-				<div class="ui simple dropdown item" href="">
-					
-					<%=req.org.name%>
-					<!-- Free plan -->
-					<i class="dropdown icon"></i>
-					<div class="menu" style="margin-top: 0em">
-						
-						<%req.user.memberships.forEach(function(membership){%>
-							<% var href;
-							  if (req.route){
-								href = req.route.path;
-								href = href.replace(':o_id', membership.org.id)
-							  }else{
-							  href = `/org/${membership.org.id}/dashboard`;
-							  }
-							%>
-							<a class="item" href='<%=href%>'><i class="ui lightbulb outlinetop icon"></i><%=membership.org.name%></a>
-						<%})%>
-						<a class="item" href='/org/create'><i class="ui plus icon"></i>New Organisation</a>
-					</div>
-				</div>
-				<a class="item home" href="/org/<%=req.org.id%>/mastery">
-					Mastery<br>
-				</a>
-			<%}%>
-			<div class="right menu">
-				
-				<%if(req.user){%>
-					<a class="ui item" style='padding-left:0.5rem;padding-right:0.5rem;'  href="/user/<%=req.user.id%>/notifications">
-						<i class="icon alarm"></i>
-						<% if(req.user.details.notifications&&req.user.details.notifications.unseen_count>0){%>
-							<%=req.user.details.notifications.unseen_count%>
-						<%}%>
-					</a> 
-
-					<div class="ui simple dropdown item" href="">
-						
-						<%=req.user.name.split(' ')[0]%>
-						<!-- Free plan -->
-						<i class="dropdown icon"></i>
-						<div class="menu" style="margin-top: 0em">
-							<a class="item" href='/user/<%=req.user.id%>/edit'><i class="ui wrench icon"></i>User Settings</a>
-							<a class="item" href="/privacy"><i class="ui lightbulb outlinetop icon"></i>Privacy</a>
-							<a class="item" href="/terms"><i class="ui lightbulb outlinetop icon"></i>Terms</a>
-							<a class="item" href='/logout'><i class="ui stop icon"></i>Logout</a>
-						</div>
-					</div>
-				<%}else{%>
-					<a class="item" href="/privacy">Privacy</a>
-					<a class="item" href="/terms">Terms</a>
-					<a class="item" href="/login">
-						
-						Login
-					</a>
-					<a class="item" href="/signup">
-						
-						Signup
-					</a>
-				<%}%>
-			</div>
-				<!-- end of right menu -->
-			<!-- </div> -->
-		</div>
-		<!-- end of secondary pointing large menu -->
-	</div>
-	<!-- End of definition of the nav bar when seen on a computer -->
-	<!-- Definition of the nav bar when seen on a mobile -->
+<div class="ui grid" style="padding-bottom: 0.5em">
+	    <!-- Definition of the nav bar when seen on a computer -->
+	    <div class="ui sixteen wide column">
+	        <div class="ui secondary pointing large menu" id="threads" >
+	            <!-- <div class="ui container" > -->
+	            <%if(req.user){%>
+	            <a class="item click-sidebar"><i class="sidebar icon"></i></a>
+	            <%}%>
+	            <a class="item home header <%if(req.page=='dashboard'){%>active<%}%>" href="/">
+	                Cashflowy
+	            </a>
+	            <%if(req.org){%>
+	                <div class="ui simple dropdown item cusdiv" href="">
+	                    <i class="users icon cusicon"></i>
+	                    <span class="abc"><%=req.org.name%></span>
+	                    <!-- Free plan -->
+	                    <i class="dropdown icon"></i>
+	                    <div class="menu" style="margin-top: 0em">
+	                        
+	                        <%req.user.memberships.forEach(function(membership){%>
+	                            <% var href;
+	                              if (req.route){
+	                                href = req.route.path;
+	                                href = href.replace(':o_id', membership.org.id)
+	                              }else{
+	                              href = `/org/${membership.org.id}/dashboard`;
+	                              }
+	                            %>
+	                            <a class="item" href='<%=href%>'><i class="ui lightbulb outlinetop icon"></i><%=membership.org.name%></a>
+	                        <%})%>
+	                        <a class="item" href='/org/create'><i class="ui plus icon"></i>New Organisation</a>
+	                    </div>
+	                </div>
+	                <a class="item home abc" href="/org/<%=req.org.id%>/mastery">
+	                    <i class="book icon cusicon"></i><span class="abc">Mastery<br></span>
+	                </a>
+	                                
+	            <%}%>
+	            <div class="right menu">
+	                
+	                <%if(req.user){%>
+	                    <a class="ui item" style='padding-left:0.5rem;padding-right:0.5rem;'  href="/user/<%=req.user.id%>/notifications">
+	                        <i class="icon alarm"></i>
+	                        <% if(req.user.details.notifications&&req.user.details.notifications.unseen_count>0){%>
+	                            <%=req.user.details.notifications.unseen_count%>
+	                        <%}%>
+	                    </a> 
 	
-	<!-- End of definition of the nav bar when seen on a mobile -->
-</div>
-
-<script type="text/javascript">
-	$(document).ready(function(){
-		var path = window.location.pathname;
-		$('a[href="'+path+'"]').addClass('active');
-		$('.click-sidebar').click(function(){
-			$('.ui.sidebar').sidebar('toggle');
-		})
-	});
-</script>
+	                    <div class="ui simple dropdown item cusdiv" href="">
+	                        <i class="user icon cusicon"></i>
+	                        <span class="abc"><%=req.user.name.split(' ')[0]%></span></a>
+	    
+	                        <!-- Free plan -->
+	                        <i class="dropdown icon"></i>
+	                        <div class="menu" style="margin-top: 0em">
+	                            <a class="item" href='/user/<%=req.user.id%>/edit'><i class="ui wrench icon"></i>User Settings</a>
+	                            <a class="item" href="/privacy"><i class="ui lightbulb outlinetop icon"></i>Privacy</a>
+	                            <a class="item" href="/terms"><i class="ui lightbulb outlinetop icon"></i>Terms</a>
+	                            <a class="item" href='/logout'><i class="ui stop icon"></i>Logout</a>
+	                        </div>
+	                    </div>
+	                <%}else{%>
+	                    <a class="item" href="/privacy">Privacy</a>
+	                    <a class="item" href="/terms">Terms</a>
+	                    <a class="item" href="/login">
+	                        
+	                        Login
+	                    </a>
+	                    <a class="item" href="/signup">
+	                        
+	                        Signup
+	                    </a>
+	                <%}%>
+	            </div>
+	                <!-- end of right menu -->
+	            <!-- </div> -->
+	        </div>
+	        <!-- end of secondary pointing large menu -->
+	    </div>
+	    <!-- End of definition of the nav bar when seen on a computer -->
+	    <!-- Definition of the nav bar when seen on a mobile -->
+	    
+	    <!-- End of definition of the nav bar when seen on a mobile -->
+	</div>
+	
+	<script type="text/javascript">
+	    $(document).ready(function(){
+	        var path = window.location.pathname;
+	        $('a[href="'+path+'"]').addClass('active');
+	        $('.click-sidebar').click(function(){
+	            $('.ui.sidebar').sidebar('toggle');
+	        })
+	    });
+	</script>
+	
