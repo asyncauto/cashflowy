@@ -26,6 +26,7 @@ module.exports = {
 		},
 		status:{
 			type: 'string',
+			allowNull: true,
 			isIn:['duplicate', 'unique']
 		},
 		details: { // additional stuff that you want to add

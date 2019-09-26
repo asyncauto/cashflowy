@@ -74,110 +74,19 @@ module.exports = {
 			cb(null);
 		})
 	},
-	afterCreate: function (pe, cb) {
-		async.auto({
-			getAccount: function (callback) {
-				var find = {
-					acc_number: {
-						endsWith: pe.data.acc_number, // ends with the following number
-					},
-					org: pe.org
-				}
+	afterCreate: function (pe, calllback) {
+		CashflowyService.afterCreate_PE(pe, calllback);
+	},
+	afterUpdate: async function(pe, calllback){
+		//exit if dtes exists
+		var dtes = await Doubtful_transaction_event.find({parsed_email: pe.id})
+		if(dtes.length) return calllback(null);
 
-				var create = { // incase the account does not exist, create account.
-					acc_number: '' + pe.data.acc_number,
-					org: pe.org,
-					type: 'bank', // user might need to change this
-					name: 'Auto generated account' + pe.data.acc_number,
-				}
-				Account.findOrCreate(find, create).exec(function (err, result, created) {
-					callback(err, result);
-				});
-			},
-			getToAccount: function (callback) {
-				// console.log('getToAccount');
-				if (pe.data.type == 'transfer') {
-					var find = {
-						acc_number: {
-							endsWith: pe.data.acc_number, // ends with the following number
-						},
-						org: pe.org
-					}
-
-					var create = { // incase the account does not exist, create account.
-						acc_number: '' + pe.data.acc_number,
-						org: pe.org,
-						type: 'investment', // user might need to change this
-						name: 'Auto generated account' + pe.data.acc_number,
-					}
-					Account.findOrCreate(find, create).exec(callback);
-				} else {
-					callback(null);
-				}
-			},
-			findOrCreateTransactionEvent: ['getAccount', 'getToAccount', function (results, callback) {
-				//skip if it only contains information about account balance.
-
-				if (pe.data.type == 'balance')
-					return callback(null);
-				const fx = require('money');
-				fx.base = 'INR';
-				fx.rates = sails.config.fx_rates;
-				var occuredAt = _.get(pe, 'data.occuredAt', new Date());
-				var t = {
-					original_currency: pe.data.currency,
-					createdBy: 'parsed_email',
-					type: pe.data.type,
-					account: results.getAccount.id,
-					third_party: _.get(pe, 'data.third_party', null),
-					original_amount: _.get(pe, 'data.original_amount', 0),
-					amount_inr: _.get(pe, 'data.amount_inr', 0),
-					occuredAt: _.isDate(occuredAt) ? occuredAt.toISOString() : occuredAt
-				}
-
-				// if transfer add to_account
-				if (pe.data.type == 'transfer') {
-					t.to_account = results.getToAccount.id;
-				}
-
-				Transaction_event.findOrCreate(t, t).exec(function (err, result) {
-					callback(err, result);
-				});
-
-			}],
-			updateParsedEmail: ['findOrCreateTransactionEvent', function (results, callback) {
-				//skip if it only contains information about account balance.
-				if (pe.data.type == 'balance')
-					return callback(null);
-				Parsed_email.update({ id: pe.id }, { transaction_event: results.findOrCreateTransactionEvent.id }).exec(callback);
-			}],
-			createSnapshotIfPossible: ['getAccount', function (results, callback) {
-				// console.log('create snapshot');
-				if (pe.data.balance_currency && pe.data.balance_amount) {
-					var ss = {
-						account: results.getAccount.id,
-						createdBy: 'parsed_email',
-						// takenAt: new Date(pe.data.date+' '+pe.data.time+'+5:30'),
-						balance_currency: pe.data.balance_currency,
-						balance: pe.data.balance_amount,
-						takenAt: pe.data.occuredAt
-					}
-					Snapshot.create(ss).exec(callback);
-				} else if (pe.data.credit_limit_currency && pe.data.credit_limit_amount && pe.data.available_credit_balance) {
-					var ss = {
-						account: results.getAccount.id,
-						createdBy: 'parsed_email',
-						// takenAt: new Date(pe.data.date+' '+pe.data.time+'+5:30'),
-						balance_currency: pe.data.credit_limit_currency,
-						balance: pe.data.available_credit_balance - pe.data.credit_limit_amount,
-						takenAt: pe.data.occuredAt
-					}
-					Snapshot.create(ss).exec(callback);
-				} else {
-					callback(null);
-				}
-			}]
-		}, cb)
+		//run after create functionality if transaction_event is not created.
+		if(!pe.transaction_event)
+			CashflowyService.afterCreate_PE(pe, calllback);
+		else 
+			calllback(null);
 	}
 };
 

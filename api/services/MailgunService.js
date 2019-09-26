@@ -75,7 +75,7 @@ module.exports = {
 					org: options.org,
 					type: options.email_type,
 					body_parser_used: results.extractDataFromMessageBody.body_parser_used,
-					email: options.email_address,
+					email: options.email,
 					message_id: options.inbound_data['Message-Id'],
 					details: {
 						inbound: options.inbound_data
@@ -88,19 +88,26 @@ module.exports = {
 				if (parsed_email.body_parser_used == '') {
 					cb(new Error('INVALID_FILTER'));
 				} else {
-					// console.log('parser success');
-					Parsed_email.findOrCreate({ message_id: parsed_email.message_id }, parsed_email).exec(function (err, pe, created) {
-						// log to status of the parsing to success.
-						Parse_failure.update({ message_id: parsed_email.message_id },
-							{
-								parsed_email: pe.id,
-								status: 'PARSED', extracted_data: parsed_email.extracted_data
-							}).exec(function (err, pf_u) {
-								sails.log.info(err, pf_u);
+					//sails modifies the parsed_email after the query, clone and do operation.
+					Parsed_email.findOrCreate({ message_id: parsed_email.message_id }, _.clone(parsed_email)).exec(function (err, pe, created) {
+						if (err) return cb(err);
+						if (!created) {
+							Parsed_email.update({ id: pe.id }, _.clone(parsed_email)).exec(function (err, updated) {
+								if (err) return cb(err);
+								return cb(null, updated[0]);
 							});
-						cb(err, pe)
+						} else {
+							return cb(null, pe);
+						}
 					});
 				}
+			}],
+			updateParseFailure: ['findOrCreateParsedEmail', function (results, cb) {
+				Parse_failure.update({ message_id: results.findOrCreateParsedEmail.message_id },
+					{
+						parsed_email: results.findOrCreateParsedEmail.id,
+						status: 'PARSED', extracted_data: results.findOrCreateParsedEmail.extracted_data
+					}).exec(cb);
 			}]
 		}, cb)
 	},
@@ -120,11 +127,10 @@ module.exports = {
 				var parsed_email; // store the Parse_email object in the variable, send to slack if this variable is empty
 				async.someLimit(sails.config.emailparser.filters, 1, function (filter, next) {
 					var data = {
-						email_id: results.getEmail.id,
 						email_type: filter.name,
 						inbound_data: inbound_data,
 						org: results.getEmail.org,
-						email_address: results.getEmail.email
+						email: results.getEmail.email
 					};
 					MailgunService.parseEmailBodyWithBodyParser(data, function (err, pe) {
 						if (err) {
