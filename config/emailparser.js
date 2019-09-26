@@ -54,7 +54,7 @@ module.exports.emailparser = {
         {
             name: 'PaytmFilter',
             modifyData: function (pe) {
-                if (pe.body_parser_used == 'received_money_v1') {
+                if (pe.body_parser_used == 'received_money_v1'||pe.body_parser_used == 'money_added_v1') {
                     pe.data.third_party = pe.extracted_data.from_phone + '(' + pe.extracted_data.from_name + ')';
                     pe.data.acc_number = pe.extracted_data.to;
                     pe.data.original_amount = pe.extracted_data.amount;
