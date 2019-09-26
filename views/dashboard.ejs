@@ -5,6 +5,11 @@
             <div class='ui sixteen wide column'>
 
                 <div class='ui center aligned basic segment'>
+                    <% if(unresolved_dtes_count){%>
+                        <div class="ui small  compact warning message">
+                                we found <a href="/org/<%=req.org.id%>/dtes?status=unresolved"><%=unresolved_dtes_count%></a> possible duplicate events. Resolve them to get a better sense of data.
+                        </div>
+                    <%}%>
                     <div class="ui horizontal divider header">
                         <a href="/org/<%=req.org.id%>/dashboard/?month=<%=prev%>">
                             <i class="angle left icon big"></i>

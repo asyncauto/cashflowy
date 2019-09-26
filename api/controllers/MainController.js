@@ -354,12 +354,21 @@ module.exports = {
 					.skip(skip)
 					.exec(callback);
 			},
+			getDTEs: ['getParsedEmails', function(results, cb){
+				var pe_ids = _.map(results.getParsedEmails, 'id')
+				Doubtful_transaction_event.find({parsed_email: pe_ids}).exec(cb);
+			}],
 			getTransactionEvents: ['getParsedEmails', function(results, cb){
 				var te_ids=_.chain(results.getParsedEmails).map('transaction_event').filter().value();
 				Transaction_event.find({id:te_ids}).populate('account').exec(cb);
 			}]
 		},function(err,results){
 			results.getParsedEmails.forEach(function(pe){
+				results.getDTEs.forEach(function(dte){
+					if(dte.parsed_email == pe.id){
+						pe.dte = dte;
+					}
+				});
 				if(pe.transaction_event){
 					results.getTransactionEvents.forEach(function(te){
 						if(te.id==_.get(pe, 'transaction_event')){
@@ -368,7 +377,7 @@ module.exports = {
 					});
 				}
 			})
-
+			
 			var locals={
 				parsed_emails:results.getParsedEmails,
 				page: page,
@@ -391,142 +400,19 @@ module.exports = {
 				Parsed_email.findOne({id: req.params.id, org:req.org.id}).exec(function(err, pe){
 					if(err) return cb(err);
 					if(!pe || !_.get(pe, 'details.inbound')) return cb(new Error("NOT_FOUND"));
+					if(pe.transaction_event) return cb(new Error('TRANSACTION_EVENT_EXIST'))
 					return cb(null, pe);
 				});
 			},
 			reParse: ['getParsedEmail', function(results, cb){
 				var opts = {
 					email_type: results.getParsedEmail.type,
-					body: results.getParsedEmail.details.inbound['body-plain'].replace(/[\r\n]+/g, " ")
+					inbound_data: results.getParsedEmail.details.inbound,
+					org: results.getParsedEmail.org,
+					email: results.getParsedEmail.email
 				}
-				EmailParserService.extractDataFromMessageBody(opts, cb);
-			}],
-			updateParsedEmail: ['reParse', function(results, cb){
-				var to_update = _.pick(results.getParsedEmail, ['email', 'body_parser_used', 'data','extracted_data'])
-				to_update.extracted_data =  results.reParse.ed
-				to_update.body_parser_used =  results.reParse.body_parser_used
-				to_update.extracted_data.email_received_time = new Date(results.getParsedEmail.details.inbound['Date']);
-
-				// apply before filter
-				sails.config.emailparser.beforeModifyData(to_update);
-				// apply particular filter
-				var filter = _.find(sails.config.emailparser.filters, {name: results.getParsedEmail.type});
-				if(filter.modifyData)
-					filter.modifyData(to_update);
-				// apply after modify 
-				sails.config.emailparser.afterModifyData(to_update);
-				Parsed_email.update({ message_id: results.getParsedEmail.message_id }, to_update)
-				.exec(function(err, pe){
-					cb(err, pe);
-				})
-			}],
-			getAccount:['updateParsedEmail', function(results, callback){
-				var pe = results.updateParsedEmail[0]
-				var find = {
-					acc_number:{
-						endsWith: pe.data.acc_number, // ends with the following number
-					},
-					org:pe.org
-				}
-
-				var create={ // incase the account does not exist, create account.
-					acc_number:''+pe.data.acc_number,
-					org:pe.org,
-					type:'bank', // user might need to change this
-					name:'Auto generated account'+pe.data.acc_number,
-				} 
-				Account.findOrCreate(find, create).exec(function(err, result, created){
-					callback(err,result);
-				});
-			}],
-			findOrCreateTransactionEvent:['updateParsedEmail', 'getAccount',function(results,callback){
-				//skip if it only contains information about account balance.
-				var pe = results.updateParsedEmail[0]
-
-				if(pe.data.type=='balance')
-					return callback(null);
-				const fx = require('money');
-				fx.base='INR';
-				fx.rates=sails.config.fx_rates;
-				var occuredAt = _.get(pe, 'data.occuredAt', new Date());
-				var te={
-					original_currency:pe.data.currency,
-					createdBy:'parsed_email',
-					type: pe.data.type,
-					account:results.getAccount.id,
-					third_party: _.get(pe, 'data.third_party', null),
-					original_amount: _.get(pe, 'data.original_amount', 0),
-					amount_inr: _.get(pe, 'data.amount_inr', 0),
-					occuredAt: _.isDate(occuredAt) ? occuredAt.toISOString() : occuredAt
-				}
-
-				if(pe.transaction_event)
-					Transaction_event.update({id:pe.transaction_event}, te).exec(function(err, txn){
-						if(err) return callback(err);
-						return callback(null, txn[0]);
-					});
-				else
-					Transaction_event.findOrCreate(te, te).exec(function(err, txn){callback(err, txn);});
-			}],
-			updateTransaction: ['findOrCreateTransactionEvent', function(results, callback){
-				var pe = results.updateParsedEmail[0]
-				var t = {
-					original_currency:pe.data.currency,
-					type: pe.data.type,
-					account:results.getAccount.id,
-					third_party: _.get(pe, 'data.third_party', null),
-					original_amount: _.get(pe, 'data.original_amount', 0),
-					amount_inr: _.get(pe, 'data.amount_inr', 0),
-					occuredAt: _.get(pe, 'data.occuredAt', new Date())
-				}
-				//update t if this transaction contains only one t
-				Transaction.find({transaction_event: results.findOrCreateTransactionEvent.id}).exec(function(err, ts){
-					if(err) return callback(err);
-					if(ts.length == 1)
-						Transaction.update({id: ts[0].id}, t).exec(callback)
-					else
-						return callback(null);
-				})
-			}],
-			updateParsedEmailWithTransactionEvent:['findOrCreateTransactionEvent',function(results,callback){
-				var pe = results.updateParsedEmail[0]
-				//skip if it only contains information about account balance.
-				if(pe.data.type=='balance')
-					return callback(null);
-				Parsed_email.update({id:pe.id},{transaction_event:results.findOrCreateTransactionEvent.id}).exec(callback);
-			}],
-			createSnapshotIfPossible:['getAccount',function(results,callback){
-				var pe = results.updateParsedEmail[0]
-				// console.log('create snapshot');
-				if(pe.data.balance_currency && pe.data.balance_amount){
-					var ss={
-						account:results.getAccount.id,
-						createdBy:'parsed_email',
-						balance:pe.data.balance_amount,
-						takenAt: pe.data.occuredAt
-					}
-					Snapshot.find(ss).exec(function(err, snaps){
-						if(err) return callback(err);
-						if(snaps & snaps.length) return callback(null);
-						Snapshot.create(ss).exec(callback)
-					});
-				}else if(pe.data.credit_limit_currency && pe.data.credit_limit_amount && pe.data.available_credit_balance){
-					var ss={
-						account:results.getAccount.id,
-						createdBy:'parsed_email',
-						balance:pe.data.available_credit_balance-pe.data.credit_limit_amount,
-						takenAt: pe.data.occuredAt
-					}
-					Snapshot.find(ss).exec(function(err, snaps){
-						if(err) return callback(err);
-						if(snaps & snaps.length) return callback(null);
-						Snapshot.create(ss).exec(callback)
-					});
-				}else{
-					callback(null);
-				}
-			}],
-			
+				MailgunService.parseEmailBodyWithBodyParser(opts, cb);
+			}]	
 		}, function(err, results){
 			if(err){
 				switch (err.message) {
@@ -751,7 +637,10 @@ module.exports = {
 					else
 						callback(err,rawResult.rows);
 				});
-			}]
+			}],
+			getUnresolvedDTEsCount: function(cb){
+				Doubtful_transaction_event.count({org: req.org.id, status: null}).exec(cb);
+			}
 		},function(err,results){
 			if(err){
 				console.log(err);
@@ -773,6 +662,7 @@ module.exports = {
 			var locals={
 				current:year+'-'+month,
 				accounts:results.getAccounts,
+				unresolved_dtes_count: results.getUnresolvedDTEsCount,
 				categories:GeneralService.orderCategories(results.getCategories),
 				transactions_without_category: results.getTransactionsWithOutCategory,
 				transactions_without_description: results.getTransactionsWithOutDescription,
@@ -2071,6 +1961,9 @@ module.exports = {
 		}
 		if(req.query.status)
 			filter.status = req.query.status;
+		if(req.query.status == 'unresolved')
+			filter.status = null;
+			
 		async.auto({
 			getAccounts: function(cb){
 				Account.find({org: req.org.id}).exec(cb);
@@ -2147,8 +2040,14 @@ module.exports = {
 				Doubtful_transaction_event.update({id:dte.id},{details:dte.details, status: dte.status}).exec(callback);
 			}],
 			updateSLI:['getDTE','createTransactionEvent',function(results,callback){
+				if(!results.getDTE.sli) return callback(null);
 				var sli_id = results.getDTE.sli;
 				Statement_line_item.update({id:sli_id},{transaction_event:results.createTransactionEvent.id}).exec(callback);
+			}],
+			updateParsedEmail:['getDTE','createTransactionEvent',function(results,callback){
+				if(!results.getDTE.parsed_email) return callback(null);
+				var pe_id = results.getDTE.parsed_email;
+				Parsed_email.update({id:pe_id},{transaction_event:results.createTransactionEvent.id}).exec(callback);
 			}]
 		},function(err,results){
 			if(err)
@@ -2173,8 +2072,14 @@ module.exports = {
 				Doubtful_transaction_event.update({id:dte.id},{details:dte.details, status: dte.status}).exec(callback);
 			}],
 			updateSLI:['getDTE',function(results,callback){
+				if(!results.getDTE.sli) return callback(null);
 				var sli_id = results.getDTE.sli;
 				Statement_line_item.update({id:sli_id},{transaction_event:req.params.orig_txn_id}).exec(callback);
+			}],
+			updateParsedEmail:['getDTE',function(results,callback){
+				if(!results.getDTE.parsed_email) return callback(null);
+				var pe_id = results.getDTE.parsed_email;
+				Parsed_email.update({id:pe_id},{transaction_event:req.params.orig_txn_id}).exec(callback);
 			}]
 		},function(err,results){
 			if(err)

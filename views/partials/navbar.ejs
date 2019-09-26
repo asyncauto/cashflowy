@@ -1,7 +1,7 @@
 <div class="ui grid" style="padding-bottom: 0.5em">
 	<!-- Definition of the nav bar when seen on a computer -->
 	<div class="ui sixteen wide column">
-		<div class="ui stackable secondary pointing large menu" id="threads" >
+		<div class="ui secondary pointing large menu" id="threads" >
 			<!-- <div class="ui container" > -->
 			<%if(req.user){%>
 			<a class="item click-sidebar"><i class="sidebar icon"></i></a>
@@ -10,9 +10,9 @@
 				Cashflowy
 			</a>
 			<%if(req.org){%>
-				<div class="ui simple dropdown item" href="">
-					
-					<%=req.org.name%>
+				<div class="ui simple dropdown item cusdiv" href="">
+					<i class="users icon cusicon"></i>
+					<span class="abc"><%=req.org.name%></span>
 					<!-- Free plan -->
 					<i class="dropdown icon"></i>
 					<div class="menu" style="margin-top: 0em">
@@ -31,8 +31,8 @@
 						<a class="item" href='/org/create'><i class="ui plus icon"></i>New Organisation</a>
 					</div>
 				</div>
-				<a class="item home" href="/org/<%=req.org.id%>/mastery">
-					Mastery<br>
+				<a class="item home abc" href="/org/<%=req.org.id%>/mastery">
+					<i class="book icon cusicon"></i><span class="abc">Mastery<br></span>
 				</a>
 			<%}%>
 			<div class="right menu">
@@ -45,9 +45,9 @@
 						<%}%>
 					</a> 
 
-					<div class="ui simple dropdown item" href="">
-						
-						<%=req.user.name.split(' ')[0]%>
+					<div class="ui simple dropdown item cusdiv" href="">
+						<i class="user icon cusicon"></i>
+						<span class="abc"><%=req.user.name.split(' ')[0]%></span>
 						<!-- Free plan -->
 						<i class="dropdown icon"></i>
 						<div class="menu" style="margin-top: 0em">

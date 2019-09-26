@@ -8,7 +8,7 @@
 				<a class="item" href='/org/<%=req.org.id%>/parse_failures' data-tab="second">Parsed Failed</a>
 
 			</div>
-				<table class="ui celled unstackable collapsing table" style="display: block;overflow-x:scroll;">
+				<table class="ui basic fluid unstackable  table" style="display: block;overflow-x:scroll;">
 					<thead>
 						<tr>
 							<th>From</th>
@@ -24,7 +24,7 @@
 					</thead>
 					<tbody>
 						<%parsed_emails.forEach(function(pe){%>
-							<tr>
+							<tr <%if(!pe.transaction_event && pe.dte){%>class="warning"<%}%>>
 								<td><%=pe.details.inbound.from%></td>
 								<td><%=pe.details.inbound.To%></td>
 								<td><%=pe.details.inbound.subject%></td>
@@ -42,9 +42,13 @@
 										<!-- <i class='dollar icon popup' ></i> -->
 										<%=pe.transaction_event.amount_inr%>
 									</a>
+									<%}else if(pe.dte){%>
+										<a href="/org/<%=req.org.id%>/dte/<%=pe.dte.id%>" >
+											resolve duplicate
+										</a>
 									<%}%>
 								</td>
-								<td class='single line'><button class="ui basic blue button submit_pe_retry" data-pe-retry-id="<%=pe.id%>">Reparse</button>
+								<td class='single line'><button class="ui basic blue button submit_pe_retry <%=pe.dte & !pe.transaction_event?'disabled': ''%>" data-pe-retry-id="<%=pe.id%>">Reparse</button>
 									<p class="pe_retry_err"></p>
 							</tr>
 						<%})%>
