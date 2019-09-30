@@ -289,6 +289,8 @@ module.exports.routes = {
   'GET /curator/parse_failures/': 'CuratorController.listAllParseFailures',
   'GET /curator/:pf_id/resolve_parse_failure': 'CuratorController.resolveParseFailureManually',
   'GET /curator/create_transaction': 'CuratorController.createTransaction',
+  'GET /curator/detect_file_type': 'CuratorController.detectFileType',
+  'POST /curator/detect_file_type': 'CuratorController.detectFileType',
 
 
 
