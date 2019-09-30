@@ -85,7 +85,7 @@ module.exports = {
 		bucket: process.env.AWS_BUCKET,
 		region: process.env.AWS_REGION,
 	},
-	admins: process.env.ADMINS.split(',').map(parseInt),
+	admins: process.env.ADMINS.split(',').map(function(s){return parseInt(s)}),
 
 	sentry: sentry
 };
