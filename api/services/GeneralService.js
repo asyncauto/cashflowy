@@ -222,5 +222,31 @@ module.exports={
 	},
 	includePackage:function(pkg_name){
 		return require(pkg_name);
+	},
+	detectFileType:function(text){
+		if(!text)
+			throw 'no text found'
+		var filters=sails.config.filetypeparser.filters;
+		console.log('filters:');
+		console.log(filters);
+		for(i=0;i<filters.length;i++){
+			var all_good_flag=true;
+			var filter=filters[i]
+			console.log('filter in use:');
+			console.log(filter);
+			if(filter.required_keywords.length==0)
+				continue
+			
+			for(j=0;j<filter.required_keywords.length;j++){
+				if(text.search(filter.required_keywords[j])==-1){
+					all_good_flag=false;
+				}
+			}
+			if(all_good_flag){ // if all data is fine, break out.
+				filter_used=filter.type;
+				return filter_used;
+			} 
+		}
+		return null;
 	}
 }

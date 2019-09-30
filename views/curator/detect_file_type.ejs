@@ -1,0 +1,43 @@
+
+<div class="ui container">
+	<div class="ui grid">
+		<div class='four wide tablet computer only column'></div>
+		<div class='eight wide table eight wide computer sixteen wide mobile column'>
+			<h4 class="ui horizontal divider header">
+				<!-- <i class="list icon"></i> -->
+				Create Statement
+			</h4>
+			<form class="ui form " action="" method='post' enctype="multipart/form-data">
+				<!-- <h4 class="ui dividing header">Shipping Information</h4> -->
+				
+				<div class="field">
+					<label>Enter Password (optional)<i class="icon info"></i></label>
+					<input type="text" name="password">
+				</div>
+				<div class="field">
+					<label>Upload</label>
+					<input type="file" name="file" required multiple>
+				</div>
+				<input type="submit" class="ui button" value="Submit">
+				<%if(type){%>
+					<div class="ui message">
+						<div class="description">Document type: <%=type%></div>
+					</div>
+				<%}%>
+				
+			</form>
+			
+			
+		</div>
+		<div class='sixteen wide tablet four wide computer sixteen wide mobile column'>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.dropdown').dropdown();
+		
+	})
+
+</script>
+

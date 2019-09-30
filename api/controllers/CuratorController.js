@@ -87,5 +87,94 @@ module.exports = {
 			res.view('curator/resolve_parse_failures')
 		}
 	},
+	detectFileType:function(req,res){
+		if (req.method == 'GET') {
+			var locals = {
+				type: '',
+				message: ''
+			}
+			res.view('curator/detect_file_type', locals)
+		}else{
+			var u_file;
+			req.file('file').upload(async function (err, uploadedFiles) {
+				if (err) {
+	
+					console.log('err:');
+					console.log(err);
+				}else{
+					console.log('files:');
+					console.log(uploadedFiles);
+					u_file=uploadedFiles[0];
+					const util = require('util');
+					const exec = util.promisify(require('child_process').exec);
+					var fsExists = util.promisify(require('fs').exists);
+					var uf = u_file.fd.split('/')
+					
+					uf[uf.length -1] = 'decrypted_'+uf[uf.length -1];
+					uf = uf.join('/');
+
+					if(req.body.password)
+						try{
+							const { stdout, stderr } = await exec(`qpdf -password=${req.body.password} -decrypt ${u_file.fd} ${uf}`);
+							console.log('output', stdout, stderr);
+						}
+						catch(error){
+							// pass
+							console.log('error', error);
+							throw new Error('INVALID_PASSWORD_ENTERED');
+						}
+					else{
+						var statement_passwords=[];//get this from org details
+						for (const sp of _.union(statement_passwords, [''])) {
+							try{
+								const { stdout, stderr } = await exec(`qpdf -password=${sp} -decrypt ${u_file.fd} ${uf}`);
+								console.log('output', stdout, stderr);
+							}
+							catch(error){
+								// pass
+								console.log('error', error);
+							}
+						}
+					}
+					var decrypted_file_exists = await fsExists(uf);
+					if(decrypted_file_exists){
+						// if worked
+						console.log('uf:');
+						console.log(uf);
+						const fs = require('fs');
+						const pdf = require('pdf-parse');
+						
+						let dataBuffer = fs.readFileSync(uf);
+
+						pdf(dataBuffer).then(function(data) {
+							// PDF text
+							console.log(data.text); 
+							var detected_file_type=GeneralService.detectFileType(data.text)
+							console.log('detected type:');
+							console.log(detected_file_type);
+							var locals={
+								type:detected_file_type
+							}
+							// res.status(200).json(locals)
+							res.view('curator/detect_file_type', locals)
+							
+						});		
+						
+
+
+					}
+					else
+						throw new Error('PASSWORD_DECRYPTION_FAILED');
+				}
+				
+	
+			});
+
+
+			
+			// res.status(200).json(req.file)
+		}
+
+	}
 	
 };
