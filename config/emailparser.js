@@ -82,7 +82,7 @@ module.exports.emailparser = {
         { 
             name:'IciciCreditCardPaymentReceivedFilter',
             modifyData: function (pe) {
-                if (pe.body_parser_used == 'received_money_v1') {
+                if (pe.body_parser_used == 'received_money_v1'||'received_money_via_upi_v1') {
                     pe.data.original_amount = pe.extracted_data.amount;
                 }
 
