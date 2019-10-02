@@ -1349,6 +1349,278 @@ module.exports={
 				},
 			]
 		},
+		{
+			version:'imps_v1',
+			description:'as of oct 2019',
+			fields:[
+				{
+					name:'account_last_4_digits',
+					type:'integer',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Dear Customer'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'is debited for '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Your A/c xxxxxxxxxx'
+						},
+						
+						{
+							type:'trim',
+						},
+					]
+				},
+				
+				{
+					name:'currency',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' is debited for '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Available balance is '
+						},
+						{
+							type:'trim',
+						},
+						
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' is credited.'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' on '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
+						},
+					]
+				},
+				{
+					name:'amount',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' is debited for '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Available balance is '
+						},
+						{
+							type:'trim',
+						},
+						
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' is credited.'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' on '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
+						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'third_party',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Dear Customer'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' is credited'
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' and '
+						},
+						
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'date',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Dear Customer'
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'is debited for'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'is credited'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' and '
+						},
+						{
+							type:'trim',
+						},
+						
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' on '
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				
+			]
+		},
 	]
 	
 }
