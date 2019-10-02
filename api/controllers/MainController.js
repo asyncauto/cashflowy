@@ -2659,11 +2659,19 @@ module.exports = {
 
 			locals.org = org;
 
+			var notify = {};
+			notify.type = 'created';
+			notify.user = req.user.id;
+			notify.body = new String(req.user.name+' '+notify.type+' Organisation '+ req.body.name);
+
 			try{
 				var o = await Org.create(org)
 				.intercept('E_UNIQUE', ()=>{ return new Error('There is already an Org using that email address!') });
 				if(org.email)
 					await MailgunService.createSmtpCredential({email:org.email});
+					notify.org = o.id;
+					await Notification.create(notify);
+					// await NotificationService.sendPushNotification({notify:notify});
 				return res.redirect('/org/'+o.id+'/dashboard');
 			}catch(err){
 				locals.message = err.message;
