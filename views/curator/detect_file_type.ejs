@@ -19,12 +19,16 @@
 					<input type="file" name="file" required multiple>
 				</div>
 				<input type="submit" class="ui button" value="Submit">
-				<%if(type){%>
+				<%if(type!=""){%>
 					<div class="ui message">
 						<div class="description">Document type: <%=type%></div>
 					</div>
 				<%}%>
-				
+				<%if(message){%>
+					<div class="ui message">
+						<div class="description"><%=message%></div>
+					</div>
+				<%}%>
 			</form>
 			
 			
