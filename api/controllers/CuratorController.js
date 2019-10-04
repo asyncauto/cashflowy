@@ -121,7 +121,11 @@ module.exports = {
 						catch(error){
 							// pass
 							console.log('error', error);
-							throw new Error('INVALID_PASSWORD_ENTERED');
+							var locals={
+								type:"",
+								message:"Entered password is invalid"
+							}
+							res.view('curator/detect_file_type', locals)
 						}
 					else{
 						var statement_passwords=[];//get this from org details
