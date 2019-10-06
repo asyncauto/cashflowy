@@ -13,23 +13,24 @@
                     <% notifications.unseen.forEach(function(n){%>
                         <div class="item">
                         <div class="content">
-                            <a href="<%=n.navigate_uri%>"><%-n.body%></a>
-                            <div class="description" style='opacity:0.7;'><%=n.createdAtAgo%></div>
+                                <div class="description"><a href="<%=n.navigate_uri%>"><%-n.body%></a></div>
+                            <div class="description" style='opacity:0.7;'><%=n.createdAtAgo%> ago</div>
                         </div>
                         </div>
                     <%})%>
                 </div>
             <%}%>
             <%if(!notifications.seen.length){%>
-                You have no notifications
+                You have no seen notifications
             <%}else{%>
                 <br><div class='ui horizontal divider'>Seen notifications</div>
-                <div class="ui relaxed divided list">
+                <div class="ui relaxed divided list ">
                     <% notifications.seen.forEach(function(n){%>
                         <div class="item">
-                        <div class="content">
-                            <a style='color:#000040; opacity:0.9;' href="<%=n.navigate_uri%>"><%-n.body%></a>
-                            <div class="description" style='opacity:0.7;'><%=n.createdAtAgo%></div>
+                                <i class="users icon big"></i>
+                         <div class="content">
+                            <div class="description"><a style='color:#000040; opacity:0.9;' href="<%=n.navigate_uri%>"><%-n.body%></a></div>
+                            <div class="description" style='opacity:0.7;'><%=n.createdAtAgo%> ago</div>
                         </div>
                         </div>
                     <%})%>
