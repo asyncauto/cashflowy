@@ -165,7 +165,8 @@ module.exports = {
 
 							}else{
 								var locals={
-									type:detected_file_type
+									type:detected_file_type,
+									message:''
 								}
 								
 							}
