@@ -274,6 +274,111 @@ module.exports={
 				},
 			]
 		},
+		{
+			version:'v2_refund',
+			description:'as of Oct 2019',
+			fields:[
+				{
+					name:'currency',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Refund of'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'initiated for your Amazon Pay order'
+						},
+						{
+							type:'trim',
+						},					
+						{
+							type:'replace',
+							options:{
+								replace:'Rs.',
+								with:'INR',
+							}
+						},
+						{
+							type:'substring',
+							options:{
+								start:0,
+								end:3,
+							}
+						},
+					]
+				},
+				{
+					name:'amount',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Refund of'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'initiated for your Amazon Pay order'
+						},
+						{
+							type:'trim',
+						},					
+						{
+							type:'replace',
+							options:{
+								replace:'Rs.',
+								with:'INR',
+							}
+						},
+						{
+							type:'substring',
+							options:{
+								start:3,
+							}
+						},
+						{
+							type:'replace',
+							options:{
+								replace:',',
+								with:'',
+							}
+						},
+					]
+				},
+				{
+					name:'third_party',
+					type:'string',
+					filters:[
+						{
+							type:'is',
+							value:'Amazon'
+						},
+					]
+				},
+                
+			]
+		},
 	]
 	
 }

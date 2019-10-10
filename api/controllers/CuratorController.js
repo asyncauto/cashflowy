@@ -121,7 +121,11 @@ module.exports = {
 						catch(error){
 							// pass
 							console.log('error', error);
-							throw new Error('INVALID_PASSWORD_ENTERED');
+							var locals={
+								type:"",
+								message:"Entered password is invalid"
+							}
+							res.view('curator/detect_file_type', locals)
 						}
 					else{
 						var statement_passwords=[];//get this from org details
@@ -152,10 +156,20 @@ module.exports = {
 							var detected_file_type=GeneralService.detectFileType(data.text)
 							console.log('detected type:');
 							console.log(detected_file_type);
-							var locals={
-								type:detected_file_type
-							}
+							
 							// res.status(200).json(locals)
+							if(!detected_file_type || detected_file_type==""){
+								var locals={
+									message:'Cannot recognize the file type'
+								}
+
+							}else{
+								var locals={
+									type:detected_file_type,
+									message:''
+								}
+								
+							}
 							res.view('curator/detect_file_type', locals)
 							
 						});		
@@ -163,8 +177,15 @@ module.exports = {
 
 
 					}
-					else
-						throw new Error('PASSWORD_DECRYPTION_FAILED');
+					else{
+						var locals={
+							type:'',
+							message:'Password decryption failed'
+						}
+						// res.status(200).json(locals)
+						res.view('curator/detect_file_type', locals)
+					}
+						// throw new Error('PASSWORD_DECRYPTION_FAILED');
 				}
 				
 	

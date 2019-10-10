@@ -12,7 +12,7 @@
  * automatically.
  */
 
-module.exports = function serverError (data, options) {
+module.exports = function serverError(data, options) {
 
   // Get access to `req`, `res`, & `sails`
   var req = this.req;
@@ -22,9 +22,14 @@ module.exports = function serverError (data, options) {
   // Set status code
   res.status(500);
 
+  // send to sentry if  its ejs error.
+  if (_.isError(data) && _.get(data, 'stack').includes(".ejs:"))
+      sentry.captureException(data);
+
+
   // Log error to console
   if (data !== undefined) {
-    sails.log.error('Sending 500 ("Server Error") response: \n',data);
+    sails.log.error('Sending 500 ("Server Error") response: \n', data);
   }
   else sails.log.error('Sending empty 500 ("Server Error") response');
 
@@ -49,9 +54,9 @@ module.exports = function serverError (data, options) {
   var viewData = data;
   if (!(viewData instanceof Error) && 'object' == typeof viewData) {
     try {
-      viewData = require('util').inspect(data, {depth: null});
+      viewData = require('util').inspect(data, { depth: null });
     }
-    catch(e) {
+    catch (e) {
       viewData = undefined;
     }
   }
@@ -73,7 +78,7 @@ module.exports = function serverError (data, options) {
       // Additionally:
       // • If the view was missing, ignore the error but provide a verbose log.
       if (err.code === 'E_VIEW_FAILED') {
-        sails.log.verbose('res.serverError() :: Could not locate view for error page (sending JSON instead).  Details: ',err);
+        sails.log.verbose('res.serverError() :: Could not locate view for error page (sending JSON instead).  Details: ', err);
       }
       // Otherwise, if this was a more serious error, log to the console with the details.
       else {

@@ -9,14 +9,6 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.http.html
  */
 
-const sentry = require('@sentry/node');
-
-sentry.init({
-  dsn: process.env.SENTRY_DNS,
-  environment: process.env.NODE_ENV
-});
-
-
 module.exports.http = {
 
   /****************************************************************************
@@ -28,8 +20,7 @@ module.exports.http = {
   * `customMiddleware` config option.                                         *
   *                                                                           *
   ****************************************************************************/
-  trustProxy: true,
-
+  trustProxy: true, 
   middleware: {
 
     /***************************************************************************
@@ -80,7 +71,6 @@ module.exports.http = {
         }
       }
     }),
-
     authenticateBlueprint: function (req, res, next) {
       // authenticate apis with bearer token
       if (req.url.startsWith('/api/'))
