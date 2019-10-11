@@ -24,6 +24,17 @@
 // > Note: This is not required in order to lift, but it is a convenient default.
 process.chdir(__dirname);
 
+// Sentry should be the first thing to start with
+// configuration: sentry setup as global to access via different files
+sentry = require('@sentry/node');
+
+sentry.init({
+  dsn: process.env.SENTRY_DNS,
+  environment: process.env.NODE_ENV,
+  debug: true
+});
+
+
 // Attempt to import `sails`.
 var sails;
 try {
@@ -55,6 +66,14 @@ try {
   }
 }
 
-
 // Start server
-sails.lift(rc('sails'));
+sails.lift(rc('sails'), function (err) {
+  if (err) {
+    sails.log.error('callback err of sails lift from app.js', err);
+    sentry.withScope(scope => {
+      scope.setTag('transaction', 'ERROR | sails lift');
+      sentry.captureException(err);
+    });
+  }
+});
+
