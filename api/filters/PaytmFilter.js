@@ -3477,6 +3477,24 @@ module.exports={
 							q:'If you have queries'
 						},
 						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Need help'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'View more details'
+						},
+						{
 							type:'trim',
 						},
 						{
