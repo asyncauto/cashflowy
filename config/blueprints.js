@@ -185,10 +185,12 @@ module.exports.blueprints = {
 
     switch (req.options.action) {
       case 'transaction/find':
+      case 'snapshot/find':
         _.set(queryOptions, 'criteria.where.account', req.options.org_accounts);
         delete queryOptions.criteria.where.org;
         break;
       case 'transaction/create':
+      case 'snapshot/create':
         delete queryOptions.newRecord.o_id;
         break;
       default:

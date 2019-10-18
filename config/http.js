@@ -80,6 +80,9 @@ module.exports.http = {
     },
 
     blueprintUnauthorized: function (err, req, res, next) {
+      if(err.message.startsWith('BLUEPRINT_')){
+        res.status(401).json({ error: 'invalid token' });
+      }
       switch (err.name) {
         case 'UnauthorizedError':
         case 'JsonWebTokenError':

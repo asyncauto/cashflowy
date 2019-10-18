@@ -72,6 +72,11 @@ var convertSliToTransactionEvent = function (sli) {
 			t.amount_inr = -parseFloat(sli.data.amount_inr);
 		}
 		t.third_party = sli.data.details;
+	} else if (sli.details.type == 'citi_bank_platinum_credit_card' && sli.details.parser_used == 'fxbmpihdoiae') {
+		if (sli.data.dr_cr == 'CR') // amount is creditted
+			t.original_amount = parseFloat(sli.data.amount);
+		else
+			t.original_amount = -parseFloat(sli.data.amount);
 	}
 
 
@@ -166,7 +171,7 @@ module.exports = {
 	afterCreate_SLI: function (sli, callback) {
 		if (!sli.data.currency)
 			sli.data.currency = 'INR'
-		console.log('\n\n\n ------------');
+		console.log('\n\n\n ------------xx');
 		var t = convertSliToTransactionEvent(sli);
 		console.log(t);
 		// callback('error');
