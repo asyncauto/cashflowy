@@ -81,5 +81,13 @@ module.exports.policies = {
   AccountController: {
     '*': ['isAuthenticated', 'isMemberOfOrg', 'isBlueprint'],
     'destroy': false
+  },
+  StatementController: {
+    '*': ['isAuthenticated', 'isMemberOfOrg', 'isBlueprint'],
+    'destroy': false
+  },
+  Parsed_emailController: {
+    '*': ['isAuthenticated', 'isMemberOfOrg', 'isBlueprint'],
+    'destroy': false
   }
 };
