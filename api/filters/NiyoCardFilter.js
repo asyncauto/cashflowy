@@ -78,81 +78,8 @@ module.exports={
 					type:'string',
 					filters:[
 						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Dear'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Thank you for shopping with NiYO!'
-                        },
-                        {
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Transaction Successful'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'was spent on your NiYO Card'
-						},
-						{
-							type:'trim',
-						},
-					
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:','
-                        },
-                        
-						
-                        {
-							type:'replace',
-							options:{
-								replace:'₹',
-								with:'INR',
-							}
-                        },
-                        {
-							type:'replace',
-							options:{
-								replace:'*',
-								with:'',
-							}
-						},
-                        
-                        {
-							type:'substring',
-							options:{
-								start:0,
-								end:3,
-							}
-                        },
-                        
-						{
-							type:'trim',
+							type:'is',
+							value:'INR'
 						},
 					]
 				},
