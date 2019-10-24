@@ -136,10 +136,18 @@ module.exports={
 							}
                         },
                         {
+							type:'replace',
+							options:{
+								replace:'*',
+								with:'',
+							}
+						},
+                        
+                        {
 							type:'substring',
 							options:{
-								start:1,
-								end:4,
+								start:0,
+								end:3,
 							}
                         },
                         
@@ -210,6 +218,14 @@ module.exports={
 								with:'INR',
 							}
                         },
+                        {
+							type:'replace',
+							options:{
+								replace:'*',
+								with:'',
+							}
+						},
+                        
                         {
 							type:'substring',
 							options:{
@@ -282,7 +298,15 @@ module.exports={
 								beginning_of_line:true
 							},
 							q:'.'
+                        },
+                        {
+							type:'replace',
+							options:{
+								replace:'*',
+								with:'',
+							}
 						},
+                        
 						
 						{
 							type:'trim',
@@ -489,7 +513,15 @@ module.exports={
 								beginning_of_line:true
 							},
 							q:' '
+                        },
+                        {
+							type:'replace',
+							options:{
+								replace:'*',
+								with:'',
+							}
 						},
+                        
 						{
 							type:'replace',
 							options:{
