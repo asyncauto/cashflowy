@@ -214,7 +214,10 @@ module.exports.emailparser = {
                     pe.data.original_amount = pe.extracted_data.amount;
                 return pe
             }
-        }
+        },
+        {
+            name: 'NiyoCardFilter',
+        },
     ]
 
 }
