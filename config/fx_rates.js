@@ -8,5 +8,6 @@ module.exports.fx_rates={
 	'HUF':4.03376,
 	'SGD':0.0191422,
 	'THB':0.442593,
-	'AED': 0.052
+	'AED': 0.052,
+	'TRY':0.08136,
 }
