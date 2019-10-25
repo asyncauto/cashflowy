@@ -20,6 +20,7 @@ module.exports={
 							},
 							q:'Dear'
 						},
+						
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
@@ -27,16 +28,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Thank you for shopping with NiYO!'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Transaction Successful'
+							q:'Remaining total balance is'
 						},
 						{
 							type:'trim',
@@ -103,17 +95,9 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Thank you for shopping with NiYO!'
+							q:'Account Balance Summary'
                         },
-                        {
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Transaction Successful'
-						},
+                        
 						{
 							type:'find_end_position',
 							criteria:'text_match_before',
@@ -152,7 +136,10 @@ module.exports={
 								with:'',
 							}
 						},
-                        
+                          
+						{
+							type:'trim',
+						},
                         {
 							type:'substring',
 							options:{
@@ -185,16 +172,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Thank you for shopping with NiYO!'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Transaction Successful'
+							q:'Remaining total balance is'
 						},
 						{
 							type:'trim',
@@ -260,17 +238,9 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Thank you for shopping with NiYO!'
+							q:'Remaining total balance is'
 						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Transaction Successful'
-						},
+						
 						{
 							type:'trim',
 						},
@@ -344,17 +314,9 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Thank you for shopping with NiYO!'
+							q:'Remaining total balance is'
 						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Transaction Successful'
-						},
+						
 						{
 							type:'trim',
 						},
