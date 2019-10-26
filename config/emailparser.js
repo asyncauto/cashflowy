@@ -52,6 +52,10 @@ module.exports.emailparser = {
     },
     filters: [
         {
+            name: 'NiyoCardFilter',
+            
+        },
+        {
             name: 'PaytmFilter',
             modifyData: function (pe) {
                 if (pe.body_parser_used == 'received_money_v1'||pe.body_parser_used == 'money_added_v1'||pe.body_parser_used == 'received_cashback_v1'||pe.body_parser_used == 'money_added_automatically_v1'||pe.body_parser_used == 'received_refund_v1') {
@@ -215,9 +219,7 @@ module.exports.emailparser = {
                 return pe
             }
         },
-        {
-            name: 'NiyoCardFilter',
-        },
+       
     ]
 
 }
