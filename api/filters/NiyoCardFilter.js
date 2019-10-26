@@ -1,7 +1,7 @@
 module.exports={
-
+	gmail_filter:'from:(*@goniyo.com)',
 	active:true,
-	required_fields:['credit_card_last_4_digits','currency','amount','whom_you_paid','available_credit_balance','date','time'],
+	required_fields:['account_last_4_digits','currency','amount','whom_you_paid','balance_currency','balance_amount','date','time'],
 	body_parsers:[
 		{
 			version:'v1',
@@ -446,26 +446,22 @@ module.exports={
 							q:'Account Balance Summary is'
 						},
 						{
-							type:'trim',
-						},
-						
-                        {
 							type:'find_start_position',
 							criteria:'text_match_after',
 							options:{
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' '
+							q:' . '
 						},
-						
-                        {
+						{
 							type:'trim',
-                        },
+						},
 					]
 				},
 			]
 		},
+		
 		
 	]
 	
