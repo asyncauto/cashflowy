@@ -49,7 +49,7 @@
                 <div class="text"></div>
                 <div class="menu transition hidden" tabindex="-1">
                     <%sails.config.emailparser.filters.forEach(function(f){%>
-                        <div class="item" data-value='<%= f %>'>
+                        <div class="item" data-value='<%= f.name %>'>
                             <%= f.name %>
                         </div>
                         <%})%>
