@@ -23,11 +23,16 @@ var generateHTML = function (email, cb) {
 
 var findEmailIdFromWebhook = function (inbound_data) {
 	//check for manual forward or auto forward
-	var email = ((inbound_data.subject.startsWith("Fwd:") ||
-		inbound_data["stripped-text"].startsWith("---------- Forwarded message ---------")) &&
-		inbound_data.To.includes("@" + sails.config.mailgun.domain)) ? inbound_data.sender.toLowerCase() :
+	var email = inbound_data.To.includes("@" + sails.config.mailgun.domain) ? inbound_data.sender.toLowerCase() :
 		inbound_data.To.toLowerCase()
 	return email;
+}
+
+var findOrgEmailFromWebhook = function (inbound_data) {
+	//check for manual forward or auto forward
+	var org_email = inbound_data.To.includes("@" + sails.config.mailgun.domain) ? inbound_data.To.toLowerCase() :
+		inbound_data['X-Forwarded-To'].toLowerCase()
+	return org_email;
 }
 
 module.exports = {
@@ -113,24 +118,39 @@ module.exports = {
 	},
 
 	parseInboundEmail: function (inbound_data, callback) {
+		var sender_email = findEmailIdFromWebhook(inbound_data);
 		async.auto({
-			getEmail: function (cb) {
-				//check for manual forward or auto forward
-				var email = findEmailIdFromWebhook(inbound_data);
-				Email.findOne({ email: email }).exec(function (err, email) {
+			getOrg: function (cb) {
+				var org_email = findOrgEmailFromWebhook(inbound_data);
+				if (!org_email) return cb(new Error('ORG_NOT_FOUND'));
+				Org.findOne({ email: org_email }).exec(function (err, org) {
 					if (err) return cb(err);
-					if (!email) return cb(new Error('EMAIL_NOT_FOUND'));
-					return cb(null, email);
+					if (!org) return cb(new Error('ORG_NOT_FOUND'));
+					return cb(null, org);
 				});
 			},
-			parseWithEachFilter: ['getEmail', function (results, cb) {
+			sendBackGmailAutoForwardConfirmationCode: ['getOrg', function (results, cb) {
+				if (inbound_data.subject.includes('Gmail Forwarding Confirmation'))
+					mailgun.messages().send({
+						from: 'support@cashflowy.in',
+						to: inbound_data['stripped-text'].split(' ')[0],
+						subject: "Cashflowy Fwd: "+ inbound_data.Subject,
+						html: inbound_data['stripped-html']
+					}, function (err, body) {
+						console.log(body);
+						cb(err);
+					});
+				else
+					cb(null);
+			}],
+			parseWithEachFilter: ['sendBackGmailAutoForwardConfirmationCode', function (results, cb) {
 				var parsed_email; // store the Parse_email object in the variable, send to slack if this variable is empty
 				async.someLimit(sails.config.emailparser.filters, 1, function (filter, next) {
 					var data = {
 						email_type: filter.name,
 						inbound_data: inbound_data,
-						org: results.getEmail.org,
-						email: results.getEmail.email
+						org: results.getOrg.id,
+						email: sender_email
 					};
 					MailgunService.parseEmailBodyWithBodyParser(data, function (err, pe) {
 						if (err) {
@@ -151,13 +171,13 @@ module.exports = {
 			function (err, results) {
 				if (err) {
 					switch (err.message) {
-						case 'EMAIL_NOT_FOUND':
+						case 'ORG_NOT_FOUND':
 							return callback(err);
 							break;
 						case 'UNABLE_TO_PARSE':
 							var parsed_failure = {
-								org: results.getEmail.org,
-								email: results.getEmail.email,
+								org: results.getOrg.id,
+								email: sender_email,
 								message_id: inbound_data['Message-Id'],
 								status: 'FAILED',
 								details: {
