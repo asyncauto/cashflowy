@@ -461,6 +461,201 @@ module.exports={
 				},
 			]
 		},
+		{
+			version:'money_added_v1',
+			description:'as of oct 2019',
+			fields:[
+				
+				{
+					name:'amount',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Your NiYO card is funded'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Your account balance is'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' . '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
+						},
+						{
+							type:'trim',
+						},
+					]
+				},
+				{
+					name:'currency',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Your NiYO card is funded'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Your account balance is'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' . '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
+						},
+						{
+							type:'replace',
+							options:{
+								replace:'₹',
+								with:'INR',
+							}
+                        },
+						{
+							type:'trim',
+						},
+					]
+				},
+				
+				{
+					name:'balance_amount',
+					type:'float',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Your account balance is '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'. Just swipe your card and save on your tax'
+						},
+						{
+							type:'trim',
+						},
+						
+					]
+				},
+				{
+					name:'balance_currency',
+					type:'string',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Your NiYO card is funded'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'Your account balance is'
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' . '
+						},
+						{
+							type:'trim',
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
+						},
+						{
+							type:'replace',
+							options:{
+								replace:'₹',
+								with:'INR',
+							}
+                        },
+						{
+							type:'trim',
+						},
+					]
+				},
+			]
+		},
+	
 		
 		
 	]
