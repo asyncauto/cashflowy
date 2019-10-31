@@ -405,13 +405,7 @@ module.exports = {
 				});
 			},
 			reParse: ['getParsedEmail', function(results, cb){
-				var opts = {
-					email_type: results.getParsedEmail.type,
-					inbound_data: results.getParsedEmail.details.inbound,
-					org: results.getParsedEmail.org,
-					email: results.getParsedEmail.email
-				}
-				MailgunService.parseEmailBodyWithBodyParser(opts, cb);
+				MailgunService.parseInboundEmail(results.getParsedEmail.details.inbound,cb)
 			}]	
 		}, function(err, results){
 			if(err){

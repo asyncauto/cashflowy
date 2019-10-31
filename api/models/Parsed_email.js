@@ -44,10 +44,14 @@ module.exports = {
 		},
 		status:{
 			type: 'string',
-			isIn: ['PARSED', 'PARSE_FAILED']
+			enum: ['PARSED', 'PARSE_FAILED'],
+			allowNull: true
 		},
 	},
 	beforeCreate: function (pe, cb) {
+		// exit if extracted_data is empty
+		if(!pe.extracted_data)
+			return cb(null);
 		// apply before modifier
 		sails.config.emailparser.beforeModifyData(pe);
 		// apply particular filter
@@ -72,19 +76,27 @@ module.exports = {
 			cb(null);
 		})
 	},
-	afterCreate: function (pe, calllback) {
-		CashflowyService.afterCreate_PE(pe, calllback);
+	afterCreate: function (pe, cb) {
+		// exit if extracted_data is empty
+		if(!pe.extracted_data)
+			return cb(null);
+
+		CashflowyService.afterCreate_PE(pe, cb);
 	},
-	afterUpdate: async function(pe, calllback){
+	afterUpdate: async function(pe, cb){
+		// exit if extracted_data is empty
+		if(!pe.extracted_data)
+			return cb(null);
+
 		//exit if dtes exists
 		var dtes = await Doubtful_transaction_event.find({parsed_email: pe.id})
-		if(dtes.length) return calllback(null);
+		if(dtes.length) return cb(null);
 
 		//run after create functionality if transaction_event is not created.
 		if(!pe.transaction_event)
-			CashflowyService.afterCreate_PE(pe, calllback);
+			CashflowyService.afterCreate_PE(pe, cb);
 		else 
-			calllback(null);
+			cb(null);
 	}
 };
 
