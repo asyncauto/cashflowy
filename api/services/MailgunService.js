@@ -30,9 +30,10 @@ var findEmailIdFromWebhook = function (inbound_data) {
 
 var findOrgEmailFromWebhook = function (inbound_data) {
 	//check for manual forward or auto forward
-	var org_email = inbound_data.To.includes("@" + sails.config.mailgun.domain) ? inbound_data.To.toLowerCase() :
-		inbound_data['X-Forwarded-To'].toLowerCase()
-	return org_email;
+	if (inbound_data.recipient.includes("@" + sails.config.mailgun.domain))
+		return inbound_data.recipient.toLowerCase()
+	else
+		return '';
 }
 
 module.exports = {
@@ -134,7 +135,7 @@ module.exports = {
 					mailgun.messages().send({
 						from: 'support@cashflowy.in',
 						to: inbound_data['stripped-text'].split(' ')[0],
-						subject: "Cashflowy Fwd: "+ inbound_data.Subject,
+						subject: "Cashflowy Fwd: " + inbound_data.Subject,
 						html: inbound_data['stripped-html']
 					}, function (err, body) {
 						console.log(body);
