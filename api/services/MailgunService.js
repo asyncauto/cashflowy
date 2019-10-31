@@ -93,11 +93,13 @@ module.exports = {
 				if (parsed_email.body_parser_used == '') {
 					cb(new Error('INVALID_FILTER'));
 				} else {
-					//sails modifies the parsed_email after the query, clone and do operation.
-					Parsed_email.findOrCreate({ message_id: parsed_email.message_id }, _.clone(parsed_email)).exec(function (err, pe, created) {
+					//sails modifies the parsed_email object after the query, clone and do operation.
+					var to_update = _.clone(parsed_email)
+					to_update.status = 'PARSED'
+					Parsed_email.findOrCreate({ message_id: parsed_email.message_id }, to_update).exec(function (err, pe, created) {
 						if (err) return cb(err);
 						if (!created) {
-							Parsed_email.update({ id: pe.id }, _.clone(parsed_email)).exec(function (err, updated) {
+							Parsed_email.update({ id: pe.id }, to_update).exec(function (err, updated) {
 								if (err) return cb(err);
 								return cb(null, updated[0]);
 							});
@@ -106,13 +108,6 @@ module.exports = {
 						}
 					});
 				}
-			}],
-			updateParseFailure: ['findOrCreateParsedEmail', function (results, cb) {
-				Parse_failure.update({ message_id: results.findOrCreateParsedEmail.message_id },
-					{
-						parsed_email: results.findOrCreateParsedEmail.id,
-						status: 'PARSED', extracted_data: results.findOrCreateParsedEmail.extracted_data
-					}).exec(cb);
 			}]
 		}, cb)
 	},
@@ -134,7 +129,7 @@ module.exports = {
 					mailgun.messages().send({
 						from: 'support@cashflowy.in',
 						to: inbound_data['stripped-text'].split(' ')[0],
-						subject: "Cashflowy Fwd: "+ inbound_data.Subject,
+						subject: "Cashflowy Fwd: " + inbound_data.Subject,
 						html: inbound_data['stripped-html']
 					}, function (err, body) {
 						console.log(body);
@@ -144,21 +139,32 @@ module.exports = {
 					cb(null);
 			}],
 			parseWithEachFilter: ['sendBackGmailAutoForwardConfirmationCode', function (results, cb) {
-				var parsed_email; // store the Parse_email object in the variable, send to slack if this variable is empty
 				async.someLimit(sails.config.emailparser.filters, 1, function (filter, next) {
-					var data = {
+					var options = {
 						email_type: filter.name,
 						inbound_data: inbound_data,
 						org: results.getOrg.id,
 						email: sender_email
 					};
-					MailgunService.parseEmailBodyWithBodyParser(data, function (err, pe) {
-						if (err) {
-							if (err.message == 'INVALID_FILTER')
-								return next(null, false);
+					MailgunService.parseEmailBodyWithBodyParser(options, function (err, r) {
+						if (err)
 							return next(err, true);
+						var parsed_email = {
+							extracted_data: r.extractDataFromMessageBody.ed,
+							org: results.getOrg.id,
+							type: filter.name,
+							body_parser_used: r.extractDataFromMessageBody.body_parser_used,
+							email: sender_email,
+							message_id: options.inbound_data['Message-Id'],
+							details: {
+								inbound: inbound_data
+							}
 						}
-						parsed_email = pe.findOrCreateParsedEmail;
+						parsed_email.extracted_data.email_received_time = new Date(options.inbound_data['Date']);
+						if (results.exctractDatetimeforManualForward && results.exctractDatetimeforManualForward.body_parser_used)
+							parsed_email.extracted_data.forward_orignal_date = _.get(results, 'exctractDatetimeforManualForward.ed.datetime')
+						if(parsed_email.body_parser_used)
+							
 						return next(null, true)
 					})
 				}, function (err) {
@@ -166,6 +172,41 @@ module.exports = {
 						return cb(new Error('UNABLE_TO_PARSE'));
 					cb(err, parsed_email);
 				})
+			}],
+			findOrCreateParsedEmail: ['parseWithEachFilter', function (results, cb) {
+				var parsed_email = {
+					extracted_data: results.extractDataFromMessageBody.ed,
+					org: options.org,
+					type: options.email_type,
+					body_parser_used: results.extractDataFromMessageBody.body_parser_used,
+					email: options.email,
+					message_id: options.inbound_data['Message-Id'],
+					details: {
+						inbound: options.inbound_data
+					}
+				}
+				parsed_email.extracted_data.email_received_time = new Date(options.inbound_data['Date']);
+				if (results.exctractDatetimeforManualForward && results.exctractDatetimeforManualForward.body_parser_used) {
+					parsed_email.extracted_data.forward_orignal_date = _.get(results, 'exctractDatetimeforManualForward.ed.datetime')
+				}
+				if (parsed_email.body_parser_used == '') {
+					cb(new Error('INVALID_FILTER'));
+				} else {
+					//sails modifies the parsed_email object after the query, clone and do operation.
+					var to_update = _.clone(parsed_email)
+					to_update.status = 'PARSED'
+					Parsed_email.findOrCreate({ message_id: parsed_email.message_id }, to_update).exec(function (err, pe, created) {
+						if (err) return cb(err);
+						if (!created) {
+							Parsed_email.update({ id: pe.id }, to_update).exec(function (err, updated) {
+								if (err) return cb(err);
+								return cb(null, updated[0]);
+							});
+						} else {
+							return cb(null, pe);
+						}
+					});
+				}
 			}]
 		},
 			function (err, results) {

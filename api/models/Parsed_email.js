@@ -10,12 +10,10 @@ module.exports = {
 
 	attributes: {
 		extracted_data: { // data originally extracted from email
-			type: 'json',
-			required: true,
+			type: 'json'
 		},
 		data: { // the processed version of extracted data. This can be modified by automation
-			type: 'json',
-			// required: true,	
+			type: 'json'
 		},
 		email: {
 			type: 'string',
@@ -26,10 +24,6 @@ module.exports = {
 		},
 		type: {
 			type: 'string',
-			required: true,
-			// enum:[
-			// 	'credit_card_alert','credit_card_statement','bank_transaction_alert','bank_statement'
-			// ]
 		},
 		body_parser_used: {
 			type: 'string',
@@ -47,7 +41,11 @@ module.exports = {
 		details: {
 			type: 'json',
 			columnType: 'jsonb'
-		}
+		},
+		status:{
+			type: 'string',
+			isIn: ['PARSED', 'PARSE_FAILED']
+		},
 	},
 	beforeCreate: function (pe, cb) {
 		// apply before modifier
