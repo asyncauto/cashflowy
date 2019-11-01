@@ -44,7 +44,7 @@ module.exports = {
 		},
 		status:{
 			type: 'string',
-			enum: ['PARSED', 'PARSE_FAILED'],
+			enum: ['PARSED', 'PARSE_FAILED', 'JUNK'],
 			allowNull: true
 		},
 	},

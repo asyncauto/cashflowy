@@ -1,70 +1,74 @@
-<div class='ui container'>
-	<div class='ui grid'>
-		<!-- <div class='three wide column'></div> -->
-		<div class='sixteen wide column'>
-			
-			<div class="ui pointing secondary menu">
-				<a class="item active" href='/org/<%=req.org.id%>/parsed_emails' data-tab="first">Parsed emails</a>
-				<a class="item" href='/org/<%=req.org.id%>/parse_failures' data-tab="second">Parsed Failed</a>
-
-			</div>
-				<table class="ui basic fluid unstackable  table" style="display: block;overflow-x:scroll;">
-					<thead>
-						<tr>
-							<th>From</th>
-							<th>To</th>
-							<th>Subject</th>
-							<th>Date</th>
-							<th>Parser</th>
-							<th>Data</th>
-							<th>View</th>
-							<th>Te</th>
-							<th>Reparse</th>
-						</tr>
-					</thead>
-					<tbody>
-						<%parsed_emails.forEach(function(pe){%>
-							<tr <%if(!pe.transaction_event && pe.dte){%>class="warning"<%}%>>
-								<td><%=pe.details.inbound.from%></td>
-								<td><%=pe.details.inbound.To%></td>
-								<td><%=pe.details.inbound.subject%></td>
-								<td><%=pe.details.inbound.Date%></td>
-								<td><%=pe.type%> <%=pe.body_parser_used%></td>
-								<td><i class='eye icon popup' data-html="<div class='header'>Extracted data</div><div class='content'><pre><%=JSON.stringify(pe.extracted_data,null,'    ')%></pre></div>"></i></td>
-								<td>
-									<a href="/org/<%=req.params.o_id%>/parsed_email/<%=pe.id%>">
-										<i class='file icon '></i>
-									</a>
-								</td>
-								<td>
-									<%if(pe.transaction_event){%>
-									<a class="popup" href="/org/<%=req.params.o_id%>/transaction_event/<%=pe.transaction_event.id%>" data-html="<%- partial('popups/transaction_event', {t: pe.transaction_event}) %>" data-variation="very wide">
-										<!-- <i class='dollar icon popup' ></i> -->
-										<%=pe.transaction_event.amount_inr%>
-									</a>
-									<%}else if(pe.dte){%>
-										<a href="/org/<%=req.org.id%>/dte/<%=pe.dte.id%>" >
-											resolve duplicate
-										</a>
-									<%}%>
-								</td>
-								<td class='single line'><button class="ui basic blue button submit_pe_retry <%=pe.dte & !pe.transaction_event?'disabled': ''%>" data-pe-retry-id="<%=pe.id%>">Reparse</button>
-									<p class="pe_retry_err"></p>
-							</tr>
-						<%})%>
-					</tbody>
-				</table>
-			<!-- <pre><%=JSON.stringify(parsed_emails,null,'    ')%></pre> -->
-		</div>
-	</div>
+<div class="ui internally celled stackable grid container" id='lpe'>
+  <div class="ui three wide fluid column">
+    <div class="ui sticky left_menu">
+      <b><%= req.org.email %></b>
+      <div class="ui vertical fluid menu">
+          <a class="link item <%=!req.query.status? 'active':''%>" href="/org/<%=req.org.id%>/parsed_emails?">
+            All
+          </a>
+        <a class="link item <%=req.query.status == 'PARSED'? 'active':''%>" href="/org/<%=req.org.id%>/parsed_emails?status=PARSED">
+          Parsed
+        </a>
+        <a class="link item <%=req.query.status == 'PARSE_FAILED'? 'active':''%>" href="/org/<%=req.org.id%>/parsed_emails?status=PARSE_FAILED">
+          Failed
+        </a>
+        <a class="link item <%=req.query.status == 'JUNK'? 'active':''%>" href="/org/<%=req.org.id%>/parsed_emails?status=JUNK">
+          Junk
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="ui six wide fluid  column">
+    <div class="ui relaxed divided list">
+      <%parsed_emails.forEach(function(pe){%>
+      <div class="item preview" id=<%=pe.id%>>
+        <div class="content">
+          <div class="description" style="font-size: 0.92rem;"><i class="mail icon"></i><%= moment(pe.createdAt).fromNow()%><span class="right floated"><%=pe.email%></span></div>
+          <a class="header"><%=pe.details.inbound.subject%></a>
+          <div class="description"><%-pe.details.inbound['body-plain'].substring(0, 120) + '.....'%></div>
+        </div>
+      </div>
+      <%})%>
+    </div>
+  </div>
+  <div class="ui  seven wide column">
+      <%parsed_emails.forEach(function(pe){%>
+        <div class="ui sticky detail_view"  style="display:none;" detail-view-id=<%= pe.id %> >
+          <%if(pe.status == 'PARSED'){%>
+            <div class="ui basic small green label">Parsed</div>
+            <div class="ui basic small  icon label">
+                <i class='eye icon popup' data-html="<div class='header'>Extracted data</div><div class='content'><pre><%=JSON.stringify(pe.extracted_data,null,'    ')%></pre></div>"> Extracted Data</i>
+              </div>
+            <%}else if(pe.status == 'PARSE_FAILED'){%>
+              <div class="ui  basic small red label">Failed</div>
+              <a class="ui  small grey label disabled"><i class="trash alternate outline icon"></i> Mark Junk</a>
+              <%} else if(pe.status == 'JUNK'){%>
+                <div class="ui basic small grey label">Junk</div>
+              <%}%>
+            <%if(pe.transaction_event){%>
+              <a class="ui  basic small teal icon label" href="/org/<%=req.params.o_id%>/transaction_event/<%=pe.transaction_event.id%>" target="_blank" data-html="<%- partial('popups/transaction_event', {t: pe.transaction_event}) %>" data-variation="very wide">
+                <i class="rupee icon popup"> <%=pe.transaction_event.amount_inr%> </i> <i class="external alternate icon"></i>
+              </a>
+              <%}else if(pe.dte){%>
+                <a class="ui  yellow icon label" href="/org/<%=req.org.id%>/dte/<%=pe.dte.id%>" target="_blank">
+                  <i class="attention  icon"></i> resolve Duplicate <i class="external alternate icon"></i>
+                </a>
+              <%}%>
+              <a class="ui compact icon label reparse" data-reparse-id="<%=pe.id%>">
+                <i class="sync alternate icon"></i> Reparse
+              </a>
+              
+              <iframe srcdoc="<%=pe.details.inbound['body-html']%>" style="position: relative; width: 100%; height:1000px;" frameborder="0"></iframe>
+        </div>
+        <%})%>
+  </div>
 </div>
-<script type="text/javascript">
-	$(document).ready(function(){
-		$('.popup').popup();
-		$('.submit_pe_retry').click(function(e){
-			console.log('submit retry button clicked');
-			var pe_id=$(this).attr('data-pe-retry-id');
-			console.log(pe_id);
+<script>
+  $('document').ready(function () {
+
+    $('.reparse').click(function(e){
+			console.log('reparse button clicked');
+			var pe_id=$(this).attr('data-reparse-id');
 			var button = this;
 			$(button).addClass('loading');
 			$(button).addClass('disabled');
@@ -75,8 +79,29 @@
 				$(button).removeClass('loading');
 				$(button).removeClass('disabled');
 			}).success(function() {
-				location.reload();
+				window.location = updateUrlParameter("<%=req.url%>", "highlight", pe_id)
 			});
 		});
-	});
+   
+  // show th detail view of first parsed email
+  $("#"+ "<%=req.query.highlight?req.query.highlight:_.get(parsed_emails, '[0].id', '')%>").css('background-color', '#E8E8E8');
+  $(`[detail-view-id=<%=req.query.highlight ? req.query.highlight : _.get(parsed_emails, '[0].id', '')%>]`).show()
+  $('.popup').popup();
+    $('.ui.sticky.detail_view')
+      .sticky()
+    $('.ui.sticky.left_menu')
+      .sticky()
+  });
+  
+  $(".preview.item").click(function () {
+    var pe_id = $(this).attr('id')
+    var pe = pes.find(pe => pe.id == pe_id)
+    $(".preview.item").css('background-color', '');
+    $("#"+pe.id).css('background-color', '#E8E8E8');
+    $('.detail_view').hide()
+    $(`[detail-view-id=${pe.id}]`).show()
+    $('.ui.sticky.detail_view')
+      .sticky()
+  });
+  var pes = <%- JSON.stringify(parsed_emails) %>;
 </script>
