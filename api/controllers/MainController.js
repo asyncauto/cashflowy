@@ -346,9 +346,16 @@ module.exports = {
 		var limit = req.query.limit?parseInt(req.query.limit): 25;
 		var page = req.query.page?parseInt(req.query.page):1;
 		var skip = limit * (page-1);
+		var filter = {
+			org: req.org.id,
+		}
+		// only allow white listed status
+		if(req.query.status && _.includes(['PARSED', 'PARSE_FAILED', 'JUNK'], req.query.status))
+			filter.status = req.query.status;
+
 		async.auto({
 			getParsedEmails:function(callback){
-				Parsed_email.find({org:req.params.o_id})
+				Parsed_email.find(filter)
 					.sort('createdAt DESC')
 					.limit(limit)
 					.skip(skip)
@@ -382,6 +389,7 @@ module.exports = {
 				parsed_emails:results.getParsedEmails,
 				page: page,
 				limit:limit,
+				moment: moment
 			}
 			res.view('list_parsed_emails',locals);
 		})
