@@ -74,55 +74,15 @@ module.exports = {
 					body: options.inbound_data['body-plain'].replace(/[\r\n]+/g, " ")
 				}
 				EmailParserService.extractDataFromMessageBody(opts, cb);
-			},
-			findOrCreateParsedEmail: ['extractDataFromMessageBody', 'exctractDatetimeforManualForward', function (results, cb) {
-				var parsed_email = {
-					extracted_data: results.extractDataFromMessageBody.ed,
-					org: options.org,
-					type: options.email_type,
-					body_parser_used: results.extractDataFromMessageBody.body_parser_used,
-					email: options.email,
-					message_id: options.inbound_data['Message-Id'],
-					details: {
-						inbound: options.inbound_data
-					}
-				}
-				parsed_email.extracted_data.email_received_time = new Date(options.inbound_data['Date']);
-				if (results.exctractDatetimeforManualForward && results.exctractDatetimeforManualForward.body_parser_used) {
-					parsed_email.extracted_data.forward_orignal_date = _.get(results, 'exctractDatetimeforManualForward.ed.datetime')
-				}
-				if (parsed_email.body_parser_used == '') {
-					cb(new Error('INVALID_FILTER'));
-				} else {
-					//sails modifies the parsed_email after the query, clone and do operation.
-					Parsed_email.findOrCreate({ message_id: parsed_email.message_id }, _.clone(parsed_email)).exec(function (err, pe, created) {
-						if (err) return cb(err);
-						if (!created) {
-							Parsed_email.update({ id: pe.id }, _.clone(parsed_email)).exec(function (err, updated) {
-								if (err) return cb(err);
-								return cb(null, updated[0]);
-							});
-						} else {
-							return cb(null, pe);
-						}
-					});
-				}
-			}],
-			updateParseFailure: ['findOrCreateParsedEmail', function (results, cb) {
-				Parse_failure.update({ message_id: results.findOrCreateParsedEmail.message_id },
-					{
-						parsed_email: results.findOrCreateParsedEmail.id,
-						status: 'PARSED', extracted_data: results.findOrCreateParsedEmail.extracted_data
-					}).exec(cb);
-			}]
+			}
 		}, cb)
 	},
 
 	parseInboundEmail: function (inbound_data, callback) {
 		var sender_email = findEmailIdFromWebhook(inbound_data);
+		var org_email = findOrgEmailFromWebhook(inbound_data);
 		async.auto({
 			getOrg: function (cb) {
-				var org_email = findOrgEmailFromWebhook(inbound_data);
 				if (!org_email) return cb(new Error('ORG_NOT_FOUND'));
 				Org.findOne({ email: org_email }).exec(function (err, org) {
 					if (err) return cb(err);
@@ -145,65 +105,98 @@ module.exports = {
 					cb(null);
 			}],
 			parseWithEachFilter: ['sendBackGmailAutoForwardConfirmationCode', function (results, cb) {
-				var parsed_email; // store the Parse_email object in the variable, send to slack if this variable is empty
+				var parsed_email = {
+					org: results.getOrg.id,
+					email: sender_email,
+					message_id: inbound_data['Message-Id'],
+					details: {
+						inbound: inbound_data
+					}
+				};
 				async.someLimit(sails.config.emailparser.filters, 1, function (filter, next) {
-					var data = {
+					var options = {
 						email_type: filter.name,
 						inbound_data: inbound_data,
 						org: results.getOrg.id,
 						email: sender_email
 					};
-					MailgunService.parseEmailBodyWithBodyParser(data, function (err, pe) {
-						if (err) {
-							if (err.message == 'INVALID_FILTER')
-								return next(null, false);
+					MailgunService.parseEmailBodyWithBodyParser(options, function (err, r) {
+						if (err)
 							return next(err, true);
-						}
-						parsed_email = pe.findOrCreateParsedEmail;
-						return next(null, true)
+
+						parsed_email.body_parser_used = r.extractDataFromMessageBody.body_parser_used
+						if (parsed_email.body_parser_used) {
+							parsed_email.extracted_data = r.extractDataFromMessageBody.ed;
+							parsed_email.extracted_data.email_received_time = new Date(options.inbound_data['Date']);
+							parsed_email.type = filter.name;
+							parsed_email.status = 'PARSED';
+							// if its manual forward, then add the forward_original_date to extracted_data.
+							if (r.exctractDatetimeforManualForward && r.exctractDatetimeforManualForward.body_parser_used)
+								parsed_email.extracted_data.forward_orignal_date = _.get(r, 'exctractDatetimeforManualForward.ed.datetime')
+							return next(null, true);
+						} else
+							return next(null, false)
 					})
 				}, function (err) {
-					if (!parsed_email)
-						return cb(new Error('UNABLE_TO_PARSE'));
+					if (!parsed_email.body_parser_used)
+						parsed_email.status = 'PARSE_FAILED'
 					cb(err, parsed_email);
-				})
+				});
+			}],
+			findOrCreateParsedEmail: ['parseWithEachFilter', function (results, cb) {
+				//sails modifies the parsed_email object after the query, clone and do operation.
+				var to_create = _.clone(results.parseWithEachFilter)
+				Parsed_email.findOrCreate({ message_id: to_create.message_id }, to_create).exec(function (err, pe, created) {
+					if (err) return cb(err);
+					if (!created) {
+						var to_update = _.clone(results.parseWithEachFilter);
+						Parsed_email.update({ id: pe.id }, to_update).exec(function (err, updated) {
+							if (err) return cb(err);
+							return cb(null, updated[0]);
+						});
+					} else {
+						return cb(null, pe);
+					}
+				});
 			}]
 		},
 			function (err, results) {
+				var pe = results.findOrCreateParsedEmail;
+				var slack_options = {
+					icon_emoji: ":robot_face:",
+					username: "cashflowy_bot",
+					attachments: [
+						{
+							pretext: "Mailgun Webhook Failure",
+							color: "#EB3449"
+						}
+					]
+				}
+				
+				var text = `*Sender:* ${sender_email}\n *Receipient:* ${inbound_data.recipient}\n`
+				text += `*Subject:* ${inbound_data.subject}\n\n`;
+				text += "*Email body:*\n";
+				text += inbound_data['body-plain'].trim() + `\n\n`;
+				text += "*Error*\n"
 				if (err) {
 					switch (err.message) {
 						case 'ORG_NOT_FOUND':
-							return callback(err);
-							break;
-						case 'UNABLE_TO_PARSE':
-							var parsed_failure = {
-								org: results.getOrg.id,
-								email: sender_email,
-								message_id: inbound_data['Message-Id'],
-								status: 'FAILED',
-								details: {
-									inbound: inbound_data
-								}
-							}
-							Parse_failure.findOrCreate({ message_id: parsed_failure.message_id }, parsed_failure).exec(function (err, pf) {
-								sails.log.info('parse failure created', err, pf);
-								var text = `Parsing email failure ${pf.id}\n`;
-								text += "<-Email body->\n";
-								text += inbound_data['body-plain'].trim();
-								var content = {
-									"icon_emoji": ":robot_face:",
-									"username": "cashflowy_bot",
-									"text": text,
-								}
-								SlackService.pushToSlack('cashflowy', content, sails.log.info);
-								return callback(err);
-							});
+							text = `*Error:* Not able to find Org details \n\n` + text
 							break;
 						default:
-							return callback(err);
+							text = `*Error:* ${err.message}, ${pe ? 'PE: ' + pe.id : ''}\n` + text;
 							break;
 					}
+					slack_options.attachments[0].text = text;
+					SlackService.pushToSlack('cashflowy', slack_options, sails.log.info);
+					return callback(err);
 				} else {
+					if (!pe.extracted_data) {
+						//send parse failure emails to slack
+						text = `*Error:* Parsing email failure, ${pe ? 'PE: ' + pe.id : ''}\n\n` + text;
+						slack_options.attachments[0].text = text;
+						SlackService.pushToSlack('cashflowy', slack_options, sails.log.info);
+					}
 					return callback(null, results);
 				}
 			});
@@ -212,6 +205,7 @@ module.exports = {
 	createSmtpCredential: async function (options) {
 		var DOMAIN = sails.config.mailgun.domain;
 		var data = await mailgun.post(`/domains/${DOMAIN}/credentials`, { "login": options.email });
+		return data;
 	},
 
 	findEmailIdFromWebhook: findEmailIdFromWebhook

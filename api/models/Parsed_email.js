@@ -10,12 +10,10 @@ module.exports = {
 
 	attributes: {
 		extracted_data: { // data originally extracted from email
-			type: 'json',
-			required: true,
+			type: 'json'
 		},
 		data: { // the processed version of extracted data. This can be modified by automation
-			type: 'json',
-			// required: true,	
+			type: 'json'
 		},
 		email: {
 			type: 'string',
@@ -26,10 +24,6 @@ module.exports = {
 		},
 		type: {
 			type: 'string',
-			required: true,
-			// enum:[
-			// 	'credit_card_alert','credit_card_statement','bank_transaction_alert','bank_statement'
-			// ]
 		},
 		body_parser_used: {
 			type: 'string',
@@ -47,9 +41,17 @@ module.exports = {
 		details: {
 			type: 'json',
 			columnType: 'jsonb'
-		}
+		},
+		status:{
+			type: 'string',
+			enum: ['PARSED', 'PARSE_FAILED', 'JUNK'],
+			allowNull: true
+		},
 	},
 	beforeCreate: function (pe, cb) {
+		// exit if extracted_data is empty
+		if(!pe.extracted_data)
+			return cb(null);
 		// apply before modifier
 		sails.config.emailparser.beforeModifyData(pe);
 		// apply particular filter
@@ -74,19 +76,27 @@ module.exports = {
 			cb(null);
 		})
 	},
-	afterCreate: function (pe, calllback) {
-		CashflowyService.afterCreate_PE(pe, calllback);
+	afterCreate: function (pe, cb) {
+		// exit if extracted_data is empty
+		if(!pe.extracted_data)
+			return cb(null);
+
+		CashflowyService.afterCreate_PE(pe, cb);
 	},
-	afterUpdate: async function(pe, calllback){
+	afterUpdate: async function(pe, cb){
+		// exit if extracted_data is empty
+		if(!pe.extracted_data)
+			return cb(null);
+
 		//exit if dtes exists
 		var dtes = await Doubtful_transaction_event.find({parsed_email: pe.id})
-		if(dtes.length) return calllback(null);
+		if(dtes.length) return cb(null);
 
 		//run after create functionality if transaction_event is not created.
 		if(!pe.transaction_event)
-			CashflowyService.afterCreate_PE(pe, calllback);
+			CashflowyService.afterCreate_PE(pe, cb);
 		else 
-			calllback(null);
+			cb(null);
 	}
 };
 
