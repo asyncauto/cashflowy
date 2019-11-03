@@ -86,7 +86,7 @@ module.exports = {
 								condition.amount_inr = -Math.abs(condition.amount_inr)
 
 						condition.type = 'income_expense'
-						if (condition.third_party)
+						if (created.third_party && condition.third_party)
 							if (!created.third_party.toLowerCase().includes(condition.third_party.toLowerCase()))
 								return
 							else
