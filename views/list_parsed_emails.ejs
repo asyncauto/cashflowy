@@ -33,7 +33,7 @@
   </div>
   <div class="ui  seven wide column">
       <%parsed_emails.forEach(function(pe){%>
-        <div class="ui sticky detail_view"  style="display:none;" detail-view-id=<%= pe.id %> >
+        <div class="ui detail_view"  style="display:none;" detail-view-id=<%= pe.id %> >
           <%if(pe.status == 'PARSED'){%>
             <div class="ui basic small green label">Parsed</div>
             <div class="ui basic small  icon label">
@@ -85,7 +85,7 @@
    
   // show th detail view of first parsed email
   $("#"+ "<%=req.query.highlight?req.query.highlight:_.get(parsed_emails, '[0].id', '')%>").css('background-color', '#E8E8E8');
-  $(`[detail-view-id=<%=req.query.highlight ? req.query.highlight : _.get(parsed_emails, '[0].id', '')%>]`).show()
+  $(`[detail-view-id=<%=req.query.highlight ? req.query.highlight : _.get(parsed_emails, '[0].id', '')%>]`).addClass('sticky').show()
   $('.popup').popup();
     $('.ui.sticky.detail_view')
       .sticky()
@@ -97,7 +97,7 @@
     var pe_id = $(this).attr('id')
     var pe = pes.find(pe => pe.id == pe_id)
     $(".preview.item").css('background-color', '');
-    $("#"+pe.id).css('background-color', '#E8E8E8');
+    $("#"+pe.id).removeClass('sticky').css('background-color', '#E8E8E8');
     $('.detail_view').hide()
     $(`[detail-view-id=${pe.id}]`).show()
     $('.ui.sticky.detail_view')

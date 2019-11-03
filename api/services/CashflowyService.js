@@ -241,6 +241,7 @@ module.exports = {
 	afterCreate_PE: function (pe, callback) {
 		var t;
 		var unique_transaction_flag;
+		var te_id;
 		async.auto({
 			getAccount: function (callback) {
 				var find = {
@@ -306,18 +307,21 @@ module.exports = {
 				}
 
 				Transaction_event.find(t).exec(function (err, tes) {
-					if (tes.length)
+					if (tes.length) {
 						unique_transaction_flag = true
-					return callback(null, tes[0]);
+						te_id = _.get(tes, '[0].id');
+						return callback(null, tes[0]);
+					} else {
+						return callback(null);
+					}
 				})
-
 			}],
 			findSimilarTransactionEvents: ['getAccounts', 'findExactTransactionEvent', function (results, callback) {
 				//skip if it only contains information about account balance.
 				if (pe.data.type == 'balance')
 					return callback(null);
 
-				// if there is a unique transaction then skip
+				// if there is an unique transaction already exist then skip
 				if (unique_transaction_flag)
 					return callback(null);
 
@@ -335,7 +339,11 @@ module.exports = {
 
 				if (results.findSimilarTransactionEvents.length == 0) {
 					unique_transaction_flag = true;
-					Transaction_event.create(t).exec(callback);
+					Transaction_event.create(t).exec(function (err, te) {
+						if (err) return callback(err);
+						te_id = te.id;
+						return callback(null, te);
+					});
 				} else {
 					//else create a doubtful transaction
 					var dte = {
@@ -352,7 +360,7 @@ module.exports = {
 				if (pe.data.type == 'balance')
 					return callback(null);
 				if (unique_transaction_flag) {
-					Parsed_email.update({ id: pe.id }, { transaction_event: results.createTransactionEvent.id }).exec(callback);
+					Parsed_email.update({ id: pe.id }, { transaction_event: te_id }).exec(callback);
 				} else {
 					callback(null);
 				}
