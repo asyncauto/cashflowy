@@ -127,6 +127,12 @@ module.exports.emailparser = {
             name: 'CitibankCreditCardTransactionFilter',
         },
         {
+            name: 'CitibankUpiFilter',
+        },
+        {
+            name: 'CitibankBalanceUpdate',
+        },
+        {
             name: 'AmazonPayTransactionFilter',
             modifyData: function (pe) {
                 pe.data.acc_number = pe.email + '-amazon_pay';
