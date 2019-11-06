@@ -968,8 +968,9 @@ module.exports = {
 					if(t.tags){
 						var tags_strs = ''
 						_.forEach(t.tags, function(tag){
-							tags_strs += tag+', '
+							tags_strs += tag.name+', '
 						});
+						tags_strs = tags_strs.slice(0, -2);//remove last comma
 						t.tags = tags_strs;
 					}
 				});
