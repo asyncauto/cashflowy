@@ -961,8 +961,14 @@ module.exports = {
 					}
 					if(t.category){
 						_.forEach(locals.categories, function(c){
-							if(c.id == t.category)
+							if(c.id == t.category){
 								t.category = c.fullname
+							}else if (c.children.length!=0){
+								_.forEach(c.children, function(c){
+									if(c.id == t.category)
+										t.category = c.fullname
+								})
+							}
 						})
 					}
 					if(t.tags){
