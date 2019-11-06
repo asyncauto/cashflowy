@@ -169,6 +169,31 @@ module.exports.docparser={
 				return data;
 			}
 		},
+		{
+			docparser_id:'nagbodeqpkuy',
+			type:'icici_amazonpay_credit_card',
+			name:'ICICI AmazonPay Credit card',
+			modifyParsedData:function(extracted_data){
+				var data = _.clone(extracted_data)
+				if(data.transactions && data.transactions.length){
+					if(!data.transactions_from_date) // if transaction_from_date does not exist
+						data.transactions_from_date = data.transactions[0].date;
+					if(!data.transactions_to_date) // if transaction_end_date does not exist
+						data.transactions_to_date = data.transactions[data.transactions.length -1].date;
+				}
+				data.transactions.forEach(function(t){
+					var year=data.transactions_from_date.substring(-4);
+					if(t.date.substring(3,5)=='01')
+						year=data.transactions_to_date.substring(0,4);
+					t.date=moment(t.date, 'DD/MM/YYYY').tz('Asia/Kolkata').toISOString().substring(0,10)
+					t.amount = t.amount.replace(/,/g,'');
+					delete t.key_1;
+					delete t.key_5;
+				})
+				return data;
+			}
+		},
+
 
 	]
 }

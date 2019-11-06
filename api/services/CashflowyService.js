@@ -77,6 +77,11 @@ var convertSliToTransactionEvent = function (sli) {
 			t.original_amount = parseFloat(sli.data.amount);
 		else
 			t.original_amount = -parseFloat(sli.data.amount);
+	}else if (sli.details.type == 'icici_amazonpay_credit_card' && sli.details.parser_used == 'nagbodeqpkuy') {
+		if (sli.data.dr_cr == 'CR') // amount is creditted
+			t.original_amount = parseFloat(sli.data.amount);
+		else
+			t.original_amount = -parseFloat(sli.data.amount);
 	}
 
 
