@@ -3245,6 +3245,7 @@ module.exports = {
 			})
 		}
 	},
+	// this is only used for updating category of a transaction.
 	updateTransaction: function(req,res){
 		async.auto({
 			getTransaction: function(cb){
@@ -3253,7 +3254,25 @@ module.exports = {
 			updateTransaction: ['getTransaction', function(results, cb){
 				if(_.get(results, 'getTransaction.account.org') != req.org.id)
 					return cb(new Error('INVALID_ACCESS'));
-				Transaction.update({id: req.params.id}, req.body).exec(cb);
+
+				Transaction.update({id: req.params.id}, {category:req.body.category}).exec(cb);
+			}],
+			getCategory:['updateTransaction',function(results,cb){
+				Category.findOne({id:req.body.category}).exec(cb);
+			}],
+			createActivity:['getCategory',function(results,cb){
+				var transaction = results.getTransaction;
+				var activity={
+					log: {
+						t_prev:transaction,
+						category_updated:results.getCategory,
+					},
+					user: req.user.id,
+					type: 'transaction__edit_category',
+					org: req.org.id,
+					doer_type:'user'
+				};
+				Activity.create(activity).exec(cb);
 			}]
 		}, function(err, results){
 			if(err){
