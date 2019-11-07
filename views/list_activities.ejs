@@ -95,6 +95,23 @@ function updateQueryStringParameter(uri, key, value) {
 								</div>
 							</div>
 						</div>
+					<%}else if(activity.type=='email__received'){%>
+						<div class="event" style="user-select: auto;">
+							<div class="label" style="user-select: auto;">
+								<img src="/images/apple-touch-icon.png" style="user-select: auto;">
+							</div>
+							<div class="content" style="user-select: auto;">
+								<div class="summary" style="user-select: auto;">
+									<a href="/org/<%=activity.org%>/parsed_emails">New email</a> received 
+									<div class="date" style="user-select: auto;">
+										<%=format_time(activity.createdAt)%> Ago
+									</div>
+								</div>
+								<div class="extra text" style="user-select: auto;">
+									<b>Subject:</b> <%=activity.log.inbound_data.Subject%>
+								</div>
+							</div>
+						</div>
 					<%}%>
 				<%})%>
 				
