@@ -1222,6 +1222,36 @@ module.exports = {
 			});
 		}
 	},
+	// editCategoryOfTransaction(req,res){
+	// 	// do you have permission to edit description of that transaction?
+	// 	async.auto({
+	// 		getAccounts:function(callback){
+	// 			Account.find({org:req.org.id}).exec(callback);
+	// 		},
+	// 		getTransaction:function(callback){
+	// 			Transaction.findOne({id:req.body.tc}).exec(callback);
+	// 		},
+	// 	},function(err,results){
+	// 		if(err)
+	// 			throw err;
+	// 		var t = results.getTransaction;
+	// 		var flag=false;
+	// 		results.getAccounts.forEach(function(account){
+	// 			if(t.account==account.id) // transaction in account of the user
+	// 				flag=true;
+	// 		});
+	// 		if(flag){
+	// 			Transaction.update({id:t.id},{description:req.body.description}).exec(function(err,result){
+	// 				if(err)
+	// 					throw err;
+	// 				else
+	// 					res.send('ok');
+	// 			})
+	// 		}else{
+	// 			res.send(400,'you cant edit that transaction');
+	// 		}
+	// 	})
+	// },
 	editDescription:function(req,res){
 		if(req.body.tc){
 			// do you have permission to edit description of that transaction?
@@ -1232,25 +1262,44 @@ module.exports = {
 				getTransaction:function(callback){
 					Transaction.findOne({id:req.body.tc}).exec(callback);
 				},
+				updateTransaction:['getAccounts','getTransaction',function(results,callback){
+					var t = results.getTransaction;
+					var flag=false;
+					results.getAccounts.forEach(function(account){
+						if(t.account==account.id) // transaction in account of the user
+							flag=true;
+					});
+					if(flag){
+						Transaction.update({id:t.id},{description:req.body.description}).exec(callback);
+					}else{
+						callback('you cant edit that transaction');
+					}
+				}],
+				createActivity:['updateTransaction',function(results,callback){
+					// if permission is not there, this function is not called. 
+					var transaction = results.getTransaction;
+					transaction.account=_.find(results.getAccounts,{id:transaction.account});
+					var activity={
+						log: {
+							t_prev:transaction,
+							description_updated:req.body.description,
+						},
+						user: req.user.id,
+						type: 'transaction__edit_desc',
+						org: req.org.id,
+						doer_type:'user'
+					};
+					
+					Activity.create(activity).exec(callback);
+				}]
 			},function(err,results){
-				if(err)
-					throw err;
-				var t = results.getTransaction;
-				var flag=false;
-				results.getAccounts.forEach(function(account){
-					if(t.account==account.id) // transaction in account of the user
-						flag=true;
-				});
-				if(flag){
-					Transaction.update({id:t.id},{description:req.body.description}).exec(function(err,result){
-						if(err)
-							throw err;
-						else
-							res.send('ok');
-					})
-				}else{
+				if(err=='you cant edit that transaction')
 					res.send(400,'you cant edit that transaction');
-				}
+
+				if(err && err!='you cant edit that transaction')
+					throw err;
+				else
+					res.send('ok');
 			})
 		}else if(req.body.doc){
 			Statement.findOne({id:req.body.doc}).exec(function(err,doc){
