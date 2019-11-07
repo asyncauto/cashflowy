@@ -64,14 +64,34 @@ function updateQueryStringParameter(uri, key, value) {
 								<div class="summary" style="user-select: auto;">
 									<a class="user" style="user-select: auto;">
 										<%=activity.user.name%>
-									</a> edited description of a transaction
+									</a> edited description of a <a href="/org/<%=activity.log.t_prev.account.org%>/transaction_event/<%=activity.log.t_prev.id%>" data-tooltip="<%=activity.log.t_prev.original_currency%> <%=-activity.log.t_prev.original_amount%> was spend at '<%=activity.log.t_prev.third_party%>' from account '<%=activity.log.t_prev.account.name%>'">transaction</a>
 									<div class="date" style="user-select: auto;">
 										<%=format_time(activity.createdAt)%> Ago
 									</div>
 								</div>
 								<div class="extra text" style="user-select: auto;">
+									
 									<b>to:</b> <%=activity.log.description_updated%><br>
 									<b>was:</b> <%=activity.log.t_prev.description%><br>
+								</div>
+							</div>
+						</div>
+					<%}else if(activity.type=='transaction__edit_category'){%>
+						<div class="event" style="user-select: auto;">
+							<div class="label" style="user-select: auto;">
+								<img src="/images/apple-touch-icon.png" style="user-select: auto;">
+							</div>
+							<div class="content" style="user-select: auto;">
+								<div class="summary" style="user-select: auto;">
+									<a class="user" style="user-select: auto;">
+										<%=activity.user.name%>
+									</a> modified budget category of a <a href="/org/<%=activity.log.t_prev.account.org%>/transaction_event/<%=activity.log.t_prev.id%>" data-tooltip="<%=activity.log.t_prev.original_currency%> <%=-activity.log.t_prev.original_amount%> was spend at '<%=activity.log.t_prev.third_party%>' from account '<%=activity.log.t_prev.account.name%>'">transaction</a>
+									<div class="date" style="user-select: auto;">
+										<%=format_time(activity.createdAt)%> Ago
+									</div>
+								</div>
+								<div class="extra text" style="user-select: auto;">
+									<b>to:</b> <%=activity.log.category_updated.name%><br>
 								</div>
 							</div>
 						</div>
