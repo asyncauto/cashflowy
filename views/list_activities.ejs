@@ -1,0 +1,111 @@
+<style>
+	.ui.grid>.row{
+	padding: 0.5rem 0;
+	}
+</style>
+<%
+var format_time=function(time){
+	return GeneralService.timeAgo(time);
+}
+function updateQueryStringParameter(uri, key, value) {
+	var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+	var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+	if (uri.match(re)) {
+	  return uri.replace(re, '$1' + key + "=" + value + '$2');
+	}
+	else {
+	  return uri + separator + key + "=" + value;
+	}
+  }
+%>
+<div class='ui container'>
+	<div class='ui grid'>
+		<div class='five wide computer only column'>
+			<h2>Filters</h2>
+			options to filter activity feed will show up here. 
+		</div>
+		<div class='eleven wide computer sixteen wide tablet sixteen wide mobile column'>
+			<div class='ui grid'>
+				<div class='eight wide column'>
+					<h2>Activities</h2>
+				</div>
+				<div class='eight wide column right aligned'>
+					
+				</div>
+			</div>
+			<div class="ui feed">
+				<%activities.forEach(function(activity){%>
+					<!-- <pre><%=JSON.stringify(activity,null,'    ')%></pre>  -->
+					<%if(activity.type=='transaction__manual_create'){%>
+						<div class="event" style="user-select: auto;">
+							<div class="label" style="user-select: auto;">
+								<img src="/images/apple-touch-icon.png" style="user-select: auto;">
+							</div>
+							<div class="content" style="user-select: auto;">
+								<div class="summary" style="user-select: auto;">
+									<a class="user" style="user-select: auto;">
+										<%=activity.user.name%>
+									</a> created a transaction manually
+									<div class="date" style="user-select: auto;">
+										<%=format_time(activity.createdAt)%> Ago
+									</div>
+								</div>
+								<div class="extra text" style="user-select: auto;">
+									<b><%=activity.log.t.original_currency%> <%=-activity.log.t.original_amount%></b> was spend at "<%=activity.log.t.third_party%>" from account "<%=activity.log.t.account.name%>"
+								</div>
+							</div>
+						</div>
+					<%}else if(activity.type=='transaction__edit_desc'){%>
+						<div class="event" style="user-select: auto;">
+							<div class="label" style="user-select: auto;">
+								<img src="/images/apple-touch-icon.png" style="user-select: auto;">
+							</div>
+							<div class="content" style="user-select: auto;">
+								<div class="summary" style="user-select: auto;">
+									<a class="user" style="user-select: auto;">
+										<%=activity.user.name%>
+									</a> edited description of a <a href="/org/<%=activity.log.t_prev.account.org%>/transaction_event/<%=activity.log.t_prev.id%>" data-tooltip="<%=activity.log.t_prev.original_currency%> <%=-activity.log.t_prev.original_amount%> was spend at '<%=activity.log.t_prev.third_party%>' from account '<%=activity.log.t_prev.account.name%>'">transaction</a>
+									<div class="date" style="user-select: auto;">
+										<%=format_time(activity.createdAt)%> Ago
+									</div>
+								</div>
+								<div class="extra text" style="user-select: auto;">
+									
+									<b>to:</b> <%=activity.log.description_updated%><br>
+									<b>was:</b> <%=activity.log.t_prev.description%><br>
+								</div>
+							</div>
+						</div>
+					<%}else if(activity.type=='transaction__edit_category'){%>
+						<div class="event" style="user-select: auto;">
+							<div class="label" style="user-select: auto;">
+								<img src="/images/apple-touch-icon.png" style="user-select: auto;">
+							</div>
+							<div class="content" style="user-select: auto;">
+								<div class="summary" style="user-select: auto;">
+									<a class="user" style="user-select: auto;">
+										<%=activity.user.name%>
+									</a> modified budget category of a <a href="/org/<%=activity.log.t_prev.account.org%>/transaction_event/<%=activity.log.t_prev.id%>" data-tooltip="<%=activity.log.t_prev.original_currency%> <%=-activity.log.t_prev.original_amount%> was spend at '<%=activity.log.t_prev.third_party%>' from account '<%=activity.log.t_prev.account.name%>'">transaction</a>
+									<div class="date" style="user-select: auto;">
+										<%=format_time(activity.createdAt)%> Ago
+									</div>
+								</div>
+								<div class="extra text" style="user-select: auto;">
+									<b>to:</b> <%=activity.log.category_updated.name%><br>
+								</div>
+							</div>
+						</div>
+					<%}%>
+				<%})%>
+				
+			</div>
+			<!-- </div> -->
+		</div>
+	</div>
+</div>
+
+<a class="circular ui icon right floated primary big button" href="/org/<%=req.org.id%>/transaction_event/create" style="position:fixed;top:auto;left:auto;right:20px;bottom:20px;display:;" data-tooltip="Add new transaction event" data-position="left center" data-inverted=""><i class="icon add"></i></a>
+<script type="text/javascript">
+	$(document).ready(function(){
+	});
+</script>

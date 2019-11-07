@@ -213,6 +213,8 @@ module.exports.routes = {
   'POST /org/:o_id/rule/:id/edit':'MainController.editRule',
   'GET /org/:o_id/rule/:id/delete':'MainController.deleteRule',
   'POST /org/:o_id/rule/:id/delete':'MainController.deleteRule',
+
+  'GET /org/:o_id/activity':'MainController.listActivities',
   
   //org settings
   'GET /org/:o_id/settings': 'MainController.listSettings',
