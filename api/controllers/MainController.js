@@ -428,30 +428,30 @@ module.exports = {
 	},
 	createEmail:function(req,res){
 		if(req.body){ // post request
- 			var e={
- 				email:req.body.email,
- 				org:req.org.id,
- 			}
- 			// console.log('before transaction find or create');
- 			console.log(e);
- 			Email.create(e).exec(function(err,transaction){
- 				if(err){
- 					console.log(err);
- 					throw err;
- 				}
- 				else
+			var e={
+				email:req.body.email,
+				org:req.org.id,
+			}
+			// console.log('before transaction find or create');
+			console.log(e);
+			Email.create(e).exec(function(err,transaction){
+				if(err){
+					console.log(err);
+					throw err;
+				}
+				else
 					res.redirect('/org/' + req.org.id +'/emails');
- 			});
- 		}else{ // view the form
- 			var locals={
- 				email:'',
- 				token:'',
- 				status:'',
- 				message:'',
- 			}
- 			console.log(locals);
- 			res.view('create_email',locals);
- 		}
+			});
+		}else{ // view the form
+			var locals={
+				email:'',
+				token:'',
+				status:'',
+				message:'',
+			}
+			console.log(locals);
+			res.view('create_email',locals);
+		}
 	},
 	editEmail:function(req,res){
 	},
@@ -680,14 +680,14 @@ module.exports = {
 			});
 			
 			if(month==1)		
- 				locals.prev=(parseInt(year)-1)+'-12';		
- 			else		
- 				locals.prev=year+'-'+(parseInt(month)-1)		
+				locals.prev=(parseInt(year)-1)+'-12';		
+			else		
+				locals.prev=year+'-'+(parseInt(month)-1)		
 
-  			if(month==12)		
- 				locals.next=(parseInt(year)+1)+'-1'		
- 			else		
- 				locals.next=year+'-'+(parseInt(month)+1);
+			if(month==12)		
+				locals.next=(parseInt(year)+1)+'-1'		
+			else		
+				locals.next=year+'-'+(parseInt(month)+1);
 			
 			res.view('dashboard',locals);
 		})
@@ -1030,7 +1030,26 @@ module.exports = {
 				}
 				// console.log('before transaction find or create');
 				console.log(t);
-				Transaction_event.create(t).exec(async function(err,transaction){
+				async.auto({
+					createActivity:function(callback){
+						var transaction = _.cloneDeep(t);
+						transaction.account=_.find(accounts,{id:parseInt(req.body.account_id)});
+						var activity={
+							log: {
+								t:transaction,
+							},
+							user: req.user.id,
+							type: 'transaction__manual_create',
+							org: req.org.id,
+							doer_type:'user'
+						};
+						
+						Activity.create(activity).exec(callback);
+					},
+					createTransactionEvent:function(callback){
+						Transaction_event.create(t).exec(callback);
+					}
+				},function(err,results){
 					if(err){
 						var locals={
 							occuredAt:'',
@@ -1057,6 +1076,7 @@ module.exports = {
 							res.redirect('/org/' + req.org.id +'/transactions');
 					}
 				});
+				
 			}else{ // view the form
 				var locals={
 					occuredAt:'',
@@ -3056,13 +3076,13 @@ module.exports = {
 		}
 	},
 	createDocument: async function(req, res){
-        var uploaded = await sails.uploadOne(req.file('attachment'));
+		var uploaded = await sails.uploadOne(req.file('attachment'));
 		var document = await Document.create({ filename: uploaded.filename, 
 			fd: uploaded.fd, mime: uploaded.type, 
 			org: req.org.id, transaction: _.get(req, 'body.t', null), description: _.get(req, 'body.description', null) }).fetch();
 		if(req.query.redirect == 'true')
 			return res.redirect(req.headers.referer);
-       	res.json(document);
+		res.json(document);
 	},
 	deleteDocument: async function(req, res){
 	},
@@ -3111,7 +3131,7 @@ module.exports = {
 		}else{
 			res.json(file);
 		}
-   		
+		
 	},
 	bulkOps:function(req,res){
 		var locals={}
@@ -3289,5 +3309,16 @@ module.exports = {
 			}
 			res.view('view_transaction_group', locals)
 		})
-	}
+	},
+	listActivities:function(req,res){
+		Activity.find({org:req.org.id})
+			.sort('createdAt DESC')
+			.populate('user')
+			.exec(function(err,activities){
+			var locals={
+				activities:activities
+			}
+			res.view('list_activities',locals);
+		});
+	},
 }
