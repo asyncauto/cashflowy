@@ -59,11 +59,11 @@ passport.use(new BearerStrategy(
 			if(err) return done(err);
 			User.findOne(jwt_decode_payload.id).exec(function(err, user){
 				if(err) return done(err);
-				if(!user) return done(new Error('invalid token'));
+				if(!user) return done(new Error('BLUEPRINT_USER_NOT_FOUND'));
 				KmsService.decrypt(user.api_token, function(err, plain_api_token){
 					if(err) return done(err);
 					if(plain_api_token != api_token)
-						return done(new Error('invalid token'))
+						return done(new Error('BLUEPRINT_TOKEN_IS_NOT_VALID'))
 					return done(null, user, { scope: 'blueprint' });
 				})
 			})

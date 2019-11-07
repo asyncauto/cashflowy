@@ -1,26 +1,128 @@
 module.exports={
-	gmail_filter:'from:(CitiAlert.India@citicorp.com) subject:("CitiAlert - UPI Fund Transfer Acknowledgement") ',
+	gmail_filter:'from:(CitiAlert.India@citicorp.com) subject:("Transaction confirmation on your Citibank credit card")',
 	active:true,
-	required_fields:['account_last_4_digits','currency','amount','whom_you_paid','available_credit_balance','date','time','upi_ref_no'],
+	required_fields:['credit_card_last_4_digits','available_credit_balance_currency','available_credit_balance','date','time'],
 	body_parsers:[
 		{
 			version:'v1',
-			description:'as of nov 2019',
+			description:'this works till Oct 2018',
 			fields:[
-				
 				{
-					name:'currency',
+					name:'credit_card_last_4_digits',
+					type:'integer',
+					filters:[
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'balance in your Citibank account No. '
+						},
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'You can withdraw upto '
+						},
+						{
+							type:'trim',
+						},
+						
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' is '
+                        },
+                        {
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'XXXXXX'
+						},
+						{
+							type:'trim',
+                        },
+                        
+					]
+				},
+				{
+					name:'available_credit_balance_currency',
 					type:'string',
 					filters:[
 						{
-							type:'is',
-							value:'INR'
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'balance in your Citibank account No. '
 						},
-					]
+						{
+							type:'find_end_position',
+							criteria:'text_match_before',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:'You can withdraw upto '
+						},
+						{
+							type:'trim',
+						},
 						
+						{
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' is '
+						},
+						{
+							type:'trim',
+                        },
+                        {
+							type:'substring',
+							options:{
+								end:3,
+							}
+                        },
+                        {
+							type:'replace',
+							options:{
+								replace:'Rs.',
+								with:'INR',
+							}
+                        },
+                        {
+							type:'replace',
+							options:{
+								replace:'Rs ',
+								with:'INR',
+							}
+                        },
+                        {
+							type:'trim',
+                        },
+					]
 				},
+				
 				{
-					name:'amount',
+					name:'available_credit_balance',
 					type:'float',
 					filters:[
 						{
@@ -30,7 +132,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Your Citibank A/c has been debited with INR '
+							q:'balance in your Citibank account No. '
 						},
 						{
 							type:'find_end_position',
@@ -39,70 +141,43 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'has been credited'
+							q:'You can withdraw upto '
 						},
 						{
 							type:'trim',
 						},
+						
 						{
-							type:'find_end_position',
-							criteria:'text_match_before',
+							type:'find_start_position',
+							criteria:'text_match_after',
 							options:{
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' on '
+							q:' is '
 						},
 						{
 							type:'trim',
+                        },
+                        {
+							type:'find_start_position',
+							criteria:'text_match_after',
+							options:{
+								case_sensitive:false,
+								beginning_of_line:true
+							},
+							q:' '
 						},
-						{
+                        {
 							type:'replace',
 							options:{
 								replace:',',
 								with:'',
 							}
-						},
-					]
-				},
-				{
-					name:'third_party',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Your Citibank A/c has been debited with'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' has been credited.'
-						},
-						{
+                        },
+                        {
 							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'and account '
-						},
-						
-						{
-							type:'trim',
-						},
+                        },
 					]
 				},
 				{
@@ -116,7 +191,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:'Your Citibank A/c has been debited with'
+							q:'As on '
 						},
 						{
 							type:'find_end_position',
@@ -125,19 +200,7 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' has been credited.'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on '
+							q:'balance in your Citibank account No. '
 						},
 						{
 							type:'find_end_position',
@@ -146,104 +209,12 @@ module.exports={
 								case_sensitive:false,
 								beginning_of_line:true
 							},
-							q:' at '
-						},
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'time',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Your Citibank A/c has been debited with'
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' has been credited.'
-						},
-						{
-							type:'trim',
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' on '
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' at '
-						},
-						{
-							type:'find_end_position',
-							criteria:'text_match_before',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:' and '
-						},
-						
-						{
-							type:'trim',
-						},
-					]
-				},
-				{
-					name:'upi_ref_no',
-					type:'string',
-					filters:[
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'Your Citibank A/c has been debited with'
-						},
-						{
-							type:'find_start_position',
-							criteria:'text_match_after',
-							options:{
-								case_sensitive:false,
-								beginning_of_line:true
-							},
-							q:'UPI Ref no. '
+							q:','
 						},
 						{
 							type:'trim',
 						},
 						
-						{
-							type:'substring',
-							options:{
-								start:0,
-								end:12,
-							}
-						},
 						{
 							type:'trim',
 						},
@@ -251,7 +222,7 @@ module.exports={
 				},
 			]
 		},
-	
+		
+		
 	]
-	
 }

@@ -52,6 +52,16 @@ module.exports.emailparser = {
     },
     filters: [
         {
+            name: 'NiyoCardFilter',
+            modifyData: function (pe) {
+                if (pe.body_parser_used == 'money_added_v1') {
+                    pe.data.original_amount = pe.extracted_data.amount;
+                }
+                return pe;
+            }
+            
+        },
+        {
             name: 'PaytmFilter',
             modifyData: function (pe) {
                 if (pe.body_parser_used == 'received_money_v1'||pe.body_parser_used == 'money_added_v1'||pe.body_parser_used == 'received_cashback_v1'||pe.body_parser_used == 'money_added_automatically_v1'||pe.body_parser_used == 'received_refund_v1') {
@@ -115,6 +125,12 @@ module.exports.emailparser = {
         },
         {
             name: 'CitibankCreditCardTransactionFilter',
+        },
+        {
+            name: 'CitibankUpiFilter',
+        },
+        {
+            name: 'CitibankBalanceUpdate',
         },
         {
             name: 'AmazonPayTransactionFilter',
@@ -214,7 +230,8 @@ module.exports.emailparser = {
                     pe.data.original_amount = pe.extracted_data.amount;
                 return pe
             }
-        }
+        },
+       
     ]
 
 }

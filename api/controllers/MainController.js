@@ -346,9 +346,16 @@ module.exports = {
 		var limit = req.query.limit?parseInt(req.query.limit): 25;
 		var page = req.query.page?parseInt(req.query.page):1;
 		var skip = limit * (page-1);
+		var filter = {
+			org: req.org.id,
+		}
+		// only allow white listed status
+		if(req.query.status && _.includes(['PARSED', 'PARSE_FAILED', 'JUNK'], req.query.status))
+			filter.status = req.query.status;
+
 		async.auto({
 			getParsedEmails:function(callback){
-				Parsed_email.find({org:req.params.o_id})
+				Parsed_email.find(filter)
 					.sort('createdAt DESC')
 					.limit(limit)
 					.skip(skip)
@@ -382,6 +389,7 @@ module.exports = {
 				parsed_emails:results.getParsedEmails,
 				page: page,
 				limit:limit,
+				moment: moment
 			}
 			res.view('list_parsed_emails',locals);
 		})
@@ -405,13 +413,7 @@ module.exports = {
 				});
 			},
 			reParse: ['getParsedEmail', function(results, cb){
-				var opts = {
-					email_type: results.getParsedEmail.type,
-					inbound_data: results.getParsedEmail.details.inbound,
-					org: results.getParsedEmail.org,
-					email: results.getParsedEmail.email
-				}
-				MailgunService.parseEmailBodyWithBodyParser(opts, cb);
+				MailgunService.parseInboundEmail(results.getParsedEmail.details.inbound,cb)
 			}]	
 		}, function(err, results){
 			if(err){
@@ -959,15 +961,22 @@ module.exports = {
 					}
 					if(t.category){
 						_.forEach(locals.categories, function(c){
-							if(c.id == t.category)
+							if(c.id == t.category){
 								t.category = c.fullname
+							}else if (c.children.length!=0){
+								_.forEach(c.children, function(c){
+									if(c.id == t.category)
+										t.category = c.fullname
+								})
+							}
 						})
 					}
 					if(t.tags){
 						var tags_strs = ''
 						_.forEach(t.tags, function(tag){
-							tags_strs += tag+', '
+							tags_strs += tag.name+', '
 						});
+						tags_strs = tags_strs.slice(0, -2);//remove last comma
 						t.tags = tags_strs;
 					}
 				});
