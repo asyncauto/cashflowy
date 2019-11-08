@@ -90,6 +90,19 @@ module.exports = {
 					return cb(null, org);
 				});
 			},
+			createActivity:['getOrg',function(results,cb){
+				var activity={
+					log: {
+						sender_email:sender_email,
+						org_email:org_email,
+						inbound_data:inbound_data,
+					},
+					type: 'email__received',
+					org: results.getOrg.id,
+					doer_type:'user'
+				};
+				Activity.create(activity).exec(cb);
+			}],
 			sendBackGmailAutoForwardConfirmationCode: ['getOrg', function (results, cb) {
 				if (inbound_data.subject.includes('Gmail Forwarding Confirmation'))
 					mailgun.messages().send({

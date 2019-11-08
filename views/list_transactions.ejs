@@ -384,7 +384,7 @@ function updateQueryStringParameter(uri, key, value) {
 										<%=t.third_party%>
 									<%}else{%>
 										<span style='opacity: 0.5'>to</span><br>
-										<%=t.to_account.name%>
+										<%=t.to_account?t.to_account.name:'XXXXXXXX'%>
 									<%}%>
 								</td>
 								<td>
