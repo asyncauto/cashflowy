@@ -151,6 +151,10 @@ module.exports.emailparser = {
         },
         {
             name: 'CitibankBalanceUpdate',
+            modifyData: function (pe) {
+                pe.data.type = 'balance';
+                return pe
+            }
         },
         {
             name: 'AmazonPayTransactionFilter',
