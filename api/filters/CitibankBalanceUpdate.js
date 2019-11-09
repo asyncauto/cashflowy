@@ -1,7 +1,7 @@
 module.exports={
 	gmail_filter:'from:(CitiAlert.India@citicorp.com) subject:("Transaction confirmation on your Citibank credit card")',
 	active:true,
-	required_fields:['credit_card_last_4_digits','available_credit_balance_currency','available_credit_balance','date','time'],
+	required_fields:['credit_card_last_4_digits','balance_currency','balance_amount','date','time'],
 	body_parsers:[
 		{
 			version:'v1',
@@ -58,7 +58,7 @@ module.exports={
 					]
 				},
 				{
-					name:'available_credit_balance_currency',
+					name:'balance_currency',
 					type:'string',
 					filters:[
 						{
@@ -122,7 +122,7 @@ module.exports={
 				},
 				
 				{
-					name:'available_credit_balance',
+					name:'balance_amount',
 					type:'float',
 					filters:[
 						{
