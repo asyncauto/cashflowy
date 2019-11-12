@@ -82,6 +82,9 @@ var convertSliToTransactionEvent = function (sli) {
 			t.original_amount = parseFloat(sli.data.amount);
 		else
 			t.original_amount = -parseFloat(sli.data.amount);
+	
+	}else if (sli.details.type == 'niyo_account' && sli.details.parser_used == 'wxudfcnucobv') {
+			t.original_amount = parseFloat(sli.data.amount);
 	}
 
 
