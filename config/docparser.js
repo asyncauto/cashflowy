@@ -208,7 +208,9 @@ module.exports.docparser={
 				data.transactions.forEach(function(t){
 					t.date=moment(t.date, 'DD-MM-YY hh:mm').tz('Asia/Kolkata').toISOString().substring(0,10)
 					t.amount = t.amount.replace(/,/g,'');
+					t.amount = t.amount.replace(/ /g,'');
 					t.balance = t.balance.replace(/,/g,'');
+					t.balance = t.balance.replace(/ ,/g,'');
 					delete t.key_1;
 					delete t.key_3;
 					delete t.key_7;
